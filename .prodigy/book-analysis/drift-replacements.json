@@ -1,0 +1,132 @@
+{
+  "chapter_id": "replacements",
+  "chapter_title": "Replacements",
+  "chapter_file": "book/src/replacements.md",
+  "drift_detected": true,
+  "severity": "critical",
+  "quality_assessment": "Chapter is currently a placeholder with no content. All replacement functionality documentation is missing, including the -r/--replace flag, capture group syntax, and practical examples.",
+  "issues": [
+    {
+      "type": "missing_content",
+      "severity": "critical",
+      "section": "Entire Chapter",
+      "description": "Chapter is a placeholder with no actual content beyond a header and placeholder text",
+      "current_content": "# Replacements\n\nThis chapter will be populated with content from the codebase analysis.\n\n*This content will be populated by the documentation drift detection workflow.*",
+      "should_add": "Complete chapter content covering the -r/--replace flag, capture group syntax, interpolation, and practical replacement examples",
+      "fix_suggestion": "Populate the entire chapter with comprehensive replacement functionality documentation based on the actual implementation",
+      "source_reference": "crates/core/flags/defs.rs:5973-6034 (Replace flag definition), crates/matcher/src/interpolate.rs (capture group interpolation)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "critical",
+      "section": "Replace Flag",
+      "description": "No documentation of the -r/--replace flag and its basic usage",
+      "should_add": "Basic -r/--replace flag documentation: syntax, purpose, and simple examples without capture groups",
+      "fix_suggestion": "Add section explaining: 'rg pattern -r replacement' replaces matched text in output (does NOT modify files), show simple literal replacement examples like 'rg foo -r bar', explain that replacement affects output only",
+      "source_reference": "crates/core/flags/defs.rs:5982-5993 (flag definition), features.json:output_formatting:capabilities[15] (Replacements -r/--replace)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "critical",
+      "section": "Capturing Groups",
+      "description": "No documentation of capture group syntax and usage in replacements",
+      "should_add": "Comprehensive capture group documentation: numbered groups ($0, $1, $2, etc.), named groups ($name), and brace syntax (${1}, ${name})",
+      "fix_suggestion": "Add detailed section on capture groups:\n- $0 represents the entire match\n- $1, $2, etc. for numbered capture groups (based on opening parenthesis position)\n- $name for named capture groups\n- ${1}, ${name} brace syntax to disambiguate from following text\n- $$ to write a literal $\n- Examples: 'rg '(\\w+) (\\w+)' -r '$2 $1'' to swap words, 'rg '(?P<year>\\d{4})' -r 'Year: ${year}'' for named groups",
+      "source_reference": "crates/core/flags/defs.rs:5999-6021 (capture group documentation in flag help), crates/matcher/src/interpolate.rs:3-56 (interpolation implementation)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "critical",
+      "section": "Capture Group Syntax Rules",
+      "description": "No documentation of the specific syntax rules for capture group references",
+      "should_add": "Detailed syntax rules: valid characters in names ([_0-9A-Za-z]), how names are parsed, brace requirement for special cases",
+      "fix_suggestion": "Add section explaining:\n- Capture group names consist of letters, numbers, and underscores only ([_0-9A-Za-z])\n- Longest matching name is used (e.g., $1a matches name '1a', not group 1 followed by 'a')\n- Use braces ${1}a to separate group reference from following text\n- Invalid group references are replaced with empty string\n- Show examples of edge cases: $1a (name), ${1}a (group 1 + 'a'), $foo (named group)",
+      "source_reference": "crates/core/flags/defs.rs:6005-6015 (name parsing rules), crates/matcher/src/interpolate.rs:97-143 (parsing implementation)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "critical",
+      "section": "Shell Quoting",
+      "description": "No documentation of shell quoting requirements when using replacements",
+      "should_add": "Shell quoting best practices to avoid variable expansion",
+      "fix_suggestion": "Add important note about shell quoting:\n- Use single quotes in Bash/zsh to prevent shell variable expansion\n- Wrong: rg '(\\w+)' -r \"$1\" (shell expands $1)\n- Correct: rg '(\\w+)' -r '$1' (ripgrep processes $1)\n- Explain that without proper quoting, $1 gets replaced by shell variable (likely empty)",
+      "source_reference": "crates/core/flags/defs.rs:6017-6019 (shell quoting warning in help text)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "high",
+      "section": "Output Modification",
+      "description": "No explanation of how replacements affect output and interaction with other flags",
+      "should_add": "Documentation of replacement behavior and interaction with other output flags",
+      "fix_suggestion": "Add section explaining:\n- Replacements are output-only (files are never modified)\n- By default, replaces each match, not entire line (to replace entire line, match entire line)\n- Works with --only-matching flag\n- Show example: 'rg '(\\w+)@(\\w+\\.com)' -o -r '$1 at $2' to extract and format email parts\n- Clarify that replacement text appears in output instead of original match",
+      "source_reference": "crates/core/flags/defs.rs:6023-6026 (replacement behavior notes), features.json:output_formatting:capabilities[15,17]"
+    },
+    {
+      "type": "missing_content",
+      "severity": "high",
+      "section": "Practical Examples",
+      "description": "No working examples demonstrating replacement functionality",
+      "should_add": "Multiple practical examples showing common replacement patterns and use cases",
+      "fix_suggestion": "Add examples section with:\n1. Simple literal replacement: 'rg foo -r bar'\n2. Swapping words: 'rg '(\\w+) (\\w+)' -r '$2 $1''\n3. Named groups: 'rg '(?P<name>\\w+)' -r 'Hello, ${name}!''\n4. Extracting parts: 'rg '(\\d{3})-(\\d{3})-(\\d{4})' -r 'Area code: $1' -o'\n5. Escaping dollar sign: 'rg price -r '$$5.00''\n6. Using with context lines: 'rg pattern -r replacement -C2'\n7. Multiple matches per line replacement",
+      "source_reference": "tests/feature.rs:301-306 (f129_replace test), tests/json.rs:202-217 (replacement test)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Edge Cases",
+      "description": "No documentation of edge cases and special behaviors",
+      "should_add": "Documentation of edge cases and corner cases in replacement behavior",
+      "fix_suggestion": "Add section covering:\n- Invalid capture group references result in empty string substitution\n- Empty replacement string: 'rg pattern -r \"\"' (removes matches from output)\n- Replacement with multiline mode (-U flag)\n- Maximum column limits with replacements (--max-columns)\n- How replacements appear in JSON output (--json flag includes replacement field)",
+      "source_reference": "crates/core/flags/defs.rs:6014-6015 (invalid group behavior), tests/feature.rs:301-306 (max-columns interaction)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Named Capture Groups",
+      "description": "No examples or explanation specific to named capture groups in regex patterns",
+      "should_add": "Detailed explanation and examples of using named capture groups with replacements",
+      "fix_suggestion": "Add section on named capture groups:\n- Regex syntax: (?P<name>pattern) for Rust regex, (?<name>pattern) for PCRE2\n- Using in replacement: $name or ${name}\n- Benefits: self-documenting patterns, more maintainable\n- Example: 'rg '(?P<protocol>https?)://(?P<domain>[^/]+)' -r '$protocol at $domain''\n- Show comparison with numbered groups for same pattern",
+      "source_reference": "crates/matcher/src/interpolate.rs:48-52 (named group handling), features.json:regex_support:capabilities[20-21] (named capture groups)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Performance Considerations",
+      "description": "No mention of performance implications when using replacements",
+      "should_add": "Brief note about performance when using replacement flag",
+      "fix_suggestion": "Add note that replacements require capture group extraction which has some performance overhead, but is generally negligible for most use cases",
+      "source_reference": "crates/printer/src/util.rs:14-25 (Replacer implementation with allocation amortization)"
+    }
+  ],
+  "positive_aspects": [
+    "Chapter title clearly indicates the topic",
+    "Chapter is appropriately positioned to depend on basics chapter",
+    "Topics list correctly identifies the key areas: replace_flag, capturing_groups, output_modification"
+  ],
+  "improvement_suggestions": [
+    "Start with simplest examples (literal replacements) before introducing capture groups",
+    "Include a visual diagram showing how capture group numbering works with nested groups",
+    "Add a comparison table showing numbered vs named capture groups side by side",
+    "Include a troubleshooting section for common mistakes (forgetting quotes, wrong group numbers, etc.)",
+    "Add examples that combine replacements with other ripgrep features (context, filtering, etc.)",
+    "Include a reference table of all special replacement syntax ($0, $1, $name, ${}, $$)",
+    "Cross-reference the 'Basics' chapter for regex syntax and the 'Advanced Patterns' chapter for complex regex features",
+    "Add real-world use cases: reformatting log entries, extracting data, sanitizing output, etc.",
+    "Include warnings about common pitfalls: shell quoting, group numbering with nested groups",
+    "Show how replacements appear in different output modes (standard, JSON, vimgrep)"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-08",
+    "feature_inventory": ".prodigy/book-analysis/features.json",
+    "topics_covered": [],
+    "topics_expected": [
+      "replace_flag",
+      "capturing_groups",
+      "output_modification"
+    ],
+    "validation_focus": "Verify replacement examples and capturing group syntax are correct",
+    "dependencies": [
+      "basics"
+    ]
+  }
+}
