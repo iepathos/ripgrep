@@ -3,250 +3,218 @@
   "chapter_title": "Common Options",
   "chapter_file": "book/src/common-options.md",
   "drift_detected": true,
-  "severity": "critical",
-  "quality_assessment": "Chapter is completely empty - contains only a placeholder. This chapter needs to be written from scratch to document the most frequently used ripgrep flags that users need on a daily basis.",
+  "severity": "medium",
+  "quality_assessment": "Chapter is comprehensive and well-written with accurate flag documentation and excellent examples. Main gaps are advanced flags (JSON output, debugging, regex engine selection) and binary file handling. Content is accurate but incomplete for advanced users.",
   "issues": [
     {
       "type": "missing_content",
-      "severity": "critical",
-      "section": "Entire Chapter",
-      "description": "Chapter file contains only placeholder text and no actual documentation",
-      "current_content": "# Common Options\n\nThis chapter will be populated with content from the codebase analysis.\n\n*This content will be populated by the documentation drift detection workflow.*",
-      "should_add": "Complete chapter documenting the most frequently used ripgrep flags organized by category",
-      "fix_suggestion": "Write comprehensive chapter covering: search basics (-i/-s/-S/-F/-w/-x), output control (-n/-H/-A/-B/-C), filtering (-t/-g/-u), and output modes (-c/-l)",
-      "source_reference": "CLI help output from crates/cli, features.json categories: core_cli, output_formatting, file_filtering"
+      "severity": "high",
+      "section": "Search Basics > Pattern Types",
+      "description": "Missing documentation for multiline pattern matching flags",
+      "should_add": "Document -U/--multiline flag for patterns spanning multiple lines and --multiline-dotall for dot matching newlines",
+      "fix_suggestion": "Add subsection on multiline mode with examples of patterns spanning lines. Explain difference between -U alone and with --multiline-dotall. Show practical examples like matching function definitions across lines.",
+      "source_reference": "features.json:19 (search.key_flags includes --multiline (-U) and --multiline-dotall)"
     },
     {
       "type": "missing_content",
       "severity": "high",
-      "section": "Case Sensitivity Options",
-      "description": "No documentation for case sensitivity flags which are among the most commonly used",
-      "should_add": "Document -i/--ignore-case, -s/--case-sensitive, -S/--smart-case with examples showing when each is appropriate",
-      "fix_suggestion": "Add section explaining case sensitivity modes with practical examples: searching code (use -s), searching prose (use -i), smart defaults (use -S)",
-      "source_reference": "features.json:core_cli capabilities, CLI flags: -i/--ignore-case, -s/--case-sensitive, -S/--smart-case"
+      "section": "Search Basics > Pattern Types",
+      "description": "Missing documentation for PCRE2 regex engine support",
+      "should_add": "Document -P/--pcre2 flag for switching to PCRE2 engine with advanced features (backreferences, lookahead/lookbehind)",
+      "fix_suggestion": "Add subsection on regex engines. Explain default Rust regex vs PCRE2. Show examples requiring PCRE2 like lookahead: rg -P 'foo(?=bar)' or backreferences: rg -P '(\\w+)\\s+\\1'",
+      "source_reference": "features.json:19 (search.key_flags includes --pcre2 (-P)), features.json:106-109 (pcre2_engine details)"
     },
     {
       "type": "missing_content",
       "severity": "high",
-      "section": "Pattern Type Options",
-      "description": "No documentation for pattern type flags (-F, -w, -x) which control how patterns are interpreted",
-      "should_add": "Document -F/--fixed-strings (literal search), -w/--word-regexp (word boundaries), -x/--line-regexp (full line match)",
-      "fix_suggestion": "Add section on pattern types with examples: searching for literal strings with special chars (use -F), finding whole words only (use -w), matching complete lines (use -x)",
-      "source_reference": "features.json:core_cli capabilities: 'Fixed string search', 'Word boundary matching', CLI flags: -F, -w, -x"
+      "section": "Search Basics > Pattern Types",
+      "description": "Missing documentation for regex engine selection",
+      "should_add": "Document --engine flag for choosing between default and PCRE2 engines",
+      "fix_suggestion": "Add note about --engine flag allowing explicit engine choice (auto, default, pcre2). Mention this provides control over which regex backend to use.",
+      "source_reference": "features.json:19 (search.key_flags includes --engine)"
     },
     {
       "type": "missing_content",
       "severity": "high",
-      "section": "Line Numbers and File Names",
-      "description": "No documentation for output formatting flags that show context about matches",
-      "should_add": "Document -n/--line-number, -N/--no-line-number, -H/--with-filename, -I/--no-filename, --column",
-      "fix_suggestion": "Add section explaining how to control what metadata appears with matches, when defaults apply, and how to override them",
-      "source_reference": "features.json:output_formatting capabilities: 'Line numbers', 'Column numbers', 'File path printing', CLI flags: -n, -N, -H, -I, --column"
+      "section": "Output Modes",
+      "description": "Missing documentation for JSON output mode",
+      "should_add": "Document --json flag for structured JSON Lines output format with message types (begin, match, context, end, summary)",
+      "fix_suggestion": "Add subsection on JSON output mode. Explain JSON Lines format, message types, use cases (machine parsing, tooling integration). Show example JSON match object with fields like path, line_number, submatches, etc. Reference features.json:57-61 for complete schema.",
+      "source_reference": "features.json:29 (output.key_flags includes --json), features.json:57-61 (json format details)"
     },
     {
       "type": "missing_content",
       "severity": "high",
-      "section": "Context Lines",
-      "description": "No documentation for context flags (-A/-B/-C) which are essential for understanding matches",
-      "should_add": "Document -A/--after-context, -B/--before-context, -C/--context with examples showing how to see surrounding lines",
-      "fix_suggestion": "Add section with examples: 'rg -A 3 pattern' (3 lines after), 'rg -B 2 pattern' (2 before), 'rg -C 5 pattern' (5 before and after). Explain context separator.",
-      "source_reference": "features.json:output_formatting capabilities: 'Context lines', CLI flags: -A, -B, -C, --context-separator"
-    },
-    {
-      "type": "missing_content",
-      "severity": "high",
-      "section": "File Type Filtering",
-      "description": "No documentation for -t/--type and -T/--type-not which are frequently used for language-specific searches",
-      "should_add": "Document -t/--type and -T/--type-not with examples of common file types",
-      "fix_suggestion": "Add section showing: 'rg -trust pattern' (search only Rust files), 'rg -tpy -tjs pattern' (Python and JavaScript), 'rg -Tlog pattern' (exclude log files). Link to --type-list.",
-      "source_reference": "features.json:file_filtering capabilities: 'File type filtering', CLI flags: -t/--type, -T/--type-not, --type-list"
-    },
-    {
-      "type": "missing_content",
-      "severity": "high",
-      "section": "Glob Patterns",
-      "description": "No documentation for -g/--glob which provides flexible file filtering",
-      "should_add": "Document -g/--glob and --iglob with examples of include/exclude patterns",
-      "fix_suggestion": "Add section with examples: 'rg -g '*.rs' pattern' (only .rs files), 'rg -g '!*.min.js' pattern' (exclude minified), 'rg -g 'src/**/*.py' pattern' (Python in src tree)",
-      "source_reference": "features.json:file_filtering capabilities: 'Glob patterns', CLI flags: -g/--glob, --iglob, --glob-case-insensitive"
-    },
-    {
-      "type": "missing_content",
-      "severity": "high",
-      "section": "Unrestricted Search",
-      "description": "No documentation for -u flag which progressively removes smart filtering",
-      "should_add": "Document -u/--unrestricted flag and its cumulative effect (-u, -uu, -uuu)",
-      "fix_suggestion": "Add section explaining: -u (search hidden files/dirs), -uu (also search binary files), -uuu (also search ignored files). Explain when each level is needed.",
-      "source_reference": "features.json:file_filtering capabilities: 'Unrestricted search (-u/-uu/-uuu)', CLI flag: -u"
+      "section": "Output Modes",
+      "description": "Missing documentation for vimgrep output format",
+      "should_add": "Document --vimgrep flag for vim-compatible quickfix format useful for IDE integration",
+      "fix_suggestion": "Add note about --vimgrep output format. Explain it produces vim-compatible quickfix output (path:line:col:text) useful for editor integration and tooling.",
+      "source_reference": "features.json:29 (output.key_flags includes --vimgrep), features.json:62-65 (vimgrep format details)"
     },
     {
       "type": "missing_content",
       "severity": "medium",
-      "section": "Count and List Modes",
-      "description": "No documentation for output modes that summarize instead of showing matches",
-      "should_add": "Document -c/--count, --count-matches, -l/--files-with-matches, --files-without-match",
-      "fix_suggestion": "Add section showing: 'rg -c pattern' (count lines per file), 'rg --count-matches pattern' (count all matches), 'rg -l pattern' (just list files), 'rg --files-without-match pattern' (files with no matches)",
-      "source_reference": "features.json:core_cli capabilities: 'Count matches', 'Files mode', CLI flags: -c, --count-matches, -l, --files-without-match"
+      "section": "Output Formatting > Color and Formatting",
+      "description": "Missing documentation for heading mode control",
+      "should_add": "Document --heading and --no-heading flags for controlling grouped output by file",
+      "fix_suggestion": "Add explanation of heading mode. --heading groups matches by file with filename as header. --no-heading shows inline format (path:line:match). Note that -p flag enables heading mode. Show visual examples of both formats.",
+      "source_reference": "features.json:177 (pretty flag mentions --heading), features.json:261 (standard printer features include heading mode)"
     },
     {
       "type": "missing_content",
       "severity": "medium",
-      "section": "Quiet Mode",
-      "description": "No documentation for -q/--quiet which is useful in scripts",
-      "should_add": "Document -q/--quiet flag for silent operation with exit codes",
-      "fix_suggestion": "Add section explaining how -q suppresses output and only sets exit code, useful in scripts: 'if rg -q pattern file; then ...'",
-      "source_reference": "features.json:core_cli capabilities: 'Quiet mode (-q/--quiet)', CLI flag: -q"
+      "section": "Output Formatting > Match Output",
+      "description": "Missing documentation for byte offset display",
+      "should_add": "Document -b/--byte-offset flag for showing absolute file byte offsets",
+      "fix_suggestion": "Add -b/--byte-offset flag. Shows absolute byte offset in file for each match. Useful for binary file analysis and precise location tracking. Example output: file.txt:42:137:matching line (137 is byte offset).",
+      "source_reference": "features.json:29 (output.key_flags includes --byte-offset (-b)), features.json:309 (byte_offset display mode)"
     },
     {
       "type": "missing_content",
       "severity": "medium",
-      "section": "Max Count",
-      "description": "No documentation for -m/--max-count which limits matches",
-      "should_add": "Document -m/--max-count with example showing how to limit matches per file",
-      "fix_suggestion": "Add section: 'rg -m 5 pattern' stops after 5 matches per file, useful for quick sampling or performance",
-      "source_reference": "features.json:core_cli capabilities: 'Max match limits (-m/--max-count)', CLI flag: -m"
+      "section": "Output Formatting > Match Output",
+      "description": "Missing documentation for hyperlink support",
+      "should_add": "Document --hyperlink-format flag for clickable terminal links using OSC 8 escape sequences",
+      "fix_suggestion": "Add subsection on hyperlinks. Explain --hyperlink-format with built-in aliases (vscode, cursor, macvim, etc.) and custom format strings. Show variable interpolation: {path}, {line}, {column}. Example: rg --hyperlink-format vscode pattern. Note requires terminal with OSC 8 support.",
+      "source_reference": "features.json:29 (output.key_flags includes --hyperlink-format), features.json:283-288 (hyperlink_support details)"
     },
     {
       "type": "missing_content",
       "severity": "medium",
-      "section": "Invert Match",
-      "description": "No documentation for -v/--invert-match which is a common grep operation",
-      "should_add": "Document -v/--invert-match for finding non-matching lines",
-      "fix_suggestion": "Add section with example: 'rg -v pattern' shows lines that don't match, useful for filtering out noise",
-      "source_reference": "features.json:core_cli capabilities: 'Inverted matching (-v/--invert-match)', CLI flag: -v"
+      "section": "File Filtering",
+      "description": "Missing documentation for binary file handling",
+      "should_add": "Document --binary and -a/--text flags for controlling binary file search behavior",
+      "fix_suggestion": "Add subsection on binary files. Explain ripgrep auto-detects binary files (via NUL byte) and skips them. --binary forces searching binary files. -a/--text treats all files as text. Mention --max-columns-preview for binary detection tuning.",
+      "source_reference": "features.json:248 (binary_detection), features.json:683 (troubleshooting for binary files)"
     },
     {
       "type": "missing_content",
       "severity": "medium",
-      "section": "Only Matching",
-      "description": "No documentation for -o/--only-matching which shows just the matched text",
-      "should_add": "Document -o/--only-matching for extracting matched portions",
-      "fix_suggestion": "Add section: 'rg -o pattern' prints only the matched text, not the full line. Useful for extracting data.",
-      "source_reference": "features.json:output_formatting capabilities: 'Only matching (-o/--only-matching)', CLI flag: -o"
+      "section": "File Filtering",
+      "description": "Missing documentation for advanced filtering options",
+      "should_add": "Document --same-file-system flag and parent directory ignore file behavior",
+      "fix_suggestion": "Add note about --same-file-system to avoid crossing filesystem boundaries. Mention parent directory traversal respects parent .gitignore/.ignore files by default.",
+      "source_reference": "features.json:249-251 (advanced_filtering options)"
     },
     {
       "type": "missing_content",
       "severity": "medium",
-      "section": "Replace",
-      "description": "No documentation for -r/--replace which is useful for transformations",
-      "should_add": "Document -r/--replace with examples of capture group substitution",
-      "fix_suggestion": "Add section with examples: 'rg pattern -r replacement' shows matches replaced. Note this doesn't modify files, use with -o to extract transformed matches.",
-      "source_reference": "features.json:output_formatting capabilities: 'Replacements (-r/--replace)', CLI flag: -r. Link to 'replacements' chapter for details."
+      "section": "Performance and Limits",
+      "description": "Missing documentation for sorting options",
+      "should_add": "Document --sort and --sortr flags with sorting criteria (path, modified, accessed, created)",
+      "fix_suggestion": "Add subsection on sorting. Explain --sort SORTBY and --sortr SORTBY (reverse). Available criteria: path (default), modified, accessed, created. Note: requires buffering all results which impacts performance. Examples: rg --sort modified pattern, rg --sortr path pattern.",
+      "source_reference": "features.json:437-440 (sorting configuration)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Performance and Limits",
+      "description": "Missing documentation for line length limits",
+      "should_add": "Document --max-columns and --max-columns-preview flags for handling long lines",
+      "fix_suggestion": "Add --max-columns NUM to truncate/skip long lines for performance. Add --max-columns-preview NUM for binary detection threshold. Explain long lines can slow down search and these flags help manage that.",
+      "source_reference": "features.json:310 (max_columns), features.json:248 (binary_detection)"
     },
     {
       "type": "missing_content",
       "severity": "low",
-      "section": "Help Flags",
-      "description": "No documentation for -h/--help distinction",
-      "should_add": "Document difference between -h (short help with common options) and --help (comprehensive help)",
-      "fix_suggestion": "Add brief note that -h shows frequently used flags while --help shows all flags with detailed descriptions",
-      "source_reference": "features.json:core_cli capabilities: 'Help output (-h/--help)', CLI flag: -h/--help"
+      "section": "Getting Help",
+      "description": "Missing documentation for debugging and statistics flags",
+      "should_add": "Document --debug, --trace, and --stats flags for troubleshooting and performance analysis",
+      "fix_suggestion": "Add subsection on debugging. --debug shows search strategy, engine selection, config. --trace shows trace-level debug info. --stats shows metrics (elapsed time, bytes searched, matches, etc). Useful for understanding performance and troubleshooting pattern issues.",
+      "source_reference": "features.json:453-466 (debug_modes details), features.json:314-315 (statistics_tracking)"
     },
     {
       "type": "missing_content",
       "severity": "low",
-      "section": "Color Control",
-      "description": "No documentation for --color flag",
-      "should_add": "Document --color auto/always/never for controlling colored output",
-      "fix_suggestion": "Add brief section: --color auto (default, color if terminal), --color always (force color), --color never (no color, useful for piping)",
-      "source_reference": "features.json:output_formatting capabilities: 'Color support (--color auto|always|never|ansi)', CLI flag: --color"
+      "section": "Output Formatting",
+      "description": "Missing documentation for custom color configuration",
+      "should_add": "Document --colors flag for fine-grained color customization beyond --color",
+      "fix_suggestion": "Add note about --colors TYPE:STYLE:VALUE for customizing specific color types (path, line, column, match, highlight). Supports standard 16, 256-color palette, and 24-bit RGB. Can specify bold, intense, underline, italic. Example: rg --colors 'match:fg:red' --colors 'path:style:bold' pattern.",
+      "source_reference": "features.json:29 (output.key_flags includes --colors), features.json:277-281 (color_support details)"
     },
     {
       "type": "missing_content",
       "severity": "low",
-      "section": "Pretty Mode",
-      "description": "No documentation for -p/--pretty convenience flag",
-      "should_add": "Document -p/--pretty as shorthand for multiple formatting options",
-      "fix_suggestion": "Add note that -p combines --heading, --line-number, and color settings for human-friendly output",
-      "source_reference": "features.json:output_formatting capabilities, CLI flag: -p/--pretty"
+      "section": "File Filtering",
+      "description": "Missing documentation for --path-separator flag",
+      "should_add": "Document --path-separator flag for controlling path separator in output",
+      "fix_suggestion": "Add brief mention of --path-separator for customizing path separators in output (useful for Windows/Unix compatibility).",
+      "source_reference": "Implied by output formatting capabilities, common in cross-platform tools"
     },
     {
       "type": "missing_content",
       "severity": "low",
-      "section": "Follow Symlinks",
-      "description": "No documentation for -L/--follow flag",
-      "should_add": "Document -L/--follow for following symbolic links during traversal",
-      "fix_suggestion": "Add note that by default symlinks are not followed, use -L to follow them (beware of cycles)",
-      "source_reference": "features.json:file_filtering capabilities: 'Follow symlinks (-L/--follow)', CLI flag: -L"
+      "section": "Getting Help",
+      "description": "Missing documentation for --pcre2-version flag",
+      "should_add": "Document --pcre2-version flag for checking PCRE2 availability and JIT status",
+      "fix_suggestion": "Add --pcre2-version to show PCRE2 library version and whether JIT compilation is available. Useful for verifying PCRE2 support before using -P flag.",
+      "source_reference": "features.json:469 (diagnostic_flags includes --pcre2-version)"
     },
     {
-      "type": "missing_content",
+      "type": "uncertain_content",
       "severity": "low",
-      "section": "Hidden Files",
-      "description": "No documentation for -./--hidden flag",
-      "should_add": "Document -./--hidden for searching hidden files and directories",
-      "fix_suggestion": "Add note that by default hidden files/dirs (starting with .) are skipped, use --hidden to search them",
-      "source_reference": "features.json:file_filtering capabilities: 'Hidden file handling (--hidden)', CLI flag: --hidden/-."
+      "section": "File Filtering > Hidden Files and Symlinks",
+      "description": "Chapter documents --hidden with alias -. but features.json doesn't confirm this alias",
+      "current_content": "--hidden, -.",
+      "should_verify": "Verify if -. is actually an alias for --hidden or if this is documentation drift",
+      "fix_suggestion": "Check ripgrep source code or --help output to confirm -. alias. If not supported, update to just --hidden. If supported, this is fine.",
+      "source_reference": "features.json:237-238 (hidden_files only mentions --hidden flag)"
     },
     {
-      "type": "missing_content",
+      "type": "incomplete_explanation",
       "severity": "low",
-      "section": "Max Depth",
-      "description": "No documentation for -d/--max-depth flag",
-      "should_add": "Document -d/--max-depth for limiting directory recursion",
-      "fix_suggestion": "Add example: 'rg -d 1 pattern' searches only current directory, 'rg -d 3 pattern' descends 3 levels",
-      "source_reference": "features.json:file_filtering capabilities: 'Max depth (--max-depth)', CLI flag: -d/--max-depth"
+      "section": "File Filtering > Unrestricted Search",
+      "description": "Explanation of -uuu could be more specific about what 'don't filter out anything' means",
+      "current_content": "-uuu: Also don't filter out anything",
+      "should_be": "-uuu: Disable all filtering including respect for ignore files, hidden files, and binary detection",
+      "fix_suggestion": "Clarify that -uuu combines all unrestricted behaviors: searches ignored files (.gitignore), hidden files, and doesn't skip binary files. It's the most permissive mode.",
+      "source_reference": "features.json:235-254 (file filtering hierarchy and binary detection)"
     }
   ],
   "positive_aspects": [
-    "Chapter is properly titled and positioned in the book structure",
-    "Placeholder clearly indicates content needs to be added",
-    "Chapter ID and metadata are properly configured"
+    "Excellent organization by functional categories (Search Basics, Output Formatting, File Filtering, etc.)",
+    "Every flag includes clear, practical examples with real command lines",
+    "Good progressive complexity from simple to advanced features",
+    "Helpful Quick Reference table for essential flags",
+    "Excellent Comparison with grep section for users transitioning",
+    "Combining Flags section shows real-world usage patterns",
+    "Good use of bash syntax highlighting in code blocks",
+    "Clear explanation of smart case behavior with concrete examples",
+    "Context lines section includes helpful note about -- separator",
+    "See Also section provides good navigation to related chapters"
   ],
   "improvement_suggestions": [
-    "Organize flags by category: Search Basics, Output Formatting, File Filtering, Output Modes",
-    "Start with the most common flags users need daily: -i, -n, -A/-B/-C, -t, -g",
-    "Include practical examples for each flag showing common use cases",
-    "Add a quick reference table at the end summarizing all flags",
-    "Link to other chapters for detailed coverage (e.g., link to 'replacements' chapter from -r flag)",
-    "Show flag combinations that work well together (e.g., -p combines several formatting flags)",
-    "Include tips about when to use each flag",
-    "Add comparison with standard grep where relevant to help users transitioning from grep",
-    "Show both short and long forms of flags consistently",
-    "Mention that -h shows just these common options while --help shows everything"
+    "Add Advanced Search section covering multiline mode, PCRE2 engine, and regex engine selection",
+    "Add Binary Files subsection under File Filtering explaining auto-detection and override flags",
+    "Add JSON Output subsection under Output Modes with schema and use cases",
+    "Add Debugging and Performance Analysis section covering --debug, --trace, --stats",
+    "Add Sorting subsection under Performance showing --sort options and performance notes",
+    "Expand Color and Formatting to include --colors flag for fine-grained customization",
+    "Add note about --heading mode control separate from -p alias explanation",
+    "Add Cross-Reference Links: Link to regex chapter when introducing -P flag, link to file-encoding chapter for binary handling",
+    "Consider adding Performance Tips callout boxes throughout (e.g., 'Use -F for literal searches to improve performance')",
+    "Add common troubleshooting patterns inline (e.g., 'If pattern not matching, check case sensitivity and try -i')",
+    "Verify -. alias for --hidden and update if needed"
   ],
-  "recommended_structure": {
-    "introduction": "Brief explanation that this chapter covers the most frequently used flags. Users can see all flags with --help or -h for a concise list.",
-    "sections": [
-      {
-        "title": "Search Basics",
-        "flags": ["-i", "-s", "-S", "-F", "-w", "-x", "-v", "-e", "-f"],
-        "description": "Flags that control how patterns are interpreted and matched"
-      },
-      {
-        "title": "Output Formatting",
-        "flags": ["-n", "-N", "-H", "-I", "--column", "-A", "-B", "-C", "-o", "-r", "--color", "-p"],
-        "description": "Flags that control what is shown and how it's formatted"
-      },
-      {
-        "title": "File Filtering",
-        "flags": ["-t", "-T", "-g", "--iglob", "-u", "-uu", "-uuu", "--hidden", "-L", "-d", "--max-filesize"],
-        "description": "Flags that control which files are searched"
-      },
-      {
-        "title": "Output Modes",
-        "flags": ["-c", "--count-matches", "-l", "--files-without-match", "-q", "--files"],
-        "description": "Alternative output formats instead of showing matches"
-      },
-      {
-        "title": "Performance and Limits",
-        "flags": ["-m", "-j", "--mmap"],
-        "description": "Flags that affect search performance and resource usage"
-      },
-      {
-        "title": "Getting Help",
-        "flags": ["-h", "--help", "--type-list", "-V"],
-        "description": "Flags for learning more about ripgrep"
-      }
-    ],
-    "conclusion": "Link to other chapters for advanced topics and detailed explanations"
-  },
   "metadata": {
     "analyzed_at": "2025-11-08",
     "feature_inventory": ".prodigy/book-analysis/features.json",
-    "topics_covered": ["flags", "command_options", "frequently_used", "help"],
+    "topics_covered": [
+      "Case sensitivity flags",
+      "Pattern types (regex, fixed-strings, word-regexp, line-regexp)",
+      "Multiple patterns",
+      "Output formatting (line numbers, filenames, context, colors)",
+      "File type and glob filtering",
+      "Hidden files and symlinks",
+      "Directory depth",
+      "File size limits",
+      "Output modes (count, list files, quiet)",
+      "Performance settings (threads, mmap)",
+      "Help and version flags"
+    ],
     "validation_focus": "Verify all commonly used flags are documented with current syntax",
-    "cli_help_output_analyzed": true,
-    "total_common_flags_identified": 50
+    "flags_documented": 46,
+    "flags_in_features_json": 104,
+    "coverage_percentage": 44
   }
 }

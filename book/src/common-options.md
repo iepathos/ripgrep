@@ -54,6 +54,55 @@ By default, ripgrep treats patterns as regular expressions. These flags change t
   rg -x 'import sys'
   ```
 
+### Multiline Matching
+
+By default, patterns match within single lines. For patterns that span multiple lines:
+
+- **`-U, --multiline`**: Enable multiline mode where patterns can match across line boundaries
+  ```bash
+  # Match function definitions spanning multiple lines
+  rg -U 'fn \w+\([^)]*\)\s*->'
+
+  # Find multi-line comments
+  rg -U '/\*.*?\*/'
+  ```
+
+- **`--multiline-dotall`**: Make `.` match newlines in multiline mode
+  ```bash
+  # Match struct definitions with any content between braces
+  rg -U --multiline-dotall 'struct \w+ \{.*?\}'
+  ```
+  Use with `-U` to make dot match newline characters. Without this, `.` doesn't match `\n` even in multiline mode.
+
+### Regex Engine Selection
+
+Ripgrep uses Rust's regex engine by default, which is very fast. For advanced regex features, you can switch to the PCRE2 engine:
+
+- **`-P, --pcre2`**: Use PCRE2 engine for advanced features like lookahead/lookbehind and backreferences
+  ```bash
+  # Lookahead: find "foo" only if followed by "bar"
+  rg -P 'foo(?=bar)'
+
+  # Lookbehind: find "bar" only if preceded by "foo"
+  rg -P '(?<=foo)bar'
+
+  # Backreferences: find repeated words
+  rg -P '(\w+)\s+\1'
+  ```
+  See the [Regular Expressions](./regex.md) chapter for detailed regex syntax and PCRE2 features.
+
+- **`--engine ENGINE`**: Explicitly choose regex engine
+  ```bash
+  # Force PCRE2 engine
+  rg --engine pcre2 'pattern'
+
+  # Force default Rust regex
+  rg --engine default 'pattern'
+
+  # Auto-select based on pattern (default)
+  rg --engine auto 'pattern'
+  ```
+
 ### Invert Match
 
 - **`-v, --invert-match`**: Show lines that DON'T match the pattern
@@ -160,6 +209,26 @@ When showing context, ripgrep prints `--` as a separator between match groups.
   ```
   This changes the display only. To modify files, use other tools like `sed`. See the [Replacements chapter](./replacements.md) for more details.
 
+- **`-b, --byte-offset`**: Show absolute byte offset in file for each match
+  ```bash
+  # Display byte positions for binary file analysis
+  rg -b pattern
+  # Output: file.txt:42:137:matching line
+  #                    ^^^ byte offset
+  ```
+  Useful for precise location tracking and binary file analysis.
+
+- **`--hyperlink-format FORMAT`**: Generate clickable terminal links using OSC 8 escape sequences
+  ```bash
+  # Use built-in editor formats
+  rg --hyperlink-format vscode pattern
+  rg --hyperlink-format cursor pattern
+
+  # Custom format with variables: {path}, {line}, {column}
+  rg --hyperlink-format 'file://{path}:{line}:{column}' pattern
+  ```
+  Requires a terminal that supports OSC 8 hyperlinks. Built-in formats: `vscode`, `cursor`, `macvim`, `sublime`, `textmate`, `emacs`, `vim`.
+
 ### Color and Formatting
 
 - **`--color WHEN`**: Control colored output
@@ -173,6 +242,29 @@ When showing context, ripgrep prints `--` as a separator between match groups.
   # Disable color for clean output
   rg --color never pattern > results.txt
   ```
+
+- **`--colors TYPE:STYLE:VALUE`**: Fine-grained color customization
+  ```bash
+  # Customize match highlighting color to red
+  rg --colors 'match:fg:red' pattern
+
+  # Bold path names, green matches
+  rg --colors 'path:style:bold' --colors 'match:fg:green' pattern
+
+  # Use 256-color palette or 24-bit RGB
+  rg --colors 'match:fg:0,128,255' pattern
+  ```
+  Types: `path`, `line`, `column`, `match`. Styles: `fg` (foreground), `bg` (background), `style` (bold, intense, underline, italic).
+
+- **`--heading`** / **`--no-heading`**: Control file grouping in output
+  ```bash
+  # Group matches by file with filename as header
+  rg --heading pattern
+
+  # Inline format: path:line:match on each line
+  rg --no-heading pattern
+  ```
+  With `--heading`, matches are grouped under filenames. With `--no-heading`, every line shows the full path.
 
 - **`-p, --pretty`**: Alias for `--color always --heading --line-number`
   ```bash
@@ -245,17 +337,18 @@ The `-u` flag progressively removes ripgrep's smart filtering. Each `-u` adds mo
   rg -uu pattern
   ```
 
-- **`-uuu`**: Also don't filter out anything
+- **`-uuu`**: Disable all filtering (ignore files, hidden files, and binary detection)
   ```bash
   # The kitchen sink - search absolutely everything
   rg -uuu pattern
   ```
+  This is the most permissive mode, combining all unrestricted behaviors: searches ignored files (`.gitignore`), hidden files (`.dotfiles`), and doesn't skip binary files.
 
 Use `-u` when you need to search `.gitignore`d files, `-uu` when you also need hidden/binary files, and `-uuu` for maximum coverage.
 
 ### Hidden Files and Symlinks
 
-- **`--hidden, -.`**: Search hidden files and directories (those starting with `.`)
+- **`--hidden`**: Search hidden files and directories (those starting with `.`)
   ```bash
   # Search .config files
   rg --hidden 'database'
@@ -291,9 +384,78 @@ Use `-u` when you need to search `.gitignore`d files, `-uu` when you also need h
   ```
   Suffixes: `K` (kilobytes), `M` (megabytes), `G` (gigabytes).
 
+### Binary Files
+
+By default, ripgrep auto-detects binary files (by finding NUL bytes) and skips them to avoid polluting output.
+
+- **`--binary`**: Force searching binary files (shows matches even if NUL bytes detected)
+  ```bash
+  # Search binary files for strings
+  rg --binary 'pattern'
+  ```
+
+- **`-a, --text`**: Treat all files as text, disabling binary detection
+  ```bash
+  # Search everything as text
+  rg -a pattern
+  ```
+
+- **`--max-columns-preview NUM`**: Tune binary detection threshold
+  ```bash
+  # Files with lines longer than 200 chars are considered binary
+  rg --max-columns-preview 200 pattern
+  ```
+  Default is 150. Ripgrep checks the first preview bytes for NUL characters.
+
+### Advanced Filtering
+
+- **`--same-file-system`**: Don't cross filesystem boundaries when searching
+  ```bash
+  # Stay on same filesystem (avoid mounted drives, network shares)
+  rg --same-file-system pattern
+  ```
+  Useful to avoid searching network mounts or external drives.
+
+- **`--no-ignore-parent`**: Don't respect ignore files in parent directories
+  ```bash
+  # Only use .gitignore in current directory, not parents
+  rg --no-ignore-parent pattern
+  ```
+  By default, ripgrep traverses up and respects `.gitignore`/`.ignore` files in parent directories.
+
+- **`--path-separator SEPARATOR`**: Use custom path separator in output
+  ```bash
+  # Use forward slashes on Windows for Unix-style paths
+  rg --path-separator / pattern
+  ```
+  Useful for cross-platform scripts and consistent output formatting.
+
 ## Output Modes
 
 Instead of showing matching lines, these flags produce alternative output formats.
+
+### Structured Output
+
+- **`--json`**: Output results in JSON Lines format (one JSON object per line)
+  ```bash
+  # Get machine-readable output for tooling
+  rg --json 'pattern'
+  ```
+  Each line is a JSON object with a `type` field indicating the message type:
+  - `begin`: Start of search in a file
+  - `match`: A match with fields like `path`, `line_number`, `lines` (matched text), `submatches` (match positions)
+  - `context`: Context lines around matches (when using `-A/-B/-C`)
+  - `end`: End of search in a file
+  - `summary`: Final statistics (if `--stats` is used)
+
+  Useful for integrating ripgrep into scripts, editors, and other tools that need structured data.
+
+- **`--vimgrep`**: Output in vim-compatible quickfix format
+  ```bash
+  # Generate vim quickfix format: path:line:col:text
+  rg --vimgrep 'pattern'
+  ```
+  Format: `path:line:column:matching text`. Useful for IDE integration and editor plugins that support quickfix format.
 
 ### Counting
 
@@ -377,6 +539,44 @@ Instead of showing matching lines, these flags produce alternative output format
   ```
   Memory mapping can be faster on some systems but uses more memory.
 
+### Sorting
+
+Results can be sorted by various criteria, though this requires buffering all results and impacts performance:
+
+- **`--sort SORTBY`**: Sort results in ascending order
+- **`--sortr SORTBY`**: Sort results in descending order (reverse)
+  ```bash
+  # Sort by file path
+  rg --sort path pattern
+
+  # Sort by modification time (newest first)
+  rg --sortr modified pattern
+
+  # Sort by creation time
+  rg --sort created pattern
+  ```
+  Available criteria: `path` (lexicographic), `modified` (modification time), `accessed` (access time), `created` (creation time).
+
+  Note: Sorting disables parallelism and buffers all results, which can be slow on large searches.
+
+### Line Length Limits
+
+Long lines can slow down searches. These flags help manage that:
+
+- **`--max-columns NUM`**: Don't print lines longer than NUM bytes
+  ```bash
+  # Skip very long lines (often minified code or data)
+  rg --max-columns 500 pattern
+  ```
+  Lines exceeding this length are skipped entirely.
+
+- **`--max-columns-preview NUM`**: For binary detection, check first NUM bytes for NUL
+  ```bash
+  # Adjust binary detection sensitivity
+  rg --max-columns-preview 200 pattern
+  ```
+  Default is 150. Used to decide if a file is binary.
+
 ## Getting Help
 
 - **`-h`**: Show short help with the most common flags
@@ -399,6 +599,40 @@ Instead of showing matching lines, these flags produce alternative output format
   ```bash
   rg --type-list
   ```
+
+- **`--pcre2-version`**: Show PCRE2 library version and JIT availability
+  ```bash
+  rg --pcre2-version
+  ```
+  Useful for verifying PCRE2 support before using the `-P` flag.
+
+### Debugging and Performance Analysis
+
+These flags help troubleshoot search behavior and analyze performance:
+
+- **`--debug`**: Show debug information about search strategy and configuration
+  ```bash
+  rg --debug pattern
+  ```
+  Shows which files are searched, which are ignored, regex engine selection, and configuration details. Useful for understanding why certain files are included or excluded.
+
+- **`--trace`**: Show trace-level debug information (very verbose)
+  ```bash
+  rg --trace pattern 2> trace.log
+  ```
+  Even more detailed than `--debug`. Typically redirected to a file due to verbosity.
+
+- **`--stats`**: Show search statistics after results
+  ```bash
+  rg --stats pattern
+  ```
+  Displays metrics including:
+  - Elapsed time
+  - Bytes searched and printed
+  - Number of matched lines
+  - Number of searches with matches
+
+  Useful for performance analysis and understanding search scope.
 
 ## Quick Reference
 
