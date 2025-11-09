@@ -2,186 +2,113 @@
   "chapter_id": "advanced-patterns",
   "chapter_title": "Advanced Patterns",
   "chapter_file": "book/src/advanced-patterns.md",
-  "drift_detected": true,
-  "severity": "critical",
-  "quality_assessment": "Chapter is currently a placeholder with no content. All advanced regex pattern documentation is missing, including PCRE2 features, multiline search, lookahead/lookbehind assertions, and Unicode handling.",
+  "drift_detected": false,
+  "severity": "low",
+  "quality_assessment": "Excellent chapter with comprehensive coverage of advanced regex features. All major features are accurately documented with correct syntax and practical examples. Only minor improvements suggested.",
   "issues": [
     {
       "type": "missing_content",
-      "severity": "critical",
-      "section": "Entire Chapter",
-      "description": "Chapter is a placeholder with no actual content beyond a header and placeholder text",
-      "current_content": "# Advanced Patterns\n\nThis chapter will be populated with content from the codebase analysis.\n\n*This content will be populated by the documentation drift detection workflow.*",
-      "should_add": "Complete chapter content covering multiline search, PCRE2 engine features, lookahead/lookbehind assertions, Unicode patterns, and advanced regex techniques with working examples",
-      "fix_suggestion": "Populate the entire chapter with advanced regex pattern documentation based on ripgrep's actual capabilities",
-      "source_reference": "features.json:regex_support, features.json:search_engine"
+      "severity": "low",
+      "section": "Unicode Patterns",
+      "description": "Chapter doesn't explicitly mention that \\p{Emoji} may not be fully supported or may behave differently across regex engines",
+      "should_add": "Note about emoji matching reliability and potential differences between regex engines",
+      "fix_suggestion": "Add a note in the Unicode Patterns section mentioning that emoji matching may vary, and users should test patterns with their specific use case",
+      "source_reference": "No test coverage found for \\p{Emoji} patterns in tests/"
     },
     {
-      "type": "missing_content",
-      "severity": "critical",
-      "section": "Multiline Search",
-      "description": "No documentation of multiline search mode which allows matching across line boundaries",
-      "should_add": "Comprehensive multiline search documentation: -U/--multiline flag, how it enables matching \\n in patterns, use of \\p{any} for any character including newlines, memory implications, performance considerations",
-      "fix_suggestion": "Add section explaining multiline mode: Basic usage with -U flag, explain that by default matches cannot span lines, show examples like 'rg -U \"abc\\ndef\"' matching across lines, explain \\p{any} vs . behavior, warn about memory usage (must read entire file into memory), note automatic optimization when pattern doesn't need it. Include practical examples from tests/multiline.rs",
-      "source_reference": "crates/core/flags/defs.rs:4126-4184 (Multiline flag), tests/multiline.rs (test examples)"
-    },
-    {
-      "type": "missing_content",
-      "severity": "critical",
-      "section": "Multiline Dotall Mode",
-      "description": "No documentation of --multiline-dotall flag which makes . match newlines",
-      "should_add": "Documentation of --multiline-dotall flag and its interaction with multiline mode",
-      "fix_suggestion": "Add section on dotall mode: Explain default behavior where . doesn't match \\n even in multiline mode, show --multiline-dotall flag makes . match newlines, explain alternative inline syntax (?s:.) for enabling dotall in pattern, provide examples contrasting 'rg -U \"world.+detective\"' (fails) vs 'rg -U --multiline-dotall \"world.+detective\"' (succeeds), mention \\p{any} as alternative that always matches newlines",
-      "source_reference": "crates/core/flags/defs.rs:4214-4272 (MultilineDotall flag), tests/multiline.rs:20-43 (dot_no_newline and dot_all tests)"
-    },
-    {
-      "type": "missing_content",
-      "severity": "critical",
+      "type": "incomplete_explanation",
+      "severity": "low",
       "section": "PCRE2 Engine",
-      "description": "No documentation of PCRE2 regex engine support and how to enable it",
-      "should_add": "PCRE2 engine documentation: -P/--pcre2 flag, --engine option, when to use PCRE2 vs default engine, feature differences, availability, performance considerations",
-      "fix_suggestion": "Add comprehensive PCRE2 section: Explain -P/--pcre2 flag enables PCRE2 engine, mention --engine=pcre2|default|auto options, explain 'auto' mode dynamically chooses engine based on pattern features, note PCRE2 is optional compile-time feature (check with --pcre2-version), list key differences (PCRE2 supports lookaround and backreferences, default engine is faster for most cases), warn about less helpful error messages with PCRE2, provide examples showing when PCRE2 is needed",
-      "source_reference": "crates/core/flags/defs.rs:5330-5407 (PCRE2 flag), crates/core/flags/defs.rs:1691-1779 (Engine flag), crates/pcre2/src/lib.rs"
+      "description": "Chapter doesn't explain what 'JIT: enabled' means in --pcre2-version output",
+      "current_content": "# Output example:\n# PCRE2 10.42 (JIT: enabled)",
+      "should_be": "Explain that JIT (Just-In-Time compilation) improves PCRE2 performance significantly",
+      "fix_suggestion": "Add a brief explanation that JIT compilation provides significant performance improvement for PCRE2 patterns",
+      "source_reference": "crates/pcre2/src/ - JIT compilation configuration"
     },
     {
-      "type": "missing_content",
-      "severity": "critical",
-      "section": "Lookahead and Lookbehind Assertions",
-      "description": "No documentation of lookahead/lookbehind assertions which are PCRE2-only features",
-      "should_add": "Complete lookaround assertions documentation with syntax and examples",
-      "fix_suggestion": "Add detailed lookaround section: Explain these are PCRE2-only features (require -P flag), cover positive lookahead (?=...), negative lookahead (?!...), positive lookbehind (?<=...), negative lookbehind (?<!...). Provide practical examples: 'rg -P \".*o(?!.*\\s)\"' (find lines ending with 'o' before last word), 'rg -UP \"(?<=foo\\n)bar\"' (match 'bar' preceded by 'foo\\n'), explain use cases like filtering based on context without including it in match, show combination with -o/--only-matching for precise extraction",
-      "source_reference": "tests/regression.rs:1040-1075 (lookahead/lookbehind tests), tests/regression.rs:1145-1167 (multiline lookahead), crates/core/flags/defs.rs:5358-5359 (mentions lookaround)"
-    },
-    {
-      "type": "missing_content",
-      "severity": "critical",
-      "section": "Backreferences",
-      "description": "No documentation of backreferences which are PCRE2-only features",
-      "should_add": "Backreferences documentation explaining syntax and use cases",
-      "fix_suggestion": "Add backreferences section: Explain PCRE2-only feature requiring -P flag, show syntax for numbered backreferences (\\1, \\2, etc.) and named backreferences, provide examples like 'rg -P \"(\\w+)\\s+\\1\"' to find repeated words, explain use with replacements -r flag for complex transformations, note performance implications (backreferences prevent some optimizations)",
-      "source_reference": "crates/core/flags/defs.rs:5358-5359 (mentions backreferences), features.json:regex_support (Backreferences PCRE2 only)"
-    },
-    {
-      "type": "missing_content",
-      "severity": "high",
-      "section": "Unicode Character Classes",
-      "description": "No documentation of Unicode character classes and properties available in regex patterns",
-      "should_add": "Unicode character classes documentation: \\p{...} syntax, common properties, Unicode-aware \\w\\s\\d, case folding, word boundaries",
-      "fix_suggestion": "Add Unicode section: Explain Unicode mode is default in ripgrep, show \\p{Property} syntax for Unicode character classes, list common properties (\\p{Emoji}, \\p{Greek}, \\p{Alphabetic}, \\p{Uppercase}), explain \\p{any} matches any Unicode codepoint including newlines, document Unicode-aware \\w (all Unicode word characters not just ASCII), \\s (Unicode whitespace), Unicode case folding with -i flag, Unicode word boundaries \\b, show examples 'rg \"\\p{Emoji}\"', 'rg \"\\p{Greek}+\"', mention --no-unicode flag to disable for ASCII-only performance",
-      "source_reference": "crates/core/flags/defs.rs:4884-4961 (NoUnicode flag), features.json:regex_support (Unicode capabilities), tests/multiline.rs (uses \\p{any})"
-    },
-    {
-      "type": "missing_content",
-      "severity": "high",
-      "section": "Engine Selection Strategy",
-      "description": "No documentation of --engine flag and auto engine selection",
-      "should_add": "Documentation of --engine flag with default/pcre2/auto options and selection heuristics",
-      "fix_suggestion": "Add engine selection section: Document --engine flag accepts 'default', 'pcre2', or 'auto', explain 'default' uses Rust regex (finite automata, fastest, good for most cases), 'pcre2' uses PCRE2 (supports advanced features, may be slower), 'auto' dynamically chooses based on pattern analysis (uses PCRE2 if pattern requires lookaround/backreferences, default otherwise), note --auto-hybrid-regex is deprecated in favor of --engine=auto, explain tradeoffs (auto mode can have surprising performance changes, explicit choice more predictable)",
-      "source_reference": "crates/core/flags/defs.rs:1691-1779 (Engine flag), crates/core/flags/defs.rs:240-337 (AutoHybridRegex deprecated flag)"
-    },
-    {
-      "type": "missing_content",
-      "severity": "high",
-      "section": "Named Capture Groups",
-      "description": "No documentation of named capture groups syntax and use with replacements",
-      "should_add": "Named capture groups documentation with syntax and replacement examples",
-      "fix_suggestion": "Add named captures section: Show syntax (?P<name>...) for defining named groups (both engines support), explain use with -r flag for replacements using $name or ${name}, provide examples like 'rg \"(?P<func>\\w+)\\(\" -r \"Function: $func\"', contrast with numbered captures $1, $2, show practical use cases for complex replacements maintaining readability",
-      "source_reference": "features.json:regex_support (Named capture groups)"
-    },
-    {
-      "type": "missing_content",
-      "severity": "medium",
-      "section": "Inline Regex Flags",
-      "description": "No documentation of inline regex flags like (?s), (?i), (?m)",
-      "should_add": "Documentation of inline regex flags for controlling regex behavior within patterns",
-      "fix_suggestion": "Add inline flags section: Document (?s) for dotall (. matches \\n), (?i) for case-insensitive, (?m) for multi-line anchors, (?x) for verbose mode with comments, show syntax (?flags:pattern) for scoped application vs (?flags) for rest of pattern, provide examples 'rg \"(?s:.)\"' vs 'rg \"(?s).\"', explain precedence over command-line flags, note (?-s) to disable flags",
-      "source_reference": "crates/core/flags/defs.rs:4162-4165 (mentions (?s:.) syntax), crates/core/flags/defs.rs:4246-4248 (inline flags discussion)"
-    },
-    {
-      "type": "missing_content",
-      "severity": "medium",
-      "section": "Memory and Performance Implications",
-      "description": "No documentation of performance and memory considerations for advanced patterns",
-      "should_add": "Performance guidance for multiline, PCRE2, and complex patterns",
-      "fix_suggestion": "Add performance section: Warn multiline mode requires reading entire file into memory (can't use memory mapping for stdin), explain PCRE2 generally slower than default engine especially for simple patterns, note backreferences and lookaround prevent some optimizations, recommend testing performance with --stats flag, suggest using default engine when possible, explain automatic optimization (ripgrep detects when multiline pattern doesn't actually match \\n and avoids memory penalty)",
-      "source_reference": "crates/core/flags/defs.rs:4170-4181 (multiline performance warning), features.json:search_engine (performance optimizations)"
-    },
-    {
-      "type": "missing_content",
-      "severity": "medium",
-      "section": "Pattern Limitations and Gotchas",
-      "description": "No documentation of pattern limitations and common mistakes with advanced features",
-      "should_add": "Common pitfalls and limitations when using advanced regex features",
-      "fix_suggestion": "Add gotchas section: Explain PCRE2 silently fails instead of error when using \\n without --multiline (unlike default engine), note lookaround/backreferences not available in default engine, warn about forgetting -P flag when using PCRE2 features, explain . doesn't match newlines by default even in multiline mode (need --multiline-dotall or (?s)), document that --no-unicode affects all patterns globally, mention regex size limits (--regex-size-limit)",
-      "source_reference": "crates/core/flags/defs.rs:5368-5373 (PCRE2 silent failure warning)"
-    },
-    {
-      "type": "missing_content",
-      "severity": "medium",
-      "section": "Practical Examples",
-      "description": "No working examples demonstrating advanced pattern techniques",
-      "should_add": "Real-world examples showing advanced patterns solving actual problems",
-      "fix_suggestion": "Add comprehensive examples section: Multi-line log parsing 'rg -U \"ERROR.*\\n.*stack trace\"', finding functions with specific usage patterns using lookahead 'rg -UP \"(?s)def (\\w+);(?=.*use \\w+)\"', extracting specific parts with lookaround and -o, finding repeated words 'rg -P \"(\\w+)\\s+\\1\"', searching specific Unicode scripts 'rg \"\\p{Han}+\"', complex replacements with named captures, combining multiline with PCRE2 for powerful queries. Each example should include explanation of why advanced features are needed",
-      "source_reference": "tests/multiline.rs (multiline examples), tests/regression.rs:1040-1167 (lookaround examples)"
-    },
-    {
-      "type": "missing_content",
+      "type": "unclear_content",
       "severity": "low",
-      "section": "PCRE2 Version Detection",
-      "description": "No mention of --pcre2-version flag to check PCRE2 availability",
-      "should_add": "Documentation of --pcre2-version flag for checking PCRE2 support",
-      "fix_suggestion": "Add note about checking PCRE2 availability: Mention --pcre2-version flag shows PCRE2 version and JIT status if available, exits with error if PCRE2 not compiled in, useful for checking if advanced features are available before using them",
-      "source_reference": "crates/core/flags/defs.rs:5409-5443 (PCRE2Version flag)"
+      "section": "Performance Considerations - PCRE2 Engine Performance",
+      "description": "Could be clearer about when PCRE2 is 'generally slower' - it's specifically due to backtracking vs DFA",
+      "current_content": "Generally slower than default engine:\n- Backtracking regex implementation vs finite automata",
+      "should_be": "Add explanation that backtracking can cause exponential behavior on pathological patterns",
+      "fix_suggestion": "Expand the PCRE2 performance section to mention potential exponential time complexity with backtracking and suggest testing on representative data",
+      "source_reference": "features.json regex_engines.pcre2"
     },
     {
-      "type": "missing_content",
+      "type": "missing_best_practice",
       "severity": "low",
-      "section": "Regex Size and DFA Limits",
-      "description": "No documentation of --regex-size-limit and --dfa-size-limit flags",
-      "should_add": "Documentation of regex complexity limits and how to adjust them",
-      "fix_suggestion": "Add limits section: Explain --regex-size-limit controls compiled regex size (default sufficient for most cases), --dfa-size-limit controls DFA size for default engine, note these prevent excessive memory use for extremely complex patterns, show how to increase if hitting limits, mention error messages will suggest increasing limits when needed",
-      "source_reference": "features.json:search_engine (DFA size limits, regex size limits)"
+      "section": "Regex Limits",
+      "description": "Missing advice about when you might legitimately need to increase regex limits",
+      "should_add": "Explain common scenarios where limits are hit (auto-generated patterns, large alternations) vs when the pattern should be simplified",
+      "fix_suggestion": "Add subsection 'When to Increase Limits vs Simplify' with guidance on distinguishing legitimate complex patterns from poorly designed ones",
+      "source_reference": "features.json regex_support.configuration"
     }
   ],
   "positive_aspects": [
-    "Chapter title clearly indicates advanced content scope",
-    "Placeholder indicates it's planned for completion",
-    "Dependencies on basics and file-encoding chapters are logical prerequisites"
+    "Comprehensive coverage of all major advanced regex features",
+    "Accurate documentation of --multiline-dotall flag functionality",
+    "Correct documentation of --engine flag with all three options (default, pcre2, auto)",
+    "Proper notation that --auto-hybrid-regex is deprecated",
+    "Excellent practical examples throughout",
+    "Clear explanation of multiline mode memory implications",
+    "Accurate comparison table of Default vs PCRE2 features",
+    "Good coverage of lookaround assertions with correct syntax",
+    "Accurate backreferences documentation",
+    "Comprehensive Unicode support documentation",
+    "Helpful decision tree at the end",
+    "Well-organized with clear table of contents",
+    "Good balance of explanation and examples",
+    "Accurate inline regex flags documentation",
+    "Proper explanation of regex size limits and DFA limits",
+    "Excellent 'Limitations and Gotchas' section addressing common mistakes"
   ],
   "improvement_suggestions": [
-    "Start with multiline as it's a foundational advanced feature",
-    "Introduce PCRE2 engine early since many advanced features depend on it",
-    "Use progressive examples building from simple to complex",
-    "Include a comparison table of default vs PCRE2 engine features",
-    "Add a decision tree for when to use multiline vs PCRE2 vs both",
-    "Include performance benchmarks or guidance for common use cases",
-    "Cross-reference to replacements chapter for capture group usage",
-    "Add troubleshooting section for common errors with advanced patterns",
-    "Consider a cheat sheet of advanced regex syntax at the end"
+    "Add a brief mention of PCRE2 JIT compilation benefits in the PCRE2 section",
+    "Consider adding a note about emoji matching reliability",
+    "Expand the performance section with more details on backtracking complexity",
+    "Add guidance on when to increase regex limits vs simplify patterns",
+    "Consider adding a 'Testing Your Patterns' subsection with tips on using --debug and --stats",
+    "Could add more examples of problematic patterns that hit regex limits",
+    "Consider adding a cross-reference to the Troubleshooting chapter for regex errors"
   ],
   "metadata": {
     "analyzed_at": "2025-11-08",
     "feature_inventory": ".prodigy/book-analysis/features.json",
-    "topics_covered": [],
-    "topics_should_cover": [
-      "multiline",
-      "multiline-dotall",
-      "pcre2",
-      "lookahead",
-      "lookbehind",
-      "backreferences",
-      "unicode",
-      "named-captures",
-      "inline-flags",
-      "engine-selection",
-      "performance"
+    "topics_covered": [
+      "Multiline search",
+      "Multiline dotall mode",
+      "PCRE2 engine",
+      "Lookaround assertions",
+      "Backreferences",
+      "Unicode patterns",
+      "Engine selection",
+      "Named capture groups",
+      "Inline regex flags",
+      "Performance considerations",
+      "Limitations and gotchas",
+      "Practical examples",
+      "Regex limits"
     ],
     "validation_focus": "Check advanced regex features including PCRE2 support",
-    "key_source_files": [
-      "crates/core/flags/defs.rs (flag definitions)",
-      "tests/multiline.rs (multiline examples)",
-      "tests/regression.rs (lookaround examples)",
-      "crates/pcre2/src/lib.rs (PCRE2 implementation)"
+    "flags_verified": [
+      "--multiline (-U)",
+      "--multiline-dotall",
+      "--pcre2 (-P)",
+      "--engine (default|pcre2|auto)",
+      "--auto-hybrid-regex (deprecated)",
+      "--pcre2-version",
+      "--regex-size-limit",
+      "--dfa-size-limit",
+      "--no-unicode",
+      "--stats"
+    ],
+    "code_references_checked": [
+      "crates/core/flags/defs.rs:4214 (MultilineDotall flag)",
+      "crates/core/flags/defs.rs:1691 (Engine flag)",
+      "crates/core/flags/defs.rs:1710-1729 (Engine flag documentation)",
+      "tests/multiline.rs (multiline test coverage)",
+      "features.json (regex_engines configuration)"
     ]
   }
 }
