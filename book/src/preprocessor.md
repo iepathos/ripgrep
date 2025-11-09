@@ -228,7 +228,7 @@ Beyond PDFs, preprocessors enable searching many file types:
 
 ### Compressed Files
 
-Note: ripgrep has built-in support for compressed files via `-z/--search-zip` (supports gzip, bzip2, xz, lz4, lzma, brotli, zstd). Use `--pre` for compression formats not covered by `-z`.
+Note: ripgrep has built-in support for compressed files via `-z/--search-zip` (supports gzip (.gz, .tgz), bzip2 (.bz2, .tbz2), xz (.xz, .txz), lz4 (.lz4), lzma (.lzma), brotli (.br), zstd (.zst, .zstd), and uncompress (.Z)). Use `--pre` for compression formats not covered by `-z`.
 
 ```bash
 #!/bin/sh
@@ -275,7 +275,7 @@ esac
 
 Ripgrep provides two ways to handle special file formats:
 
-- **`-z/--search-zip`**: Built-in support for common compressed formats (gzip, bzip2, xz, lz4, lzma, brotli, zstd)
+- **`-z/--search-zip`**: Built-in support for common compressed formats including gzip (.gz, .tgz), bzip2 (.bz2, .tbz2), xz (.xz, .txz), lz4 (.lz4), lzma (.lzma), brotli (.br), zstd (.zst, .zstd), and uncompress (.Z)
 - **`--pre`**: Custom preprocessing for any file transformation
 
 **When to use each:**
@@ -303,6 +303,8 @@ Each preprocessor invocation spawns a new process per file. This overhead can be
 - **Without `--pre-glob`**: New process for every file searched
 - **With `--pre-glob`**: New process only for matching files
 - **Parallelism helps**: Multiple files processed simultaneously
+
+Note: The `-z/--search-zip` flag also spawns decompression processes (one per compressed file), but uses optimized glob matching to automatically detect compression formats by file extension, avoiding the need for manual glob specification.
 
 ### Optimization Tips
 

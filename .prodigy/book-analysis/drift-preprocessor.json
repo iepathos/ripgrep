@@ -1,0 +1,83 @@
+{
+  "chapter_id": "preprocessor",
+  "chapter_title": "Preprocessor",
+  "chapter_file": "book/src/preprocessor.md",
+  "drift_detected": true,
+  "severity": "low",
+  "quality_assessment": "Chapter is well-written and accurate with comprehensive examples. Minor gaps in documenting all compression formats supported by -z/--search-zip.",
+  "issues": [
+    {
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "Relationship with -z/--search-zip (line 274-296)",
+      "description": "Chapter mentions common compression formats but doesn't list all formats supported by -z/--search-zip",
+      "current_content": "Built-in support for common compressed formats (gzip, bzip2, xz, lz4, lzma, brotli, zstd)",
+      "should_be": "Built-in support includes: gzip (.gz, .tgz), bzip2 (.bz2, .tbz2), xz (.xz, .txz), lz4 (.lz4), lzma (.lzma), brotli (.br), zstd (.zst, .zstd), and uncompress (.Z)",
+      "fix_suggestion": "Add a comprehensive list of all file extensions supported by -z/--search-zip in the comparison table or nearby text",
+      "source_reference": "crates/cli/src/decompress.rs:490-531 (default_decompression_commands function)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Compressed Files (line 229-239)",
+      "description": "Chapter doesn't mention .txz (xz-compressed tar) and .Z (Unix compress) extensions",
+      "current_content": "Note mentions -z supports gzip, bzip2, xz, lz4, lzma, brotli, zstd",
+      "should_add": "Also mention that .txz (xz tarball) and .Z (Unix compress) extensions are supported",
+      "fix_suggestion": "Add .txz and .Z to the list of supported formats in line 231",
+      "source_reference": "crates/cli/src/decompress.rs:524 (.txz) and line 530 (.Z)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Compressed Files example (line 233-239)",
+      "description": "Example only shows Zstandard decompression, could show more formats",
+      "should_add": "Could add examples for other compression formats or reference the full list",
+      "fix_suggestion": "Either expand the example to show handling multiple compression types or add a note referencing the complete list of formats handled by -z",
+      "source_reference": "crates/cli/src/decompress.rs:490-531"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "Performance Considerations - Overhead (line 299-306)",
+      "description": "Could mention that -z also spawns processes but is optimized compared to --pre",
+      "should_add": "Clarify that -z/--search-zip also spawns decompression processes but uses optimized matching",
+      "fix_suggestion": "Add a note that -z has similar process-spawning overhead but with built-in glob matching for known extensions",
+      "source_reference": "crates/cli/src/decompress.rs (DecompressionMatcher uses globset)"
+    }
+  ],
+  "positive_aspects": [
+    "Excellent practical examples with pdftotext showing the complete workflow",
+    "Clear progression from simple to robust preprocessor implementations",
+    "Comprehensive coverage of --pre-glob optimization with real benchmarks (17x improvement)",
+    "Good security coverage including CVE-2021-3013 and safe scripting practices",
+    "Accurate documentation of --pre and --pre-glob flag behavior matching implementation",
+    "Helpful comparison table explaining when to use -z vs --pre",
+    "Multiple real-world use cases: PDFs, encrypted files, encoding conversion, Office documents",
+    "Good troubleshooting section with common issues and solutions",
+    "Accurate example scripts that match the patterns shown in the flag documentation"
+  ],
+  "improvement_suggestions": [
+    "Add a complete reference table of all compression formats and extensions supported by -z/--search-zip",
+    "Consider adding an example showing a multi-format decompression preprocessor",
+    "Could add a note about the order of precedence when multiple globs match (most recent wins)",
+    "Mention that preprocessor receives file path AND stdin (line 5496 in defs.rs: 'standard input connected to PATH for convenience')",
+    "Add reference to globset syntax documentation for --pre-glob patterns"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-08",
+    "feature_inventory": ".prodigy/book-analysis/features.json",
+    "topics_covered": [
+      "--pre flag usage and behavior",
+      "--pre-glob for performance optimization",
+      "PDF search with pdftotext",
+      "Compressed file handling",
+      "Multiple file type handling",
+      "Security considerations",
+      "Relationship with -z/--search-zip",
+      "Performance optimization",
+      "Debugging and troubleshooting"
+    ],
+    "validation_focus": "Ensure preprocessor examples (pdftotext, etc.) are working and documented",
+    "validation_result": "PASS - All examples are accurate and match implementation. pdftotext usage is correctly documented with working examples. Minor gaps in comprehensive compression format listing."
+  }
+}
