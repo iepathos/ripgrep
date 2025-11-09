@@ -119,6 +119,56 @@
       "topics": ["common_issues", "debug_flag", "no_results", "performance_issues"],
       "validation": "Verify troubleshooting guide covers common problems and debug flag usage",
       "dependencies": ["common-options"]
+    },
+    {
+      "id": "output-formats",
+      "title": "Output Formats",
+      "file": "book/src/output-formats.md",
+      "topics": ["json_output", "color_customization", "field_separators", "vimgrep_format", "null_separators", "buffering_modes", "heading_mode"],
+      "validation": "Check that JSON output, color specs, field separators, and all output formatting options are documented",
+      "dependencies": ["basics"],
+      "auto_generated": true,
+      "source_feature": "output_formatting"
+    },
+    {
+      "id": "context-lines",
+      "title": "Context Lines",
+      "file": "book/src/context-lines.md",
+      "topics": ["after_context", "before_context", "context", "context_separators"],
+      "validation": "Ensure -A/-B/-C flags and context separator options are explained with examples",
+      "dependencies": ["basics"],
+      "auto_generated": true,
+      "source_feature": "context_display"
+    },
+    {
+      "id": "sorting-results",
+      "title": "Sorting Results",
+      "file": "book/src/sorting-results.md",
+      "topics": ["sort_flag", "sort_by_path", "sort_by_modified", "sort_by_accessed", "sort_by_created", "reverse_sort"],
+      "validation": "Verify sorting options and their impact on performance are documented",
+      "dependencies": ["basics"],
+      "auto_generated": true,
+      "source_feature": "sorting"
+    },
+    {
+      "id": "statistics",
+      "title": "Statistics and Metrics",
+      "file": "book/src/statistics.md",
+      "topics": ["stats_flag", "search_metrics", "performance_data", "match_counts"],
+      "validation": "Check that --stats output format and interpretation are explained",
+      "dependencies": ["common-options"],
+      "auto_generated": true,
+      "source_feature": "statistics"
+    },
+    {
+      "id": "hyperlinks",
+      "title": "Hyperlinks",
+      "file": "book/src/hyperlinks.md",
+      "topics": ["hyperlink_format", "osc8_sequences", "terminal_support"],
+      "validation": "Ensure hyperlink format syntax and terminal compatibility are documented",
+      "dependencies": ["common-options"],
+      "auto_generated": true,
+      "source_feature": "hyperlinks"
     }
   ]
 }

@@ -1,0 +1,171 @@
+{
+  "analysis_date": "2025-11-08",
+  "features_analyzed": 10,
+  "documented_topics": 15,
+  "gaps_found": 5,
+  "gaps": [
+    {
+      "severity": "high",
+      "type": "missing_chapter",
+      "feature_category": "output_formatting",
+      "feature_description": "Comprehensive coverage of output modes (JSON, colors, formatting options, field separators, vimgrep format)",
+      "recommended_chapter_id": "output-formats",
+      "recommended_title": "Output Formats",
+      "recommended_location": "book/src/output-formats.md",
+      "reason": "While common-options and replacements touch on output, there's no dedicated chapter for JSON output, color customization, field separators, vimgrep format, and other formatting modes"
+    },
+    {
+      "severity": "high",
+      "type": "missing_chapter",
+      "feature_category": "context_display",
+      "feature_description": "Context lines display options including -A/-B/-C flags and context separators",
+      "recommended_chapter_id": "context-lines",
+      "recommended_title": "Context Lines",
+      "recommended_location": "book/src/context-lines.md",
+      "reason": "Context display (-A/-B/-C) is a commonly used feature that deserves its own chapter with examples"
+    },
+    {
+      "severity": "medium",
+      "type": "missing_chapter",
+      "feature_category": "sorting",
+      "feature_description": "Sorting search results by path, modification time, access time, or creation time",
+      "recommended_chapter_id": "sorting-results",
+      "recommended_title": "Sorting Results",
+      "recommended_location": "book/src/sorting-results.md",
+      "reason": "Sorting functionality (--sort, --sortr) is not documented in any existing chapter"
+    },
+    {
+      "severity": "medium",
+      "type": "missing_chapter",
+      "feature_category": "statistics",
+      "feature_description": "Statistics output showing search metrics and performance data",
+      "recommended_chapter_id": "statistics",
+      "recommended_title": "Statistics and Metrics",
+      "recommended_location": "book/src/statistics.md",
+      "reason": "The --stats flag and statistics output are not covered in existing documentation"
+    },
+    {
+      "severity": "low",
+      "type": "missing_chapter",
+      "feature_category": "hyperlinks",
+      "feature_description": "Hyperlink format support using OSC 8 terminal escape sequences",
+      "recommended_chapter_id": "hyperlinks",
+      "recommended_title": "Hyperlinks",
+      "recommended_location": "book/src/hyperlinks.md",
+      "reason": "Advanced feature for terminal hyperlinks (--hyperlink-format) is not documented"
+    }
+  ],
+  "coverage_analysis": {
+    "well_documented": [
+      {
+        "feature_category": "core_cli",
+        "chapters": ["introduction", "basics", "common-options"]
+      },
+      {
+        "feature_category": "file_filtering",
+        "chapters": ["automatic-filtering", "manual-filtering-globs", "manual-filtering-types", "recursive-search"]
+      },
+      {
+        "feature_category": "regex_support",
+        "chapters": ["basics", "advanced-patterns", "file-encoding"]
+      },
+      {
+        "feature_category": "compression_preprocessing",
+        "chapters": ["preprocessor", "binary-data"]
+      },
+      {
+        "feature_category": "performance_tuning",
+        "chapters": ["performance"]
+      },
+      {
+        "feature_category": "debugging_troubleshooting",
+        "chapters": ["troubleshooting"]
+      },
+      {
+        "feature_category": "configuration",
+        "chapters": ["configuration-file"]
+      }
+    ],
+    "partially_documented": [
+      {
+        "feature_category": "output_formatting",
+        "chapters": ["replacements", "common-options"],
+        "missing_topics": ["JSON output modes", "Color customization", "Field separators", "Vimgrep format", "Null separators", "Buffering modes"]
+      },
+      {
+        "feature_category": "search_engine",
+        "chapters": ["advanced-patterns", "performance"],
+        "missing_topics": ["Engine selection (--engine)", "Memory mapping details", "Multiline dotall mode"]
+      }
+    ],
+    "undocumented": [
+      {
+        "feature_category": "context_display",
+        "reason": "No chapter covers context lines (-A/-B/-C) comprehensively"
+      },
+      {
+        "feature_category": "sorting",
+        "reason": "Sorting functionality is completely undocumented"
+      },
+      {
+        "feature_category": "statistics",
+        "reason": "Statistics output is not covered"
+      },
+      {
+        "feature_category": "hyperlinks",
+        "reason": "Hyperlink support is undocumented"
+      }
+    ]
+  },
+  "actions_taken": [
+    {
+      "action": "created_chapter_definition",
+      "chapter_id": "output-formats",
+      "file_path": "workflows/data/ripgrep-chapters.json"
+    },
+    {
+      "action": "created_chapter_definition",
+      "chapter_id": "context-lines",
+      "file_path": "workflows/data/ripgrep-chapters.json"
+    },
+    {
+      "action": "created_chapter_definition",
+      "chapter_id": "sorting-results",
+      "file_path": "workflows/data/ripgrep-chapters.json"
+    },
+    {
+      "action": "created_chapter_definition",
+      "chapter_id": "statistics",
+      "file_path": "workflows/data/ripgrep-chapters.json"
+    },
+    {
+      "action": "created_chapter_definition",
+      "chapter_id": "hyperlinks",
+      "file_path": "workflows/data/ripgrep-chapters.json"
+    },
+    {
+      "action": "created_stub_file",
+      "file_path": "book/src/output-formats.md"
+    },
+    {
+      "action": "created_stub_file",
+      "file_path": "book/src/context-lines.md"
+    },
+    {
+      "action": "created_stub_file",
+      "file_path": "book/src/sorting-results.md"
+    },
+    {
+      "action": "created_stub_file",
+      "file_path": "book/src/statistics.md"
+    },
+    {
+      "action": "created_stub_file",
+      "file_path": "book/src/hyperlinks.md"
+    },
+    {
+      "action": "updated_summary",
+      "file_path": "book/src/SUMMARY.md"
+    }
+  ]
+}

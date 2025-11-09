@@ -15,9 +15,14 @@
 - [Binary Data](binary-data.md)
 - [Preprocessor](preprocessor.md)
 - [Common Options](common-options.md)
+- [Context Lines](context-lines.md)
+- [Output Formats](output-formats.md)
+- [Sorting Results](sorting-results.md)
 
 # Advanced Topics
 
 - [Advanced Patterns](advanced-patterns.md)
 - [Performance](performance.md)
+- [Statistics and Metrics](statistics.md)
+- [Hyperlinks](hyperlinks.md)
 - [Troubleshooting](troubleshooting.md)
