@@ -29,9 +29,15 @@ rg --sort accessed pattern
 # Sort by creation time (newest first)
 rg --sort created pattern
 
-# No sorting (default, fastest)
+# Explicitly disable sorting (useful to override config files)
 rg --sort none pattern
 ```
+
+**Note**: The `--sort=none` option explicitly disables sorting, which is useful for overriding configuration files or previous command-line flags that may have enabled sorting.
+
+### Deprecated Options
+
+The `--sort-files` flag is deprecated. Use `--sort=path` instead for equivalent functionality. This change was made to consolidate all sorting options under the unified `--sort` flag.
 
 ## Reverse Sorting
 
@@ -131,7 +137,7 @@ rg pattern
 rg --sort path pattern
 ```
 
-For large codebases:
+Example timing for large codebases (actual values depend on hardware, file count, and filesystem):
 - Unsorted: ~100ms
 - Sorted by path: ~500ms
 - Sorted by time: ~600ms (requires stat calls)
@@ -211,6 +217,8 @@ Time-based sorting behavior may vary:
 - **Linux**: Reliable modified, accessed, and created times
 - **macOS**: Reliable modified and created times
 - **Windows**: All timestamps available but may have different precision
+
+**Error Handling**: When a requested sort criterion is unavailable on the filesystem (for example, creation time on ext4 filesystems), ripgrep will detect this, print an error message, and exit without performing the search. This ensures that you're aware when the requested sorting cannot be reliably performed.
 
 ## See Also
 
