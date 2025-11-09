@@ -34,6 +34,8 @@ For comprehensive performance benchmarks and feature comparisons with grep, ag, 
 - **Multiline search**: Search patterns that span multiple lines with the `-U/--multiline` flag.
 - **Replacement support**: Replace matched patterns with the `-r/--replace` flag.
 - **JSON output**: Machine-readable JSON output format for integration with other tools.
+- **Hyperlink support**: Terminal hyperlinks for clickable file paths with `--hyperlink-format` (built-in support for VSCode, vim, and more).
+- **Performance statistics**: Track and display search metrics with `--stats` for understanding search performance.
 
 ## Installation
 
