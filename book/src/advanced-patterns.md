@@ -293,6 +293,8 @@ rg '\p{Uppercase}+'
 | `\p{White_Space}` | Whitespace |
 | `\p{any}` | Any character (including newlines) |
 
+**Note on Emoji Matching**: Emoji matching with `\p{Emoji}` may vary across different regex engines and Unicode versions. Some complex emoji (like multi-codepoint sequences, skin tone modifiers, or zero-width joiners) may require additional pattern logic. Always test emoji patterns with your specific use case and data.
+
 ### Unicode-Aware Metacharacters
 
 By default, these metacharacters are Unicode-aware:
@@ -509,12 +511,20 @@ Advanced regex features can impact performance. Understanding these implications
 - More complex matching algorithm
 - Less optimized for large-scale text search
 
+**Backtracking Complexity**: PCRE2's backtracking algorithm can exhibit exponential time complexity on certain "pathological" patterns, especially those with:
+- Nested quantifiers (e.g., `(a+)+`)
+- Complex alternations with overlapping possibilities
+- Patterns that cause extensive backtracking on non-matches
+
+The default engine uses finite automata which guarantees linear time complexity regardless of pattern complexity. This makes it much more predictable and safer for untrusted input.
+
 **When PCRE2 is worth it**:
 - Need lookaround or backreferences
 - Pattern complexity requires PCRE2 features
 - Search space is limited (specific files/directories)
+- You've tested the pattern on representative data and performance is acceptable
 
-**Recommendation**: Use default engine unless you need PCRE2-specific features.
+**Recommendation**: Use default engine unless you need PCRE2-specific features. When using PCRE2, test patterns on representative data to ensure acceptable performance, especially before using in production scripts or on large codebases.
 
 ### Backreferences and Lookaround
 
@@ -754,6 +764,8 @@ rg --pcre2-version
 
 If PCRE2 is not compiled in, this command exits with an error.
 
+**JIT Compilation**: The "JIT: enabled" status indicates that PCRE2's Just-In-Time compiler is available. JIT compilation converts regex patterns into native machine code at runtime, providing significant performance improvements (often 2-10x faster) for PCRE2 pattern matching. When JIT is enabled, PCRE2 patterns run much faster, though still typically slower than ripgrep's default finite automata engine.
+
 ### Regex Size Limit
 
 Controls the maximum size of compiled regex:
@@ -795,6 +807,37 @@ When you hit a limit, ripgrep's error message suggests the appropriate flag to i
 error: regex compiled too large
 help: use --regex-size-limit to increase the limit
 ```
+
+### When to Increase Limits vs Simplify Patterns
+
+Hitting regex limits is often a sign that your pattern needs simplification, but sometimes large patterns are legitimate. Here's how to decide:
+
+**Increase limits for**:
+- **Auto-generated patterns**: Patterns produced by tools or scripts (e.g., generated from configuration)
+- **Large alternations**: Legitimate need to match many alternatives (`word1|word2|...|word1000`)
+- **Comprehensive matching**: Domain-specific patterns covering many cases (e.g., all valid email formats, file extensions)
+- **One-time searches**: Complex ad-hoc queries that won't be reused
+
+**Simplify patterns instead for**:
+- **Deeply nested groups**: Patterns with excessive nesting usually can be refactored
+- **Repeated similar logic**: Extract common patterns or use multiple simpler searches
+- **Unclear complexity**: If you can't explain why the pattern is complex, it's probably poorly designed
+- **Production scripts**: Patterns used repeatedly should be simple and maintainable
+
+**Simplification strategies**:
+```bash
+# Instead of huge alternation, use multiple searches
+rg -e 'pattern1' -e 'pattern2' -e 'pattern3'
+
+# Instead of complex nested groups, break into stages
+rg 'simple_pattern1' | rg 'simple_pattern2'
+
+# Use character classes instead of alternations
+# Bad: (a|b|c|d|e)
+# Good: [a-e]
+```
+
+**Rule of thumb**: If increasing the limit solves a one-time problem, that's fine. If you're hitting limits regularly, invest time in understanding and simplifying your patterns.
 
 ## Decision Tree: Choosing the Right Features
 
