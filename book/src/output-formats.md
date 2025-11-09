@@ -79,6 +79,7 @@ Available color types:
 - `path`: File paths
 - `line`: Line numbers
 - `column`: Column numbers
+- `highlight`: Highlighted matching text (for alternate match highlighting)
 
 Color attributes:
 - Foreground: `fg:color` (e.g., `fg:red`, `fg:blue`, `fg:green`)
