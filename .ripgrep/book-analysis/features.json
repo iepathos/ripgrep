@@ -1,0 +1,591 @@
+{
+  "core_cli": {
+    "basic_usage": {
+      "pattern_specification": {
+        "regexp": "Multiple patterns via -e/--regexp",
+        "file_patterns": "Patterns from file via -f/--file",
+        "fixed_strings": "Literal string search via -F/--fixed-strings",
+        "word_regexp": "Whole word matching via -w/--word-regexp",
+        "line_regexp": "Whole line matching via -x/--line-regexp"
+      },
+      "search_modes": {
+        "standard": "Default search with matched lines",
+        "files_with_matches": "List files containing matches (-l)",
+        "files_without_match": "List files without matches (--files-without-match)",
+        "count": "Count matching lines per file (-c/--count)",
+        "count_matches": "Count total matches per file (--count-matches)",
+        "json": "JSON Lines output format (--json)",
+        "only_matching": "Print only matched parts (-o/--only-matching)",
+        "quiet": "Suppress output, exit code only (-q/--quiet)",
+        "files": "List files that would be searched (--files)",
+        "type_list": "List available file types (--type-list)"
+      }
+    },
+    "output_control": {
+      "context_options": {
+        "after_context": "Show N lines after match (-A)",
+        "before_context": "Show N lines before match (-B)",
+        "context": "Show N lines before and after (-C)",
+        "context_separator": "Separator for context blocks (--context-separator)",
+        "passthru": "Print all lines, highlight matches (--passthru)"
+      },
+      "display_options": {
+        "line_number": "Show line numbers (-n/--line-number)",
+        "column": "Show column numbers (--column)",
+        "byte_offset": "Show byte offsets (-b/--byte-offset)",
+        "with_filename": "Show file names (-H/--with-filename)",
+        "heading": "Group matches by file (--heading)",
+        "vimgrep": "Vim-compatible format (--vimgrep)",
+        "null": "Separate output with NUL (--null)",
+        "path_separator": "Custom path separator (--path-separator)"
+      },
+      "formatting": {
+        "color": "Enable/disable colored output (--color)",
+        "colors": "Custom color specs (--colors)",
+        "hyperlink_format": "Hyperlink output format (--hyperlink-format)",
+        "trim": "Trim whitespace from output (--trim)",
+        "max_columns": "Limit line length (--max-columns)",
+        "max_columns_preview": "Preview long lines (--max-columns-preview)"
+      },
+      "field_separators": {
+        "field_match_separator": "Separator between fields (--field-match-separator)",
+        "field_context_separator": "Separator for context (--field-context-separator)"
+      }
+    },
+    "performance_options": {
+      "threads": "Number of search threads (-j/--threads)",
+      "mmap": "Memory map strategy (--mmap, --no-mmap)",
+      "buffer_mode": {
+        "auto": "Automatic buffering based on tty",
+        "line": "Line buffering (--line-buffered)",
+        "block": "Block buffering (--block-buffered)"
+      },
+      "dfa_size_limit": "DFA cache size (--dfa-size-limit)",
+      "regex_size_limit": "Compiled regex size limit (--regex-size-limit)"
+    },
+    "limiting_options": {
+      "max_count": "Stop after N matches (-m/--max-count)",
+      "max_filesize": "Skip files larger than N (--max-filesize)",
+      "max_depth": "Maximum directory depth (--max-depth)",
+      "stop_on_nonmatch": "Stop reading file on first non-match (--stop-on-nonmatch)",
+      "include_zero": "Include files with zero matches (--include-zero)"
+    }
+  },
+  "search_engine": {
+    "regex_engines": {
+      "default": {
+        "description": "Rust regex engine with finite automata",
+        "features": [
+          "Full Unicode support by default",
+          "SIMD optimizations",
+          "Aggressive literal optimizations",
+          "UTF-8 decoding in DFA engine"
+        ],
+        "performance": "Best for most use cases"
+      },
+      "pcre2": {
+        "description": "PCRE2 engine for advanced patterns",
+        "flag": "-P/--pcre2",
+        "features": [
+          "Look-around assertions",
+          "Backreferences",
+          "Advanced regex features",
+          "Optional Unicode support"
+        ],
+        "use_cases": ["Complex pattern matching", "Compatibility with grep -P"]
+      },
+      "auto_hybrid": {
+        "description": "Automatically use PCRE2 when needed",
+        "flag": "--engine auto",
+        "behavior": "Tries default engine, falls back to PCRE2"
+      }
+    },
+    "search_strategies": {
+      "line_oriented": "Default line-by-line search",
+      "multiline": "Cross-line pattern matching (-U/--multiline)",
+      "multiline_dotall": "Dot matches newline in multiline (--multiline-dotall)",
+      "binary_detection": {
+        "auto": "Automatic binary file detection",
+        "search_and_suppress": "Search but suppress binary matches (-a/--text)",
+        "as_text": "Treat all files as text (--text)"
+      },
+      "memory_mapping": {
+        "auto": "Choose best strategy automatically",
+        "enabled": "Use mmap for large files",
+        "disabled": "Use incremental buffering"
+      }
+    },
+    "pattern_features": {
+      "case_sensitivity": {
+        "sensitive": "Default case-sensitive",
+        "insensitive": "Case-insensitive (-i/--ignore-case)",
+        "smart_case": "Smart case matching (-S/--smart-case)"
+      },
+      "boundary_matching": {
+        "word_boundaries": "Word boundary mode (-w)",
+        "line_boundaries": "Line boundary mode (-x)"
+      },
+      "invert_match": "Invert matching (-v/--invert-match)",
+      "crlf": "Support CRLF line terminators (--crlf)",
+      "null_data": "Use NUL as line terminator (--null-data)"
+    }
+  },
+  "file_filtering": {
+    "automatic_filtering": {
+      "gitignore_support": {
+        "description": "Respect .gitignore rules by default",
+        "vcs_ignore": ".gitignore, .git/info/exclude",
+        "parent_ignore": "Parent directory .gitignore files",
+        "global_ignore": "Global gitignore configuration",
+        "disable_flags": [
+          "--no-ignore-vcs (disable VCS ignore)",
+          "--no-ignore-parent (disable parent ignore)",
+          "--no-ignore-global (disable global ignore)"
+        ]
+      },
+      "custom_ignore_files": {
+        "ignore": ".ignore files for all tools",
+        "rgignore": ".rgignore files for ripgrep only",
+        "custom": "Custom ignore files (--ignore-file)",
+        "disable": "--no-ignore-dot, --no-ignore-files"
+      },
+      "hidden_files": {
+        "default": "Skip hidden files by default",
+        "enable": "Search hidden files (--hidden)"
+      },
+      "binary_files": {
+        "default": "Automatically skip binary files",
+        "override": "Search binary files (-a/--text)"
+      },
+      "unrestricted_mode": {
+        "u1": "Disable VCS ignore (-u)",
+        "u2": "Disable all ignore files (-uu)",
+        "u3": "Disable all filtering including hidden/binary (-uuu)"
+      }
+    },
+    "glob_patterns": {
+      "include_globs": {
+        "glob": "Include files matching glob (-g/--glob)",
+        "iglob": "Case-insensitive glob (--iglob)",
+        "multiple": "Multiple glob patterns supported"
+      },
+      "glob_options": {
+        "glob_case_insensitive": "Case-insensitive globs (--glob-case-insensitive)"
+      },
+      "syntax": {
+        "wildcards": "*, ?, [ab], {a,b}",
+        "recursive": "** for recursive directory matching",
+        "negation": "! prefix for exclusion"
+      }
+    },
+    "file_type_filtering": {
+      "builtin_types": {
+        "description": "Pre-defined file types for common languages",
+        "examples": ["py (Python)", "js (JavaScript)", "rs (Rust)", "c (C/C++)", "md (Markdown)"],
+        "usage": "-t/--type to include, -T/--type-not to exclude",
+        "list": "--type-list to show all types"
+      },
+      "custom_types": {
+        "type_add": "Define new file types (--type-add)",
+        "type_clear": "Clear type definitions (--type-clear)",
+        "format": "name:glob pattern or ext pattern"
+      }
+    },
+    "directory_traversal": {
+      "follow_symlinks": "Follow symbolic links (-L/--follow)",
+      "one_file_system": "Stay on same file system (--one-file-system)",
+      "max_depth": "Limit directory depth (--max-depth)",
+      "require_git": "Only search git repositories (default)",
+      "no_require_git": "Search non-git directories (--no-require-git)"
+    },
+    "compression_support": {
+      "search_zip": "Search compressed files (-z/--search-zip)",
+      "supported_formats": ["gzip", "bzip2", "xz", "lz4", "lzma", "brotli", "zstandard"]
+    }
+  },
+  "output_formatting": {
+    "standard_printer": {
+      "description": "Human-readable grep-like output",
+      "features": [
+        "Cross-platform terminal coloring",
+        "Contextual lines",
+        "File path display with heading",
+        "Line numbers and byte offsets",
+        "Column numbers",
+        "Match highlighting"
+      ],
+      "customization": {
+        "colors": "Custom color specifications",
+        "separators": "Configurable field separators",
+        "heading": "Grouped or interleaved output"
+      }
+    },
+    "json_printer": {
+      "description": "Machine-readable JSON Lines format",
+      "flag": "--json",
+      "message_types": {
+        "begin": "Start of file search",
+        "match": "Individual match with context",
+        "context": "Context lines",
+        "end": "End of file search",
+        "summary": "Search statistics"
+      },
+      "fields": [
+        "type",
+        "data.path",
+        "data.lines",
+        "data.line_number",
+        "data.absolute_offset",
+        "data.submatches"
+      ]
+    },
+    "summary_printer": {
+      "description": "Aggregate statistics",
+      "modes": {
+        "count": "Match counts per file",
+        "count_matches": "Total matches per file",
+        "files_with_matches": "File paths only",
+        "files_without_match": "Non-matching files"
+      },
+      "stats": "Overall statistics (--stats)"
+    },
+    "replacement": {
+      "description": "Search and replace in output",
+      "flag": "-r/--replace",
+      "features": [
+        "Capture group references ($1, $2, etc.)",
+        "Named capture groups",
+        "Text transformation in output"
+      ],
+      "use_cases": ["Preview replacements", "Extract matched portions", "Reformat output"]
+    },
+    "hyperlinks": {
+      "description": "Terminal hyperlink support",
+      "format": "--hyperlink-format",
+      "formats": ["default", "file", "grep", "kitty", "vscode"],
+      "environment": "Hostname detection for remote files"
+    }
+  },
+  "regex_support": {
+    "default_syntax": {
+      "description": "Rust regex syntax (similar to Perl)",
+      "unicode": "Full Unicode support always enabled",
+      "features": [
+        "Character classes",
+        "Repetition operators (*, +, ?, {n,m})",
+        "Alternation (|)",
+        "Grouping and capturing",
+        "Escape sequences",
+        "Unicode categories and properties"
+      ],
+      "limitations": [
+        "No look-around assertions",
+        "No backreferences",
+        "No conditional patterns"
+      ]
+    },
+    "pcre2_syntax": {
+      "description": "PCRE2 advanced regex features",
+      "flag": "-P/--pcre2",
+      "additional_features": [
+        "Positive/negative look-ahead (?=, ?!)",
+        "Positive/negative look-behind (?<=, ?<!)",
+        "Backreferences (\\1, \\2, etc.)",
+        "Named captures (?P<name>...)",
+        "Conditional patterns",
+        "Atomic groups",
+        "Possessive quantifiers"
+      ],
+      "unicode_control": "--no-pcre2-unicode to disable Unicode"
+    },
+    "encoding_support": {
+      "description": "Search files in various text encodings",
+      "flag": "-E/--encoding",
+      "auto_detection": "Automatic UTF-16 detection with BOM",
+      "supported_encodings": [
+        "UTF-8 (default)",
+        "UTF-16LE, UTF-16BE",
+        "latin1, ISO-8859-1",
+        "GBK, GB18030",
+        "EUC-JP, Shift_JIS",
+        "EUC-KR",
+        "Big5"
+      ],
+      "special": "auto, none (binary)"
+    },
+    "unicode_features": {
+      "default_enabled": "Unicode always on in default engine",
+      "case_folding": "Unicode case-insensitive matching",
+      "word_boundaries": "Unicode-aware word boundaries",
+      "character_classes": "Unicode categories (\\p{L}, \\p{N}, etc.)",
+      "disable": "--no-unicode for ASCII-only matching"
+    }
+  },
+  "preprocessing": {
+    "preprocessor": {
+      "description": "Transform files before searching",
+      "flag": "--pre",
+      "pre_glob": "Apply to files matching glob (--pre-glob)",
+      "use_cases": [
+        "PDF text extraction",
+        "Decompression",
+        "Decryption",
+        "Encoding conversion",
+        "Document format conversion"
+      ],
+      "execution": "External command receives file path, outputs to stdout"
+    }
+  },
+  "configuration": {
+    "config_file": {
+      "description": "Persistent ripgrep configuration",
+      "locations": {
+        "unix": "$RIPGREP_CONFIG_PATH or $XDG_CONFIG_HOME/ripgrep/config",
+        "windows": "%APPDATA%/ripgrep/config"
+      },
+      "format": "One flag per line, no leading dashes",
+      "disable": "--no-config"
+    },
+    "environment_variables": {
+      "RIPGREP_CONFIG_PATH": "Path to config file",
+      "RIPGREP_NO_MESSAGES": "Suppress error messages"
+    }
+  },
+  "special_modes": {
+    "generation": {
+      "man_page": "--generate man",
+      "completions": {
+        "bash": "--generate complete-bash",
+        "zsh": "--generate complete-zsh",
+        "fish": "--generate complete-fish",
+        "powershell": "--generate complete-powershell"
+      }
+    },
+    "debugging": {
+      "stats": "Show search statistics (--stats)",
+      "debug": "Debug logging (--debug)",
+      "trace": "Trace logging (--trace)"
+    },
+    "version_info": {
+      "short": "-V",
+      "long": "--version",
+      "pcre2": "--pcre2-version"
+    }
+  },
+  "performance_characteristics": {
+    "optimizations": {
+      "simd": "SIMD for literal search acceleration",
+      "finite_automata": "DFA/NFA hybrid for regex matching",
+      "literal_extraction": "Extract literals from patterns for fast filtering",
+      "lazy_dfa": "Lazily constructed DFA states",
+      "utf8_dfa": "UTF-8 decoding in DFA engine",
+      "memory_mapping": "mmap for large files",
+      "parallel_search": "Multi-threaded directory traversal"
+    },
+    "memory_management": {
+      "buffer_reuse": "Reuse buffers across searches",
+      "dfa_cache": "Configurable DFA cache size",
+      "incremental_reading": "Stream large files"
+    },
+    "benchmarks": {
+      "typical_speed": "1.00x baseline in most benchmarks",
+      "advantages": [
+        "Fast on Unicode with full support",
+        "Efficient directory traversal",
+        "Good performance on large files",
+        "Scales with parallel execution"
+      ],
+      "edge_cases": [
+        "Patterns without literals slower",
+        "Very high match counts reduce advantage",
+        "Some PCRE2 patterns have overhead"
+      ]
+    }
+  },
+  "best_practices": {
+    "everyday_usage": [
+      "Use smart case (-S) for convenient case handling",
+      "Leverage file type filters (-t) for targeted searches",
+      "Use --files to preview what will be searched",
+      "Enable stats (--stats) to understand search performance",
+      "Configure common options in config file"
+    ],
+    "performance_tips": [
+      "Use literal strings (-F) when possible for speed",
+      "Limit search scope with globs and types",
+      "Use -m/--max-count to stop early",
+      "Let automatic mmap selection work",
+      "Adjust --threads for your workload"
+    ],
+    "pattern_writing": [
+      "Start with simpler patterns, add complexity as needed",
+      "Use -w for whole word matches to reduce false positives",
+      "Test patterns on small file sets first",
+      "Use PCRE2 (-P) only when advanced features needed",
+      "Consider fixed strings (-F) for literal text"
+    ],
+    "filtering_strategies": [
+      "Start with automatic filtering (default)",
+      "Add specific ignore files (--ignore-file) for projects",
+      "Use type filters (-t/-T) for language-specific searches",
+      "Create .rgignore files for project-specific exclusions",
+      "Use -uuu sparingly, prefer targeted inclusion"
+    ],
+    "output_formatting": [
+      "Use --vimgrep for tool integration",
+      "Use --json for programmatic processing",
+      "Use -l for quick file listing",
+      "Use --stats to identify performance issues",
+      "Customize colors for accessibility"
+    ]
+  },
+  "common_patterns": [
+    {
+      "name": "Find TODO comments",
+      "command": "rg 'TODO|FIXME|XXX'",
+      "description": "Search for common task markers in code"
+    },
+    {
+      "name": "Search specific file types",
+      "command": "rg -tpy 'import.*numpy' ",
+      "description": "Find numpy imports in Python files"
+    },
+    {
+      "name": "Case-insensitive search with context",
+      "command": "rg -i -C 3 'pattern'",
+      "description": "Show 3 lines of context around matches"
+    },
+    {
+      "name": "Search and replace preview",
+      "command": "rg 'old_name' -r 'new_name'",
+      "description": "Preview how replacements would look"
+    },
+    {
+      "name": "List files without matches",
+      "command": "rg --files-without-match 'pattern'",
+      "description": "Find files that don't contain pattern"
+    },
+    {
+      "name": "Count matches across project",
+      "command": "rg --count-matches 'pattern'",
+      "description": "Count total occurrences per file"
+    },
+    {
+      "name": "Search compressed files",
+      "command": "rg -z 'pattern'",
+      "description": "Search inside gzip, bzip2, etc."
+    },
+    {
+      "name": "Unrestricted search",
+      "command": "rg -uuu 'pattern'",
+      "description": "Search everything including hidden and binary"
+    },
+    {
+      "name": "JSON output for tools",
+      "command": "rg --json 'pattern' | jq",
+      "description": "Machine-readable output for processing"
+    },
+    {
+      "name": "Multiline pattern",
+      "command": "rg -U 'start.*\\n.*end'",
+      "description": "Match patterns across multiple lines"
+    }
+  ],
+  "troubleshooting": {
+    "common_issues": [
+      {
+        "issue": "Pattern not matching expected files",
+        "solutions": [
+          "Check if files are being filtered (use --files to verify)",
+          "Verify .gitignore rules aren't excluding files",
+          "Try -uuu to disable all filtering",
+          "Check file type definitions with --type-list"
+        ]
+      },
+      {
+        "issue": "Binary file detection preventing matches",
+        "solutions": [
+          "Use -a/--text to treat files as text",
+          "Use --max-filesize to skip detection on small files",
+          "Check if encoding needs to be specified with -E"
+        ]
+      },
+      {
+        "issue": "Regex pattern not working as expected",
+        "solutions": [
+          "Verify regex syntax for Rust regex (different from grep)",
+          "Try PCRE2 mode (-P) for advanced features",
+          "Use -F for literal string matching",
+          "Test pattern with simple file first"
+        ]
+      },
+      {
+        "issue": "Performance slower than expected",
+        "solutions": [
+          "Check pattern complexity (avoid patterns without literals)",
+          "Use --stats to identify bottlenecks",
+          "Adjust --threads if needed",
+          "Verify not searching too many unnecessary files",
+          "Consider using file type filters"
+        ]
+      },
+      {
+        "issue": "Hidden or system files not searched",
+        "solutions": [
+          "Use --hidden to include hidden files",
+          "Use --no-ignore to disable ignore files",
+          "Use -u/-uu/-uuu for progressive unrestriction"
+        ]
+      },
+      {
+        "issue": "Encoding problems with non-UTF8 files",
+        "solutions": [
+          "Specify encoding with -E/--encoding",
+          "Use --encoding auto for automatic detection",
+          "Check file encoding with file command",
+          "Try latin1 or other common encodings"
+        ]
+      },
+      {
+        "issue": "Context lines not showing properly",
+        "solutions": [
+          "Verify -A/-B/-C flags are set correctly",
+          "Check if --passthru is interfering",
+          "Ensure context separator is visible (--context-separator)"
+        ]
+      }
+    ],
+    "debugging_strategies": [
+      "Use --debug for detailed logging",
+      "Use --files to preview search targets",
+      "Use --type-list to verify type definitions",
+      "Test with simplified pattern first",
+      "Use --stats to measure performance",
+      "Check config file with --debug (shows loaded config)"
+    ]
+  },
+  "integration_examples": {
+    "editor_integration": {
+      "vim": "Use with :grep, set grepprg=rg\\ --vimgrep",
+      "emacs": "Use with rg.el package",
+      "vscode": "Built-in search uses ripgrep",
+      "sublime": "Use ripgrep via plugins"
+    },
+    "shell_integration": {
+      "aliases": "alias rg='rg --smart-case'",
+      "functions": "Shell functions for common patterns",
+      "completion": "Install shell completions for efficiency"
+    },
+    "pipeline_usage": {
+      "find_and_edit": "rg -l 'pattern' | xargs vim",
+      "count_total": "rg -c 'pattern' | awk -F: '{sum+=$2} END {print sum}'",
+      "json_processing": "rg --json 'pattern' | jq '.data.lines.text'"
+    }
+  },
+  "version_info": {
+    "analyzed_version": "15.1.0",
+    "analysis_date": "2025-01-08",
+    "rust_version": "1.85",
+    "edition": "2024"
+  }
+}
