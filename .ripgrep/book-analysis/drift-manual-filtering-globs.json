@@ -1,0 +1,159 @@
+{
+  "chapter_id": "manual-filtering-globs",
+  "chapter_title": "Manual Filtering: Globs",
+  "chapter_file": "book/src/manual-filtering-globs.md",
+  "drift_detected": true,
+  "severity": "critical",
+  "quality_assessment": "Chapter is currently a placeholder and needs complete content",
+  "issues": [
+    {
+      "type": "missing_content",
+      "severity": "high",
+      "section": "Introduction",
+      "description": "Chapter needs introduction explaining what glob patterns are and why they're useful",
+      "should_add": "Explain that -g/--glob provides manual control over file filtering, overriding automatic ignore logic. Mention it complements automatic filtering covered in the dependency chapter.",
+      "fix_suggestion": "Add introduction section explaining glob patterns as a powerful way to include/exclude files, always overriding other ignore logic",
+      "source_reference": "crates/core/flags/defs.rs:2522-2551 (Glob flag doc_long)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "high",
+      "section": "Basic Glob Syntax",
+      "description": "Chapter must document the standard glob wildcards supported",
+      "should_add": "Document wildcards: * (zero or more chars), ? (single char), [ab] (character class), {a,b} (alternatives)",
+      "fix_suggestion": "Add section showing each wildcard with examples: *.rs, file?.txt, [a-z]*, {foo,bar}.txt",
+      "source_reference": "crates/globset/src/lib.rs:66-92 (Syntax documentation)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "high",
+      "section": "Recursive Matching",
+      "description": "Chapter must explain ** for recursive directory matching",
+      "should_add": "Explain ** matches zero or more directories. Show valid placements: **/foo, foo/**, foo/**/bar",
+      "fix_suggestion": "Add section on ** with examples and common pitfall: -g foo won't match foo/bar, need -g 'foo/**'",
+      "source_reference": "crates/globset/src/lib.rs:73-81, crates/core/flags/defs.rs:2544-2550"
+    },
+    {
+      "type": "missing_content",
+      "severity": "high",
+      "section": "Include and Exclude Patterns",
+      "description": "Chapter must document ! prefix for exclusion and precedence rules",
+      "should_add": "Explain ! prefix excludes matching files. Document that later globs take precedence over earlier ones.",
+      "fix_suggestion": "Add section with examples: -g '*.rs' -g '!test*.rs' excludes test files. Show precedence with example.",
+      "source_reference": "crates/core/flags/defs.rs:2530-2531, tests/misc.rs:331-339 (glob_negate test)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "high",
+      "section": "Multiple Glob Patterns",
+      "description": "Chapter must explain that -g can be used multiple times",
+      "should_add": "Document that multiple -g flags can be combined. Each applies independently. Show examples of combining include/exclude.",
+      "fix_suggestion": "Add examples showing multiple -g flags working together to refine file selection",
+      "source_reference": "crates/core/flags/defs.rs:2528-2529"
+    },
+    {
+      "type": "missing_content",
+      "severity": "high",
+      "section": "Brace Expansion",
+      "description": "Chapter must document {a,b} alternative syntax extension",
+      "should_add": "Document brace expansion: {c,d} matches either c or d. Note: empty alternatives like {,c} not supported. Mention this is ripgrep extension beyond standard .gitignore.",
+      "fix_suggestion": "Add section with examples: -g '*.{rs,toml}' matches both Rust and TOML files. Note this extends .gitignore syntax.",
+      "source_reference": "crates/core/flags/defs.rs:2533-2542"
+    },
+    {
+      "type": "missing_content",
+      "severity": "high",
+      "section": "Case-Insensitive Globs",
+      "description": "Chapter must document --iglob and --glob-case-insensitive flags",
+      "should_add": "Document --iglob for single case-insensitive glob, --glob-case-insensitive to make all -g flags case-insensitive",
+      "fix_suggestion": "Add section showing --iglob '*.html' matching .HTML files, and --glob-case-insensitive affecting all globs",
+      "source_reference": "crates/core/flags/defs.rs:3089-3124 (IGlob), 2592-2647 (GlobCaseInsensitive), tests/misc.rs:341-364"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Gitignore Compatibility",
+      "description": "Chapter should explain relationship to .gitignore syntax",
+      "should_add": "Note that glob rules match .gitignore globs with some extensions (brace expansion)",
+      "fix_suggestion": "Add note explaining globs use same syntax as .gitignore files, making patterns familiar to git users",
+      "source_reference": "crates/core/flags/defs.rs:2529"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Practical Examples",
+      "description": "Chapter needs real-world examples showing common use cases",
+      "should_add": "Examples: search only Rust files, search all files in a directory tree, exclude test directories, combine multiple patterns",
+      "fix_suggestion": "Add examples section with: rg -g '*.rs' pattern, rg -g 'src/**' pattern, rg -g '!**/test/**' pattern",
+      "source_reference": "tests/misc.rs:322-364 (glob test cases)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Common Pitfalls",
+      "description": "Chapter should warn about common mistakes",
+      "should_add": "Common mistake: using -g foo to search directory foo (doesn't match foo/bar). Solution: use -g 'foo/**'",
+      "fix_suggestion": "Add troubleshooting section highlighting the directory matching pitfall with clear before/after examples",
+      "source_reference": "crates/core/flags/defs.rs:2544-2550"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Glob Override Behavior",
+      "description": "Chapter should explain that globs override all other ignore logic",
+      "should_add": "Emphasize that -g always overrides .gitignore, .ignore, and other automatic filtering",
+      "fix_suggestion": "Add note that globs provide ultimate control, overriding automatic filtering from dependency chapter",
+      "source_reference": "crates/core/flags/defs.rs:2527-2528"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Short Flag Form",
+      "description": "Chapter should mention -g as short form of --glob",
+      "should_add": "Note that -g is shorthand for --glob",
+      "fix_suggestion": "Show both forms in examples, use -g primarily as it's more concise",
+      "source_reference": "crates/core/flags/defs.rs:2510-2514"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Character Classes",
+      "description": "Chapter should document [...] character class syntax",
+      "should_add": "Document [ab] matches a or b, [!ab] matches any char except a or b. Can use ranges like [a-z].",
+      "fix_suggestion": "Add examples of character classes: [0-9]*, [!.]*, [a-zA-Z]*",
+      "source_reference": "crates/globset/src/lib.rs:84-85"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Escaping Metacharacters",
+      "description": "Chapter should explain how to escape special characters",
+      "should_add": "Document character class notation for escaping: [*] matches literal asterisk",
+      "fix_suggestion": "Add note on escaping with character classes, mention backslash behavior is platform-dependent",
+      "source_reference": "crates/globset/src/lib.rs:86-92"
+    }
+  ],
+  "positive_aspects": [
+    "Placeholder clearly indicates content needs to be added",
+    "Chapter is listed in correct dependency order (after automatic-filtering)"
+  ],
+  "improvement_suggestions": [
+    "Structure chapter progressively: basic wildcards → recursive matching → include/exclude → advanced features",
+    "Include comparison table showing glob syntax and what it matches",
+    "Add side-by-side examples comparing file type filters (-t) vs glob patterns",
+    "Show how globs interact with --files flag to preview what will be searched",
+    "Include performance note: globs evaluated for every file, so specific patterns are better than broad ones",
+    "Link to automatic-filtering chapter to show how these features complement each other",
+    "Add FAQ section addressing common questions about glob precedence and override behavior"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-01-08",
+    "feature_inventory": ".ripgrep/book-analysis/features.json",
+    "topics_covered": [
+      "glob_patterns",
+      "include_exclude",
+      "glob_syntax"
+    ],
+    "validation_focus": "Verify glob pattern examples match current implementation"
+  }
+}
