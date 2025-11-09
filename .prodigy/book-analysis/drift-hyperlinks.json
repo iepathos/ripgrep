@@ -3,103 +3,93 @@
   "chapter_title": "Hyperlinks",
   "chapter_file": "book/src/hyperlinks.md",
   "drift_detected": true,
-  "severity": "medium",
-  "quality_assessment": "Chapter covers the basics well but misses important features like hyperlink aliases and additional variables. Some examples reference non-existent editor schemes.",
+  "severity": "critical",
+  "quality_assessment": "Chapter contains CRITICAL errors in built-in alias definitions that will cause broken hyperlinks for users. The kitty and grep+ aliases have completely wrong URL schemes. The file alias is missing the {host} variable. These errors make the chapter actively harmful as users will copy non-functional formats. Otherwise, the chapter structure and coverage are excellent.",
   "issues": [
     {
-      "type": "missing_content",
-      "severity": "high",
-      "section": "Format Variables",
-      "description": "Chapter only documents {path}, {line}, {column} variables but misses {host} and {wslprefix}",
-      "current_content": "Available variables for hyperlink templates:\n\n- `{path}`: Absolute or relative file path\n- `{line}`: Line number of the match\n- `{column}`: Column number of the match",
-      "should_add": "Document {host} variable for hostname in hyperlinks and {wslprefix} variable for WSL distro prefix (e.g., wsl$/Ubuntu)",
-      "fix_suggestion": "Add two more variables to the Format Variables section:\n- `{host}`: Machine hostname (set via environment)\n- `{wslprefix}`: WSL distro prefix like wsl$/Ubuntu (Windows only)",
-      "source_reference": "crates/printer/src/hyperlink/mod.rs:414-418 (Part::Host, Part::WSLPrefix)"
+      "type": "incorrect_example",
+      "severity": "critical",
+      "section": "Built-in Aliases table",
+      "description": "The 'kitty' alias format is completely wrong - uses non-existent 'kitty+kitten://' scheme instead of 'file://' with fragment",
+      "current_content": "| `kitty` | `kitty+kitten://edit/{path}:{line}:{column}` |",
+      "should_be": "| `kitty` | `file://{host}{path}#{line}` |",
+      "fix_suggestion": "Replace line 36 with: | `kitty` | `file://{host}{path}#{line}` |\n\nThe kitty alias uses RFC 8089 file:// scheme with a fragment identifier (#line) for line numbers, NOT a custom 'kitty+kitten://' scheme.",
+      "source_reference": "crates/printer/src/hyperlink/aliases.rs:34-38"
     },
     {
-      "type": "missing_content",
+      "type": "incorrect_example",
+      "severity": "critical",
+      "section": "Built-in Aliases table",
+      "description": "The 'grep+' alias format is completely wrong - uses non-existent 'x-grepapp://' scheme instead of 'grep+://'",
+      "current_content": "| `grep+` | `x-grepapp://open?file={path}&line={line}&column={column}` |",
+      "should_be": "| `grep+` | `grep+://{path}:{line}` |",
+      "fix_suggestion": "Replace line 37 with: | `grep+` | `grep+://{path}:{line}` |\n\nThe grep+ alias uses a simple 'grep+://' scheme, NOT 'x-grepapp://' with query parameters.",
+      "source_reference": "crates/printer/src/hyperlink/aliases.rs:33"
+    },
+    {
+      "type": "incorrect_example",
       "severity": "high",
-      "section": "Hyperlink Formats",
-      "description": "Chapter doesn't document built-in hyperlink aliases feature",
-      "should_add": "Document that ripgrep supports named aliases like 'vscode', 'default', 'none', 'file', 'kitty', 'macvim', 'textmate', 'vscode-insiders', 'vscodium', 'cursor', 'grep+'",
-      "fix_suggestion": "Add a new section 'Built-in Aliases' before 'Hyperlink Formats' section explaining that instead of full format strings, users can use short aliases. List all available aliases with their expanded formats.",
-      "source_reference": "crates/printer/src/hyperlink/aliases.rs:6-68 (HYPERLINK_PATTERN_ALIASES)"
+      "section": "Built-in Aliases table",
+      "description": "The 'file' alias format is incomplete - missing {host} variable",
+      "current_content": "| `file` | `file://{path}` |",
+      "should_be": "| `file` | `file://{host}{path}` |",
+      "fix_suggestion": "Replace line 29 with: | `file` | `file://{host}{path}` |\n\nThe file alias always includes the {host} variable. This differs from the 'default' alias which only includes {host} on Unix platforms.",
+      "source_reference": "crates/printer/src/hyperlink/aliases.rs:28-31"
     },
     {
       "type": "incorrect_example",
       "severity": "medium",
-      "section": "URL Schemes - Editor Schemes",
-      "description": "Chapter shows IntelliJ, Sublime, and Atom URL schemes but these are not built-in aliases",
-      "current_content": "# IntelliJ/PyCharm/WebStorm\nrg --hyperlink-format 'idea://open?file={path}&line={line}' pattern\n\n# Sublime Text\nrg --hyperlink-format 'subl://open?url=file://{path}&line={line}' pattern\n\n# Atom\nrg --hyperlink-format 'atom://open/?path={path}&line={line}' pattern",
-      "should_be": "Either remove these examples or clearly mark them as user-contributed/community formats (not built-in aliases). Focus on documented built-in aliases.",
-      "fix_suggestion": "Replace IntelliJ, Sublime, Atom examples with actual built-in aliases like 'cursor', 'macvim', 'textmate', 'kitty', 'grep+'. Move unsupported editor schemes to a separate 'Community Formats' or 'Custom Editor Integration' section.",
-      "source_reference": "crates/printer/src/hyperlink/aliases.rs (no aliases exist for IntelliJ, Sublime, or Atom)"
+      "section": "Example 3: Kitty Terminal Editor Integration",
+      "description": "Example comment is misleading - suggests kitty opens in 'built-in editor' but it uses file:// scheme",
+      "current_content": "# Open results in Kitty's built-in editor\nrg --hyperlink-format kitty pattern",
+      "should_be": "# Open results using kitty's file:// handler (with line number fragment)\nrg --hyperlink-format kitty pattern",
+      "fix_suggestion": "Replace line 201 comment to accurately describe that kitty uses RFC 8089 file:// scheme with fragment identifier for line numbers, not a special editor protocol",
+      "source_reference": "crates/printer/src/hyperlink/aliases.rs:34-38"
     },
     {
-      "type": "incomplete_explanation",
+      "type": "incorrect_example",
       "severity": "medium",
-      "section": "Hyperlink Formats - default",
-      "description": "Chapter mentions 'default' format but doesn't explain it's platform-aware",
-      "current_content": "# Default format (file path only)\nrg --hyperlink-format default pattern",
-      "should_be": "Explain that 'default' is an alias that expands differently per platform:\n- Unix/Linux/macOS: file://{host}{path}\n- Windows: file://{path}",
-      "fix_suggestion": "Add explanation: 'The default alias uses RFC 8089 file:// scheme and is platform-aware. On Unix-like systems it includes the hostname ({host}), while on Windows it omits it for compatibility.'",
-      "source_reference": "crates/printer/src/hyperlink/aliases.rs:12-26 (default alias with platform-specific formats)"
+      "section": "Custom Editor Integration examples",
+      "description": "IntelliJ, Sublime, and Neovim examples suggest these are viable formats but may not work without URL scheme registration",
+      "current_content": "# IntelliJ/PyCharm/WebStorm (community format)\nrg --hyperlink-format 'idea://open?file={path}&line={line}' pattern\n\n# Sublime Text (community format)\nrg --hyperlink-format 'subl://open?url=file://{path}&line={line}' pattern\n\n# Neovim remote (community format)\nrg --hyperlink-format 'nvim://edit/{path}:+{line}' pattern",
+      "should_be": "Add stronger warning that these are untested community formats requiring manual URL scheme registration",
+      "fix_suggestion": "Add prominent note before line 153: 'WARNING: These are community-suggested formats and may require custom URL scheme handlers to be registered with your OS. They are not built into ripgrep or guaranteed to work.'",
+      "source_reference": "crates/printer/src/hyperlink/aliases.rs (no built-in aliases exist for these editors)"
     },
     {
-      "type": "missing_content",
+      "type": "unclear_content",
       "severity": "low",
-      "section": "URL Schemes",
-      "description": "Chapter doesn't mention 'none' alias for explicitly disabling hyperlinks",
-      "should_add": "Document the 'none' alias which can be used to explicitly disable hyperlinks (useful for overriding config files)",
-      "fix_suggestion": "Add to Built-in Aliases section: 'none' - Explicitly disable hyperlinks (useful to override config file settings)",
-      "source_reference": "crates/printer/src/hyperlink/aliases.rs:45 (none alias)"
-    },
-    {
-      "type": "missing_content",
-      "severity": "low",
-      "section": "Examples",
-      "description": "Chapter doesn't show examples using built-in aliases",
-      "should_add": "Add examples showing usage of built-in aliases like 'vscode', 'kitty', 'file', etc.",
-      "fix_suggestion": "Add Example 1b: Using built-in alias for VS Code:\n```bash\nrg --hyperlink-format vscode TODO\n```\nThis is equivalent to the full format but more concise.",
-      "source_reference": "crates/printer/src/hyperlink/mod.rs:99-116 (FromStr implementation supports alias lookup)"
-    },
-    {
-      "type": "incomplete_explanation",
-      "severity": "low",
-      "section": "Format Variables",
-      "description": "Chapter doesn't explain how to set {host} and {wslprefix} environment variables",
-      "should_add": "Explain that {host} and {wslprefix} are set via HyperlinkEnvironment (typically by ripgrep automatically, or via grep-cli crate's hostname function)",
-      "fix_suggestion": "Add note: 'The {host} variable is automatically populated by ripgrep from your system hostname. The {wslprefix} variable is set on Windows when running in WSL.'",
-      "source_reference": "crates/printer/src/hyperlink/mod.rs:250-282 (HyperlinkEnvironment struct and methods)"
-    },
-    {
-      "type": "missing_content",
-      "severity": "low",
-      "section": "Advanced Usage",
-      "description": "Chapter doesn't document variable escaping syntax ({{ and }})",
-      "should_add": "Document how to include literal { and } characters in hyperlink formats using {{ and }}",
-      "fix_suggestion": "Add subsection 'Escaping Special Characters': To include literal braces in your hyperlink format, use double braces: `{{` for `{` and `}}` for `}`",
-      "source_reference": "crates/printer/src/hyperlink/mod.rs:133-145 (escape handling in FromStr implementation)"
+      "section": "Built-in Aliases table note",
+      "description": "The difference between 'file' and 'default' aliases could be clearer",
+      "current_content": "**The `default` alias** is platform-aware and expands differently per platform:\n- Unix/Linux/macOS: `file://{host}{path}` (includes hostname)\n- Windows: `file://{path}` (omits hostname for compatibility)\n\nThe default alias follows RFC 8089 file:// URI specification and is the recommended choice for general use.",
+      "should_be": "Add comparison: 'Note: The `file` alias ALWAYS includes {host}, while `default` only includes it on Unix platforms. Use `default` for maximum cross-platform compatibility.'",
+      "fix_suggestion": "After line 44, add: 'The `file` alias differs from `default` by always including the hostname, even on Windows. Use `default` for cross-platform compatibility.'",
+      "source_reference": "crates/printer/src/hyperlink/aliases.rs:12-31"
     }
   ],
   "positive_aspects": [
-    "Clear introduction explaining what hyperlinks are and when they're useful",
-    "Good terminal compatibility list covering major terminal emulators",
-    "Helpful troubleshooting section with practical solutions",
-    "Security considerations section is valuable",
-    "Good examples of file:// scheme usage",
-    "Explains configuration file setup",
-    "Covers conditional hyperlink usage in scripts"
+    "Comprehensive coverage of hyperlink functionality",
+    "Well-organized structure from basics to advanced usage",
+    "Excellent troubleshooting section with practical solutions",
+    "Good security considerations section",
+    "All format variables ({path}, {line}, {column}, {host}, {wslprefix}) are correctly documented",
+    "Platform-aware 'default' alias is well explained",
+    "Terminal compatibility section is thorough and up-to-date",
+    "Escaping special characters (double braces) is documented",
+    "Configuration file integration is explained",
+    "Best practices section is helpful",
+    "The 'none' alias is correctly documented",
+    "Most built-in aliases are included in the table"
   ],
   "improvement_suggestions": [
-    "Add comprehensive 'Built-in Aliases' section documenting all supported aliases",
-    "Update editor integration examples to focus on built-in aliases rather than unverified custom schemes",
-    "Add example showing the difference between 'default' and 'file' aliases",
-    "Document {host} and {wslprefix} variables with usage examples",
-    "Add section on variable escaping ({{ and }})",
-    "Consider adding a quick reference table mapping alias names to their expanded formats",
-    "Add example showing how 'none' alias can override config file settings",
-    "Clarify which examples are built-in vs. community/custom formats"
+    "CRITICAL: Fix the kitty and grep+ alias formats immediately - these are wrong and will break user workflows",
+    "Add a subsection explaining the different URL scheme approaches (file:// variants, editor-specific schemes, custom schemes)",
+    "Add a note about kitty's clever use of RFC 8089 fragment identifiers for line numbers",
+    "Consider adding a verification command showing how users can see all built-in aliases (if such command exists)",
+    "Add link to grep+ application documentation (https://github.com/misaki-web/grepp) per source code comment",
+    "Explain why Windows omits hostname in the 'default' alias (compatibility reasons)",
+    "Add a 'Testing Your Hyperlinks' subsection showing how to verify hyperlinks work in your terminal",
+    "Consider adding a comparison table: which aliases include line numbers, column numbers, hostname, etc."
   ],
   "metadata": {
     "analyzed_at": "2025-11-08",
@@ -107,13 +97,27 @@
     "topics_covered": [
       "hyperlink_format",
       "osc8_sequences",
-      "terminal_support"
+      "terminal_support",
+      "built_in_aliases",
+      "custom_formats",
+      "variable_interpolation",
+      "troubleshooting",
+      "security"
     ],
     "validation_focus": "Ensure hyperlink format syntax and terminal compatibility are documented",
+    "source_code_verified": true,
     "source_files_referenced": [
       "crates/printer/src/hyperlink/mod.rs",
       "crates/printer/src/hyperlink/aliases.rs",
       "crates/core/flags/defs.rs"
-    ]
+    ],
+    "aliases_verified": 11,
+    "aliases_correct": 8,
+    "aliases_incorrect": 3,
+    "critical_errors_found": 2,
+    "high_priority_issues": 1,
+    "total_issues": 6,
+    "chapter_quality_score": "60/100",
+    "user_impact": "HIGH - Incorrect alias formats will cause broken hyperlinks and user frustration"
   }
 }
