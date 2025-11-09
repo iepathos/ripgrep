@@ -90,9 +90,25 @@ Change the separator between match groups:
 # Use custom separator
 rg -C 2 --context-separator '=====' pattern
 
-# Use empty separator
+# Use empty separator (still shows line breaks)
 rg -C 2 --context-separator '' pattern
+
+# Use escape sequences
+rg -C 2 --context-separator '\t===\t' pattern
 ```
+
+### Disabling Separators Completely
+
+To remove all separation between match groups (including line breaks):
+
+```bash
+# Completely disable context separators
+rg -C 2 --no-context-separator pattern
+```
+
+The difference between empty separator and `--no-context-separator`:
+- `--context-separator ''` removes the `--` separator but keeps a blank line between groups
+- `--no-context-separator` removes all separation, making match groups flow continuously
 
 ## Line Number Display
 
@@ -107,6 +123,27 @@ rg -n -C 2 pattern
 
 # Without line numbers
 rg -N -C 2 pattern
+```
+
+### Customizing Field Separators
+
+The separator between line numbers and content can be customized:
+
+```bash
+# Change context line field separator (default is '-')
+rg -C 2 --field-context-separator '|' pattern
+
+# Change match line field separator (default is ':')
+rg -C 2 --field-match-separator '::' pattern
+
+# Combine both for custom formatting
+rg -C 2 --field-context-separator ' | ' --field-match-separator ' > ' pattern
+```
+
+This produces output like:
+```
+file.txt 42 > matching line
+file.txt 43 | context line after
 ```
 
 ## Combining with Other Options
@@ -131,6 +168,20 @@ rg -C 3 -tpy 'def '
 # Show context with replacement preview
 rg -C 2 -r 'new_value' 'old_value'
 ```
+
+### Context vs Passthru
+
+The `--passthru` flag shows ALL lines from files that contain matches, not just context around matches:
+
+```bash
+# Show all lines from files with matches
+rg --passthru pattern
+
+# Context flags override passthru behavior
+rg --passthru -C 2 pattern  # Only shows 2 lines of context, not all lines
+```
+
+Use `--passthru` when you want to see the entire file with matches highlighted. Use `-A/-B/-C` when you only need specific context around matches.
 
 ## Examples
 
@@ -162,6 +213,16 @@ rg -C 3 'database_url' config/
 rg -C 2 --context-separator '─────────────' 'TODO'
 ```
 
+### Example 5: Disabling Context Separators
+
+```bash
+# Remove all separators between match groups for continuous output
+rg -C 3 --no-context-separator 'import\|use'
+
+# Useful when piping to other tools that don't expect separators
+rg -C 2 --no-context-separator pattern | grep specific_context
+```
+
 ## Best Practices
 
 - Start with `-C 2` for general purpose context
@@ -169,7 +230,38 @@ rg -C 2 --context-separator '─────────────' 'TODO'
 - Use `-B` when you care about what precedes (e.g., comments, setup)
 - Increase context size for complex code, decrease for simple searches
 - Use custom separators to make output more readable
-- Combine with `--heading` for clearer file organization
+- Combine with `--heading` for clearer file organization in multi-file searches
+
+### Using --heading with Context
+
+The `--heading` flag groups matches by filename, printing each filename once as a header instead of on every line. This makes context blocks much easier to read in multi-file searches:
+
+Without `--heading`:
+```
+src/main.rs:10:matching line
+src/main.rs-11-context line
+src/main.rs-12-context line
+--
+src/utils.rs:5:matching line
+src/utils.rs-6-context line
+```
+
+With `--heading`:
+```
+src/main.rs
+10:matching line
+11-context line
+12-context line
+
+src/utils.rs
+5:matching line
+6-context line
+```
+
+Enable it for cleaner context output:
+```bash
+rg -C 3 --heading pattern
+```
 
 ## Performance Considerations
 
@@ -182,7 +274,34 @@ rg -C 2 --context-separator '─────────────' 'TODO'
 
 ### Overlapping Matches
 
-When matches are close together, their context may overlap. ripgrep handles this gracefully by not duplicating lines.
+When matches are close together and their context windows overlap, ripgrep merges them into a single contiguous block without duplicating lines or adding separators between them.
+
+For example, with `-C 2` (2 lines of context):
+```
+10: first match
+11- context
+12- context
+--
+13- context
+14- context
+15: second match (3 lines after first match)
+16- context
+17- context
+```
+
+Since the context windows overlap (lines 13-14 appear in both contexts), ripgrep merges them:
+```
+10: first match
+11- context
+12- context
+13- context
+14- context
+15: second match
+16- context
+17- context
+```
+
+No separator appears because the matches share context.
 
 ### No Separator Appearing
 
