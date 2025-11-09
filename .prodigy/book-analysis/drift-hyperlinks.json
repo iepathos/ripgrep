@@ -1,0 +1,119 @@
+{
+  "chapter_id": "hyperlinks",
+  "chapter_title": "Hyperlinks",
+  "chapter_file": "book/src/hyperlinks.md",
+  "drift_detected": true,
+  "severity": "medium",
+  "quality_assessment": "Chapter covers the basics well but misses important features like hyperlink aliases and additional variables. Some examples reference non-existent editor schemes.",
+  "issues": [
+    {
+      "type": "missing_content",
+      "severity": "high",
+      "section": "Format Variables",
+      "description": "Chapter only documents {path}, {line}, {column} variables but misses {host} and {wslprefix}",
+      "current_content": "Available variables for hyperlink templates:\n\n- `{path}`: Absolute or relative file path\n- `{line}`: Line number of the match\n- `{column}`: Column number of the match",
+      "should_add": "Document {host} variable for hostname in hyperlinks and {wslprefix} variable for WSL distro prefix (e.g., wsl$/Ubuntu)",
+      "fix_suggestion": "Add two more variables to the Format Variables section:\n- `{host}`: Machine hostname (set via environment)\n- `{wslprefix}`: WSL distro prefix like wsl$/Ubuntu (Windows only)",
+      "source_reference": "crates/printer/src/hyperlink/mod.rs:414-418 (Part::Host, Part::WSLPrefix)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "high",
+      "section": "Hyperlink Formats",
+      "description": "Chapter doesn't document built-in hyperlink aliases feature",
+      "should_add": "Document that ripgrep supports named aliases like 'vscode', 'default', 'none', 'file', 'kitty', 'macvim', 'textmate', 'vscode-insiders', 'vscodium', 'cursor', 'grep+'",
+      "fix_suggestion": "Add a new section 'Built-in Aliases' before 'Hyperlink Formats' section explaining that instead of full format strings, users can use short aliases. List all available aliases with their expanded formats.",
+      "source_reference": "crates/printer/src/hyperlink/aliases.rs:6-68 (HYPERLINK_PATTERN_ALIASES)"
+    },
+    {
+      "type": "incorrect_example",
+      "severity": "medium",
+      "section": "URL Schemes - Editor Schemes",
+      "description": "Chapter shows IntelliJ, Sublime, and Atom URL schemes but these are not built-in aliases",
+      "current_content": "# IntelliJ/PyCharm/WebStorm\nrg --hyperlink-format 'idea://open?file={path}&line={line}' pattern\n\n# Sublime Text\nrg --hyperlink-format 'subl://open?url=file://{path}&line={line}' pattern\n\n# Atom\nrg --hyperlink-format 'atom://open/?path={path}&line={line}' pattern",
+      "should_be": "Either remove these examples or clearly mark them as user-contributed/community formats (not built-in aliases). Focus on documented built-in aliases.",
+      "fix_suggestion": "Replace IntelliJ, Sublime, Atom examples with actual built-in aliases like 'cursor', 'macvim', 'textmate', 'kitty', 'grep+'. Move unsupported editor schemes to a separate 'Community Formats' or 'Custom Editor Integration' section.",
+      "source_reference": "crates/printer/src/hyperlink/aliases.rs (no aliases exist for IntelliJ, Sublime, or Atom)"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "medium",
+      "section": "Hyperlink Formats - default",
+      "description": "Chapter mentions 'default' format but doesn't explain it's platform-aware",
+      "current_content": "# Default format (file path only)\nrg --hyperlink-format default pattern",
+      "should_be": "Explain that 'default' is an alias that expands differently per platform:\n- Unix/Linux/macOS: file://{host}{path}\n- Windows: file://{path}",
+      "fix_suggestion": "Add explanation: 'The default alias uses RFC 8089 file:// scheme and is platform-aware. On Unix-like systems it includes the hostname ({host}), while on Windows it omits it for compatibility.'",
+      "source_reference": "crates/printer/src/hyperlink/aliases.rs:12-26 (default alias with platform-specific formats)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "URL Schemes",
+      "description": "Chapter doesn't mention 'none' alias for explicitly disabling hyperlinks",
+      "should_add": "Document the 'none' alias which can be used to explicitly disable hyperlinks (useful for overriding config files)",
+      "fix_suggestion": "Add to Built-in Aliases section: 'none' - Explicitly disable hyperlinks (useful to override config file settings)",
+      "source_reference": "crates/printer/src/hyperlink/aliases.rs:45 (none alias)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Examples",
+      "description": "Chapter doesn't show examples using built-in aliases",
+      "should_add": "Add examples showing usage of built-in aliases like 'vscode', 'kitty', 'file', etc.",
+      "fix_suggestion": "Add Example 1b: Using built-in alias for VS Code:\n```bash\nrg --hyperlink-format vscode TODO\n```\nThis is equivalent to the full format but more concise.",
+      "source_reference": "crates/printer/src/hyperlink/mod.rs:99-116 (FromStr implementation supports alias lookup)"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "Format Variables",
+      "description": "Chapter doesn't explain how to set {host} and {wslprefix} environment variables",
+      "should_add": "Explain that {host} and {wslprefix} are set via HyperlinkEnvironment (typically by ripgrep automatically, or via grep-cli crate's hostname function)",
+      "fix_suggestion": "Add note: 'The {host} variable is automatically populated by ripgrep from your system hostname. The {wslprefix} variable is set on Windows when running in WSL.'",
+      "source_reference": "crates/printer/src/hyperlink/mod.rs:250-282 (HyperlinkEnvironment struct and methods)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Advanced Usage",
+      "description": "Chapter doesn't document variable escaping syntax ({{ and }})",
+      "should_add": "Document how to include literal { and } characters in hyperlink formats using {{ and }}",
+      "fix_suggestion": "Add subsection 'Escaping Special Characters': To include literal braces in your hyperlink format, use double braces: `{{` for `{` and `}}` for `}`",
+      "source_reference": "crates/printer/src/hyperlink/mod.rs:133-145 (escape handling in FromStr implementation)"
+    }
+  ],
+  "positive_aspects": [
+    "Clear introduction explaining what hyperlinks are and when they're useful",
+    "Good terminal compatibility list covering major terminal emulators",
+    "Helpful troubleshooting section with practical solutions",
+    "Security considerations section is valuable",
+    "Good examples of file:// scheme usage",
+    "Explains configuration file setup",
+    "Covers conditional hyperlink usage in scripts"
+  ],
+  "improvement_suggestions": [
+    "Add comprehensive 'Built-in Aliases' section documenting all supported aliases",
+    "Update editor integration examples to focus on built-in aliases rather than unverified custom schemes",
+    "Add example showing the difference between 'default' and 'file' aliases",
+    "Document {host} and {wslprefix} variables with usage examples",
+    "Add section on variable escaping ({{ and }})",
+    "Consider adding a quick reference table mapping alias names to their expanded formats",
+    "Add example showing how 'none' alias can override config file settings",
+    "Clarify which examples are built-in vs. community/custom formats"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-08",
+    "feature_inventory": ".prodigy/book-analysis/features.json",
+    "topics_covered": [
+      "hyperlink_format",
+      "osc8_sequences",
+      "terminal_support"
+    ],
+    "validation_focus": "Ensure hyperlink format syntax and terminal compatibility are documented",
+    "source_files_referenced": [
+      "crates/printer/src/hyperlink/mod.rs",
+      "crates/printer/src/hyperlink/aliases.rs",
+      "crates/core/flags/defs.rs"
+    ]
+  }
+}
