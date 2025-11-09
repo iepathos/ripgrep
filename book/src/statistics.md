@@ -43,7 +43,7 @@ Note that time values are formatted with 6 decimal places of precision.
 ### Match Statistics
 
 - **Matches**: Total number of pattern matches found
-- **Matched lines**: Number of unique lines containing matches
+- **Matched lines**: Number of lines containing matches. With multiline patterns (`--multiline` or `-U`), this counts all lines that participate in or are part of any match, not just the first line of each match.
 - **Files contained matches**: Count of files with at least one match
 
 ### Search Scope
@@ -56,6 +56,8 @@ Note that time values are formatted with 6 decimal places of precision.
 
 - **Seconds spent searching**: Actual search time across all threads
 - **Seconds total**: Wall-clock time for the entire operation
+
+The `--stats` flag itself has minimal performance overhead since ripgrep tracks these metrics internally regardless. Enabling `--stats` only adds the cost of formatting and printing the final summary.
 
 ## Understanding the Metrics
 
@@ -82,11 +84,15 @@ With parallel search:
 - **Searching time**: Sum of time across all threads (can exceed wall time)
 - **Total time**: Actual elapsed time
 
+The "seconds spent searching" metric accumulates CPU time across all threads. With parallel search, this will typically exceed wall-clock time. A ratio close to your thread count indicates good parallelization. For example, if you have 4 threads and the ratio is ~4x, your search is efficiently using all threads.
+
 Example:
 ```
 0.400000 seconds spent searching  (4 threads × 0.1s each)
 0.100000 seconds total  (wall-clock time)
 ```
+
+In this case, the 4:1 ratio (0.4s / 0.1s = 4) shows that all 4 threads were fully utilized during the search.
 
 ## Use Cases
 
@@ -139,7 +145,7 @@ rg --stats -tjs 'import'
 rg --stats -q pattern
 ```
 
-Note: When combining `--stats` with `--quiet`, ripgrep will search all files completely to collect accurate statistics, even though `--quiet` alone would normally exit after the first match.
+Note: When combining `--stats` with `--quiet`, ripgrep will search all files completely to collect accurate statistics, even though `--quiet` alone would normally exit after the first match. This means `--stats` disables `--quiet`'s early-exit optimization. If you're just checking for pattern existence in a large codebase, using both flags together will be much slower than `--quiet` alone, as it must search all files to completion.
 
 ### Statistics in JSON
 
@@ -157,6 +163,7 @@ This produces a summary message with `"type": "summary"` containing a `stats` ob
   "type": "summary",
   "data": {
     "elapsed_total": {
+      "human": "0.001000s",
       "secs": 0,
       "nanos": 1000000
     },
@@ -175,6 +182,8 @@ This produces a summary message with `"type": "summary"` containing a `stats` ob
   }
 }
 ```
+
+The `elapsed_total` object includes a `human` field with a formatted time string for readability, in addition to the precise `secs` and `nanos` fields for programmatic use.
 
 ## Examples
 
@@ -245,7 +254,19 @@ If statistics show:
 
 ## Statistics in Scripts
 
-Capture statistics for reporting:
+Capture statistics for reporting.
+
+For production scripts, prefer JSON output for reliable parsing:
+
+```bash
+#!/bin/bash
+OUTPUT=$(rg --json --stats 'pattern' | tail -1)
+MATCHES=$(echo "$OUTPUT" | jq '.data.stats.matches')
+FILES=$(echo "$OUTPUT" | jq '.data.stats.searches_with_match')
+echo "Found $MATCHES matches across $FILES files"
+```
+
+Alternatively, you can parse text output for simpler cases:
 
 ```bash
 #!/bin/bash
