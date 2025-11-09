@@ -1,0 +1,105 @@
+{
+  "chapter_id": "context-lines",
+  "chapter_title": "Context Lines",
+  "chapter_file": "book/src/context-lines.md",
+  "drift_detected": true,
+  "severity": "medium",
+  "quality_assessment": "Chapter covers the basics well but is missing several important features and edge cases that users may encounter",
+  "issues": [
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Context Separators",
+      "description": "The --no-context-separator flag is not documented, but exists in the codebase",
+      "should_add": "Document --no-context-separator flag which completely disables context separators (including line breaks)",
+      "fix_suggestion": "Add subsection explaining --no-context-separator as an alternative to empty string separator. Explain the difference: empty string still adds line breaks, --no-context-separator removes them completely.",
+      "source_reference": "crates/core/flags/defs.rs:1147-1148, 1167-1168"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Line Number Display",
+      "description": "Field separators for context lines are not documented",
+      "should_add": "Document --field-context-separator which controls the separator between line number and context line content (default is '-')",
+      "fix_suggestion": "Add explanation that context lines use '-' as field separator while matching lines use ':'. Mention --field-context-separator and --field-match-separator flags for customization.",
+      "source_reference": "features.json:183-184, crates/core/flags/defs.rs:FieldContextSeparator, FieldMatchSeparator"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Basic Context Options",
+      "description": "Escape sequences in context separator are not demonstrated with examples",
+      "current_content": "The chapter mentions escape sequences can be used but shows no examples",
+      "should_add": "Show example using escape sequences like \\x7F or \\t in context separator",
+      "fix_suggestion": "Add example: rg -C 2 --context-separator '\\t===\\t' pattern",
+      "source_reference": "crates/core/flags/defs.rs:1163-1164"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Combining with Other Options",
+      "description": "The --passthru flag and its interaction with context flags is not explained",
+      "should_add": "Explain that --passthru shows ALL lines from files with matches, and context flags override --passthru",
+      "fix_suggestion": "Add section 'Context vs Passthru' explaining --passthru behavior and how -A/-B/-C override it",
+      "source_reference": "crates/core/flags/defs.rs:181-182, features.json:20"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "Troubleshooting > Overlapping Matches",
+      "description": "The chapter mentions overlapping context but doesn't explain the behavior clearly",
+      "current_content": "When matches are close together, their context may overlap. ripgrep handles this gracefully by not duplicating lines.",
+      "should_be": "When matches are close together and their context windows overlap, ripgrep merges them into a single contiguous block without duplicating lines or adding separators between them.",
+      "fix_suggestion": "Expand explanation with a concrete example showing two matches 3 lines apart with -C 2, demonstrating how the overlapping context is merged",
+      "source_reference": "crates/searcher/src/searcher/core.rs (context handling logic)"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "Best Practices",
+      "description": "The chapter suggests combining with --heading but doesn't explain what this does",
+      "current_content": "- Combine with `--heading` for clearer file organization",
+      "should_be": "Explain that --heading groups matches by filename (printed once as a header) instead of repeating filename on each line, which makes context blocks easier to read in multi-file searches",
+      "fix_suggestion": "Expand best practice to explain --heading mode and show a before/after example of context output with and without --heading",
+      "source_reference": "features.json:176, crates/core/flags/defs.rs:Heading"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Examples",
+      "description": "No example showing how context separators can be completely disabled",
+      "should_add": "Add example demonstrating --no-context-separator usage",
+      "fix_suggestion": "Add Example 5: Disabling Context Separators - Show search with --no-context-separator to remove all separation between match groups",
+      "source_reference": "crates/core/flags/defs.rs:1147-1148"
+    }
+  ],
+  "positive_aspects": [
+    "Clear, logical structure progressing from basic to advanced usage",
+    "Good coverage of -A/-B/-C flags with both short and long forms",
+    "Helpful examples showing practical use cases",
+    "Good explanation of line number display format differences (: vs -)",
+    "Performance considerations section is accurate",
+    "Troubleshooting section addresses common questions",
+    "Best practices provide actionable guidance"
+  ],
+  "improvement_suggestions": [
+    "Add visual examples showing actual output for each flag combination",
+    "Include example showing overlapping context behavior with concrete line numbers",
+    "Add section on context with --heading mode showing the visual difference",
+    "Show more examples of custom separators including escape sequences",
+    "Add example demonstrating field separator customization",
+    "Consider adding a reference table summarizing all context-related flags",
+    "Add cross-references to output-formats chapter for related formatting options"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-08",
+    "feature_inventory": ".prodigy/book-analysis/features.json",
+    "topics_covered": [
+      "after_context",
+      "before_context",
+      "context",
+      "context_separators"
+    ],
+    "validation_focus": "Ensure -A/-B/-C flags and context separator options are explained with examples"
+  }
+}
