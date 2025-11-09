@@ -3,131 +3,115 @@
   "chapter_title": "Basics",
   "chapter_file": "book/src/basics.md",
   "drift_detected": true,
-  "severity": "critical",
-  "quality_assessment": "Chapter is currently a placeholder with no content. All fundamental basic usage documentation is missing.",
+  "severity": "medium",
+  "quality_assessment": "Chapter provides excellent introductory content with accurate examples, but misses some important features available in ripgrep that would benefit beginners",
   "issues": [
     {
       "type": "missing_content",
-      "severity": "critical",
-      "section": "Entire Chapter",
-      "description": "Chapter is a placeholder with no actual content beyond a header",
-      "current_content": "# Basics\n\nThis chapter covers the basic usage of ripgrep, including pattern matching, literal strings, and regular expressions.\n\n*This content will be populated by the documentation drift detection workflow.*",
-      "should_add": "Complete chapter content covering pattern matching, literal strings, regular expressions, and output formats with working examples",
-      "fix_suggestion": "Populate the entire chapter with foundational ripgrep usage documentation",
-      "source_reference": "features.json:core_cli, features.json:regex_support, features.json:output_formatting"
-    },
-    {
-      "type": "missing_content",
-      "severity": "critical",
-      "section": "Pattern Matching",
-      "description": "No explanation of basic pattern matching syntax and usage",
-      "should_add": "Basic pattern matching examples: simple searches, how ripgrep interprets patterns by default, pattern specification with -e/--regexp flag",
-      "fix_suggestion": "Add section explaining basic pattern syntax with examples like 'rg TODO', 'rg -e pattern1 -e pattern2', and 'rg -f patterns.txt'",
-      "source_reference": "features.json:core_cli:capabilities[0] (Pattern specification -e/--regexp, -f/--file)"
-    },
-    {
-      "type": "missing_content",
-      "severity": "critical",
-      "section": "Literal Strings",
-      "description": "No documentation of fixed string search mode for literal matching",
-      "should_add": "Fixed string search documentation explaining when and how to use -F/--fixed-strings flag",
-      "fix_suggestion": "Add section on literal string matching: 'rg -F \"function()\"' vs 'rg \"function\\(\\)\"', explain when to use -F to avoid regex interpretation, show performance benefits",
-      "source_reference": "features.json:core_cli:capabilities[1] (Fixed string search -F/--fixed-strings)"
-    },
-    {
-      "type": "missing_content",
-      "severity": "critical",
+      "severity": "medium",
       "section": "Regular Expressions",
-      "description": "No introduction to regex syntax supported by ripgrep",
-      "should_add": "Regular expression basics for ripgrep: Rust regex syntax overview, common patterns, basic metacharacters, character classes, quantifiers",
-      "fix_suggestion": "Add comprehensive regex introduction: basic metacharacters (., *, +, ?, ^, $), character classes ([a-z], \\d, \\w, \\s), quantifiers, groups, escaping special characters. Include examples: 'rg \"[0-9]+\"', 'rg \"\\bword\\b\"', 'rg \"error.*failed\"'",
-      "source_reference": "features.json:regex_support (Rust regex syntax, Unicode support, case folding)"
+      "description": "Chapter doesn't explain regex engine selection with --engine flag",
+      "should_add": "Document --engine flag options: default (Rust regex-automata), pcre2, auto",
+      "fix_suggestion": "Add subsection 'Regex Engine Selection' explaining default DFA-based engine vs PCRE2, with --engine flag usage and when to switch engines",
+      "source_reference": "features.json:core_cli.flag_categories.search.key_flags includes --engine"
     },
     {
       "type": "missing_content",
-      "severity": "critical",
+      "severity": "medium",
+      "section": "Regular Expressions",
+      "description": "Named capture groups syntax not documented despite being supported",
+      "current_content": "# () creates a capturing group\nrg \"(error|warning): (.+)\"",
+      "should_be": "Show both numbered and named capture syntax: (?P<name>...)",
+      "fix_suggestion": "Add example showing named captures: rg '(?P<level>error|warning): (?P<msg>.+)' to demonstrate the syntax available",
+      "source_reference": "features.json:regex_support.regex_engines.rust_regex.supported_syntax includes named captures (?P<name>...)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Regular Expressions",
+      "description": "Default regex engine limitations not explained (no backreferences, possessive quantifiers, atomic groups)",
+      "should_add": "Add note explaining what regex features require PCRE2: backreferences, lookahead/lookbehind, possessive quantifiers, atomic groups",
+      "fix_suggestion": "Add 'Default Engine Limitations' subsection explaining: 'ripgrep's default Rust regex engine doesn't support backreferences, lookahead/lookbehind, or atomic groups. Use -P/--pcre2 for these features.'",
+      "source_reference": "features.json:regex_support.regex_engines.rust_regex.limitations"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Regular Expressions",
+      "description": "Multiline mode flag -U mentioned but not --multiline-dotall flag",
+      "should_add": "Document --multiline-dotall flag which makes . match newlines in multiline mode",
+      "fix_suggestion": "In a future 'Advanced Patterns' chapter, explain --multiline-dotall usage with -U flag",
+      "source_reference": "features.json:core_cli.flag_categories.search.key_flags includes --multiline-dotall"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "medium",
+      "section": "Regular Expressions - Predefined Character Classes",
+      "description": "Unicode character classes mentioned briefly but comprehensive list not provided",
+      "current_content": "# \\d matches any digit [0-9]\nrg \"\\d+\"",
+      "should_be": "Expand to show Unicode character classes: \\p{L} (letters), \\p{N} (numbers), \\p{P} (punctuation), \\p{Ll} (lowercase), \\p{Lu} (uppercase), \\P{...} for negation",
+      "fix_suggestion": "Add subsection 'Unicode Character Classes' with table showing common \\p{} classes and examples like: rg '\\p{L}+' for Unicode letters",
+      "source_reference": "features.json:regex_support.unicode_support.character_classes"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "Regular Expressions",
+      "description": "PCRE2 mentioned only in passing, but not when/why to use it",
+      "current_content": "Brief mention in Groups and Alternation section",
+      "should_be": "Dedicated subsection explaining -P/--pcre2 flag, when to use it (backreferences, lookahead/lookbehind), and performance tradeoffs",
+      "fix_suggestion": "Add 'PCRE2 Engine' subsection explaining: 'Use -P flag for Perl-compatible regex features like backreferences (\\1), lookahead (?=...), and lookbehind (?<=...). Example: rg -P \"(\\w+)\\s+\\1\" finds repeated words.'",
+      "source_reference": "features.json:regex_support.regex_engines.pcre2"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
       "section": "Output Format",
-      "description": "No documentation of output format options and how results are displayed",
-      "should_add": "Output format basics: default output format, line numbers, file names, colors, basic formatting options",
-      "fix_suggestion": "Add section on output formatting: default grep-like output, -n/--line-number for line numbers, --column for column numbers, color output (--color), heading vs non-heading modes. Show examples of what output looks like with different options",
-      "source_reference": "features.json:output_formatting (Standard grep-like output, line numbers, colors, heading mode)"
-    },
-    {
-      "type": "missing_content",
-      "severity": "high",
-      "section": "Case Sensitivity",
-      "description": "No documentation of case sensitivity control options",
-      "should_add": "Case sensitivity options: -i/--ignore-case, -s/--case-sensitive, -S/--smart-case",
-      "fix_suggestion": "Add section on case sensitivity: default behavior (case-sensitive), -i for case-insensitive search, -S/--smart-case (case-insensitive if pattern is all lowercase), examples showing difference between 'rg TODO', 'rg -i todo', 'rg -S Todo'",
-      "source_reference": "features.json:core_cli:capabilities[3] (Case sensitivity control)"
-    },
-    {
-      "type": "missing_content",
-      "severity": "high",
-      "section": "Word Boundaries",
-      "description": "No documentation of word boundary matching options",
-      "should_add": "Word boundary matching: -w/--word-regexp for whole word matches, -x/--line-regexp for whole line matches",
-      "fix_suggestion": "Add section on boundary matching: -w to match whole words only ('rg -w test' won't match 'testing'), -x to match entire lines only. Show examples demonstrating the difference",
-      "source_reference": "features.json:core_cli:capabilities[2] (Word boundary matching -w/--word-regexp, -x/--line-regexp)"
-    },
-    {
-      "type": "missing_content",
-      "severity": "high",
-      "section": "Basic Examples",
-      "description": "No working examples demonstrating basic ripgrep usage",
-      "should_add": "Practical examples showing common use cases for beginners",
-      "fix_suggestion": "Add examples section with: simple search 'rg pattern', search in specific files 'rg pattern file.txt', case-insensitive search 'rg -i pattern', literal string search 'rg -F \"exact string\"', count matches 'rg -c pattern', list matching files 'rg -l pattern'",
-      "source_reference": "features.json:core_cli (multiple basic capabilities)"
-    },
-    {
-      "type": "missing_content",
-      "severity": "medium",
-      "section": "Count and List Modes",
-      "description": "No documentation of basic count and list modes",
-      "should_add": "Count modes (-c/--count, --count-matches) and file listing modes (-l/--files-with-matches, --files-without-match)",
-      "fix_suggestion": "Add section showing: -c to count matching lines per file, --count-matches to count individual matches, -l to list files with matches, --files-without-match to list files without matches",
-      "source_reference": "features.json:core_cli:capabilities[5,6] (Count and Files modes)"
-    },
-    {
-      "type": "missing_content",
-      "severity": "medium",
-      "section": "Inverted Matching",
-      "description": "No documentation of inverted matching with -v flag",
-      "should_add": "Inverted matching: -v/--invert-match to show lines that don't match",
-      "fix_suggestion": "Add section on inverted matching: -v flag to show non-matching lines, useful for filtering out lines ('rg -v \"debug\"' to see all lines without 'debug')",
-      "source_reference": "features.json:core_cli:capabilities[4] (Inverted matching -v/--invert-match)"
+      "description": "Chapter doesn't mention the underlying regex library used (regex-automata)",
+      "should_add": "Brief note that ripgrep uses Rust's regex-automata library for default engine",
+      "fix_suggestion": "Add technical note: 'ripgrep uses the regex-automata library (DFA-based) for its default engine, providing excellent performance for most patterns.'",
+      "source_reference": "features.json:search_engine.pattern_matching.regex_engine.library = regex-automata"
     }
   ],
   "positive_aspects": [
-    "Chapter title and description are clear and appropriate",
-    "Chapter is positioned early in the book (depends only on introduction)",
-    "Topics list is well-defined and appropriate for a basics chapter"
+    "Excellent progressive structure from simple to complex patterns",
+    "All flag examples are accurate and work as documented",
+    "Clear explanations suitable for beginners",
+    "Good coverage of basic metacharacters and character classes",
+    "Helpful 'Common Mistakes' section addresses real user issues",
+    "Practice examples provide hands-on learning",
+    "Comprehensive cheat sheet table for quick reference",
+    "Word and line boundary matching well explained with -w and -x flags",
+    "Case sensitivity options (-i, -s, -S) clearly documented",
+    "Output format sections cover heading vs non-heading modes well",
+    "Context lines (-A, -B, -C) explained with clear examples",
+    "Inverted matching with -v flag covered with practical examples"
   ],
   "improvement_suggestions": [
-    "Start with simplest examples (literal searches) before introducing regex",
-    "Include a 'Quick Start' section with 5-10 most common commands",
-    "Add a comparison table showing different flag combinations and their effects",
-    "Include screenshots or formatted examples showing actual output",
-    "Add a 'Common Mistakes' subsection for beginners",
-    "Link to the 'Advanced Patterns' chapter for more complex regex features",
-    "Include a cheat sheet table of basic flags at the end",
-    "Add exercises or practice examples for readers to try",
-    "Ensure all examples use realistic file/directory structures",
-    "Cross-reference related chapters (automatic-filtering, manual-filtering, etc.)"
+    "Add 'Regex Engine Selection' subsection explaining --engine flag and default vs PCRE2",
+    "Expand 'Unicode Character Classes' section with comprehensive \\p{} examples",
+    "Add dedicated PCRE2 subsection explaining when/why to use -P flag",
+    "Document named capture groups (?P<name>...) syntax",
+    "Add note about default engine limitations to set proper expectations",
+    "Consider adding subsection on regex performance (literal extraction optimization)",
+    "Link to 'Advanced Patterns' chapter for multiline and PCRE2 deep-dive",
+    "Add troubleshooting tip: 'If pattern requires backreferences or lookahead, use -P flag'"
   ],
   "metadata": {
     "analyzed_at": "2025-11-08",
     "feature_inventory": ".prodigy/book-analysis/features.json",
-    "topics_covered": [],
-    "topics_expected": [
+    "topics_covered": [
       "pattern_matching",
       "literal_strings",
       "regular_expressions",
-      "output_format"
+      "output_format",
+      "case_sensitivity",
+      "word_boundaries",
+      "line_boundaries",
+      "context_lines",
+      "counting_matches",
+      "inverted_matching"
     ],
-    "validation_focus": "Verify examples of basic search patterns and regex syntax with working examples",
-    "dependencies": [
-      "introduction"
-    ]
+    "validation_focus": "Verify examples of basic search patterns and regex syntax with working examples"
   }
 }
