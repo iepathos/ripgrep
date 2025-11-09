@@ -1,0 +1,163 @@
+{
+  "chapter_id": "binary-data",
+  "chapter_title": "Binary Data",
+  "chapter_file": "book/src/binary-data.md",
+  "drift_detected": true,
+  "severity": "critical",
+  "quality_assessment": "Chapter is completely missing - contains only a placeholder with no actual content. This is a critical issue as binary data handling is a fundamental feature of ripgrep with significant complexity and multiple modes of operation.",
+  "issues": [
+    {
+      "type": "missing_content",
+      "severity": "critical",
+      "section": "Entire Chapter",
+      "description": "Chapter file contains only placeholder text, no actual documentation exists",
+      "current_content": "This chapter will be populated with content from the codebase analysis.\n\n*This content will be populated by the documentation drift detection workflow.*",
+      "should_be": "Comprehensive chapter documenting binary data detection, binary modes, and flags",
+      "fix_suggestion": "Create complete chapter covering: (1) Binary detection concept and heuristics, (2) Three binary modes (Auto, SearchAndSuppress, AsText), (3) --binary flag behavior, (4) -a/--text flag behavior, (5) NUL byte detection, (6) Differences between implicit/explicit file search, (7) Memory map vs buffer-based binary detection, (8) Warning messages and output behavior",
+      "source_reference": "crates/searcher/src/searcher/mod.rs:BinaryDetection, crates/core/flags/lowargs.rs:BinaryMode, tests/binary.rs"
+    },
+    {
+      "type": "missing_content",
+      "severity": "critical",
+      "section": "Binary Detection Concept",
+      "description": "No explanation of what binary detection is or why it exists",
+      "should_add": "Explain that binary detection is a heuristic process to identify and handle binary files differently from text files. Binary files often contain data unsuitable for textual pattern searching. Detection is based on finding NUL (\\x00) bytes.",
+      "fix_suggestion": "Add section explaining binary detection concept, mentioning that it's disabled by default in the searcher library but enabled by default in ripgrep's CLI for implicit file searches",
+      "source_reference": "crates/searcher/src/searcher/mod.rs:35-42"
+    },
+    {
+      "type": "missing_content",
+      "severity": "critical",
+      "section": "Binary Modes",
+      "description": "No documentation of the three binary modes: Auto, SearchAndSuppress, AsText",
+      "should_add": "Document BinaryMode enum with three variants:\n- Auto: Default mode, determines strategy based on whether file is explicit or implicit\n- SearchAndSuppress: Search binary files but suppress matches and emit warnings when NUL bytes found\n- AsText: Treat all files as text, no binary detection or special handling",
+      "fix_suggestion": "Create detailed section explaining each mode, when each is used, and the behavior differences. Include that Auto mode uses SearchAndSuppress for explicit files and quit-on-binary for implicit files",
+      "source_reference": "crates/core/flags/lowargs.rs:231-252"
+    },
+    {
+      "type": "missing_content",
+      "severity": "critical",
+      "section": "--binary Flag",
+      "description": "No documentation of --binary/--no-binary flag",
+      "should_add": "Document --binary flag that causes ripgrep to search binary files with SearchAndSuppress mode. When enabled, ripgrep will search binary files and print warnings instead of silently skipping them. Only applicable for implicit (recursive) searches, not explicit file arguments.",
+      "fix_suggestion": "Add section with examples showing --binary flag usage, explain it only affects implicit file searches (directory traversal), not explicit files or stdin. Show warning message format when binary data is detected",
+      "source_reference": "crates/core/flags/defs.rs:425-488 (Binary flag implementation)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "critical",
+      "section": "-a/--text Flag",
+      "description": "No documentation of -a/--text/--no-text flag",
+      "should_add": "Document -a/--text flag that disables binary detection entirely, treating all files as text. When used, ripgrep may print binary data to stdout including escape codes that could affect terminal behavior. Overrides --binary flag.",
+      "fix_suggestion": "Add section explaining --text flag with warnings about potential terminal corruption, show examples of searching binary files as text, explain it overrides --binary",
+      "source_reference": "crates/core/flags/defs.rs:6629-6679 (Text flag implementation)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "high",
+      "section": "NUL Byte Detection",
+      "description": "No explanation of NUL byte (\\x00) as binary indicator",
+      "should_add": "Explain that binary detection uses NUL bytes as the primary heuristic. When a NUL byte is encountered, the file is considered binary. This is a simple but effective heuristic since text files rarely contain NUL bytes while binary files typically do.",
+      "fix_suggestion": "Add section explaining NUL byte detection, mention it's imperfect but practical, note that NUL bytes are searched for in buffer contents (buffered search) or in first few KB + matches (mmap search)",
+      "source_reference": "crates/core/flags/defs.rs:452-456, tests/binary.rs:8"
+    },
+    {
+      "type": "missing_content",
+      "severity": "high",
+      "section": "Search Mode Differences",
+      "description": "No explanation of how binary detection differs between buffered and memory-mapped search",
+      "should_add": "Document two different binary detection strategies:\n1. Buffered search (--no-mmap): NUL bytes detected in all buffer contents as they're read\n2. Memory-mapped search (--mmap): NUL bytes only searched in first ~64KB and in matching lines",
+      "fix_suggestion": "Add section explaining the two strategies, why they differ (memory efficiency vs thoroughness), include examples showing different behavior with --mmap vs --no-mmap",
+      "source_reference": "crates/searcher/src/searcher/mod.rs:46-53, tests/binary.rs:10-23"
+    },
+    {
+      "type": "missing_content",
+      "severity": "high",
+      "section": "Implicit vs Explicit Files",
+      "description": "No explanation of different behavior for implicit (recursive) vs explicit file arguments",
+      "should_add": "Document that binary filtering behaves differently for implicit vs explicit files:\n- Implicit (via -g glob or recursive): Binary files silently skipped, no output\n- Explicit (file argument): Binary matches reported with 'binary file matches' message\nThe --binary flag makes implicit files behave like explicit ones.",
+      "fix_suggestion": "Add section with side-by-side examples showing behavior differences, explain rationale (implicit searches favor precision, explicit searches favor recall)",
+      "source_reference": "tests/binary.rs:162-184 (after_match1_implicit vs after_match1_explicit)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Warning Messages",
+      "description": "No documentation of binary detection warning message formats",
+      "should_add": "Document the various warning messages:\n- 'WARNING: stopped searching binary file after match (found \"\\0\" byte around offset N)' for implicit files\n- 'binary file matches (found \"\\0\" byte around offset N)' for explicit files\n- Different output for stdin searches",
+      "fix_suggestion": "Add section showing example warning messages for each scenario, explain what each means and when it appears",
+      "source_reference": "tests/binary.rs:168-169, 181-182"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Edge Cases and Gotchas",
+      "description": "No documentation of known edge cases and limitations",
+      "should_add": "Document known issues:\n1. With -l/--files-with-matches, binary files may be listed before NUL detected (performance optimization)\n2. With --quiet, binary detection may be skipped for same reason\n3. With --count, full file scan happens so binary detection works correctly\n4. Matches occurring in same buffer as NUL byte (but before it) may not be printed",
+      "fix_suggestion": "Add troubleshooting section documenting these edge cases with examples from tests/binary.rs, explain they're acceptable tradeoffs for performance",
+      "source_reference": "tests/binary.rs:253-285 (after_match1_implicit_path, after_match1_implicit_quiet, after_match1_implicit_count)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "BinaryDetection API",
+      "description": "No documentation of BinaryDetection configuration for library users",
+      "should_add": "For users of the grep-searcher library, document BinaryDetection::none(), BinaryDetection::quit(byte), and BinaryDetection::convert(byte) methods. Explain that binary detection is disabled by default in the library (unlike the CLI).",
+      "fix_suggestion": "Add section for library users explaining how to configure binary detection in SearcherBuilder, mention difference between CLI defaults and library defaults",
+      "source_reference": "crates/searcher/src/searcher/mod.rs:57-105"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Examples",
+      "description": "No practical examples showing binary data handling in action",
+      "should_add": "Provide examples showing:\n1. Default behavior with binary files\n2. Using --binary to search binary files\n3. Using --text to treat binary as text\n4. Differences with --mmap\n5. Explicit vs implicit file behavior",
+      "fix_suggestion": "Add comprehensive examples section with real-world scenarios, showing command output for each case",
+      "source_reference": "tests/binary.rs (all tests provide good example scenarios)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Performance Considerations",
+      "description": "No discussion of performance implications of binary detection",
+      "should_add": "Explain performance tradeoffs:\n- Binary detection adds minimal overhead (single byte search)\n- Can significantly improve performance by skipping binary files early\n- With --text, no detection overhead but may search irrelevant data\n- Memory map mode has different detection characteristics for efficiency",
+      "fix_suggestion": "Add brief performance section explaining the tradeoffs and when to use each mode",
+      "source_reference": "crates/searcher/src/searcher/mod.rs:43-53"
+    }
+  ],
+  "positive_aspects": [],
+  "improvement_suggestions": [
+    "Chapter needs to be written from scratch",
+    "Should include comprehensive examples from tests/binary.rs",
+    "Should explain the implicit/explicit file distinction clearly as it's a common source of confusion",
+    "Should include flowchart or decision tree for understanding which mode applies when",
+    "Should link to related chapters: file-encoding (related to text processing), manual-filtering (related to file selection)",
+    "Consider including a troubleshooting section for common binary detection issues",
+    "Include examples with compressed files (which are binary but might want to be searched with --search-zip)"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-08",
+    "feature_inventory": ".prodigy/book-analysis/features.json",
+    "topics_covered": [],
+    "topics_should_cover": [
+      "binary_detection",
+      "binary_mode",
+      "text_mode",
+      "nul_bytes",
+      "implicit_vs_explicit_files",
+      "mmap_vs_buffered_detection",
+      "warning_messages",
+      "edge_cases"
+    ],
+    "validation_focus": "Check that binary file handling modes and --binary/--text flags are explained",
+    "validation_result": "FAILED - Chapter is completely missing, contains only placeholder text",
+    "implementation_files_referenced": [
+      "crates/searcher/src/searcher/mod.rs",
+      "crates/core/flags/lowargs.rs",
+      "crates/core/flags/defs.rs",
+      "tests/binary.rs",
+      "crates/core/flags/hiargs.rs"
+    ],
+    "test_coverage": "Extensive test coverage exists in tests/binary.rs with 20+ test cases covering all major scenarios"
+  }
+}
