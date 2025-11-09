@@ -23,7 +23,7 @@ This prints statistics after all search results.
 
 ## Statistics Output Format
 
-The statistics output includes several categories of information:
+The statistics output includes several categories of information. Statistics are printed to stdout after all search results.
 
 ```
 3 matches
@@ -32,9 +32,11 @@ The statistics output includes several categories of information:
 5 files searched
 150 bytes printed
 1500 bytes searched
-0.025 seconds spent searching
-0.001 seconds spent in main thread
+0.025000 seconds spent searching
+0.001000 seconds total
 ```
+
+Note that time values are formatted with 6 decimal places of precision.
 
 ## Key Metrics
 
@@ -53,7 +55,7 @@ The statistics output includes several categories of information:
 ### Performance Metrics
 
 - **Seconds spent searching**: Actual search time across all threads
-- **Seconds spent in main thread**: Wall-clock time for the entire operation
+- **Seconds total**: Wall-clock time for the entire operation
 
 ## Understanding the Metrics
 
@@ -78,12 +80,12 @@ the quick brown fox jumps over the lazy dog
 
 With parallel search:
 - **Searching time**: Sum of time across all threads (can exceed wall time)
-- **Main thread time**: Actual elapsed time
+- **Total time**: Actual elapsed time
 
 Example:
 ```
-0.400 seconds spent searching  (4 threads × 0.1s each)
-0.100 seconds spent in main thread  (wall-clock time)
+0.400000 seconds spent searching  (4 threads × 0.1s each)
+0.100000 seconds total  (wall-clock time)
 ```
 
 ## Use Cases
@@ -137,12 +139,41 @@ rg --stats -tjs 'import'
 rg --stats -q pattern
 ```
 
+Note: When combining `--stats` with `--quiet`, ripgrep will search all files completely to collect accurate statistics, even though `--quiet` alone would normally exit after the first match.
+
 ### Statistics in JSON
 
+Statistics are fully supported in JSON output format:
+
 ```bash
-# Machine-readable statistics (not currently supported directly)
-# Workaround: Parse stats from stderr
-rg --stats pattern 2>&1 | grep 'matches\|files\|seconds'
+# Get machine-readable statistics in JSON format
+rg --json --stats pattern
+```
+
+This produces a summary message with `"type": "summary"` containing a `stats` object and `elapsed_total` field:
+
+```json
+{
+  "type": "summary",
+  "data": {
+    "elapsed_total": {
+      "secs": 0,
+      "nanos": 1000000
+    },
+    "stats": {
+      "elapsed": {
+        "secs": 0,
+        "nanos": 25000000
+      },
+      "searches": 5,
+      "searches_with_match": 1,
+      "bytes_searched": 1500,
+      "bytes_printed": 150,
+      "matched_lines": 2,
+      "matches": 3
+    }
+  }
+}
 ```
 
 ## Examples
@@ -235,9 +266,8 @@ echo "Found $MATCHES matches across $FILES files"
 
 ## Limitations
 
-- Statistics are written to stderr, not stdout
-- No built-in JSON format for statistics (requires parsing)
-- Thread time may exceed wall time with parallel execution
+- Statistics are written to stdout after search results
+- Thread time may exceed wall time with parallel execution (this is normal for parallel searches)
 - Byte counts include full file scans, not just matched content
 
 ## See Also
