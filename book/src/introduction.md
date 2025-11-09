@@ -6,6 +6,19 @@ ripgrep is a line-oriented search tool that recursively searches the current dir
 
 ripgrep is a command line tool that searches your files for patterns that you give it. ripgrep behaves as if reading each file line by line. If a line matches the pattern provided to ripgrep, then that line will be printed. If a line does not match the pattern, then the line is not printed.
 
+This documentation covers ripgrep version 15.1.0.
+
+## Why ripgrep?
+
+ripgrep combines the usability of The Silver Searcher (ag) with the raw performance of GNU grep. It's designed to be fast while providing smart defaults that respect your project's structure:
+
+- **Performance**: Often faster than other search tools due to aggressive optimizations and intelligent use of parallelism
+- **Smart filtering**: Automatically respects `.gitignore` and skips hidden/binary files without needing manual configuration
+- **Feature-rich**: Supports PCRE2 regex, searching compressed files, multiline search, and replacement operations
+- **Batteries included**: Works out of the box with sensible defaults while providing extensive customization options
+
+For comprehensive performance benchmarks and feature comparisons with grep, ag, ack, and other tools, see the [README](https://github.com/BurntSushi/ripgrep#readme).
+
 ## Key Features
 
 - **Fast**: ripgrep is built on top of Rust's regex engine, which uses finite automata, SIMD, and aggressive literal optimizations to make searching very fast.
@@ -14,10 +27,53 @@ ripgrep is a command line tool that searches your files for patterns that you gi
 - **Cross-platform**: Works on Linux, macOS, and Windows.
 - **Powerful filtering**: Support for glob patterns and file type filtering.
 - **Multiple encoding support**: Handles UTF-8, UTF-16, and other encodings with BOM detection.
+- **PCRE2 regex support**: Use advanced regex features like look-around and backreferences with the `-P/--pcre2` flag.
+- **Compressed file search**: Search inside gzip, bzip2, xz, lz4, lzma, brotli, and zstd compressed files automatically.
+- **Preprocessor support**: Transform files before searching using custom preprocessors for specialized file formats.
+- **Configuration files**: Define default settings in configuration files for consistent behavior across projects.
+- **Multiline search**: Search patterns that span multiple lines with the `-U/--multiline` flag.
+- **Replacement support**: Replace matched patterns with the `-r/--replace` flag.
+- **JSON output**: Machine-readable JSON output format for integration with other tools.
 
 ## Installation
 
-For installation instructions, please see the [README](https://github.com/BurntSushi/ripgrep#installation) in the ripgrep repository.
+### Quick Installation
+
+**Precompiled binaries** are available for most platforms:
+
+Download the latest release from [GitHub Releases](https://github.com/BurntSushi/ripgrep/releases) and extract the archive.
+
+**macOS** via Homebrew:
+```bash
+brew install ripgrep
+```
+
+**Windows** via Chocolatey:
+```bash
+choco install ripgrep
+```
+
+**Linux** via cargo (Rust package manager):
+```bash
+cargo install ripgrep
+```
+
+**Debian/Ubuntu**:
+```bash
+sudo apt install ripgrep
+```
+
+**Fedora/Red Hat**:
+```bash
+sudo dnf install ripgrep
+```
+
+**Arch Linux**:
+```bash
+sudo pacman -S ripgrep
+```
+
+For comprehensive installation instructions including package managers for other platforms, see the [README](https://github.com/BurntSushi/ripgrep#installation).
 
 ## Quick Start
 
@@ -40,12 +96,42 @@ rg -i pattern
 rg -tpy pattern  # Search only Python files
 ```
 
+### ripgrep-Specific Features
+
+ripgrep automatically respects your project's `.gitignore` files and skips hidden and binary files:
+
+```bash
+# This automatically skips files in .gitignore, .git/, node_modules/, etc.
+rg TODO
+
+# Search ALL files including ignored ones (disable smart filtering)
+rg --no-ignore --hidden TODO
+```
+
+Use PCRE2 for advanced regex features:
+
+```bash
+# Use look-ahead to find functions that use a specific API
+rg -P 'fn \w+.*(?=.*api_call)'
+
+# Use backreferences to find repeated words
+rg -P '\b(\w+)\s+\1\b'
+```
+
+Search across multiple lines:
+
+```bash
+# Find struct definitions with specific fields (multiline search)
+rg -U 'struct User \{[^}]*email[^}]*\}'
+```
+
 ## Getting Help
 
 - Use `rg -h` for a condensed help output
 - Use `rg --help` for detailed help (pipe into a pager)
+- Explore the chapters in this book for in-depth coverage of ripgrep's features
 - Visit the [FAQ](https://github.com/BurntSushi/ripgrep/blob/master/FAQ.md) for common questions
-- Check the [GUIDE](https://github.com/BurntSushi/ripgrep/blob/master/GUIDE.md) for in-depth usage
+- Check the [GUIDE](https://github.com/BurntSushi/ripgrep/blob/master/GUIDE.md) for additional usage examples
 
 ## Assumptions
 
