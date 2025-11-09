@@ -243,8 +243,8 @@ rg -g 'foo' pattern
 rg -g 'foo/**' pattern
 </code></pre>
 <p>Always use <code>foo/**</code> to match files within a directory.</p>
-<h2 id="include-and-exclude-patterns"><a class="header" href="#include-and-exclude-patterns">Include and Exclude Patterns</a></h2>
-<p>Prefix a glob with <code>!</code> to exclude files that match:</p>
+<h2 id="including-and-excluding-files"><a class="header" href="#including-and-excluding-files">Including and Excluding Files</a></h2>
+<p>By default, glob patterns include files. Prefix a glob with <code>!</code> to exclude files that match:</p>
 <pre><code class="language-bash"># Search all Rust files except tests
 rg -g '*.rs' -g '!test*.rs' pattern
 
@@ -280,12 +280,13 @@ rg -g '{src,lib,bin}/**/*.rs' pattern
 # Match multiple file patterns
 rg -g '{Cargo.toml,Cargo.lock,*.rs}' pattern
 </code></pre>
-<p><strong>Note:</strong> Empty alternatives like <code>{,c}</code> are not supported. This is a ripgrep extension beyond standard <code>.gitignore</code> syntax.</p>
+<p><strong>Note:</strong> Empty alternatives like <code>{,c}</code> are not currently supported (as of ripgrep 14.1+). Brace expansion is a ripgrep extension beyond standard <code>.gitignore</code> syntax.</p>
 <h2 id="case-insensitive-globs"><a class="header" href="#case-insensitive-globs">Case-Insensitive Globs</a></h2>
 <p>Two flags control case sensitivity for glob matching:</p>
 <ul>
 <li><code>--iglob GLOB</code> - Single case-insensitive glob pattern</li>
 <li><code>--glob-case-insensitive</code> - Makes all <code>-g</code> patterns case-insensitive</li>
+<li><code>--no-glob-case-insensitive</code> - Restores case-sensitive matching (negates <code>--glob-case-insensitive</code>)</li>
 </ul>
 <p>Examples:</p>
 <pre><code class="language-bash"># Match .html, .HTML, .Html, etc.
@@ -293,8 +294,11 @@ rg --iglob '*.html' pattern
 
 # Make all globs case-insensitive
 rg --glob-case-insensitive -g '*.rs' -g '*.toml' pattern
+
+# Restore case-sensitive matching after earlier use of --glob-case-insensitive
+rg --glob-case-insensitive -g '*.html' --no-glob-case-insensitive -g '*.RS' pattern
 </code></pre>
-<p>Use <code>--iglob</code> when you need one case-insensitive pattern, or <code>--glob-case-insensitive</code> when all your patterns should ignore case.</p>
+<p>Use <code>--iglob</code> when you need one case-insensitive pattern, or <code>--glob-case-insensitive</code> when all your patterns should ignore case. Use <code>--no-glob-case-insensitive</code> to selectively restore case-sensitive matching.</p>
 <h2 id="gitignore-compatibility"><a class="header" href="#gitignore-compatibility">Gitignore Compatibility</a></h2>
 <p>Glob patterns use the same syntax as <code>.gitignore</code> files, making them familiar if you already use Git:</p>
 <ul>
@@ -322,6 +326,19 @@ rg -g '*.rs' pattern
 rg -g 'target/**/*.rs' pattern
 </code></pre>
 <p>This override behavior gives you ultimate control when automatic filtering is too restrictive.</p>
+<h3 id="ignore-hierarchy-and-precedence"><a class="header" href="#ignore-hierarchy-and-precedence">Ignore Hierarchy and Precedence</a></h3>
+<p>Glob patterns with <code>-g/--glob</code> are "override patterns" that sit at the top of ripgrep's ignore hierarchy. The complete precedence order (highest to lowest priority) is:</p>
+<ol>
+<li><strong>Override patterns</strong> - <code>--include</code>/<code>--exclude</code> (not currently implemented) and <code>-g/--glob</code> patterns</li>
+<li><strong>Custom ignore files</strong> - Files specified with <code>--ignore-file</code></li>
+<li><strong><code>.ignore</code> files</strong> - Repository-specific ignore rules</li>
+<li><strong><code>.gitignore</code> files</strong> - Git ignore rules</li>
+<li><strong><code>.git/info/exclude</code></strong> - Git local excludes</li>
+<li><strong>Global gitignore</strong> - User's global Git ignore file</li>
+<li><strong>Explicit ignore files</strong> - Other repository ignore configurations</li>
+<li><strong>Hidden file detection</strong> - Automatic filtering of dotfiles</li>
+</ol>
+<p>When you use <code>-g</code>, your patterns take precedence over all automatic ignore sources, which is why globs can force ripgrep to search files that would normally be excluded.</p>
 <h2 id="practical-examples"><a class="header" href="#practical-examples">Practical Examples</a></h2>
 <h3 id="search-only-rust-files"><a class="header" href="#search-only-rust-files">Search Only Rust Files</a></h3>
 <pre><code class="language-bash">rg -g '*.rs' 'use std'
@@ -330,7 +347,8 @@ rg -g 'target/**/*.rs' pattern
 <pre><code class="language-bash">rg -g 'src/**' 'TODO'
 </code></pre>
 <h3 id="exclude-test-directories"><a class="header" href="#exclude-test-directories">Exclude Test Directories</a></h3>
-<pre><code class="language-bash">rg -g '!**/test/**' -g '!**/tests/**' pattern
+<pre><code class="language-bash"># Exclude both common test directory naming conventions
+rg -g '!**/test/**' -g '!**/tests/**' pattern
 </code></pre>
 <h3 id="combine-multiple-patterns"><a class="header" href="#combine-multiple-patterns">Combine Multiple Patterns</a></h3>
 <pre><code class="language-bash"># Search Rust and TOML in src/, excluding tests
@@ -368,6 +386,9 @@ rg -g 'src/**/*.rs' pattern
 rg -g '**/*.rs' -g '!target/**' -g '!.git/**' -g '!vendor/**' pattern
 </code></pre>
 <p>When possible, use include patterns that target specific directories rather than exclude patterns that filter out large portions of the file tree.</p>
+<h3 id="advanced-glob-optimization"><a class="header" href="#advanced-glob-optimization">Advanced: Glob Optimization</a></h3>
+<p>Ripgrep automatically optimizes glob patterns into specialized matching strategies for better performance. Simple patterns like <code>*.rs</code> are converted to faster matching strategies (literal extension, basename literal, prefix/suffix matching) rather than full regex evaluation. Complex patterns with <code>**</code>, <code>?</code>, or <code>[...]</code> require more expensive matching.</p>
+<p>For best performance, prefer simple extension-based patterns (<code>*.rs</code>) over complex path patterns when possible. The optimizer handles this automatically, but understanding this can help you write more efficient globs.</p>
 <h2 id="summary"><a class="header" href="#summary">Summary</a></h2>
 <p>Glob patterns give you precise control over which files ripgrep searches:</p>
 <ul>

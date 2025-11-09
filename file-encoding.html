@@ -256,12 +256,14 @@ rg -E windows-1251 'текст' files/
 </ol>
 <p>This mode is useful when searching for byte sequences or when you want complete control.</p>
 <h2 id="bom-sniffing"><a class="header" href="#bom-sniffing">BOM Sniffing</a></h2>
-<p>A <strong>Byte Order Mark (BOM)</strong> is a special sequence of bytes at the start of a file that indicates its encoding:</p>
+<p>A <strong>Byte Order Mark (BOM)</strong> is a special sequence of bytes at the start of a file that indicates its encoding.</p>
+<p><strong>ripgrep detects BOMs for these encodings only:</strong></p>
 <ul>
 <li><code>EF BB BF</code> - UTF-8 BOM</li>
 <li><code>FF FE</code> - UTF-16 Little Endian BOM</li>
 <li><code>FE FF</code> - UTF-16 Big Endian BOM</li>
 </ul>
+<p>Other encodings in the WHATWG standard that have BOMs are not automatically detected and require explicit <code>--encoding</code> specification.</p>
 <p><strong>How it works:</strong></p>
 <ol>
 <li>ripgrep reads the first 3 bytes of each file</li>
@@ -271,6 +273,10 @@ rg -E windows-1251 'текст' files/
 </ol>
 <p><strong>BOM sniffing is enabled by default</strong> in auto mode and can be disabled with <code>--encoding=none</code>.</p>
 <p><strong>BOM overrides explicit encoding:</strong> Even if you specify <code>--encoding=latin1</code>, a file with a UTF-16 BOM will be treated as UTF-16.</p>
+<pre><code class="language-bash"># Even though we specify latin1, the UTF-16 BOM is detected and used instead
+rg -E latin1 'pattern' utf16-file-with-bom
+# ripgrep uses UTF-16 (from BOM) not latin1
+</code></pre>
 <h2 id="transcoding"><a class="header" href="#transcoding">Transcoding</a></h2>
 <p>When ripgrep detects or is told about a non-UTF-8 encoding, it performs <strong>transcoding</strong> - converting the file from its source encoding to UTF-8 before searching.</p>
 <p><strong>When transcoding occurs:</strong></p>
@@ -299,6 +305,7 @@ rg -E utf-16 'Шерлок' some-utf16-file
 </code></pre>
 <h2 id="ascii-compatibility-assumption"><a class="header" href="#ascii-compatibility-assumption">ASCII Compatibility Assumption</a></h2>
 <p><strong>By default, ripgrep assumes files are ASCII-compatible.</strong> This is a critical assumption that affects how searches work.</p>
+<p>This assumption is a performance optimization: ASCII-compatible files can be searched directly without transcoding overhead, making searches significantly faster than if every file required transcoding to UTF-8.</p>
 <p><strong>ASCII-compatible encodings:</strong></p>
 <ul>
 <li>ASCII itself</li>
@@ -323,7 +330,7 @@ rg 'hello' utf16-file-no-bom
 rg -E utf-16 'hello' utf16-file-no-bom
 </code></pre>
 <h2 id="supported-encodings"><a class="header" href="#supported-encodings">Supported Encodings</a></h2>
-<p>ripgrep supports all encodings from the <a href="https://encoding.spec.whatwg.org/#concept-encoding-get">WHATWG Encoding Standard</a> via the <code>encoding_rs</code> crate.</p>
+<p>ripgrep supports all encodings from the <a href="https://encoding.spec.whatwg.org/#concept-encoding-get">WHATWG Encoding Standard</a> via the <code>encoding_rs</code> crate. The <code>encoding_rs</code> crate provides a complete implementation of the WHATWG Encoding Standard, ensuring reliable encoding detection and transcoding.</p>
 <p><strong>Common encodings:</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Encoding</th><th>Use Case</th></tr></thead><tbody>
 <tr><td><code>utf-8</code></td><td>Modern Unicode text (most common)</td></tr>
@@ -413,6 +420,7 @@ rg '\w(?-u:\w)\w'
 <p><strong>Likely cause:</strong> Encoding mismatch</p>
 <p><strong>Solutions:</strong></p>
 <ol>
+<li>Use <code>--debug</code> to see encoding detection: <code>rg --debug pattern file</code> (shows which encoding was detected or transcoding performed)</li>
 <li>Check if file has a BOM: <code>hexdump -C file | head -n 1</code></li>
 <li>Try explicit encoding: <code>rg -E utf-16 pattern file</code></li>
 <li>Try disabling encoding: <code>rg -E none pattern file</code> (search raw bytes)</li>

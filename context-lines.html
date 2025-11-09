@@ -196,6 +196,7 @@ rg -B 2 pattern
 # Show 2 lines before and after each match
 rg -C 2 pattern
 </code></pre>
+<p><strong>Note:</strong> Context values can be very large (up to the maximum value supported by your system) for edge cases where you need extensive surrounding context. However, typical usage is 2-10 lines.</p>
 <h2 id="after-context"><a class="header" href="#after-context">After Context</a></h2>
 <p>Display lines after each match:</p>
 <pre><code class="language-bash"># Long form
@@ -258,7 +259,25 @@ rg -C 2 --context-separator '\t===\t' pattern
 <pre><code class="language-bash"># Completely disable context separators
 rg -C 2 --no-context-separator pattern
 </code></pre>
-<p>The difference between empty separator and <code>--no-context-separator</code>:</p>
+<p><strong>Visual Difference:</strong> The distinction between empty separator and <code>--no-context-separator</code>:</p>
+<p>With <code>--context-separator ''</code> (empty string):</p>
+<pre><code>file.txt:10:first match
+file.txt-11-context line
+file.txt-12-context line
+
+file.txt:20:second match
+file.txt-21-context line
+</code></pre>
+<p><em>Note the blank line between match groups</em></p>
+<p>With <code>--no-context-separator</code>:</p>
+<pre><code>file.txt:10:first match
+file.txt-11-context line
+file.txt-12-context line
+file.txt:20:second match
+file.txt-21-context line
+</code></pre>
+<p><em>No blank line - output flows continuously</em></p>
+<p>Summary:</p>
 <ul>
 <li><code>--context-separator ''</code> removes the <code>--</code> separator but keeps a blank line between groups</li>
 <li><code>--no-context-separator</code> removes all separation, making match groups flow continuously</li>
@@ -290,6 +309,17 @@ rg -C 2 --field-context-separator ' | ' --field-match-separator ' &gt; ' pattern
 <pre><code>file.txt 42 &gt; matching line
 file.txt 43 | context line after
 </code></pre>
+<p><strong>Escape Sequences:</strong> Field separators support escape sequences for special characters:</p>
+<pre><code class="language-bash"># Use tab separator for easier parsing
+rg --field-match-separator '\t' pattern
+
+# Use null byte separator (useful for machine parsing)
+rg --field-match-separator '\x00' pattern
+
+# Use hex escapes for non-printable characters
+rg --field-context-separator '\xFF' pattern
+</code></pre>
+<p>Common escape sequences: <code>\t</code> (tab), <code>\n</code> (newline), <code>\r</code> (carriage return), <code>\x00</code> (null byte), <code>\xFF</code> (hex byte).</p>
 <h2 id="combining-with-other-options"><a class="header" href="#combining-with-other-options">Combining with Other Options</a></h2>
 <h3 id="context-with-multiple-patterns"><a class="header" href="#context-with-multiple-patterns">Context with Multiple Patterns</a></h3>
 <pre><code class="language-bash"># Show context for any match
@@ -308,9 +338,15 @@ rg -C 2 -r 'new_value' 'old_value'
 <pre><code class="language-bash"># Show all lines from files with matches
 rg --passthru pattern
 
-# Context flags override passthru behavior
-rg --passthru -C 2 pattern  # Only shows 2 lines of context, not all lines
+# Flag ordering determines behavior - last flag wins
+rg --passthru -C 2 pattern  # Context mode: only 2 lines of context
+rg -C 2 --passthru pattern  # Passthru mode: all lines shown
 </code></pre>
+<p><strong>Flag Precedence:</strong> When both <code>--passthru</code> and context flags (<code>-A/-B/-C</code>) are specified, the last flag wins:</p>
+<ul>
+<li>If <code>--passthru</code> comes last, it enables passthru mode (showing all lines)</li>
+<li>If <code>-A/-B/-C</code> comes last, it enables context mode (showing only specified context)</li>
+</ul>
 <p>Use <code>--passthru</code> when you want to see the entire file with matches highlighted. Use <code>-A/-B/-C</code> when you only need specific context around matches.</p>
 <h2 id="examples"><a class="header" href="#examples">Examples</a></h2>
 <h3 id="example-1-understanding-function-context"><a class="header" href="#example-1-understanding-function-context">Example 1: Understanding Function Context</a></h3>

@@ -233,6 +233,55 @@ rg -x 'import sys'
 </code></pre>
 </li>
 </ul>
+<h3 id="multiline-matching"><a class="header" href="#multiline-matching">Multiline Matching</a></h3>
+<p>By default, patterns match within single lines. For patterns that span multiple lines:</p>
+<ul>
+<li>
+<p><strong><code>-U, --multiline</code></strong>: Enable multiline mode where patterns can match across line boundaries</p>
+<pre><code class="language-bash"># Match function definitions spanning multiple lines
+rg -U 'fn \w+\([^)]*\)\s*-&gt;'
+
+# Find multi-line comments
+rg -U '/\*.*?\*/'
+</code></pre>
+</li>
+<li>
+<p><strong><code>--multiline-dotall</code></strong>: Make <code>.</code> match newlines in multiline mode</p>
+<pre><code class="language-bash"># Match struct definitions with any content between braces
+rg -U --multiline-dotall 'struct \w+ \{.*?\}'
+</code></pre>
+<p>Use with <code>-U</code> to make dot match newline characters. Without this, <code>.</code> doesn't match <code>\n</code> even in multiline mode.</p>
+</li>
+</ul>
+<h3 id="regex-engine-selection"><a class="header" href="#regex-engine-selection">Regex Engine Selection</a></h3>
+<p>Ripgrep uses Rust's regex engine by default, which is very fast. For advanced regex features, you can switch to the PCRE2 engine:</p>
+<ul>
+<li>
+<p><strong><code>-P, --pcre2</code></strong>: Use PCRE2 engine for advanced features like lookahead/lookbehind and backreferences</p>
+<pre><code class="language-bash"># Lookahead: find "foo" only if followed by "bar"
+rg -P 'foo(?=bar)'
+
+# Lookbehind: find "bar" only if preceded by "foo"
+rg -P '(?&lt;=foo)bar'
+
+# Backreferences: find repeated words
+rg -P '(\w+)\s+\1'
+</code></pre>
+<p>See the <a href="./regex.html">Regular Expressions</a> chapter for detailed regex syntax and PCRE2 features.</p>
+</li>
+<li>
+<p><strong><code>--engine ENGINE</code></strong>: Explicitly choose regex engine</p>
+<pre><code class="language-bash"># Force PCRE2 engine
+rg --engine pcre2 'pattern'
+
+# Force default Rust regex
+rg --engine default 'pattern'
+
+# Auto-select based on pattern (default)
+rg --engine auto 'pattern'
+</code></pre>
+</li>
+</ul>
 <h3 id="invert-match"><a class="header" href="#invert-match">Invert Match</a></h3>
 <ul>
 <li><strong><code>-v, --invert-match</code></strong>: Show lines that DON'T match the pattern
@@ -337,6 +386,26 @@ rg '(\w+)@(\w+)' -r '$2@$1'
 </code></pre>
 <p>This changes the display only. To modify files, use other tools like <code>sed</code>. See the <a href="./replacements.html">Replacements chapter</a> for more details.</p>
 </li>
+<li>
+<p><strong><code>-b, --byte-offset</code></strong>: Show absolute byte offset in file for each match</p>
+<pre><code class="language-bash"># Display byte positions for binary file analysis
+rg -b pattern
+# Output: file.txt:42:137:matching line
+#                    ^^^ byte offset
+</code></pre>
+<p>Useful for precise location tracking and binary file analysis.</p>
+</li>
+<li>
+<p><strong><code>--hyperlink-format FORMAT</code></strong>: Generate clickable terminal links using OSC 8 escape sequences</p>
+<pre><code class="language-bash"># Use built-in editor formats
+rg --hyperlink-format vscode pattern
+rg --hyperlink-format cursor pattern
+
+# Custom format with variables: {path}, {line}, {column}
+rg --hyperlink-format 'file://{path}:{line}:{column}' pattern
+</code></pre>
+<p>Requires a terminal that supports OSC 8 hyperlinks. Built-in formats: <code>vscode</code>, <code>cursor</code>, <code>macvim</code>, <code>sublime</code>, <code>textmate</code>, <code>emacs</code>, <code>vim</code>.</p>
+</li>
 </ul>
 <h3 id="color-and-formatting"><a class="header" href="#color-and-formatting">Color and Formatting</a></h3>
 <ul>
@@ -353,6 +422,29 @@ rg --color always pattern | less -R
 # Disable color for clean output
 rg --color never pattern &gt; results.txt
 </code></pre>
+</li>
+<li>
+<p><strong><code>--colors TYPE:STYLE:VALUE</code></strong>: Fine-grained color customization</p>
+<pre><code class="language-bash"># Customize match highlighting color to red
+rg --colors 'match:fg:red' pattern
+
+# Bold path names, green matches
+rg --colors 'path:style:bold' --colors 'match:fg:green' pattern
+
+# Use 256-color palette or 24-bit RGB
+rg --colors 'match:fg:0,128,255' pattern
+</code></pre>
+<p>Types: <code>path</code>, <code>line</code>, <code>column</code>, <code>match</code>. Styles: <code>fg</code> (foreground), <code>bg</code> (background), <code>style</code> (bold, intense, underline, italic).</p>
+</li>
+<li>
+<p><strong><code>--heading</code></strong> / <strong><code>--no-heading</code></strong>: Control file grouping in output</p>
+<pre><code class="language-bash"># Group matches by file with filename as header
+rg --heading pattern
+
+# Inline format: path:line:match on each line
+rg --no-heading pattern
+</code></pre>
+<p>With <code>--heading</code>, matches are grouped under filenames. With <code>--no-heading</code>, every line shows the full path.</p>
 </li>
 <li>
 <p><strong><code>-p, --pretty</code></strong>: Alias for <code>--color always --heading --line-number</code></p>
@@ -426,17 +518,18 @@ rg -uu pattern
 </code></pre>
 </li>
 <li>
-<p><strong><code>-uuu</code></strong>: Also don't filter out anything</p>
+<p><strong><code>-uuu</code></strong>: Disable all filtering (ignore files, hidden files, and binary detection)</p>
 <pre><code class="language-bash"># The kitchen sink - search absolutely everything
 rg -uuu pattern
 </code></pre>
+<p>This is the most permissive mode, combining all unrestricted behaviors: searches ignored files (<code>.gitignore</code>), hidden files (<code>.dotfiles</code>), and doesn't skip binary files.</p>
 </li>
 </ul>
 <p>Use <code>-u</code> when you need to search <code>.gitignore</code>d files, <code>-uu</code> when you also need hidden/binary files, and <code>-uuu</code> for maximum coverage.</p>
 <h3 id="hidden-files-and-symlinks"><a class="header" href="#hidden-files-and-symlinks">Hidden Files and Symlinks</a></h3>
 <ul>
 <li>
-<p><strong><code>--hidden, -.</code></strong>: Search hidden files and directories (those starting with <code>.</code>)</p>
+<p><strong><code>--hidden</code></strong>: Search hidden files and directories (those starting with <code>.</code>)</p>
 <pre><code class="language-bash"># Search .config files
 rg --hidden 'database'
 </code></pre>
@@ -471,8 +564,80 @@ rg --max-filesize 5M pattern
 </code></pre>
 Suffixes: <code>K</code> (kilobytes), <code>M</code> (megabytes), <code>G</code> (gigabytes).</li>
 </ul>
+<h3 id="binary-files"><a class="header" href="#binary-files">Binary Files</a></h3>
+<p>By default, ripgrep auto-detects binary files (by finding NUL bytes) and skips them to avoid polluting output.</p>
+<ul>
+<li>
+<p><strong><code>--binary</code></strong>: Force searching binary files (shows matches even if NUL bytes detected)</p>
+<pre><code class="language-bash"># Search binary files for strings
+rg --binary 'pattern'
+</code></pre>
+</li>
+<li>
+<p><strong><code>-a, --text</code></strong>: Treat all files as text, disabling binary detection</p>
+<pre><code class="language-bash"># Search everything as text
+rg -a pattern
+</code></pre>
+</li>
+<li>
+<p><strong><code>--max-columns-preview NUM</code></strong>: Tune binary detection threshold</p>
+<pre><code class="language-bash"># Files with lines longer than 200 chars are considered binary
+rg --max-columns-preview 200 pattern
+</code></pre>
+<p>Default is 150. Ripgrep checks the first preview bytes for NUL characters.</p>
+</li>
+</ul>
+<h3 id="advanced-filtering"><a class="header" href="#advanced-filtering">Advanced Filtering</a></h3>
+<ul>
+<li>
+<p><strong><code>--same-file-system</code></strong>: Don't cross filesystem boundaries when searching</p>
+<pre><code class="language-bash"># Stay on same filesystem (avoid mounted drives, network shares)
+rg --same-file-system pattern
+</code></pre>
+<p>Useful to avoid searching network mounts or external drives.</p>
+</li>
+<li>
+<p><strong><code>--no-ignore-parent</code></strong>: Don't respect ignore files in parent directories</p>
+<pre><code class="language-bash"># Only use .gitignore in current directory, not parents
+rg --no-ignore-parent pattern
+</code></pre>
+<p>By default, ripgrep traverses up and respects <code>.gitignore</code>/<code>.ignore</code> files in parent directories.</p>
+</li>
+<li>
+<p><strong><code>--path-separator SEPARATOR</code></strong>: Use custom path separator in output</p>
+<pre><code class="language-bash"># Use forward slashes on Windows for Unix-style paths
+rg --path-separator / pattern
+</code></pre>
+<p>Useful for cross-platform scripts and consistent output formatting.</p>
+</li>
+</ul>
 <h2 id="output-modes"><a class="header" href="#output-modes">Output Modes</a></h2>
 <p>Instead of showing matching lines, these flags produce alternative output formats.</p>
+<h3 id="structured-output"><a class="header" href="#structured-output">Structured Output</a></h3>
+<ul>
+<li>
+<p><strong><code>--json</code></strong>: Output results in JSON Lines format (one JSON object per line)</p>
+<pre><code class="language-bash"># Get machine-readable output for tooling
+rg --json 'pattern'
+</code></pre>
+<p>Each line is a JSON object with a <code>type</code> field indicating the message type:</p>
+<ul>
+<li><code>begin</code>: Start of search in a file</li>
+<li><code>match</code>: A match with fields like <code>path</code>, <code>line_number</code>, <code>lines</code> (matched text), <code>submatches</code> (match positions)</li>
+<li><code>context</code>: Context lines around matches (when using <code>-A/-B/-C</code>)</li>
+<li><code>end</code>: End of search in a file</li>
+<li><code>summary</code>: Final statistics (if <code>--stats</code> is used)</li>
+</ul>
+<p>Useful for integrating ripgrep into scripts, editors, and other tools that need structured data.</p>
+</li>
+<li>
+<p><strong><code>--vimgrep</code></strong>: Output in vim-compatible quickfix format</p>
+<pre><code class="language-bash"># Generate vim quickfix format: path:line:col:text
+rg --vimgrep 'pattern'
+</code></pre>
+<p>Format: <code>path:line:column:matching text</code>. Useful for IDE integration and editor plugins that support quickfix format.</p>
+</li>
+</ul>
 <h3 id="counting"><a class="header" href="#counting">Counting</a></h3>
 <ul>
 <li>
@@ -553,6 +718,45 @@ rg --mmap pattern
 </code></pre>
 Memory mapping can be faster on some systems but uses more memory.</li>
 </ul>
+<h3 id="sorting"><a class="header" href="#sorting">Sorting</a></h3>
+<p>Results can be sorted by various criteria, though this requires buffering all results and impacts performance:</p>
+<ul>
+<li>
+<p><strong><code>--sort SORTBY</code></strong>: Sort results in ascending order</p>
+</li>
+<li>
+<p><strong><code>--sortr SORTBY</code></strong>: Sort results in descending order (reverse)</p>
+<pre><code class="language-bash"># Sort by file path
+rg --sort path pattern
+
+# Sort by modification time (newest first)
+rg --sortr modified pattern
+
+# Sort by creation time
+rg --sort created pattern
+</code></pre>
+<p>Available criteria: <code>path</code> (lexicographic), <code>modified</code> (modification time), <code>accessed</code> (access time), <code>created</code> (creation time).</p>
+<p>Note: Sorting disables parallelism and buffers all results, which can be slow on large searches.</p>
+</li>
+</ul>
+<h3 id="line-length-limits"><a class="header" href="#line-length-limits">Line Length Limits</a></h3>
+<p>Long lines can slow down searches. These flags help manage that:</p>
+<ul>
+<li>
+<p><strong><code>--max-columns NUM</code></strong>: Don't print lines longer than NUM bytes</p>
+<pre><code class="language-bash"># Skip very long lines (often minified code or data)
+rg --max-columns 500 pattern
+</code></pre>
+<p>Lines exceeding this length are skipped entirely.</p>
+</li>
+<li>
+<p><strong><code>--max-columns-preview NUM</code></strong>: For binary detection, check first NUM bytes for NUL</p>
+<pre><code class="language-bash"># Adjust binary detection sensitivity
+rg --max-columns-preview 200 pattern
+</code></pre>
+<p>Default is 150. Used to decide if a file is binary.</p>
+</li>
+</ul>
 <h2 id="getting-help"><a class="header" href="#getting-help">Getting Help</a></h2>
 <ul>
 <li>
@@ -575,6 +779,41 @@ Memory mapping can be faster on some systems but uses more memory.</li>
 <p><strong><code>--type-list</code></strong>: List all recognized file types</p>
 <pre><code class="language-bash">rg --type-list
 </code></pre>
+</li>
+<li>
+<p><strong><code>--pcre2-version</code></strong>: Show PCRE2 library version and JIT availability</p>
+<pre><code class="language-bash">rg --pcre2-version
+</code></pre>
+<p>Useful for verifying PCRE2 support before using the <code>-P</code> flag.</p>
+</li>
+</ul>
+<h3 id="debugging-and-performance-analysis"><a class="header" href="#debugging-and-performance-analysis">Debugging and Performance Analysis</a></h3>
+<p>These flags help troubleshoot search behavior and analyze performance:</p>
+<ul>
+<li>
+<p><strong><code>--debug</code></strong>: Show debug information about search strategy and configuration</p>
+<pre><code class="language-bash">rg --debug pattern
+</code></pre>
+<p>Shows which files are searched, which are ignored, regex engine selection, and configuration details. Useful for understanding why certain files are included or excluded.</p>
+</li>
+<li>
+<p><strong><code>--trace</code></strong>: Show trace-level debug information (very verbose)</p>
+<pre><code class="language-bash">rg --trace pattern 2&gt; trace.log
+</code></pre>
+<p>Even more detailed than <code>--debug</code>. Typically redirected to a file due to verbosity.</p>
+</li>
+<li>
+<p><strong><code>--stats</code></strong>: Show search statistics after results</p>
+<pre><code class="language-bash">rg --stats pattern
+</code></pre>
+<p>Displays metrics including:</p>
+<ul>
+<li>Elapsed time</li>
+<li>Bytes searched and printed</li>
+<li>Number of matched lines</li>
+<li>Number of searches with matches</li>
+</ul>
+<p>Useful for performance analysis and understanding search scope.</p>
 </li>
 </ul>
 <h2 id="quick-reference"><a class="header" href="#quick-reference">Quick Reference</a></h2>

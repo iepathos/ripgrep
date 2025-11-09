@@ -213,7 +213,7 @@ rg pattern
 </ul>
 <h3 id="work-stealing-architecture"><a class="header" href="#work-stealing-architecture">Work Stealing Architecture</a></h3>
 <p>Ripgrep uses a work-stealing scheduler for parallel iteration. When one thread finishes its work early, it can "steal" work from other threads, ensuring all cores stay busy and maximizing throughput.</p>
-<p>This lock-free parallel iteration means ripgrep scales well across many cores without contention overhead.</p>
+<p>This lock-free parallel iteration (using atomic operations for work distribution) means ripgrep scales well across many cores without contention overhead.</p>
 <h3 id="when-parallelism-is-disabled"><a class="header" href="#when-parallelism-is-disabled">When Parallelism is Disabled</a></h3>
 <p>Some operations disable parallel search automatically:</p>
 <ul>
@@ -248,6 +248,7 @@ rg --no-mmap pattern
 <li>Working with network file systems</li>
 <li>Memory is constrained</li>
 </ul>
+<p><strong>Platform-specific note</strong>: Memory mapping is disabled by default on macOS due to performance overhead, but can be enabled with <code>--mmap</code> if beneficial for your use case.</p>
 <h2 id="low-level-optimizations"><a class="header" href="#low-level-optimizations">Low-Level Optimizations</a></h2>
 <p>Ripgrep uses several low-level optimizations to maximize search speed.</p>
 <h3 id="simd-acceleration"><a class="header" href="#simd-acceleration">SIMD Acceleration</a></h3>
@@ -281,13 +282,13 @@ rg pattern
 <pre><code class="language-bash"># Set DFA cache size limit (in bytes)
 rg --dfa-size-limit 100M pattern
 </code></pre>
-<p>The default is usually sufficient. Increase this if you see warnings about DFA cache thrashing on very large or complex patterns.</p>
+<p>The default is 1 MB (1000000 bytes). Increase this if you see warnings about DFA cache thrashing on very large or complex patterns.</p>
 <h3 id="regex-size-limits"><a class="header" href="#regex-size-limits">Regex Size Limits</a></h3>
 <p>Limit the compiled size of the regex:</p>
 <pre><code class="language-bash"># Set regex bytecode size limit (in bytes)
 rg --regex-size-limit 10M pattern
 </code></pre>
-<p>Useful in memory-constrained environments or when dealing with extremely large patterns.</p>
+<p>The default is 100 MB. Useful in memory-constrained environments or when dealing with extremely large patterns.</p>
 <h3 id="engine-selection"><a class="header" href="#engine-selection">Engine Selection</a></h3>
 <p>Choose between regex engines:</p>
 <pre><code class="language-bash"># Use default Rust regex (finite automata)
@@ -307,6 +308,8 @@ rg --engine auto pattern
 </ul>
 <h2 id="buffer-and-memory-tuning"><a class="header" href="#buffer-and-memory-tuning">Buffer and Memory Tuning</a></h2>
 <p>Control how ripgrep buffers output and manages memory.</p>
+<h3 id="buffer-size"><a class="header" href="#buffer-size">Buffer Size</a></h3>
+<p>Ripgrep uses a 64 KB default buffer for reading files. This is automatically managed but understanding the buffer size can help diagnose memory usage patterns and performance characteristics.</p>
 <h3 id="buffering-modes"><a class="header" href="#buffering-modes">Buffering Modes</a></h3>
 <pre><code class="language-bash"># Line buffered output (flush after each line)
 rg --line-buffered pattern
@@ -316,12 +319,13 @@ rg --block-buffered pattern
 </code></pre>
 <p>Line buffering is useful when piping to another program that needs immediate output. Block buffering (default) provides better throughput.</p>
 <h3 id="heap-limits"><a class="header" href="#heap-limits">Heap Limits</a></h3>
-<p>Ripgrep has internal heap limit controls to prevent excessive memory usage. These are automatically managed but can be important when:</p>
+<p>Ripgrep has internal heap limit controls to prevent excessive memory usage. While these are automatically managed, you can configure heap allocation behavior through other memory parameters like <code>--dfa-size-limit</code> to indirectly influence heap usage. These controls are important when:</p>
 <ul>
 <li>Searching extremely large files</li>
 <li>Using complex patterns with many capture groups</li>
 <li>Running in memory-constrained environments</li>
 </ul>
+<p>The default heap allocation strategy is eager allocation, which provides good performance for most use cases. In constrained environments, reducing memory limits through flags like <code>--dfa-size-limit</code> and <code>--regex-size-limit</code> helps control heap usage.</p>
 <h2 id="sorting-results"><a class="header" href="#sorting-results">Sorting Results</a></h2>
 <p>Ripgrep can sort results, but with a performance cost.</p>
 <pre><code class="language-bash"># Sort by file path

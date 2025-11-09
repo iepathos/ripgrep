@@ -397,6 +397,7 @@ rg '\p{Uppercase}+'
 <tr><td><code>\p{any}</code></td><td>Any character (including newlines)</td></tr>
 </tbody></table>
 </div>
+<p><strong>Note on Emoji Matching</strong>: Emoji matching with <code>\p{Emoji}</code> may vary across different regex engines and Unicode versions. Some complex emoji (like multi-codepoint sequences, skin tone modifiers, or zero-width joiners) may require additional pattern logic. Always test emoji patterns with your specific use case and data.</p>
 <h3 id="unicode-aware-metacharacters"><a class="header" href="#unicode-aware-metacharacters">Unicode-Aware Metacharacters</a></h3>
 <p>By default, these metacharacters are Unicode-aware:</p>
 <ul>
@@ -564,13 +565,21 @@ rg -i 'foo(?-i:bar)'  # "foo" is case-insensitive, "bar" is case-sensitive
 <li>More complex matching algorithm</li>
 <li>Less optimized for large-scale text search</li>
 </ul>
+<p><strong>Backtracking Complexity</strong>: PCRE2's backtracking algorithm can exhibit exponential time complexity on certain "pathological" patterns, especially those with:</p>
+<ul>
+<li>Nested quantifiers (e.g., <code>(a+)+</code>)</li>
+<li>Complex alternations with overlapping possibilities</li>
+<li>Patterns that cause extensive backtracking on non-matches</li>
+</ul>
+<p>The default engine uses finite automata which guarantees linear time complexity regardless of pattern complexity. This makes it much more predictable and safer for untrusted input.</p>
 <p><strong>When PCRE2 is worth it</strong>:</p>
 <ul>
 <li>Need lookaround or backreferences</li>
 <li>Pattern complexity requires PCRE2 features</li>
 <li>Search space is limited (specific files/directories)</li>
+<li>You've tested the pattern on representative data and performance is acceptable</li>
 </ul>
-<p><strong>Recommendation</strong>: Use default engine unless you need PCRE2-specific features.</p>
+<p><strong>Recommendation</strong>: Use default engine unless you need PCRE2-specific features. When using PCRE2, test patterns on representative data to ensure acceptable performance, especially before using in production scripts or on large codebases.</p>
 <h3 id="backreferences-and-lookaround"><a class="header" href="#backreferences-and-lookaround">Backreferences and Lookaround</a></h3>
 <p>These features prevent some optimizations:</p>
 <ul>
@@ -742,6 +751,7 @@ rg --pcre2-version
 # PCRE2 10.42 (JIT: enabled)
 </code></pre>
 <p>If PCRE2 is not compiled in, this command exits with an error.</p>
+<p><strong>JIT Compilation</strong>: The "JIT: enabled" status indicates that PCRE2's Just-In-Time compiler is available. JIT compilation converts regex patterns into native machine code at runtime, providing significant performance improvements (often 2-10x faster) for PCRE2 pattern matching. When JIT is enabled, PCRE2 patterns run much faster, though still typically slower than ripgrep's default finite automata engine.</p>
 <h3 id="regex-size-limit"><a class="header" href="#regex-size-limit">Regex Size Limit</a></h3>
 <p>Controls the maximum size of compiled regex:</p>
 <pre><code class="language-bash"># Default limit is usually sufficient
@@ -772,6 +782,34 @@ rg --dfa-size-limit 100M 'pattern'
 <pre><code>error: regex compiled too large
 help: use --regex-size-limit to increase the limit
 </code></pre>
+<h3 id="when-to-increase-limits-vs-simplify-patterns"><a class="header" href="#when-to-increase-limits-vs-simplify-patterns">When to Increase Limits vs Simplify Patterns</a></h3>
+<p>Hitting regex limits is often a sign that your pattern needs simplification, but sometimes large patterns are legitimate. Here's how to decide:</p>
+<p><strong>Increase limits for</strong>:</p>
+<ul>
+<li><strong>Auto-generated patterns</strong>: Patterns produced by tools or scripts (e.g., generated from configuration)</li>
+<li><strong>Large alternations</strong>: Legitimate need to match many alternatives (<code>word1|word2|...|word1000</code>)</li>
+<li><strong>Comprehensive matching</strong>: Domain-specific patterns covering many cases (e.g., all valid email formats, file extensions)</li>
+<li><strong>One-time searches</strong>: Complex ad-hoc queries that won't be reused</li>
+</ul>
+<p><strong>Simplify patterns instead for</strong>:</p>
+<ul>
+<li><strong>Deeply nested groups</strong>: Patterns with excessive nesting usually can be refactored</li>
+<li><strong>Repeated similar logic</strong>: Extract common patterns or use multiple simpler searches</li>
+<li><strong>Unclear complexity</strong>: If you can't explain why the pattern is complex, it's probably poorly designed</li>
+<li><strong>Production scripts</strong>: Patterns used repeatedly should be simple and maintainable</li>
+</ul>
+<p><strong>Simplification strategies</strong>:</p>
+<pre><code class="language-bash"># Instead of huge alternation, use multiple searches
+rg -e 'pattern1' -e 'pattern2' -e 'pattern3'
+
+# Instead of complex nested groups, break into stages
+rg 'simple_pattern1' | rg 'simple_pattern2'
+
+# Use character classes instead of alternations
+# Bad: (a|b|c|d|e)
+# Good: [a-e]
+</code></pre>
+<p><strong>Rule of thumb</strong>: If increasing the limit solves a one-time problem, that's fine. If you're hitting limits regularly, invest time in understanding and simplifying your patterns.</p>
 <h2 id="decision-tree-choosing-the-right-features"><a class="header" href="#decision-tree-choosing-the-right-features">Decision Tree: Choosing the Right Features</a></h2>
 <p>Use this guide to select appropriate flags for your search:</p>
 <pre><code>Do you need to match across line boundaries?
@@ -823,7 +861,7 @@ Complex pattern with multiple features?
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="sorting-results.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="utility-modes.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
@@ -837,7 +875,7 @@ Complex pattern with multiple features?
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="sorting-results.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="utility-modes.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 

@@ -200,15 +200,15 @@ rg --hyperlink-format default pattern
 <p>Instead of writing full hyperlink format strings, ripgrep provides convenient built-in aliases for common editors and schemes:</p>
 <div class="table-wrapper"><table><thead><tr><th>Alias</th><th>Expands to</th></tr></thead><tbody>
 <tr><td><code>default</code></td><td>Platform-aware file:// scheme (see below)</td></tr>
-<tr><td><code>file</code></td><td><code>file://{path}</code></td></tr>
+<tr><td><code>file</code></td><td><code>file://{host}{path}</code></td></tr>
 <tr><td><code>vscode</code></td><td><code>vscode://file/{path}:{line}:{column}</code></td></tr>
 <tr><td><code>vscode-insiders</code></td><td><code>vscode-insiders://file/{path}:{line}:{column}</code></td></tr>
 <tr><td><code>vscodium</code></td><td><code>vscodium://file/{path}:{line}:{column}</code></td></tr>
 <tr><td><code>cursor</code></td><td><code>cursor://file/{path}:{line}:{column}</code></td></tr>
 <tr><td><code>macvim</code></td><td><code>mvim://open?url=file://{path}&amp;line={line}&amp;column={column}</code></td></tr>
 <tr><td><code>textmate</code></td><td><code>txmt://open?url=file://{path}&amp;line={line}&amp;column={column}</code></td></tr>
-<tr><td><code>kitty</code></td><td><code>kitty+kitten://edit/{path}:{line}:{column}</code></td></tr>
-<tr><td><code>grep+</code></td><td><code>x-grepapp://open?file={path}&amp;line={line}&amp;column={column}</code></td></tr>
+<tr><td><code>kitty</code></td><td><code>file://{host}{path}#{line}</code></td></tr>
+<tr><td><code>grep+</code></td><td><code>grep+://{path}:{line}</code></td></tr>
 <tr><td><code>none</code></td><td>Explicitly disable hyperlinks</td></tr>
 </tbody></table>
 </div>
@@ -218,6 +218,7 @@ rg --hyperlink-format default pattern
 <li>Windows: <code>file://{path}</code> (omits hostname for compatibility)</li>
 </ul>
 <p>The default alias follows RFC 8089 file:// URI specification and is the recommended choice for general use.</p>
+<p><strong>Note:</strong> The <code>file</code> alias differs from <code>default</code> by always including the hostname, even on Windows. Use <code>default</code> for cross-platform compatibility.</p>
 <p><strong>The <code>none</code> alias</strong> can be used to explicitly disable hyperlinks, which is useful for overriding config file settings:</p>
 <pre><code class="language-bash"># Disable hyperlinks even if config file sets them
 rg --hyperlink-format none pattern
@@ -303,6 +304,7 @@ rg --hyperlink-format grep+ pattern
 </code></pre>
 <h3 id="custom-editor-integration"><a class="header" href="#custom-editor-integration">Custom Editor Integration</a></h3>
 <p>For editors not included in the built-in aliases, you can create custom hyperlink formats:</p>
+<p><strong>WARNING:</strong> These are community-suggested formats and may require custom URL scheme handlers to be registered with your OS. They are not built into ripgrep or guaranteed to work.</p>
 <pre><code class="language-bash"># IntelliJ/PyCharm/WebStorm (community format)
 rg --hyperlink-format 'idea://open?file={path}&amp;line={line}' pattern
 
@@ -335,7 +337,7 @@ rg --hyperlink-format default pattern
 </code></pre>
 <p>On Unix/Linux/macOS, this expands to <code>file://{host}{path}</code>. On Windows, it expands to <code>file://{path}</code>.</p>
 <h3 id="example-3-kitty-terminal-editor-integration"><a class="header" href="#example-3-kitty-terminal-editor-integration">Example 3: Kitty Terminal Editor Integration</a></h3>
-<pre><code class="language-bash"># Open results in Kitty's built-in editor
+<pre><code class="language-bash"># Open results using kitty's file:// handler (with line number fragment)
 rg --hyperlink-format kitty pattern
 </code></pre>
 <h3 id="example-4-disabling-hyperlinks"><a class="header" href="#example-4-disabling-hyperlinks">Example 4: Disabling Hyperlinks</a></h3>

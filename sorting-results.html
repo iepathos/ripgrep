@@ -220,6 +220,7 @@ rg --sortr path pattern
 # Oldest modified files first
 rg --sortr modified pattern
 </code></pre>
+<p><strong>Note</strong>: Reverse path sorting (<code>--sortr path</code>) collects and sorts all paths in memory, unlike forward path sorting which can stream results. This means <code>--sortr path</code> has higher memory usage than <code>--sort path</code>.</p>
 <h2 id="sorting-by-path"><a class="header" href="#sorting-by-path">Sorting by Path</a></h2>
 <p>Path sorting uses lexicographic ordering:</p>
 <pre><code class="language-bash">rg --sort path 'TODO'
@@ -236,6 +237,7 @@ rg --sortr modified pattern
 <li>Alphabetical organization</li>
 <li>Predictable file ordering</li>
 </ul>
+<p><strong>Performance Note</strong>: When using <code>--sort path</code> in ascending order (without reverse), ripgrep uses an optimized streaming path that processes paths in their natural traversal order without buffering all results in memory. This makes ascending path sorting more memory-efficient than other sort modes.</p>
 <h2 id="sorting-by-modified-time"><a class="header" href="#sorting-by-modified-time">Sorting by Modified Time</a></h2>
 <p>Find matches in recently changed files:</p>
 <pre><code class="language-bash"># Most recently modified first
@@ -278,8 +280,8 @@ rg --sortr created 'pattern'
 <h2 id="performance-impact"><a class="header" href="#performance-impact">Performance Impact</a></h2>
 <p>Sorting affects performance in several ways:</p>
 <ol>
-<li><strong>Disables Parallelism</strong>: Sorting requires collecting all results before output, so ripgrep runs single-threaded</li>
-<li><strong>Memory Usage</strong>: All results must be held in memory before sorting</li>
+<li><strong>Disables Parallelism</strong>: Sorting requires collecting all results before output, which automatically disables parallelism in the directory walker, forcing sequential processing. Exception: <code>--sort path</code> in ascending order uses an optimized streaming path that avoids this overhead.</li>
+<li><strong>Memory Usage</strong>: All results must be held in memory before sorting (except for <code>--sort path</code> in ascending order)</li>
 <li><strong>Startup Delay</strong>: No results appear until the entire search completes</li>
 </ol>
 <p>Performance comparison:</p>
@@ -349,6 +351,12 @@ rg --sortr created 'deprecated_function'
 <li><strong>Windows</strong>: All timestamps available but may have different precision</li>
 </ul>
 <p><strong>Error Handling</strong>: When a requested sort criterion is unavailable on the filesystem (for example, creation time on ext4 filesystems), ripgrep will detect this, print an error message, and exit without performing the search. This ensures that you're aware when the requested sorting cannot be reliably performed.</p>
+<p>When sorting by timestamps, files with metadata errors (such as permission denied or missing filesystem metadata) are handled gracefully:</p>
+<ul>
+<li>With ascending sort (<code>--sort</code>): Files with errors appear last in the output</li>
+<li>With descending sort (<code>--sortr</code>): Files with errors appear first in the output</li>
+</ul>
+<p>This ensures predictable behavior even when some files cannot be fully accessed.</p>
 <h2 id="see-also"><a class="header" href="#see-also">See Also</a></h2>
 <ul>
 <li><a href="performance.html">Performance</a> - Performance tuning and optimization</li>
@@ -364,7 +372,7 @@ rg --sortr created 'deprecated_function'
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="advanced-patterns.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="utility-modes.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -378,7 +386,7 @@ rg --sortr created 'deprecated_function'
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="advanced-patterns.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="utility-modes.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

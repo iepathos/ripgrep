@@ -213,7 +213,7 @@
 <h3 id="match-statistics"><a class="header" href="#match-statistics">Match Statistics</a></h3>
 <ul>
 <li><strong>Matches</strong>: Total number of pattern matches found</li>
-<li><strong>Matched lines</strong>: Number of unique lines containing matches</li>
+<li><strong>Matched lines</strong>: Number of lines containing matches. With multiline patterns (<code>--multiline</code> or <code>-U</code>), this counts all lines that participate in or are part of any match, not just the first line of each match.</li>
 <li><strong>Files contained matches</strong>: Count of files with at least one match</li>
 </ul>
 <h3 id="search-scope"><a class="header" href="#search-scope">Search Scope</a></h3>
@@ -227,6 +227,7 @@
 <li><strong>Seconds spent searching</strong>: Actual search time across all threads</li>
 <li><strong>Seconds total</strong>: Wall-clock time for the entire operation</li>
 </ul>
+<p>The <code>--stats</code> flag itself has minimal performance overhead since ripgrep tracks these metrics internally regardless. Enabling <code>--stats</code> only adds the cost of formatting and printing the final summary.</p>
 <h2 id="understanding-the-metrics"><a class="header" href="#understanding-the-metrics">Understanding the Metrics</a></h2>
 <h3 id="matches-vs-matched-lines"><a class="header" href="#matches-vs-matched-lines">Matches vs. Matched Lines</a></h3>
 <p>A line can contain multiple matches:</p>
@@ -245,10 +246,12 @@ echo "the quick brown fox jumps over the lazy dog" | rg --stats 'the'
 <li><strong>Searching time</strong>: Sum of time across all threads (can exceed wall time)</li>
 <li><strong>Total time</strong>: Actual elapsed time</li>
 </ul>
+<p>The "seconds spent searching" metric accumulates CPU time across all threads. With parallel search, this will typically exceed wall-clock time. A ratio close to your thread count indicates good parallelization. For example, if you have 4 threads and the ratio is ~4x, your search is efficiently using all threads.</p>
 <p>Example:</p>
 <pre><code>0.400000 seconds spent searching  (4 threads × 0.1s each)
 0.100000 seconds total  (wall-clock time)
 </code></pre>
+<p>In this case, the 4:1 ratio (0.4s / 0.1s = 4) shows that all 4 threads were fully utilized during the search.</p>
 <h2 id="use-cases"><a class="header" href="#use-cases">Use Cases</a></h2>
 <h3 id="performance-analysis"><a class="header" href="#performance-analysis">Performance Analysis</a></h3>
 <p>Compare different search strategies:</p>
@@ -280,7 +283,7 @@ rg --stats -tjs 'import'
 <pre><code class="language-bash"># Just get statistics, suppress output
 rg --stats -q pattern
 </code></pre>
-<p>Note: When combining <code>--stats</code> with <code>--quiet</code>, ripgrep will search all files completely to collect accurate statistics, even though <code>--quiet</code> alone would normally exit after the first match.</p>
+<p>Note: When combining <code>--stats</code> with <code>--quiet</code>, ripgrep will search all files completely to collect accurate statistics, even though <code>--quiet</code> alone would normally exit after the first match. This means <code>--stats</code> disables <code>--quiet</code>'s early-exit optimization. If you're just checking for pattern existence in a large codebase, using both flags together will be much slower than <code>--quiet</code> alone, as it must search all files to completion.</p>
 <h3 id="statistics-in-json"><a class="header" href="#statistics-in-json">Statistics in JSON</a></h3>
 <p>Statistics are fully supported in JSON output format:</p>
 <pre><code class="language-bash"># Get machine-readable statistics in JSON format
@@ -291,6 +294,7 @@ rg --json --stats pattern
   "type": "summary",
   "data": {
     "elapsed_total": {
+      "human": "0.001000s",
       "secs": 0,
       "nanos": 1000000
     },
@@ -309,6 +313,7 @@ rg --json --stats pattern
   }
 }
 </code></pre>
+<p>The <code>elapsed_total</code> object includes a <code>human</code> field with a formatted time string for readability, in addition to the precise <code>secs</code> and <code>nanos</code> fields for programmatic use.</p>
 <h2 id="examples"><a class="header" href="#examples">Examples</a></h2>
 <h3 id="example-1-find-most-common-pattern"><a class="header" href="#example-1-find-most-common-pattern">Example 1: Find Most Common Pattern</a></h3>
 <pre><code class="language-bash"># Compare prevalence of different patterns
@@ -362,7 +367,15 @@ rg --stats --debug 'pattern' 2&gt;&amp;1 | less
 <li><strong>Low parallelism benefit</strong>: Check if sorting or other options disabled threading</li>
 </ol>
 <h2 id="statistics-in-scripts"><a class="header" href="#statistics-in-scripts">Statistics in Scripts</a></h2>
-<p>Capture statistics for reporting:</p>
+<p>Capture statistics for reporting.</p>
+<p>For production scripts, prefer JSON output for reliable parsing:</p>
+<pre><code class="language-bash">#!/bin/bash
+OUTPUT=$(rg --json --stats 'pattern' | tail -1)
+MATCHES=$(echo "$OUTPUT" | jq '.data.stats.matches')
+FILES=$(echo "$OUTPUT" | jq '.data.stats.searches_with_match')
+echo "Found $MATCHES matches across $FILES files"
+</code></pre>
+<p>Alternatively, you can parse text output for simpler cases:</p>
 <pre><code class="language-bash">#!/bin/bash
 OUTPUT=$(rg --stats 'pattern' 2&gt;&amp;1)
 MATCHES=$(echo "$OUTPUT" | grep "^[0-9]* matches" | cut -d' ' -f1)

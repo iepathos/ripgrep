@@ -208,6 +208,8 @@
 <li><strong>Multiline search</strong>: Search patterns that span multiple lines with the <code>-U/--multiline</code> flag.</li>
 <li><strong>Replacement support</strong>: Replace matched patterns with the <code>-r/--replace</code> flag.</li>
 <li><strong>JSON output</strong>: Machine-readable JSON output format for integration with other tools.</li>
+<li><strong>Hyperlink support</strong>: Terminal hyperlinks for clickable file paths with <code>--hyperlink-format</code> (built-in support for VSCode, vim, and more).</li>
+<li><strong>Performance statistics</strong>: Track and display search metrics with <code>--stats</code> for understanding search performance.</li>
 </ul>
 <h2 id="installation"><a class="header" href="#installation">Installation</a></h2>
 <h3 id="quick-installation"><a class="header" href="#quick-installation">Quick Installation</a></h3>
@@ -353,7 +355,7 @@ rg -F "[debug]"
 <li>Avoiding regex metacharacter interpretation issues</li>
 </ul>
 <h2 id="regular-expressions"><a class="header" href="#regular-expressions">Regular Expressions</a></h2>
-<p>Ripgrep uses Rust's regex engine by default, which supports a rich set of regex features.</p>
+<p>Ripgrep uses Rust's regex-automata library (a DFA-based engine) by default, which provides excellent performance for most patterns while supporting a rich set of regex features.</p>
 <h3 id="basic-metacharacters"><a class="header" href="#basic-metacharacters">Basic Metacharacters</a></h3>
 <pre><code class="language-bash"># . matches any character (except newline)
 rg "error."          # Matches "error1", "errors", "error!"
@@ -398,6 +400,36 @@ rg "\s+error"        # Matches "error" with leading whitespace
 # \W matches non-word characters
 # \S matches non-whitespace
 </code></pre>
+<h3 id="unicode-character-classes"><a class="header" href="#unicode-character-classes">Unicode Character Classes</a></h3>
+<p>Ripgrep supports Unicode character classes using the <code>\p{}</code> syntax:</p>
+<pre><code class="language-bash"># \p{L} matches any Unicode letter
+rg "\p{L}+"          # Matches words in any language
+
+# \p{N} matches any Unicode number
+rg "\p{N}+"          # Matches numeric characters
+
+# \p{P} matches any Unicode punctuation
+rg "\p{P}"           # Matches punctuation marks
+
+# \p{Ll} matches lowercase letters
+rg "\p{Ll}+"         # Matches lowercase words
+
+# \p{Lu} matches uppercase letters
+rg "\p{Lu}+"         # Matches uppercase words
+
+# \P{} negates the class (matches anything except)
+rg "\P{L}+"          # Matches non-letter characters
+</code></pre>
+<p><strong>Common Unicode categories:</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Pattern</th><th>Description</th><th>Example</th></tr></thead><tbody>
+<tr><td><code>\p{L}</code></td><td>Any letter</td><td>Matches "café", "日本", "hello"</td></tr>
+<tr><td><code>\p{N}</code></td><td>Any number</td><td>Matches "42", "৪২" (Bengali)</td></tr>
+<tr><td><code>\p{P}</code></td><td>Any punctuation</td><td>Matches ".", "!", "?"</td></tr>
+<tr><td><code>\p{S}</code></td><td>Any symbol</td><td>Matches "$", "€", "©"</td></tr>
+<tr><td><code>\p{Ll}</code></td><td>Lowercase letter</td><td>Matches "abc", "ñ"</td></tr>
+<tr><td><code>\p{Lu}</code></td><td>Uppercase letter</td><td>Matches "ABC", "Ñ"</td></tr>
+</tbody></table>
+</div>
 <h3 id="word-and-line-boundaries"><a class="header" href="#word-and-line-boundaries">Word and Line Boundaries</a></h3>
 <pre><code class="language-bash"># \b matches word boundary
 rg "\btest\b"        # Matches "test" but not "testing" or "contest"
@@ -419,12 +451,16 @@ rg "[0-9]{2,4}"      # Matches 2-4 digits like "42", "123", "1234"
 <pre><code class="language-bash"># () creates a capturing group
 rg "(error|warning): (.+)"    # Captures error/warning and message
 
+# Named capture groups with (?P&lt;name&gt;...)
+rg "(?P&lt;level&gt;error|warning): (?P&lt;msg&gt;.+)"   # Named captures for clarity
+
 # | means "or"
 rg "error|warning"            # Matches either "error" or "warning"
 
 # Non-capturing groups with (?:)
 rg "(?:http|https)://\S+"     # Matches URLs
 </code></pre>
+<p><strong>Named capture groups</strong> are especially useful with replacement operations (see the <a href="./replacements.html">Replacements</a> chapter) where you can refer to captures by name instead of number.</p>
 <h3 id="common-pattern-examples"><a class="header" href="#common-pattern-examples">Common Pattern Examples</a></h3>
 <pre><code class="language-bash"># Email addresses
 rg "\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"
@@ -441,6 +477,73 @@ rg "\w+\([^)]*\)"
 # URLs
 rg "https?://[^\s]+"
 </code></pre>
+<h3 id="regex-engine-selection"><a class="header" href="#regex-engine-selection">Regex Engine Selection</a></h3>
+<p>Ripgrep supports multiple regex engines that you can select using the <code>--engine</code> flag:</p>
+<pre><code class="language-bash"># Use default engine (Rust regex-automata, DFA-based)
+rg pattern              # Implicit default
+rg --engine default pattern
+
+# Use PCRE2 engine (same as -P flag)
+rg --engine pcre2 pattern
+rg -P pattern           # Shorthand
+
+# Auto-select engine based on pattern
+rg --engine auto pattern
+</code></pre>
+<p><strong>When to use different engines:</strong></p>
+<ul>
+<li><strong>Default (regex-automata)</strong>: Fast, efficient for most patterns. Use for general searches.</li>
+<li><strong>PCRE2</strong>: Supports advanced features not in default engine. Use when you need backreferences, lookahead/lookbehind, or other Perl-compatible features.</li>
+<li><strong>Auto</strong>: Lets ripgrep choose the best engine for your pattern.</li>
+</ul>
+<h3 id="pcre2-engine"><a class="header" href="#pcre2-engine">PCRE2 Engine</a></h3>
+<p>Use the <code>-P</code> or <code>--pcre2</code> flag to enable the Perl-compatible regex engine, which supports advanced features not available in the default engine.</p>
+<p><strong>Features available only with PCRE2:</strong></p>
+<pre><code class="language-bash"># Backreferences - refer to previously captured groups
+rg -P "(\w+)\s+\1"       # Finds repeated words like "the the"
+
+# Positive lookahead (?=...)
+rg -P "error(?=:)"       # Matches "error" only if followed by ":"
+
+# Negative lookahead (?!...)
+rg -P "test(?!ing)"      # Matches "test" but not "testing"
+
+# Positive lookbehind (?&lt;=...)
+rg -P "(?&lt;=@)\w+"        # Matches username after "@" in email
+
+# Negative lookbehind (?&lt;!...)
+rg -P "(?&lt;!un)happy"     # Matches "happy" but not "unhappy"
+
+# Possessive quantifiers
+rg -P "\d++\."           # More efficient matching with possessive +
+
+# Atomic groups (?&gt;...)
+rg -P "(?&gt;error|warning):"   # Prevents backtracking
+</code></pre>
+<p><strong>Performance tradeoffs:</strong></p>
+<ul>
+<li>PCRE2 is more powerful but typically slower than the default engine</li>
+<li>Use PCRE2 only when you need its specific features</li>
+<li>The default engine is optimized for speed and handles most use cases</li>
+</ul>
+<h3 id="default-engine-limitations"><a class="header" href="#default-engine-limitations">Default Engine Limitations</a></h3>
+<p>The default Rust regex engine provides excellent performance but does not support some advanced features:</p>
+<p><strong>Not supported in default engine:</strong></p>
+<ul>
+<li>Backreferences (<code>\1</code>, <code>\2</code>, etc.)</li>
+<li>Lookahead and lookbehind assertions</li>
+<li>Possessive quantifiers (<code>*+</code>, <code>++</code>, etc.)</li>
+<li>Atomic groups (<code>(?&gt;...)</code>)</li>
+</ul>
+<p><strong>If you need these features, use the PCRE2 engine with <code>-P</code>:</strong></p>
+<pre><code class="language-bash"># This pattern requires PCRE2 for backreferences
+rg -P "(\w+)\s+\1"
+
+# This pattern requires PCRE2 for lookahead
+rg -P "error(?=:)"
+</code></pre>
+<p><strong>Troubleshooting tip:</strong> If your regex pattern isn't working as expected and uses backreferences or lookahead/lookbehind, try adding the <code>-P</code> flag to enable PCRE2.</p>
+<p><strong>Note:</strong> For multiline pattern matching, ripgrep provides the <code>-U</code> flag. You can also use <code>--multiline-dotall</code> to make <code>.</code> match newlines in multiline mode. See the <a href="./advanced-patterns.html">Advanced Patterns</a> chapter for details.</p>
 <h2 id="case-sensitivity"><a class="header" href="#case-sensitivity">Case Sensitivity</a></h2>
 <p>By default, ripgrep performs case-sensitive searches.</p>
 <h3 id="case-insensitive-search"><a class="header" href="#case-insensitive-search">Case-Insensitive Search</a></h3>
@@ -1001,6 +1104,7 @@ $ rg 'pattern' --no-ignore-global
 <p>By default, <code>.gitignore</code> files are only respected inside Git repositories. Use <code>--no-require-git</code> to respect <code>.gitignore</code> files even outside repositories:</p>
 <pre><code class="language-bash">$ rg 'pattern' --no-require-git
 </code></pre>
+<p>The default behavior can be made explicit with <code>--require-git</code>, which ensures <code>.gitignore</code> files are only respected inside Git repositories.</p>
 <h2 id="hidden-files"><a class="header" href="#hidden-files">Hidden Files</a></h2>
 <p>Ripgrep skips hidden files and directories by default.</p>
 <h3 id="what-is-hidden"><a class="header" href="#what-is-hidden">What is Hidden?</a></h3>
@@ -1010,7 +1114,7 @@ $ rg 'pattern' --no-ignore-global
 <li>On Windows, it has the "hidden" file attribute set</li>
 </ul>
 <h3 id="searching-hidden-files"><a class="header" href="#searching-hidden-files">Searching Hidden Files</a></h3>
-<p>Use <code>-./--hidden</code> to search hidden files:</p>
+<p>Use <code>-.</code>/<code>--hidden</code> to search hidden files:</p>
 <pre><code class="language-bash">$ rg 'pattern' --hidden
 # Searches all files including .bashrc, .git/, etc.
 </code></pre>
@@ -1048,6 +1152,24 @@ $ rg 'pattern' --no-ignore-global
 <pre><code class="language-bash">$ rg 'pattern' --no-ignore-parent
 # Only respect ignore files in or below current directory
 </code></pre>
+<h2 id="symlinks"><a class="header" href="#symlinks">Symlinks</a></h2>
+<p>By default, ripgrep does not follow symbolic links during recursive search.</p>
+<h3 id="following-symlinks-1"><a class="header" href="#following-symlinks-1">Following Symlinks</a></h3>
+<p>Use <code>-L</code>/<code>--follow</code> to follow symbolic links:</p>
+<pre><code class="language-bash">$ rg 'pattern' --follow
+# Follows symlinks to files and directories
+</code></pre>
+<p><strong>Loop detection</strong>: Ripgrep automatically detects and prevents infinite loops when following symlinks that create circular directory structures.</p>
+<h3 id="symlinks-and-ignore-files"><a class="header" href="#symlinks-and-ignore-files">Symlinks and Ignore Files</a></h3>
+<p>When following symlinks with <code>--follow</code>, ignore files are still respected:</p>
+<ul>
+<li>The symlink target is subject to ignore rules in its actual location</li>
+<li>If a symlinked directory contains <code>.gitignore</code> or <code>.ignore</code> files, they apply to files within that directory</li>
+</ul>
+<p>To follow symlinks while bypassing ignore files:</p>
+<pre><code class="language-bash">$ rg 'pattern' --follow --no-ignore
+# Follow symlinks and ignore all ignore files
+</code></pre>
 <h2 id="disabling-automatic-filtering"><a class="header" href="#disabling-automatic-filtering">Disabling Automatic Filtering</a></h2>
 <p>Ripgrep provides several ways to disable automatic filtering.</p>
 <h3 id="progressive-unrestricted-flags"><a class="header" href="#progressive-unrestricted-flags">Progressive Unrestricted Flags</a></h3>
@@ -1070,6 +1192,7 @@ $ rg 'pattern' --no-ignore-global
 <tr><td><code>--no-ignore</code></td><td>Disable all standard ignore files</td></tr>
 <tr><td><code>--no-ignore-dot</code></td><td>Disable <code>.ignore</code> and <code>.rgignore</code> files only</td></tr>
 <tr><td><code>--no-ignore-vcs</code></td><td>Disable <code>.gitignore</code> and <code>.git/info/exclude</code> only</td></tr>
+<tr><td><code>--no-ignore-exclude</code></td><td>Disable <code>.git/info/exclude</code> only</td></tr>
 <tr><td><code>--no-ignore-global</code></td><td>Disable global gitignore only</td></tr>
 <tr><td><code>--no-ignore-parent</code></td><td>Don't read ignore files from parent directories</td></tr>
 <tr><td><code>--no-ignore-files</code></td><td>Disable custom ignore files from <code>--ignore-file</code></td></tr>
@@ -1242,8 +1365,8 @@ rg -g 'foo' pattern
 rg -g 'foo/**' pattern
 </code></pre>
 <p>Always use <code>foo/**</code> to match files within a directory.</p>
-<h2 id="include-and-exclude-patterns"><a class="header" href="#include-and-exclude-patterns">Include and Exclude Patterns</a></h2>
-<p>Prefix a glob with <code>!</code> to exclude files that match:</p>
+<h2 id="including-and-excluding-files"><a class="header" href="#including-and-excluding-files">Including and Excluding Files</a></h2>
+<p>By default, glob patterns include files. Prefix a glob with <code>!</code> to exclude files that match:</p>
 <pre><code class="language-bash"># Search all Rust files except tests
 rg -g '*.rs' -g '!test*.rs' pattern
 
@@ -1279,12 +1402,13 @@ rg -g '{src,lib,bin}/**/*.rs' pattern
 # Match multiple file patterns
 rg -g '{Cargo.toml,Cargo.lock,*.rs}' pattern
 </code></pre>
-<p><strong>Note:</strong> Empty alternatives like <code>{,c}</code> are not supported. This is a ripgrep extension beyond standard <code>.gitignore</code> syntax.</p>
+<p><strong>Note:</strong> Empty alternatives like <code>{,c}</code> are not currently supported (as of ripgrep 14.1+). Brace expansion is a ripgrep extension beyond standard <code>.gitignore</code> syntax.</p>
 <h2 id="case-insensitive-globs"><a class="header" href="#case-insensitive-globs">Case-Insensitive Globs</a></h2>
 <p>Two flags control case sensitivity for glob matching:</p>
 <ul>
 <li><code>--iglob GLOB</code> - Single case-insensitive glob pattern</li>
 <li><code>--glob-case-insensitive</code> - Makes all <code>-g</code> patterns case-insensitive</li>
+<li><code>--no-glob-case-insensitive</code> - Restores case-sensitive matching (negates <code>--glob-case-insensitive</code>)</li>
 </ul>
 <p>Examples:</p>
 <pre><code class="language-bash"># Match .html, .HTML, .Html, etc.
@@ -1292,8 +1416,11 @@ rg --iglob '*.html' pattern
 
 # Make all globs case-insensitive
 rg --glob-case-insensitive -g '*.rs' -g '*.toml' pattern
+
+# Restore case-sensitive matching after earlier use of --glob-case-insensitive
+rg --glob-case-insensitive -g '*.html' --no-glob-case-insensitive -g '*.RS' pattern
 </code></pre>
-<p>Use <code>--iglob</code> when you need one case-insensitive pattern, or <code>--glob-case-insensitive</code> when all your patterns should ignore case.</p>
+<p>Use <code>--iglob</code> when you need one case-insensitive pattern, or <code>--glob-case-insensitive</code> when all your patterns should ignore case. Use <code>--no-glob-case-insensitive</code> to selectively restore case-sensitive matching.</p>
 <h2 id="gitignore-compatibility"><a class="header" href="#gitignore-compatibility">Gitignore Compatibility</a></h2>
 <p>Glob patterns use the same syntax as <code>.gitignore</code> files, making them familiar if you already use Git:</p>
 <ul>
@@ -1321,6 +1448,19 @@ rg -g '*.rs' pattern
 rg -g 'target/**/*.rs' pattern
 </code></pre>
 <p>This override behavior gives you ultimate control when automatic filtering is too restrictive.</p>
+<h3 id="ignore-hierarchy-and-precedence"><a class="header" href="#ignore-hierarchy-and-precedence">Ignore Hierarchy and Precedence</a></h3>
+<p>Glob patterns with <code>-g/--glob</code> are "override patterns" that sit at the top of ripgrep's ignore hierarchy. The complete precedence order (highest to lowest priority) is:</p>
+<ol>
+<li><strong>Override patterns</strong> - <code>--include</code>/<code>--exclude</code> (not currently implemented) and <code>-g/--glob</code> patterns</li>
+<li><strong>Custom ignore files</strong> - Files specified with <code>--ignore-file</code></li>
+<li><strong><code>.ignore</code> files</strong> - Repository-specific ignore rules</li>
+<li><strong><code>.gitignore</code> files</strong> - Git ignore rules</li>
+<li><strong><code>.git/info/exclude</code></strong> - Git local excludes</li>
+<li><strong>Global gitignore</strong> - User's global Git ignore file</li>
+<li><strong>Explicit ignore files</strong> - Other repository ignore configurations</li>
+<li><strong>Hidden file detection</strong> - Automatic filtering of dotfiles</li>
+</ol>
+<p>When you use <code>-g</code>, your patterns take precedence over all automatic ignore sources, which is why globs can force ripgrep to search files that would normally be excluded.</p>
 <h2 id="practical-examples-1"><a class="header" href="#practical-examples-1">Practical Examples</a></h2>
 <h3 id="search-only-rust-files"><a class="header" href="#search-only-rust-files">Search Only Rust Files</a></h3>
 <pre><code class="language-bash">rg -g '*.rs' 'use std'
@@ -1329,7 +1469,8 @@ rg -g 'target/**/*.rs' pattern
 <pre><code class="language-bash">rg -g 'src/**' 'TODO'
 </code></pre>
 <h3 id="exclude-test-directories"><a class="header" href="#exclude-test-directories">Exclude Test Directories</a></h3>
-<pre><code class="language-bash">rg -g '!**/test/**' -g '!**/tests/**' pattern
+<pre><code class="language-bash"># Exclude both common test directory naming conventions
+rg -g '!**/test/**' -g '!**/tests/**' pattern
 </code></pre>
 <h3 id="combine-multiple-patterns"><a class="header" href="#combine-multiple-patterns">Combine Multiple Patterns</a></h3>
 <pre><code class="language-bash"># Search Rust and TOML in src/, excluding tests
@@ -1367,6 +1508,9 @@ rg -g 'src/**/*.rs' pattern
 rg -g '**/*.rs' -g '!target/**' -g '!.git/**' -g '!vendor/**' pattern
 </code></pre>
 <p>When possible, use include patterns that target specific directories rather than exclude patterns that filter out large portions of the file tree.</p>
+<h3 id="advanced-glob-optimization"><a class="header" href="#advanced-glob-optimization">Advanced: Glob Optimization</a></h3>
+<p>Ripgrep automatically optimizes glob patterns into specialized matching strategies for better performance. Simple patterns like <code>*.rs</code> are converted to faster matching strategies (literal extension, basename literal, prefix/suffix matching) rather than full regex evaluation. Complex patterns with <code>**</code>, <code>?</code>, or <code>[...]</code> require more expensive matching.</p>
+<p>For best performance, prefer simple extension-based patterns (<code>*.rs</code>) over complex path patterns when possible. The optimizer handles this automatically, but understanding this can help you write more efficient globs.</p>
 <h2 id="summary-1"><a class="header" href="#summary-1">Summary</a></h2>
 <p>Glob patterns give you precise control over which files ripgrep searches:</p>
 <ul>
@@ -1380,7 +1524,7 @@ rg -g '**/*.rs' -g '!target/**' -g '!.git/**' -g '!vendor/**' pattern
 </ul>
 <p>For most searches, <a href="automatic-filtering.html">automatic filtering</a> handles file selection. Use globs when you need explicit control over which files to search or skip.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="manual-filtering-file-types"><a class="header" href="#manual-filtering-file-types">Manual Filtering: File Types</a></h1>
-<p>File type filtering allows you to search specific file types by language or format. Instead of using glob patterns, you can use predefined types like "rust", "python", or "markdown". Ripgrep ships with 150+ built-in file types and supports custom type definitions. This is more convenient than globs for common cases like "search all Python files" or "exclude all JavaScript files."</p>
+<p>File type filtering allows you to search specific file types by language or format. Instead of using glob patterns, you can use predefined types like "rust", "python", or "markdown". Ripgrep ships with 200+ built-in file types and supports custom type definitions. This is more convenient than globs for common cases like "search all Python files" or "exclude all JavaScript files."</p>
 <h2 id="quick-start-2"><a class="header" href="#quick-start-2">Quick Start</a></h2>
 <p>Here are the most common file type filtering commands:</p>
 <pre><code class="language-bash"># Search only Rust files
@@ -1469,12 +1613,35 @@ rg --type-list
 # ada: *.adb, *.ads
 # agda: *.agda, *.lagda
 # rust: *.rs
-# python: *.py, *.pyi, *.pyw, BUILD, BUILD.bazel, SConstruct, Snakefile
-# javascript: *.js, *.jsx, *.mjs, *.cjs
+# python: *.py, *.pyi
+# javascript: *.js, *.jsx, *.mjs, *.cjs, *.vue
 # ...
 </code></pre>
 <p>The output format is: <code>type_name: glob1, glob2, ...</code></p>
 <p>This shows all built-in types plus any custom types you've defined with <code>--type-add</code>. It's useful for discovering what types are available and what file patterns they match.</p>
+<h3 id="type-aliases"><a class="header" href="#type-aliases">Type Aliases</a></h3>
+<p>Many built-in types have short aliases for convenience. When a type has an alias, both names refer to the same type definition. Common aliases include:</p>
+<ul>
+<li><code>py</code> → <code>python</code></li>
+<li><code>js</code> → <code>javascript</code></li>
+<li><code>ts</code> → <code>typescript</code></li>
+<li><code>md</code> → <code>markdown</code></li>
+<li><code>rs</code> → <code>rust</code></li>
+</ul>
+<p>You can use either the full name or the alias:</p>
+<pre><code class="language-bash"># These are equivalent
+rg pattern -t python
+rg pattern -t py
+
+# These are equivalent
+rg pattern -t javascript
+rg pattern -t js
+</code></pre>
+<p>To see which types have aliases, check the output of <code>--type-list</code>. Types with aliases appear as <code>alias, fullname:</code> in the list.</p>
+<p>You can also search for a specific type's definition:</p>
+<pre><code class="language-bash"># Check what the rust type includes
+rg --type-list | grep rust
+</code></pre>
 <h2 id="custom-type-definitions---type-add"><a class="header" href="#custom-type-definitions---type-add">Custom Type Definitions (--type-add)</a></h2>
 <p>Use <code>--type-add</code> to define your own file types with custom glob patterns:</p>
 <h3 id="basic-custom-types"><a class="header" href="#basic-custom-types">Basic Custom Types</a></h3>
@@ -1553,27 +1720,28 @@ rg --type-not all pattern
 </code></pre>
 <p>This is the opposite of whitelist mode. It's useful for finding matches in uncommon file formats or files that don't match any standard type.</p>
 <h2 id="built-in-file-types"><a class="header" href="#built-in-file-types">Built-in File Types</a></h2>
-<p>Ripgrep includes 150+ built-in file types. Here are some commonly used ones:</p>
+<p>Ripgrep includes 200+ built-in file types. Here are some commonly used ones:</p>
 <p><strong>Programming Languages:</strong></p>
 <ul>
 <li><code>rust</code>: *.rs</li>
-<li><code>python</code>: *.py, *.pyi, *.pyw</li>
+<li><code>python</code>: *.py, *.pyi</li>
 <li><code>go</code>: *.go</li>
 <li><code>java</code>: *.java, *.jsp, *.jspx</li>
-<li><code>javascript</code> (alias <code>js</code>): *.js, *.jsx, *.mjs, *.cjs</li>
+<li><code>javascript</code> (alias <code>js</code>): *.js, *.jsx, *.mjs, *.cjs, *.vue</li>
 <li><code>typescript</code> (alias <code>ts</code>): *.ts, *.tsx</li>
 <li><code>c</code>: *.c, *.h</li>
 <li><code>cpp</code> (C++): *.cpp, *.cc, *.cxx, *.h, *.hpp</li>
-<li><code>ruby</code>: *.rb, Rakefile, Gemfile</li>
+<li><code>ruby</code>: *.rb, *.rbw, *.rake, *.gemspec, Rakefile, Gemfile, config.ru, .irbrc</li>
 <li><code>php</code>: *.php, *.phtml, *.php3, *.php4, *.php5</li>
 </ul>
 <p><strong>Web Development:</strong></p>
 <ul>
 <li><code>html</code>: *.html, *.htm</li>
-<li><code>css</code>: *.css, *.scss, *.sass</li>
+<li><code>css</code>: *.css, *.scss</li>
 <li><code>json</code>: *.json</li>
 <li><code>xml</code>: *.xml</li>
 </ul>
+<p><strong>Note:</strong> There is a separate <code>sass</code> type that includes *.sass and *.scss files.</p>
 <p><strong>Documentation:</strong></p>
 <ul>
 <li><code>markdown</code> (alias <code>md</code>): *.md, *.markdown</li>
@@ -1772,7 +1940,7 @@ rg '(\d{3})-(\d{3})-(\d{4})' -r 'Area code: $1'
 <li>The replacement <code>'$2 $1'</code> swaps them</li>
 </ul>
 <h3 id="named-capture-groups"><a class="header" href="#named-capture-groups">Named Capture Groups</a></h3>
-<p>You can also use named capture groups for more readable patterns. The syntax is <code>(?P&lt;name&gt;pattern)</code> in Rust regex (or <code>(?&lt;name&gt;pattern)</code> in PCRE2 mode).</p>
+<p>You can also use named capture groups for more readable patterns. The syntax is <code>(?P&lt;name&gt;pattern)</code> in Rust regex. The alternative syntax <code>(?&lt;name&gt;pattern)</code> is also supported in both Rust regex and PCRE2 mode.</p>
 <pre><code class="language-bash"># Using named groups for clarity
 rg '(?P&lt;year&gt;\d{4})-(?P&lt;month&gt;\d{2})-(?P&lt;day&gt;\d{2})' -r 'Year: ${year}, Month: ${month}'
 
@@ -1833,9 +2001,33 @@ rg '(\w+)@(\w+\.com)' -o -r '$1 at $2'
 </code></pre>
 <p><strong>With context flags</strong> (<code>-A</code>, <code>-B</code>, <code>-C</code>): Replacements only apply to matched lines, not context lines</p>
 <pre><code class="language-bash"># Replace matches but keep context unchanged
-rg 'error' -r 'ERROR' -C2
+rg 'error' -r 'ERROR' -C1
+# If input is:
+#   info message
+#   error occurred
+#   debug info
+# Output shows:
+#   info message          (context - unchanged)
+#   ERROR occurred        (match - replaced)
+#   debug info            (context - unchanged)
 </code></pre>
 <p><strong>With <code>--json</code></strong>: The JSON output includes a <code>submatches</code> array with replacement text in the <code>match</code> field</p>
+<pre><code class="language-bash"># Example JSON output with replacements
+rg 'error' -r 'ERROR' --json
+# Produces output like:
+# {
+#   "type": "match",
+#   "data": {
+#     "submatches": [
+#       {
+#         "match": {"text": "ERROR"},
+#         "start": 10,
+#         "end": 15
+#       }
+#     ]
+#   }
+# }
+</code></pre>
 <h2 id="practical-examples-3"><a class="header" href="#practical-examples-3">Practical Examples</a></h2>
 <h3 id="simple-literal-replacement"><a class="header" href="#simple-literal-replacement">Simple Literal Replacement</a></h3>
 <pre><code class="language-bash"># Replace all instances of old API endpoint
@@ -2259,12 +2451,14 @@ rg -E windows-1251 'текст' files/
 </ol>
 <p>This mode is useful when searching for byte sequences or when you want complete control.</p>
 <h2 id="bom-sniffing"><a class="header" href="#bom-sniffing">BOM Sniffing</a></h2>
-<p>A <strong>Byte Order Mark (BOM)</strong> is a special sequence of bytes at the start of a file that indicates its encoding:</p>
+<p>A <strong>Byte Order Mark (BOM)</strong> is a special sequence of bytes at the start of a file that indicates its encoding.</p>
+<p><strong>ripgrep detects BOMs for these encodings only:</strong></p>
 <ul>
 <li><code>EF BB BF</code> - UTF-8 BOM</li>
 <li><code>FF FE</code> - UTF-16 Little Endian BOM</li>
 <li><code>FE FF</code> - UTF-16 Big Endian BOM</li>
 </ul>
+<p>Other encodings in the WHATWG standard that have BOMs are not automatically detected and require explicit <code>--encoding</code> specification.</p>
 <p><strong>How it works:</strong></p>
 <ol>
 <li>ripgrep reads the first 3 bytes of each file</li>
@@ -2274,6 +2468,10 @@ rg -E windows-1251 'текст' files/
 </ol>
 <p><strong>BOM sniffing is enabled by default</strong> in auto mode and can be disabled with <code>--encoding=none</code>.</p>
 <p><strong>BOM overrides explicit encoding:</strong> Even if you specify <code>--encoding=latin1</code>, a file with a UTF-16 BOM will be treated as UTF-16.</p>
+<pre><code class="language-bash"># Even though we specify latin1, the UTF-16 BOM is detected and used instead
+rg -E latin1 'pattern' utf16-file-with-bom
+# ripgrep uses UTF-16 (from BOM) not latin1
+</code></pre>
 <h2 id="transcoding"><a class="header" href="#transcoding">Transcoding</a></h2>
 <p>When ripgrep detects or is told about a non-UTF-8 encoding, it performs <strong>transcoding</strong> - converting the file from its source encoding to UTF-8 before searching.</p>
 <p><strong>When transcoding occurs:</strong></p>
@@ -2302,6 +2500,7 @@ rg -E utf-16 'Шерлок' some-utf16-file
 </code></pre>
 <h2 id="ascii-compatibility-assumption"><a class="header" href="#ascii-compatibility-assumption">ASCII Compatibility Assumption</a></h2>
 <p><strong>By default, ripgrep assumes files are ASCII-compatible.</strong> This is a critical assumption that affects how searches work.</p>
+<p>This assumption is a performance optimization: ASCII-compatible files can be searched directly without transcoding overhead, making searches significantly faster than if every file required transcoding to UTF-8.</p>
 <p><strong>ASCII-compatible encodings:</strong></p>
 <ul>
 <li>ASCII itself</li>
@@ -2326,7 +2525,7 @@ rg 'hello' utf16-file-no-bom
 rg -E utf-16 'hello' utf16-file-no-bom
 </code></pre>
 <h2 id="supported-encodings"><a class="header" href="#supported-encodings">Supported Encodings</a></h2>
-<p>ripgrep supports all encodings from the <a href="https://encoding.spec.whatwg.org/#concept-encoding-get">WHATWG Encoding Standard</a> via the <code>encoding_rs</code> crate.</p>
+<p>ripgrep supports all encodings from the <a href="https://encoding.spec.whatwg.org/#concept-encoding-get">WHATWG Encoding Standard</a> via the <code>encoding_rs</code> crate. The <code>encoding_rs</code> crate provides a complete implementation of the WHATWG Encoding Standard, ensuring reliable encoding detection and transcoding.</p>
 <p><strong>Common encodings:</strong></p>
 <div class="table-wrapper"><table><thead><tr><th>Encoding</th><th>Use Case</th></tr></thead><tbody>
 <tr><td><code>utf-8</code></td><td>Modern Unicode text (most common)</td></tr>
@@ -2416,6 +2615,7 @@ rg '\w(?-u:\w)\w'
 <p><strong>Likely cause:</strong> Encoding mismatch</p>
 <p><strong>Solutions:</strong></p>
 <ol>
+<li>Use <code>--debug</code> to see encoding detection: <code>rg --debug pattern file</code> (shows which encoding was detected or transcoding performed)</li>
 <li>Check if file has a BOM: <code>hexdump -C file | head -n 1</code></li>
 <li>Try explicit encoding: <code>rg -E utf-16 pattern file</code></li>
 <li>Try disabling encoding: <code>rg -E none pattern file</code> (search raw bytes)</li>
@@ -2811,9 +3011,220 @@ rg --encoding utf-16le "pattern" utf16file.txt
 <li>Memory-mapped and buffered searches detect binaries differently</li>
 <li>Library users must explicitly enable binary detection</li>
 </ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="compressed-files"><a class="header" href="#compressed-files">Compressed Files</a></h1>
+<p>ripgrep provides built-in support for searching compressed files through the <code>-z/--search-zip</code> flag, automatically decompressing content on-the-fly without requiring manual extraction.</p>
+<h2 id="overview-1"><a class="header" href="#overview-1">Overview</a></h2>
+<p>The <code>-z</code> or <code>--search-zip</code> flag enables ripgrep to transparently search inside compressed files across eight different compression formats. When enabled, ripgrep automatically detects the compression format based on file extension and uses the appropriate external decompression tool during search.</p>
+<p>This feature differs from the custom <code>--pre</code> preprocessor in that it uses built-in rules for common compression formats and integrates seamlessly with ripgrep's parallel search capabilities.</p>
+<h2 id="supported-compression-formats"><a class="header" href="#supported-compression-formats">Supported Compression Formats</a></h2>
+<p>ripgrep's <code>-z</code> flag supports the following compression formats:</p>
+<div class="table-wrapper"><table><thead><tr><th>Format</th><th>Extensions</th><th>External Tool</th><th>Description</th></tr></thead><tbody>
+<tr><td><strong>Brotli</strong></td><td><code>.br</code></td><td><code>brotli</code></td><td>Modern compression algorithm with high compression ratios</td></tr>
+<tr><td><strong>Bzip2</strong></td><td><code>.bz2</code>, <code>.tbz2</code></td><td><code>bzip2</code></td><td>Block-sorting compression, good for text</td></tr>
+<tr><td><strong>Gzip</strong></td><td><code>.gz</code>, <code>.tgz</code></td><td><code>gzip</code></td><td>Widely used compression, fast decompression</td></tr>
+<tr><td><strong>LZ4</strong></td><td><code>.lz4</code></td><td><code>lz4</code></td><td>Extremely fast compression and decompression</td></tr>
+<tr><td><strong>LZMA</strong></td><td><code>.lzma</code></td><td><code>xz</code></td><td>High compression ratio, slower than others</td></tr>
+<tr><td><strong>XZ</strong></td><td><code>.xz</code>, <code>.txz</code></td><td><code>xz</code></td><td>LZMA-based with additional features</td></tr>
+<tr><td><strong>Zstandard</strong></td><td><code>.zst</code>, <code>.zstd</code></td><td><code>zstd</code></td><td>Modern algorithm balancing speed and compression ratio</td></tr>
+<tr><td><strong>Compress</strong></td><td><code>.Z</code></td><td><code>uncompress</code></td><td>Legacy Unix compress format</td></tr>
+</tbody></table>
+</div>
+<p><strong>Note</strong>: The external decompression tools must be available in your system's PATH for the corresponding formats to work.</p>
+<h2 id="basic-usage"><a class="header" href="#basic-usage">Basic Usage</a></h2>
+<h3 id="searching-compressed-files"><a class="header" href="#searching-compressed-files">Searching Compressed Files</a></h3>
+<p>Enable compressed file search with the <code>-z</code> flag:</p>
+<pre><code class="language-bash"># Search all files including compressed ones
+rg -z 'pattern'
+
+# Long form
+rg --search-zip 'pattern'
+</code></pre>
+<h3 id="examples-1"><a class="header" href="#examples-1">Examples</a></h3>
+<p>Search log files compressed with gzip:</p>
+<pre><code class="language-bash">rg -z 'error' logs/
+</code></pre>
+<p>Search through compressed source code archives:</p>
+<pre><code class="language-bash">rg -z 'function calculateTotal' release.tar.gz
+</code></pre>
+<p>Find patterns in bzip2-compressed data:</p>
+<pre><code class="language-bash">rg -z 'TODO' backup.tar.bz2
+</code></pre>
+<h2 id="how-it-works"><a class="header" href="#how-it-works">How It Works</a></h2>
+<h3 id="automatic-format-detection"><a class="header" href="#automatic-format-detection">Automatic Format Detection</a></h3>
+<p>ripgrep detects the compression format based on file extension:</p>
+<ol>
+<li>Checks file extension against known compression formats (using glob patterns)</li>
+<li>Selects the appropriate external decompression command (<code>gzip -d -c</code>, <code>xz -d -c</code>, etc.)</li>
+<li>Spawns the decompression command as a child process</li>
+<li>Reads decompressed content from the command's stdout</li>
+<li>Searches the decompressed stream</li>
+<li>Reports matches with the original compressed filename</li>
+</ol>
+<h3 id="out-of-process-decompression"><a class="header" href="#out-of-process-decompression">Out-of-Process Decompression</a></h3>
+<p>Decompression happens in separate child processes using external tools to:</p>
+<ul>
+<li>Isolate decompression failures (corrupted files won't crash ripgrep)</li>
+<li>Enable parallel decompression across multiple files</li>
+<li>Leverage optimized native decompression tools</li>
+<li>Handle missing decompression tools gracefully (falls back to treating as binary)</li>
+<li>Avoid security issues on Windows by resolving commands via PATH</li>
+</ul>
+<p><strong>Note</strong>: If a decompression tool is not available in PATH, ripgrep will fall back to reading the file without decompression and log a debug message.</p>
+<h2 id="combining-with-other-flags"><a class="header" href="#combining-with-other-flags">Combining with Other Flags</a></h2>
+<h3 id="with-file-type-filtering"><a class="header" href="#with-file-type-filtering">With File Type Filtering</a></h3>
+<p>Combine compression support with file type filtering:</p>
+<pre><code class="language-bash"># Search only Rust files in compressed archives
+rg -z -t rust 'pattern'
+
+# Search Python files in gzipped logs
+rg -z -t py 'import' logs.tar.gz
+</code></pre>
+<h3 id="with-context-lines"><a class="header" href="#with-context-lines">With Context Lines</a></h3>
+<p>Add context around matches in compressed files:</p>
+<pre><code class="language-bash"># Show 3 lines of context in compressed logs
+rg -z -C 3 'ERROR' logs.gz
+</code></pre>
+<h3 id="with-output-formatting"><a class="header" href="#with-output-formatting">With Output Formatting</a></h3>
+<p>Use JSON output for compressed file matches:</p>
+<pre><code class="language-bash"># JSON output for scripting
+rg -z --json 'pattern' archive.tar.xz
+</code></pre>
+<h2 id="performance-considerations-4"><a class="header" href="#performance-considerations-4">Performance Considerations</a></h2>
+<h3 id="decompression-overhead"><a class="header" href="#decompression-overhead">Decompression Overhead</a></h3>
+<ul>
+<li>Each compressed file requires spawning a decompression process</li>
+<li>Decompression adds CPU overhead compared to plain text search</li>
+<li>Parallel processing helps amortize decompression costs</li>
+</ul>
+<h3 id="optimization-tips"><a class="header" href="#optimization-tips">Optimization Tips</a></h3>
+<ol>
+<li><strong>Use file type filtering</strong> to avoid decompressing unnecessary files</li>
+<li><strong>Limit search scope</strong> with glob patterns or directory restrictions</li>
+<li><strong>Consider extracting</strong> archives if searching repeatedly</li>
+<li><strong>Use faster formats</strong> like LZ4 or Zstandard when possible</li>
+</ol>
+<h3 id="benchmarking"><a class="header" href="#benchmarking">Benchmarking</a></h3>
+<p>Compare search performance with and without compression:</p>
+<pre><code class="language-bash"># Compressed search
+time rg -z 'pattern' archive.tar.gz
+
+# Extracted search (for comparison)
+tar xzf archive.tar.gz
+time rg 'pattern' extracted/
+</code></pre>
+<h2 id="external-dependencies"><a class="header" href="#external-dependencies">External Dependencies</a></h2>
+<p>The <code>-z/--search-zip</code> feature requires external decompression tools to be installed and available in your system's PATH:</p>
+<div class="table-wrapper"><table><thead><tr><th>Format</th><th>Required Tool</th><th>Installation Examples</th></tr></thead><tbody>
+<tr><td>Gzip</td><td><code>gzip</code></td><td>Usually pre-installed on Unix systems</td></tr>
+<tr><td>Bzip2</td><td><code>bzip2</code></td><td><code>apt install bzip2</code> / <code>brew install bzip2</code></td></tr>
+<tr><td>XZ/LZMA</td><td><code>xz</code></td><td><code>apt install xz-utils</code> / <code>brew install xz</code></td></tr>
+<tr><td>LZ4</td><td><code>lz4</code></td><td><code>apt install liblz4-tool</code> / <code>brew install lz4</code></td></tr>
+<tr><td>Brotli</td><td><code>brotli</code></td><td><code>apt install brotli</code> / <code>brew install brotli</code></td></tr>
+<tr><td>Zstandard</td><td><code>zstd</code></td><td><code>apt install zstd</code> / <code>brew install zstd</code></td></tr>
+<tr><td>Compress</td><td><code>uncompress</code></td><td>Usually in <code>ncompress</code> package</td></tr>
+</tbody></table>
+</div>
+<p>If a required tool is missing, ripgrep will skip decompression for that file and treat it as binary data.</p>
+<h2 id="comparison-with-preprocessor"><a class="header" href="#comparison-with-preprocessor">Comparison with Preprocessor</a></h2>
+<p>ripgrep offers two ways to handle special file formats:</p>
+<div class="table-wrapper"><table><thead><tr><th>Feature</th><th><code>-z/--search-zip</code></th><th><code>--pre</code></th></tr></thead><tbody>
+<tr><td><strong>Setup</strong></td><td>Built-in glob patterns</td><td>Requires custom script</td></tr>
+<tr><td><strong>Dependencies</strong></td><td>External decompression tools</td><td>Any tools your script needs</td></tr>
+<tr><td><strong>Performance</strong></td><td>Process per file</td><td>Process per file</td></tr>
+<tr><td><strong>Formats</strong></td><td>8 compression formats</td><td>Any format with conversion tool</td></tr>
+<tr><td><strong>Flexibility</strong></td><td>Fixed format support</td><td>Unlimited extensibility</td></tr>
+<tr><td><strong>Use case</strong></td><td>Standard compressed files</td><td>Custom formats (PDF, Office, etc.)</td></tr>
+</tbody></table>
+</div>
+<h3 id="when-to-use-each"><a class="header" href="#when-to-use-each">When to Use Each</a></h3>
+<p><strong>Use <code>-z/--search-zip</code> for:</strong></p>
+<ul>
+<li>Standard compressed archives (<code>.gz</code>, <code>.xz</code>, <code>.zst</code>, etc.)</li>
+<li>Built-in glob pattern matching</li>
+<li>Systems where decompression tools are already installed</li>
+</ul>
+<p><strong>Use <code>--pre</code> for:</strong></p>
+<ul>
+<li>Custom file formats (PDF, Word documents, etc.)</li>
+<li>Encryption/decryption workflows</li>
+<li>Format conversions not supported by <code>-z</code></li>
+<li>When you need custom preprocessing logic</li>
+</ul>
+<h3 id="combining-both"><a class="header" href="#combining-both">Combining Both</a></h3>
+<p>You can use both flags together:</p>
+<pre><code class="language-bash"># Search compressed PDFs with custom preprocessor
+rg -z --pre ./pdf-preprocessor --pre-glob '*.pdf' 'pattern'
+</code></pre>
+<h2 id="examples-2"><a class="header" href="#examples-2">Examples</a></h2>
+<h3 id="example-1-searching-compressed-logs"><a class="header" href="#example-1-searching-compressed-logs">Example 1: Searching Compressed Logs</a></h3>
+<pre><code class="language-bash"># Find errors in rotated gzip logs
+rg -z 'ERROR|FATAL' /var/log/*.gz
+</code></pre>
+<h3 id="example-2-searching-tarballs"><a class="header" href="#example-2-searching-tarballs">Example 2: Searching Tarballs</a></h3>
+<pre><code class="language-bash"># Search through compressed source archives
+rg -z 'vulnerability' releases/*.tar.xz
+</code></pre>
+<h3 id="example-3-multiple-compression-formats"><a class="header" href="#example-3-multiple-compression-formats">Example 3: Multiple Compression Formats</a></h3>
+<pre><code class="language-bash"># Search across different compression formats
+rg -z 'config' backups/
+</code></pre>
+<h3 id="example-4-with-file-type-and-context"><a class="header" href="#example-4-with-file-type-and-context">Example 4: With File Type and Context</a></h3>
+<pre><code class="language-bash"># Search Rust code in compressed archives with context
+rg -z -t rust -C 5 'unsafe' archive.tar.gz
+</code></pre>
+<h2 id="troubleshooting-4"><a class="header" href="#troubleshooting-4">Troubleshooting</a></h2>
+<h3 id="compressed-file-not-searched"><a class="header" href="#compressed-file-not-searched">Compressed File Not Searched</a></h3>
+<p><strong>Issue</strong>: Compressed file is skipped</p>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Verify file has correct extension (<code>.gz</code>, <code>.xz</code>, etc.)</li>
+<li>Check that <code>-z</code> flag is enabled</li>
+<li>Ensure file is actually compressed (use <code>file</code> command)</li>
+<li>Verify the required decompression tool is in PATH (e.g., <code>which gzip</code>)</li>
+</ul>
+<h3 id="missing-decompression-tool"><a class="header" href="#missing-decompression-tool">Missing Decompression Tool</a></h3>
+<p><strong>Issue</strong>: File treated as binary instead of being decompressed</p>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Check if the tool is installed: <code>which gzip</code> / <code>which xz</code> / <code>which zstd</code></li>
+<li>Install the missing tool (see External Dependencies section)</li>
+<li>Enable debug logging to see which tools are missing: <code>RUST_LOG=debug rg -z 'pattern'</code></li>
+</ul>
+<h3 id="decompression-errors"><a class="header" href="#decompression-errors">Decompression Errors</a></h3>
+<p><strong>Issue</strong>: Errors about decompression failures</p>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Verify archive is not corrupted (test with native tool: <code>gzip -t file.gz</code>)</li>
+<li>Check that compression format matches extension</li>
+<li>Try decompressing manually to validate: <code>gzip -dc file.gz | less</code></li>
+<li>Check stderr output from the decompression process</li>
+</ul>
+<h3 id="performance-issues"><a class="header" href="#performance-issues">Performance Issues</a></h3>
+<p><strong>Issue</strong>: Search is very slow with <code>-z</code></p>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Use file type filtering to reduce files being decompressed</li>
+<li>Consider extracting archives for repeated searches</li>
+<li>Check if archives are unusually large</li>
+<li>Use faster compression formats (LZ4, Zstandard) for new archives</li>
+</ul>
+<h2 id="best-practices"><a class="header" href="#best-practices">Best Practices</a></h2>
+<ul>
+<li>Enable <code>-z</code> only when searching compressed files</li>
+<li>Use file type filtering to avoid unnecessary decompression</li>
+<li>Consider extraction for archives searched repeatedly</li>
+<li>Combine with glob patterns to target specific compressed files</li>
+<li>Monitor decompression overhead with <code>--stats</code> flag</li>
+</ul>
+<h2 id="see-also-3"><a class="header" href="#see-also-3">See Also</a></h2>
+<ul>
+<li><a href="preprocessor.html">Preprocessor</a> - Custom file preprocessing for other formats</li>
+<li><a href="performance.html">Performance</a> - Performance tuning and optimization</li>
+<li><a href="common-options.html">Common Options</a> - Other frequently used flags</li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="preprocessor"><a class="header" href="#preprocessor">Preprocessor</a></h1>
 <p>The preprocessor feature allows ripgrep to search virtually any file type by transforming content before searching. This chapter covers how to use preprocessors to search PDFs, compressed files, and other non-text formats.</p>
-<h2 id="overview-1"><a class="header" href="#overview-1">Overview</a></h2>
+<h2 id="overview-2"><a class="header" href="#overview-2">Overview</a></h2>
 <p>A preprocessor is a command that transforms file content before ripgrep searches it. This enables searching binary formats, encrypted files, compressed archives, and any content that can be converted to text.</p>
 <p>The <code>--pre</code> flag takes a command that receives:</p>
 <ul>
@@ -2979,8 +3390,8 @@ rg --pre ./preprocessor --pre-glob '*.pdf' --pre-glob '*.doc' 'search term'
 # Requires: poppler-utils (for pdftotext)
 [ -s "$1" ] &amp;&amp; exec pdftotext - - || exec cat
 </code></pre>
-<h3 id="compressed-files"><a class="header" href="#compressed-files">Compressed Files</a></h3>
-<p>Note: ripgrep has built-in support for compressed files via <code>-z/--search-zip</code> (supports gzip, bzip2, xz, lz4, lzma, brotli, zstd). Use <code>--pre</code> for compression formats not covered by <code>-z</code>.</p>
+<h3 id="compressed-files-1"><a class="header" href="#compressed-files-1">Compressed Files</a></h3>
+<p>Note: ripgrep has built-in support for compressed files via <code>-z/--search-zip</code> (supports gzip (.gz, .tgz), bzip2 (.bz2, .tbz2), xz (.xz, .txz), lz4 (.lz4), lzma (.lzma), brotli (.br), zstd (.zst, .zstd), and uncompress (.Z)). Use <code>--pre</code> for compression formats not covered by <code>-z</code>.</p>
 <pre><code class="language-bash">#!/bin/sh
 case $(file "$1") in
   *Zstandard*) exec pzstd -cdq ;;
@@ -3014,7 +3425,7 @@ esac
 <h2 id="relationship-with--z--search-zip"><a class="header" href="#relationship-with--z--search-zip">Relationship with <code>-z/--search-zip</code></a></h2>
 <p>Ripgrep provides two ways to handle special file formats:</p>
 <ul>
-<li><strong><code>-z/--search-zip</code></strong>: Built-in support for common compressed formats (gzip, bzip2, xz, lz4, lzma, brotli, zstd)</li>
+<li><strong><code>-z/--search-zip</code></strong>: Built-in support for common compressed formats including gzip (.gz, .tgz), bzip2 (.bz2, .tbz2), xz (.xz, .txz), lz4 (.lz4), lzma (.lzma), brotli (.br), zstd (.zst, .zstd), and uncompress (.Z)</li>
 <li><strong><code>--pre</code></strong>: Custom preprocessing for any file transformation</li>
 </ul>
 <p><strong>When to use each:</strong></p>
@@ -3029,7 +3440,7 @@ esac
 <pre><code class="language-bash"># Search compressed PDFs
 rg -z --pre ./pdf-preprocessor --pre-glob '*.pdf' 'search term'
 </code></pre>
-<h2 id="performance-considerations-4"><a class="header" href="#performance-considerations-4">Performance Considerations</a></h2>
+<h2 id="performance-considerations-5"><a class="header" href="#performance-considerations-5">Performance Considerations</a></h2>
 <h3 id="overhead"><a class="header" href="#overhead">Overhead</a></h3>
 <p>Each preprocessor invocation spawns a new process per file. This overhead can be significant:</p>
 <ul>
@@ -3037,7 +3448,8 @@ rg -z --pre ./pdf-preprocessor --pre-glob '*.pdf' 'search term'
 <li><strong>With <code>--pre-glob</code></strong>: New process only for matching files</li>
 <li><strong>Parallelism helps</strong>: Multiple files processed simultaneously</li>
 </ul>
-<h3 id="optimization-tips"><a class="header" href="#optimization-tips">Optimization Tips</a></h3>
+<p>Note: The <code>-z/--search-zip</code> flag also spawns decompression processes (one per compressed file), but uses optimized glob matching to automatically detect compression formats by file extension, avoiding the need for manual glob specification.</p>
+<h3 id="optimization-tips-1"><a class="header" href="#optimization-tips-1">Optimization Tips</a></h3>
 <ol>
 <li><strong>Use <code>--pre-glob</code></strong> to limit preprocessing to necessary files</li>
 <li><strong>Keep preprocessors fast</strong>: Avoid expensive transformations if possible</li>
@@ -3045,7 +3457,7 @@ rg -z --pre ./pdf-preprocessor --pre-glob '*.pdf' 'search term'
 <li><strong>Test preprocessors independently</strong> before using with ripgrep</li>
 <li><strong>Consider preprocessing once</strong>: For repeated searches, convert files ahead of time</li>
 </ol>
-<h3 id="benchmarking"><a class="header" href="#benchmarking">Benchmarking</a></h3>
+<h3 id="benchmarking-1"><a class="header" href="#benchmarking-1">Benchmarking</a></h3>
 <p>Test preprocessor impact on your workflow:</p>
 <pre><code class="language-bash"># Measure overhead
 time rg --pre ./preprocessor 'pattern'
@@ -3120,7 +3532,7 @@ $
 <pre><code class="language-bash"># See which files are preprocessed
 RUST_LOG=debug rg --pre ./preprocessor 'pattern' 2&gt;&amp;1 | grep -i preproc
 </code></pre>
-<h2 id="examples-1"><a class="header" href="#examples-1">Examples</a></h2>
+<h2 id="examples-3"><a class="header" href="#examples-3">Examples</a></h2>
 <h3 id="complete-multi-format-preprocessor"><a class="header" href="#complete-multi-format-preprocessor">Complete Multi-Format Preprocessor</a></h3>
 <p>A production-ready preprocessor handling multiple formats:</p>
 <pre><code class="language-bash">#!/bin/sh
@@ -3235,6 +3647,55 @@ rg -x 'import sys'
 </code></pre>
 </li>
 </ul>
+<h3 id="multiline-matching"><a class="header" href="#multiline-matching">Multiline Matching</a></h3>
+<p>By default, patterns match within single lines. For patterns that span multiple lines:</p>
+<ul>
+<li>
+<p><strong><code>-U, --multiline</code></strong>: Enable multiline mode where patterns can match across line boundaries</p>
+<pre><code class="language-bash"># Match function definitions spanning multiple lines
+rg -U 'fn \w+\([^)]*\)\s*-&gt;'
+
+# Find multi-line comments
+rg -U '/\*.*?\*/'
+</code></pre>
+</li>
+<li>
+<p><strong><code>--multiline-dotall</code></strong>: Make <code>.</code> match newlines in multiline mode</p>
+<pre><code class="language-bash"># Match struct definitions with any content between braces
+rg -U --multiline-dotall 'struct \w+ \{.*?\}'
+</code></pre>
+<p>Use with <code>-U</code> to make dot match newline characters. Without this, <code>.</code> doesn't match <code>\n</code> even in multiline mode.</p>
+</li>
+</ul>
+<h3 id="regex-engine-selection-1"><a class="header" href="#regex-engine-selection-1">Regex Engine Selection</a></h3>
+<p>Ripgrep uses Rust's regex engine by default, which is very fast. For advanced regex features, you can switch to the PCRE2 engine:</p>
+<ul>
+<li>
+<p><strong><code>-P, --pcre2</code></strong>: Use PCRE2 engine for advanced features like lookahead/lookbehind and backreferences</p>
+<pre><code class="language-bash"># Lookahead: find "foo" only if followed by "bar"
+rg -P 'foo(?=bar)'
+
+# Lookbehind: find "bar" only if preceded by "foo"
+rg -P '(?&lt;=foo)bar'
+
+# Backreferences: find repeated words
+rg -P '(\w+)\s+\1'
+</code></pre>
+<p>See the <a href="./regex.html">Regular Expressions</a> chapter for detailed regex syntax and PCRE2 features.</p>
+</li>
+<li>
+<p><strong><code>--engine ENGINE</code></strong>: Explicitly choose regex engine</p>
+<pre><code class="language-bash"># Force PCRE2 engine
+rg --engine pcre2 'pattern'
+
+# Force default Rust regex
+rg --engine default 'pattern'
+
+# Auto-select based on pattern (default)
+rg --engine auto 'pattern'
+</code></pre>
+</li>
+</ul>
 <h3 id="invert-match"><a class="header" href="#invert-match">Invert Match</a></h3>
 <ul>
 <li><strong><code>-v, --invert-match</code></strong>: Show lines that DON'T match the pattern
@@ -3339,6 +3800,26 @@ rg '(\w+)@(\w+)' -r '$2@$1'
 </code></pre>
 <p>This changes the display only. To modify files, use other tools like <code>sed</code>. See the <a href="./replacements.html">Replacements chapter</a> for more details.</p>
 </li>
+<li>
+<p><strong><code>-b, --byte-offset</code></strong>: Show absolute byte offset in file for each match</p>
+<pre><code class="language-bash"># Display byte positions for binary file analysis
+rg -b pattern
+# Output: file.txt:42:137:matching line
+#                    ^^^ byte offset
+</code></pre>
+<p>Useful for precise location tracking and binary file analysis.</p>
+</li>
+<li>
+<p><strong><code>--hyperlink-format FORMAT</code></strong>: Generate clickable terminal links using OSC 8 escape sequences</p>
+<pre><code class="language-bash"># Use built-in editor formats
+rg --hyperlink-format vscode pattern
+rg --hyperlink-format cursor pattern
+
+# Custom format with variables: {path}, {line}, {column}
+rg --hyperlink-format 'file://{path}:{line}:{column}' pattern
+</code></pre>
+<p>Requires a terminal that supports OSC 8 hyperlinks. Built-in formats: <code>vscode</code>, <code>cursor</code>, <code>macvim</code>, <code>sublime</code>, <code>textmate</code>, <code>emacs</code>, <code>vim</code>.</p>
+</li>
 </ul>
 <h3 id="color-and-formatting"><a class="header" href="#color-and-formatting">Color and Formatting</a></h3>
 <ul>
@@ -3355,6 +3836,29 @@ rg --color always pattern | less -R
 # Disable color for clean output
 rg --color never pattern &gt; results.txt
 </code></pre>
+</li>
+<li>
+<p><strong><code>--colors TYPE:STYLE:VALUE</code></strong>: Fine-grained color customization</p>
+<pre><code class="language-bash"># Customize match highlighting color to red
+rg --colors 'match:fg:red' pattern
+
+# Bold path names, green matches
+rg --colors 'path:style:bold' --colors 'match:fg:green' pattern
+
+# Use 256-color palette or 24-bit RGB
+rg --colors 'match:fg:0,128,255' pattern
+</code></pre>
+<p>Types: <code>path</code>, <code>line</code>, <code>column</code>, <code>match</code>. Styles: <code>fg</code> (foreground), <code>bg</code> (background), <code>style</code> (bold, intense, underline, italic).</p>
+</li>
+<li>
+<p><strong><code>--heading</code></strong> / <strong><code>--no-heading</code></strong>: Control file grouping in output</p>
+<pre><code class="language-bash"># Group matches by file with filename as header
+rg --heading pattern
+
+# Inline format: path:line:match on each line
+rg --no-heading pattern
+</code></pre>
+<p>With <code>--heading</code>, matches are grouped under filenames. With <code>--no-heading</code>, every line shows the full path.</p>
 </li>
 <li>
 <p><strong><code>-p, --pretty</code></strong>: Alias for <code>--color always --heading --line-number</code></p>
@@ -3428,17 +3932,18 @@ rg -uu pattern
 </code></pre>
 </li>
 <li>
-<p><strong><code>-uuu</code></strong>: Also don't filter out anything</p>
+<p><strong><code>-uuu</code></strong>: Disable all filtering (ignore files, hidden files, and binary detection)</p>
 <pre><code class="language-bash"># The kitchen sink - search absolutely everything
 rg -uuu pattern
 </code></pre>
+<p>This is the most permissive mode, combining all unrestricted behaviors: searches ignored files (<code>.gitignore</code>), hidden files (<code>.dotfiles</code>), and doesn't skip binary files.</p>
 </li>
 </ul>
 <p>Use <code>-u</code> when you need to search <code>.gitignore</code>d files, <code>-uu</code> when you also need hidden/binary files, and <code>-uuu</code> for maximum coverage.</p>
 <h3 id="hidden-files-and-symlinks"><a class="header" href="#hidden-files-and-symlinks">Hidden Files and Symlinks</a></h3>
 <ul>
 <li>
-<p><strong><code>--hidden, -.</code></strong>: Search hidden files and directories (those starting with <code>.</code>)</p>
+<p><strong><code>--hidden</code></strong>: Search hidden files and directories (those starting with <code>.</code>)</p>
 <pre><code class="language-bash"># Search .config files
 rg --hidden 'database'
 </code></pre>
@@ -3473,8 +3978,80 @@ rg --max-filesize 5M pattern
 </code></pre>
 Suffixes: <code>K</code> (kilobytes), <code>M</code> (megabytes), <code>G</code> (gigabytes).</li>
 </ul>
+<h3 id="binary-files-1"><a class="header" href="#binary-files-1">Binary Files</a></h3>
+<p>By default, ripgrep auto-detects binary files (by finding NUL bytes) and skips them to avoid polluting output.</p>
+<ul>
+<li>
+<p><strong><code>--binary</code></strong>: Force searching binary files (shows matches even if NUL bytes detected)</p>
+<pre><code class="language-bash"># Search binary files for strings
+rg --binary 'pattern'
+</code></pre>
+</li>
+<li>
+<p><strong><code>-a, --text</code></strong>: Treat all files as text, disabling binary detection</p>
+<pre><code class="language-bash"># Search everything as text
+rg -a pattern
+</code></pre>
+</li>
+<li>
+<p><strong><code>--max-columns-preview NUM</code></strong>: Tune binary detection threshold</p>
+<pre><code class="language-bash"># Files with lines longer than 200 chars are considered binary
+rg --max-columns-preview 200 pattern
+</code></pre>
+<p>Default is 150. Ripgrep checks the first preview bytes for NUL characters.</p>
+</li>
+</ul>
+<h3 id="advanced-filtering"><a class="header" href="#advanced-filtering">Advanced Filtering</a></h3>
+<ul>
+<li>
+<p><strong><code>--same-file-system</code></strong>: Don't cross filesystem boundaries when searching</p>
+<pre><code class="language-bash"># Stay on same filesystem (avoid mounted drives, network shares)
+rg --same-file-system pattern
+</code></pre>
+<p>Useful to avoid searching network mounts or external drives.</p>
+</li>
+<li>
+<p><strong><code>--no-ignore-parent</code></strong>: Don't respect ignore files in parent directories</p>
+<pre><code class="language-bash"># Only use .gitignore in current directory, not parents
+rg --no-ignore-parent pattern
+</code></pre>
+<p>By default, ripgrep traverses up and respects <code>.gitignore</code>/<code>.ignore</code> files in parent directories.</p>
+</li>
+<li>
+<p><strong><code>--path-separator SEPARATOR</code></strong>: Use custom path separator in output</p>
+<pre><code class="language-bash"># Use forward slashes on Windows for Unix-style paths
+rg --path-separator / pattern
+</code></pre>
+<p>Useful for cross-platform scripts and consistent output formatting.</p>
+</li>
+</ul>
 <h2 id="output-modes"><a class="header" href="#output-modes">Output Modes</a></h2>
 <p>Instead of showing matching lines, these flags produce alternative output formats.</p>
+<h3 id="structured-output"><a class="header" href="#structured-output">Structured Output</a></h3>
+<ul>
+<li>
+<p><strong><code>--json</code></strong>: Output results in JSON Lines format (one JSON object per line)</p>
+<pre><code class="language-bash"># Get machine-readable output for tooling
+rg --json 'pattern'
+</code></pre>
+<p>Each line is a JSON object with a <code>type</code> field indicating the message type:</p>
+<ul>
+<li><code>begin</code>: Start of search in a file</li>
+<li><code>match</code>: A match with fields like <code>path</code>, <code>line_number</code>, <code>lines</code> (matched text), <code>submatches</code> (match positions)</li>
+<li><code>context</code>: Context lines around matches (when using <code>-A/-B/-C</code>)</li>
+<li><code>end</code>: End of search in a file</li>
+<li><code>summary</code>: Final statistics (if <code>--stats</code> is used)</li>
+</ul>
+<p>Useful for integrating ripgrep into scripts, editors, and other tools that need structured data.</p>
+</li>
+<li>
+<p><strong><code>--vimgrep</code></strong>: Output in vim-compatible quickfix format</p>
+<pre><code class="language-bash"># Generate vim quickfix format: path:line:col:text
+rg --vimgrep 'pattern'
+</code></pre>
+<p>Format: <code>path:line:column:matching text</code>. Useful for IDE integration and editor plugins that support quickfix format.</p>
+</li>
+</ul>
 <h3 id="counting"><a class="header" href="#counting">Counting</a></h3>
 <ul>
 <li>
@@ -3555,6 +4132,45 @@ rg --mmap pattern
 </code></pre>
 Memory mapping can be faster on some systems but uses more memory.</li>
 </ul>
+<h3 id="sorting"><a class="header" href="#sorting">Sorting</a></h3>
+<p>Results can be sorted by various criteria, though this requires buffering all results and impacts performance:</p>
+<ul>
+<li>
+<p><strong><code>--sort SORTBY</code></strong>: Sort results in ascending order</p>
+</li>
+<li>
+<p><strong><code>--sortr SORTBY</code></strong>: Sort results in descending order (reverse)</p>
+<pre><code class="language-bash"># Sort by file path
+rg --sort path pattern
+
+# Sort by modification time (newest first)
+rg --sortr modified pattern
+
+# Sort by creation time
+rg --sort created pattern
+</code></pre>
+<p>Available criteria: <code>path</code> (lexicographic), <code>modified</code> (modification time), <code>accessed</code> (access time), <code>created</code> (creation time).</p>
+<p>Note: Sorting disables parallelism and buffers all results, which can be slow on large searches.</p>
+</li>
+</ul>
+<h3 id="line-length-limits"><a class="header" href="#line-length-limits">Line Length Limits</a></h3>
+<p>Long lines can slow down searches. These flags help manage that:</p>
+<ul>
+<li>
+<p><strong><code>--max-columns NUM</code></strong>: Don't print lines longer than NUM bytes</p>
+<pre><code class="language-bash"># Skip very long lines (often minified code or data)
+rg --max-columns 500 pattern
+</code></pre>
+<p>Lines exceeding this length are skipped entirely.</p>
+</li>
+<li>
+<p><strong><code>--max-columns-preview NUM</code></strong>: For binary detection, check first NUM bytes for NUL</p>
+<pre><code class="language-bash"># Adjust binary detection sensitivity
+rg --max-columns-preview 200 pattern
+</code></pre>
+<p>Default is 150. Used to decide if a file is binary.</p>
+</li>
+</ul>
 <h2 id="getting-help-1"><a class="header" href="#getting-help-1">Getting Help</a></h2>
 <ul>
 <li>
@@ -3577,6 +4193,41 @@ Memory mapping can be faster on some systems but uses more memory.</li>
 <p><strong><code>--type-list</code></strong>: List all recognized file types</p>
 <pre><code class="language-bash">rg --type-list
 </code></pre>
+</li>
+<li>
+<p><strong><code>--pcre2-version</code></strong>: Show PCRE2 library version and JIT availability</p>
+<pre><code class="language-bash">rg --pcre2-version
+</code></pre>
+<p>Useful for verifying PCRE2 support before using the <code>-P</code> flag.</p>
+</li>
+</ul>
+<h3 id="debugging-and-performance-analysis"><a class="header" href="#debugging-and-performance-analysis">Debugging and Performance Analysis</a></h3>
+<p>These flags help troubleshoot search behavior and analyze performance:</p>
+<ul>
+<li>
+<p><strong><code>--debug</code></strong>: Show debug information about search strategy and configuration</p>
+<pre><code class="language-bash">rg --debug pattern
+</code></pre>
+<p>Shows which files are searched, which are ignored, regex engine selection, and configuration details. Useful for understanding why certain files are included or excluded.</p>
+</li>
+<li>
+<p><strong><code>--trace</code></strong>: Show trace-level debug information (very verbose)</p>
+<pre><code class="language-bash">rg --trace pattern 2&gt; trace.log
+</code></pre>
+<p>Even more detailed than <code>--debug</code>. Typically redirected to a file due to verbosity.</p>
+</li>
+<li>
+<p><strong><code>--stats</code></strong>: Show search statistics after results</p>
+<pre><code class="language-bash">rg --stats pattern
+</code></pre>
+<p>Displays metrics including:</p>
+<ul>
+<li>Elapsed time</li>
+<li>Bytes searched and printed</li>
+<li>Number of matched lines</li>
+<li>Number of searches with matches</li>
+</ul>
+<p>Useful for performance analysis and understanding search scope.</p>
 </li>
 </ul>
 <h2 id="quick-reference"><a class="header" href="#quick-reference">Quick Reference</a></h2>
@@ -3624,7 +4275,7 @@ rg -p -C 5 --hidden 'password'
 </tbody></table>
 </div>
 <p>Ripgrep respects <code>.gitignore</code> by default (use <code>-u</code> to disable), shows colors automatically, and is generally faster.</p>
-<h2 id="see-also-3"><a class="header" href="#see-also-3">See Also</a></h2>
+<h2 id="see-also-4"><a class="header" href="#see-also-4">See Also</a></h2>
 <ul>
 <li><a href="./regex.html">Regular Expressions</a> - Learn ripgrep's regex syntax</li>
 <li><a href="./replacements.html">Replacements</a> - Detailed guide to the <code>-r</code> flag and capture groups</li>
@@ -3633,7 +4284,7 @@ rg -p -C 5 --hidden 'password'
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="context-lines-2"><a class="header" href="#context-lines-2">Context Lines</a></h1>
 <p>When searching for patterns, it's often helpful to see the lines surrounding each match to understand the context. ripgrep provides powerful options for displaying context lines before and after matches.</p>
-<h2 id="overview-2"><a class="header" href="#overview-2">Overview</a></h2>
+<h2 id="overview-3"><a class="header" href="#overview-3">Overview</a></h2>
 <p>Context lines help you understand the surrounding code or text when a pattern matches. This is particularly useful when debugging, code review, or understanding how a term is used in context.</p>
 <h2 id="basic-context-options"><a class="header" href="#basic-context-options">Basic Context Options</a></h2>
 <p>ripgrep provides three main flags for controlling context:</p>
@@ -3646,6 +4297,7 @@ rg -B 2 pattern
 # Show 2 lines before and after each match
 rg -C 2 pattern
 </code></pre>
+<p><strong>Note:</strong> Context values can be very large (up to the maximum value supported by your system) for edge cases where you need extensive surrounding context. However, typical usage is 2-10 lines.</p>
 <h2 id="after-context"><a class="header" href="#after-context">After Context</a></h2>
 <p>Display lines after each match:</p>
 <pre><code class="language-bash"># Long form
@@ -3708,7 +4360,25 @@ rg -C 2 --context-separator '\t===\t' pattern
 <pre><code class="language-bash"># Completely disable context separators
 rg -C 2 --no-context-separator pattern
 </code></pre>
-<p>The difference between empty separator and <code>--no-context-separator</code>:</p>
+<p><strong>Visual Difference:</strong> The distinction between empty separator and <code>--no-context-separator</code>:</p>
+<p>With <code>--context-separator ''</code> (empty string):</p>
+<pre><code>file.txt:10:first match
+file.txt-11-context line
+file.txt-12-context line
+
+file.txt:20:second match
+file.txt-21-context line
+</code></pre>
+<p><em>Note the blank line between match groups</em></p>
+<p>With <code>--no-context-separator</code>:</p>
+<pre><code>file.txt:10:first match
+file.txt-11-context line
+file.txt-12-context line
+file.txt:20:second match
+file.txt-21-context line
+</code></pre>
+<p><em>No blank line - output flows continuously</em></p>
+<p>Summary:</p>
 <ul>
 <li><code>--context-separator ''</code> removes the <code>--</code> separator but keeps a blank line between groups</li>
 <li><code>--no-context-separator</code> removes all separation, making match groups flow continuously</li>
@@ -3740,6 +4410,17 @@ rg -C 2 --field-context-separator ' | ' --field-match-separator ' &gt; ' pattern
 <pre><code>file.txt 42 &gt; matching line
 file.txt 43 | context line after
 </code></pre>
+<p><strong>Escape Sequences:</strong> Field separators support escape sequences for special characters:</p>
+<pre><code class="language-bash"># Use tab separator for easier parsing
+rg --field-match-separator '\t' pattern
+
+# Use null byte separator (useful for machine parsing)
+rg --field-match-separator '\x00' pattern
+
+# Use hex escapes for non-printable characters
+rg --field-context-separator '\xFF' pattern
+</code></pre>
+<p>Common escape sequences: <code>\t</code> (tab), <code>\n</code> (newline), <code>\r</code> (carriage return), <code>\x00</code> (null byte), <code>\xFF</code> (hex byte).</p>
 <h2 id="combining-with-other-options"><a class="header" href="#combining-with-other-options">Combining with Other Options</a></h2>
 <h3 id="context-with-multiple-patterns"><a class="header" href="#context-with-multiple-patterns">Context with Multiple Patterns</a></h3>
 <pre><code class="language-bash"># Show context for any match
@@ -3758,11 +4439,17 @@ rg -C 2 -r 'new_value' 'old_value'
 <pre><code class="language-bash"># Show all lines from files with matches
 rg --passthru pattern
 
-# Context flags override passthru behavior
-rg --passthru -C 2 pattern  # Only shows 2 lines of context, not all lines
+# Flag ordering determines behavior - last flag wins
+rg --passthru -C 2 pattern  # Context mode: only 2 lines of context
+rg -C 2 --passthru pattern  # Passthru mode: all lines shown
 </code></pre>
+<p><strong>Flag Precedence:</strong> When both <code>--passthru</code> and context flags (<code>-A/-B/-C</code>) are specified, the last flag wins:</p>
+<ul>
+<li>If <code>--passthru</code> comes last, it enables passthru mode (showing all lines)</li>
+<li>If <code>-A/-B/-C</code> comes last, it enables context mode (showing only specified context)</li>
+</ul>
 <p>Use <code>--passthru</code> when you want to see the entire file with matches highlighted. Use <code>-A/-B/-C</code> when you only need specific context around matches.</p>
-<h2 id="examples-2"><a class="header" href="#examples-2">Examples</a></h2>
+<h2 id="examples-4"><a class="header" href="#examples-4">Examples</a></h2>
 <h3 id="example-1-understanding-function-context"><a class="header" href="#example-1-understanding-function-context">Example 1: Understanding Function Context</a></h3>
 <pre><code class="language-bash"># Find function definitions with implementation preview
 rg -A 10 'fn main' src/
@@ -3786,7 +4473,7 @@ rg -C 3 --no-context-separator 'import\|use'
 # Useful when piping to other tools that don't expect separators
 rg -C 2 --no-context-separator pattern | grep specific_context
 </code></pre>
-<h2 id="best-practices"><a class="header" href="#best-practices">Best Practices</a></h2>
+<h2 id="best-practices-1"><a class="header" href="#best-practices-1">Best Practices</a></h2>
 <ul>
 <li>Start with <code>-C 2</code> for general purpose context</li>
 <li>Use <code>-A</code> when you care about what follows (e.g., function bodies)</li>
@@ -3818,14 +4505,14 @@ src/utils.rs
 <p>Enable it for cleaner context output:</p>
 <pre><code class="language-bash">rg -C 3 --heading pattern
 </code></pre>
-<h2 id="performance-considerations-5"><a class="header" href="#performance-considerations-5">Performance Considerations</a></h2>
+<h2 id="performance-considerations-6"><a class="header" href="#performance-considerations-6">Performance Considerations</a></h2>
 <ul>
 <li>Context lines have minimal performance impact</li>
 <li>Larger context sizes slightly increase memory usage</li>
 <li>Context doesn't significantly affect search speed</li>
 <li>Consider reducing context when output is very large</li>
 </ul>
-<h2 id="troubleshooting-4"><a class="header" href="#troubleshooting-4">Troubleshooting</a></h2>
+<h2 id="troubleshooting-5"><a class="header" href="#troubleshooting-5">Troubleshooting</a></h2>
 <h3 id="overlapping-matches"><a class="header" href="#overlapping-matches">Overlapping Matches</a></h3>
 <p>When matches are close together and their context windows overlap, ripgrep merges them into a single contiguous block without duplicating lines or adding separators between them.</p>
 <p>For example, with <code>-C 2</code> (2 lines of context):</p>
@@ -3852,7 +4539,7 @@ src/utils.rs
 <p>No separator appears because the matches share context.</p>
 <h3 id="no-separator-appearing"><a class="header" href="#no-separator-appearing">No Separator Appearing</a></h3>
 <p>Separators only appear when there are multiple distinct match groups. Single matches or overlapping contexts won't show separators.</p>
-<h2 id="see-also-4"><a class="header" href="#see-also-4">See Also</a></h2>
+<h2 id="see-also-5"><a class="header" href="#see-also-5">See Also</a></h2>
 <ul>
 <li><a href="basics.html">Basics</a> - Basic search usage</li>
 <li><a href="output-formats.html">Output Formats</a> - Other output customization options</li>
@@ -3860,7 +4547,7 @@ src/utils.rs
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="output-formats"><a class="header" href="#output-formats">Output Formats</a></h1>
 <p>ripgrep provides multiple output formats and customization options to tailor search results to your needs, from standard grep-like output to JSON for programmatic consumption.</p>
-<h2 id="overview-3"><a class="header" href="#overview-3">Overview</a></h2>
+<h2 id="overview-4"><a class="header" href="#overview-4">Overview</a></h2>
 <p>By default, ripgrep outputs search results in a grep-compatible format. However, it offers extensive formatting options including JSON output, custom colors, field separators, and specialized formats like vimgrep. This chapter covers all output formatting capabilities.</p>
 <h2 id="standard-output-format"><a class="header" href="#standard-output-format">Standard Output Format</a></h2>
 <p>The default output format shows matching lines with optional file paths, line numbers, and column numbers:</p>
@@ -3921,6 +4608,7 @@ rg --colors 'match:fg:red' --colors 'match:bg:yellow' pattern
 <li><code>path</code>: File paths</li>
 <li><code>line</code>: Line numbers</li>
 <li><code>column</code>: Column numbers</li>
+<li><code>highlight</code>: Highlighted matching text (for alternate match highlighting)</li>
 </ul>
 <p>Color attributes:</p>
 <ul>
@@ -4006,7 +4694,7 @@ rg --max-columns-preview pattern
 <pre><code class="language-bash"># Custom context separator
 rg --context-separator '---' -C 2 pattern
 </code></pre>
-<h2 id="examples-3"><a class="header" href="#examples-3">Examples</a></h2>
+<h2 id="examples-5"><a class="header" href="#examples-5">Examples</a></h2>
 <h3 id="example-1-json-output-for-scripting"><a class="header" href="#example-1-json-output-for-scripting">Example 1: JSON Output for Scripting</a></h3>
 <pre><code class="language-bash"># Search and parse with jq
 rg --json 'TODO' | jq -r 'select(.type == "match") | "\(.data.path.text):\(.data.line_number)"'
@@ -4020,7 +4708,7 @@ rg --colors 'match:fg:green' --colors 'match:style:bold' pattern
 rg --vimgrep pattern &gt; /tmp/results.txt
 vim -q /tmp/results.txt
 </code></pre>
-<h2 id="best-practices-1"><a class="header" href="#best-practices-1">Best Practices</a></h2>
+<h2 id="best-practices-2"><a class="header" href="#best-practices-2">Best Practices</a></h2>
 <ul>
 <li>Use <code>--json</code> for scripts and automation</li>
 <li>Use <code>--vimgrep</code> for editor integration</li>
@@ -4029,14 +4717,14 @@ vim -q /tmp/results.txt
 <li>Use <code>--heading</code> for human-readable output with many matches</li>
 <li>Use <code>--no-heading</code> when processing output line-by-line</li>
 </ul>
-<h2 id="performance-considerations-6"><a class="header" href="#performance-considerations-6">Performance Considerations</a></h2>
+<h2 id="performance-considerations-7"><a class="header" href="#performance-considerations-7">Performance Considerations</a></h2>
 <ul>
 <li>JSON output has minimal performance overhead</li>
 <li>Colored output may be slightly slower on some terminals</li>
 <li>Buffering modes can affect perceived performance in pipelines</li>
 <li><code>--only-matching</code> can be slower for complex patterns</li>
 </ul>
-<h2 id="see-also-5"><a class="header" href="#see-also-5">See Also</a></h2>
+<h2 id="see-also-6"><a class="header" href="#see-also-6">See Also</a></h2>
 <ul>
 <li><a href="replacements.html">Replacements</a> - Modify output with replacements</li>
 <li><a href="common-options.html">Common Options</a> - Other frequently used flags</li>
@@ -4044,7 +4732,7 @@ vim -q /tmp/results.txt
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="sorting-results"><a class="header" href="#sorting-results">Sorting Results</a></h1>
 <p>By default, ripgrep outputs results in an undefined order optimized for performance. However, you can sort results by various criteria when you need predictable or organized output.</p>
-<h2 id="overview-4"><a class="header" href="#overview-4">Overview</a></h2>
+<h2 id="overview-5"><a class="header" href="#overview-5">Overview</a></h2>
 <p>Sorting is useful when:</p>
 <ul>
 <li>You need consistent output across multiple runs</li>
@@ -4081,6 +4769,7 @@ rg --sortr path pattern
 # Oldest modified files first
 rg --sortr modified pattern
 </code></pre>
+<p><strong>Note</strong>: Reverse path sorting (<code>--sortr path</code>) collects and sorts all paths in memory, unlike forward path sorting which can stream results. This means <code>--sortr path</code> has higher memory usage than <code>--sort path</code>.</p>
 <h2 id="sorting-by-path"><a class="header" href="#sorting-by-path">Sorting by Path</a></h2>
 <p>Path sorting uses lexicographic ordering:</p>
 <pre><code class="language-bash">rg --sort path 'TODO'
@@ -4097,6 +4786,7 @@ rg --sortr modified pattern
 <li>Alphabetical organization</li>
 <li>Predictable file ordering</li>
 </ul>
+<p><strong>Performance Note</strong>: When using <code>--sort path</code> in ascending order (without reverse), ripgrep uses an optimized streaming path that processes paths in their natural traversal order without buffering all results in memory. This makes ascending path sorting more memory-efficient than other sort modes.</p>
 <h2 id="sorting-by-modified-time"><a class="header" href="#sorting-by-modified-time">Sorting by Modified Time</a></h2>
 <p>Find matches in recently changed files:</p>
 <pre><code class="language-bash"># Most recently modified first
@@ -4139,8 +4829,8 @@ rg --sortr created 'pattern'
 <h2 id="performance-impact-1"><a class="header" href="#performance-impact-1">Performance Impact</a></h2>
 <p>Sorting affects performance in several ways:</p>
 <ol>
-<li><strong>Disables Parallelism</strong>: Sorting requires collecting all results before output, so ripgrep runs single-threaded</li>
-<li><strong>Memory Usage</strong>: All results must be held in memory before sorting</li>
+<li><strong>Disables Parallelism</strong>: Sorting requires collecting all results before output, which automatically disables parallelism in the directory walker, forcing sequential processing. Exception: <code>--sort path</code> in ascending order uses an optimized streaming path that avoids this overhead.</li>
+<li><strong>Memory Usage</strong>: All results must be held in memory before sorting (except for <code>--sort path</code> in ascending order)</li>
 <li><strong>Startup Delay</strong>: No results appear until the entire search completes</li>
 </ol>
 <p>Performance comparison:</p>
@@ -4166,7 +4856,7 @@ rg --sort path pattern
 <h3 id="sorted-json-output"><a class="header" href="#sorted-json-output">Sorted JSON Output</a></h3>
 <pre><code class="language-bash">rg --sort modified --json 'TODO'
 </code></pre>
-<h2 id="examples-4"><a class="header" href="#examples-4">Examples</a></h2>
+<h2 id="examples-6"><a class="header" href="#examples-6">Examples</a></h2>
 <h3 id="example-1-recent-changes-audit"><a class="header" href="#example-1-recent-changes-audit">Example 1: Recent Changes Audit</a></h3>
 <pre><code class="language-bash"># Find TODOs in recently modified files
 rg --sort modified -C 2 'TODO|FIXME'
@@ -4183,7 +4873,7 @@ rg --sort created 'new_feature'
 <pre><code class="language-bash"># Find patterns in oldest files (potential legacy code)
 rg --sortr created 'deprecated_function'
 </code></pre>
-<h2 id="best-practices-2"><a class="header" href="#best-practices-2">Best Practices</a></h2>
+<h2 id="best-practices-3"><a class="header" href="#best-practices-3">Best Practices</a></h2>
 <ul>
 <li>Use <code>--sort none</code> (default) for best performance</li>
 <li>Use <code>--sort path</code> for consistent output in scripts or CI</li>
@@ -4210,11 +4900,348 @@ rg --sortr created 'deprecated_function'
 <li><strong>Windows</strong>: All timestamps available but may have different precision</li>
 </ul>
 <p><strong>Error Handling</strong>: When a requested sort criterion is unavailable on the filesystem (for example, creation time on ext4 filesystems), ripgrep will detect this, print an error message, and exit without performing the search. This ensures that you're aware when the requested sorting cannot be reliably performed.</p>
-<h2 id="see-also-6"><a class="header" href="#see-also-6">See Also</a></h2>
+<p>When sorting by timestamps, files with metadata errors (such as permission denied or missing filesystem metadata) are handled gracefully:</p>
+<ul>
+<li>With ascending sort (<code>--sort</code>): Files with errors appear last in the output</li>
+<li>With descending sort (<code>--sortr</code>): Files with errors appear first in the output</li>
+</ul>
+<p>This ensures predictable behavior even when some files cannot be fully accessed.</p>
+<h2 id="see-also-7"><a class="header" href="#see-also-7">See Also</a></h2>
 <ul>
 <li><a href="performance.html">Performance</a> - Performance tuning and optimization</li>
 <li><a href="output-formats.html">Output Formats</a> - Other output customization</li>
 <li><a href="common-options.html">Common Options</a> - Frequently used flags</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="utility-modes"><a class="header" href="#utility-modes">Utility Modes</a></h1>
+<p>Beyond pattern searching, ripgrep provides several utility modes for discovery, shell integration, and diagnostics. These modes help you explore available features, generate shell completions, and integrate ripgrep into your development workflow.</p>
+<h2 id="overview-6"><a class="header" href="#overview-6">Overview</a></h2>
+<p>Utility modes are special operating modes where ripgrep doesn't search for patterns but instead provides information or generates configuration files. These modes are essential for:</p>
+<ul>
+<li>Discovering which files would be searched</li>
+<li>Listing available file types</li>
+<li>Generating shell completions</li>
+<li>Creating man pages</li>
+<li>Checking version and feature availability</li>
+</ul>
+<h2 id="files-mode"><a class="header" href="#files-mode">Files Mode</a></h2>
+<p>The <code>--files</code> flag lists all files that ripgrep would search, without performing any pattern matching.</p>
+<h3 id="basic-usage-1"><a class="header" href="#basic-usage-1">Basic Usage</a></h3>
+<pre><code class="language-bash"># List all files that would be searched
+rg --files
+
+# List files in specific directory
+rg --files /path/to/directory
+</code></pre>
+<h3 id="use-cases"><a class="header" href="#use-cases">Use Cases</a></h3>
+<p><strong>Preview Search Scope:</strong></p>
+<pre><code class="language-bash"># See what files will be searched before running actual search
+rg --files | wc -l
+</code></pre>
+<p><strong>Verify File Filtering:</strong></p>
+<pre><code class="language-bash"># Check which files match your type filter
+rg --files -t rust
+
+# Verify ignore rules are working
+rg --files --no-ignore
+</code></pre>
+<p><strong>Generate File Lists:</strong></p>
+<pre><code class="language-bash"># Create a file inventory
+rg --files &gt; project-files.txt
+
+# Find files modified recently (combine with other tools)
+rg --files | xargs ls -lt | head -20
+</code></pre>
+<p><strong>Pipe to Other Tools:</strong></p>
+<pre><code class="language-bash"># Count lines in all searchable files
+rg --files | xargs wc -l
+
+# Find largest files in project
+rg --files | xargs du -h | sort -rh | head -10
+</code></pre>
+<h3 id="combining-with-filters"><a class="header" href="#combining-with-filters">Combining with Filters</a></h3>
+<p>The <code>--files</code> mode respects all filtering options:</p>
+<pre><code class="language-bash"># List only Python files
+rg --files -t py
+
+# List files matching glob pattern
+rg --files -g '*.json'
+
+# List files including hidden ones
+rg --files --hidden
+
+# List files ignoring .gitignore
+rg --files --no-ignore
+</code></pre>
+<p><strong>Note</strong>: The <code>--files</code> flag takes precedence over <code>--type-list</code>. If you specify both flags, ripgrep will list files rather than displaying type definitions.</p>
+<h2 id="type-list-mode"><a class="header" href="#type-list-mode">Type List Mode</a></h2>
+<p>The <code>--type-list</code> flag displays all built-in file type definitions.</p>
+<h3 id="basic-usage-2"><a class="header" href="#basic-usage-2">Basic Usage</a></h3>
+<pre><code class="language-bash"># Show all file types
+rg --type-list
+</code></pre>
+<h3 id="output-format-1"><a class="header" href="#output-format-1">Output Format</a></h3>
+<p>Each line shows a file type and its associated glob patterns:</p>
+<pre><code>rust: *.rs
+python: *.py, *.pyw, *.pyi, *.pyx
+javascript: *.js, *.jsx, *.mjs
+go: *.go
+</code></pre>
+<h3 id="use-cases-1"><a class="header" href="#use-cases-1">Use Cases</a></h3>
+<p><strong>Discover Available Types:</strong></p>
+<pre><code class="language-bash"># Find file type for your language
+rg --type-list | grep -i java
+</code></pre>
+<p><strong>Verify Custom Types:</strong></p>
+<pre><code class="language-bash"># Check if custom type is defined
+rg --type-list | grep mytype
+</code></pre>
+<p><strong>Reference for Type Filters:</strong></p>
+<pre><code class="language-bash"># See all types to use with -t flag
+rg --type-list | less
+</code></pre>
+<h3 id="custom-type-definitions"><a class="header" href="#custom-type-definitions">Custom Type Definitions</a></h3>
+<p>Add custom types and verify them:</p>
+<pre><code class="language-bash"># Add custom type
+rg --type-add 'config:*.{yml,yaml,toml,json}' --type-list | grep config
+
+# Use custom type
+rg --type-add 'config:*.{yml,yaml,toml}' -t config 'database_url'
+</code></pre>
+<p><strong>Note</strong>: The <code>--type-list</code> output reflects any custom types added via <code>--type-add</code> and respects <code>--type-clear</code> if used to remove built-in types. This makes it useful for verifying your type configuration:</p>
+<pre><code class="language-bash"># Clear all types and add only custom ones
+rg --type-clear --type-add 'web:*.{html,css,js}' --type-list
+
+# Verify custom type is available
+rg --type-add 'config:*.{yml,yaml}' --type-list | grep config
+</code></pre>
+<h2 id="generation-mode"><a class="header" href="#generation-mode">Generation Mode</a></h2>
+<p>The <code>--generate</code> flag creates shell completions and man pages for ripgrep. All generated output is written to stdout, allowing you to pipe or redirect it as needed.</p>
+<h3 id="supported-shells"><a class="header" href="#supported-shells">Supported Shells</a></h3>
+<p>ripgrep can generate completions for:</p>
+<ul>
+<li>Bash</li>
+<li>Zsh</li>
+<li>Fish</li>
+<li>PowerShell</li>
+</ul>
+<h3 id="generating-shell-completions"><a class="header" href="#generating-shell-completions">Generating Shell Completions</a></h3>
+<p><strong>Bash:</strong></p>
+<pre><code class="language-bash"># Generate Bash completions
+rg --generate complete-bash
+
+# Install system-wide (Linux)
+rg --generate complete-bash | sudo tee /usr/share/bash-completion/completions/rg
+
+# Install user-local (macOS with Homebrew)
+rg --generate complete-bash &gt; $(brew --prefix)/etc/bash_completion.d/rg
+</code></pre>
+<p><strong>Zsh:</strong></p>
+<pre><code class="language-bash"># Generate Zsh completions
+rg --generate complete-zsh
+
+# Install in fpath (common location)
+rg --generate complete-zsh &gt; ~/.zsh/completion/_rg
+
+# Or system-wide
+sudo rg --generate complete-zsh &gt; /usr/local/share/zsh/site-functions/_rg
+</code></pre>
+<p><strong>Fish:</strong></p>
+<pre><code class="language-bash"># Generate Fish completions
+rg --generate complete-fish
+
+# Install user-local
+rg --generate complete-fish &gt; ~/.config/fish/completions/rg.fish
+</code></pre>
+<p><strong>PowerShell:</strong></p>
+<pre><code class="language-bash"># Generate PowerShell completions
+rg --generate complete-powershell
+
+# Add to profile
+rg --generate complete-powershell &gt;&gt; $PROFILE
+</code></pre>
+<h3 id="generating-man-pages"><a class="header" href="#generating-man-pages">Generating Man Pages</a></h3>
+<pre><code class="language-bash"># Generate man page
+rg --generate man
+
+# Install system-wide
+rg --generate man | sudo tee /usr/local/share/man/man1/rg.1
+
+# View generated man page
+rg --generate man | man -l -
+</code></pre>
+<h3 id="installation-workflow"><a class="header" href="#installation-workflow">Installation Workflow</a></h3>
+<p>Complete shell integration setup:</p>
+<pre><code class="language-bash"># Example: Zsh installation
+mkdir -p ~/.zsh/completion
+rg --generate complete-zsh &gt; ~/.zsh/completion/_rg
+
+# Add to .zshrc if not already present
+echo 'fpath=(~/.zsh/completion $fpath)' &gt;&gt; ~/.zshrc
+echo 'autoload -Uz compinit &amp;&amp; compinit' &gt;&gt; ~/.zshrc
+
+# Reload shell
+exec zsh
+</code></pre>
+<h2 id="version-information"><a class="header" href="#version-information">Version Information</a></h2>
+<p>Check ripgrep version and feature availability.</p>
+<h3 id="version-flag"><a class="header" href="#version-flag">Version Flag</a></h3>
+<pre><code class="language-bash"># Show version (verbose output)
+rg --version
+
+# Short form (compact output)
+rg -V
+</code></pre>
+<p><strong>Example output from <code>rg --version</code>:</strong></p>
+<pre><code>ripgrep 14.1.0
+-SIMD -AVX (compiled)
++SIMD +AVX (runtime)
+</code></pre>
+<p>The output shows:</p>
+<ul>
+<li>ripgrep version number</li>
+<li>Compile-time features</li>
+<li>Runtime CPU features detected</li>
+</ul>
+<p><strong>Note</strong>: The <code>--version</code> flag provides more verbose output including feature information, while <code>-V</code> provides a more compact version string. Use <code>--version</code> when you need to check feature support, and <code>-V</code> when you only need the version number.</p>
+<h3 id="pcre2-version-check"><a class="header" href="#pcre2-version-check">PCRE2 Version Check</a></h3>
+<p>Verify PCRE2 support and JIT compilation:</p>
+<pre><code class="language-bash"># Check PCRE2 availability
+rg --pcre2-version
+</code></pre>
+<p><strong>Example output:</strong></p>
+<pre><code>PCRE2 10.42 is available (JIT is available)
+</code></pre>
+<p>This confirms:</p>
+<ul>
+<li>PCRE2 library version</li>
+<li>Whether JIT (Just-In-Time) compilation is enabled</li>
+<li>Feature availability for advanced regex patterns</li>
+</ul>
+<h3 id="use-cases-2"><a class="header" href="#use-cases-2">Use Cases</a></h3>
+<p><strong>Check Feature Availability:</strong></p>
+<pre><code class="language-bash"># Verify PCRE2 before using advanced patterns
+if rg --pcre2-version &amp;&gt;/dev/null; then
+  rg -P 'pattern(?=lookahead)'
+else
+  echo "PCRE2 not available"
+fi
+</code></pre>
+<p><strong>Version-Specific Behavior:</strong></p>
+<pre><code class="language-bash"># Check version for compatibility
+version=$(rg --version | head -n1 | awk '{print $2}')
+echo "Using ripgrep version: $version"
+</code></pre>
+<h2 id="practical-examples-5"><a class="header" href="#practical-examples-5">Practical Examples</a></h2>
+<h3 id="example-1-audit-project-structure"><a class="header" href="#example-1-audit-project-structure">Example 1: Audit Project Structure</a></h3>
+<pre><code class="language-bash"># Count files by type
+echo "Rust files:" $(rg --files -t rust | wc -l)
+echo "Python files:" $(rg --files -t py | wc -l)
+echo "JavaScript files:" $(rg --files -t js | wc -l)
+echo "Total files:" $(rg --files | wc -l)
+</code></pre>
+<h3 id="example-2-find-large-files"><a class="header" href="#example-2-find-large-files">Example 2: Find Large Files</a></h3>
+<pre><code class="language-bash"># List largest files in project
+rg --files | xargs du -h | sort -rh | head -20
+</code></pre>
+<h3 id="example-3-verify-search-coverage"><a class="header" href="#example-3-verify-search-coverage">Example 3: Verify Search Coverage</a></h3>
+<pre><code class="language-bash"># Compare total files vs searched files
+total=$(find . -type f | wc -l)
+searched=$(rg --files | wc -l)
+echo "Total files: $total"
+echo "Searched files: $searched"
+echo "Filtered: $((total - searched))"
+</code></pre>
+<h3 id="example-4-generate-file-inventory"><a class="header" href="#example-4-generate-file-inventory">Example 4: Generate File Inventory</a></h3>
+<pre><code class="language-bash"># Create JSON inventory of searchable files
+rg --files | jq -R . | jq -s '{files: .}' &gt; inventory.json
+</code></pre>
+<h3 id="example-5-setup-development-environment"><a class="header" href="#example-5-setup-development-environment">Example 5: Setup Development Environment</a></h3>
+<pre><code class="language-bash"># Complete shell integration setup script
+#!/bin/bash
+
+# Install completions
+completion_dir="$HOME/.local/share/bash-completion/completions"
+mkdir -p "$completion_dir"
+rg --generate complete-bash &gt; "$completion_dir/rg"
+
+# Install man page
+man_dir="$HOME/.local/share/man/man1"
+mkdir -p "$man_dir"
+rg --generate man &gt; "$man_dir/rg.1"
+
+# Update man database
+mandb "$HOME/.local/share/man"
+
+echo "ripgrep shell integration installed"
+</code></pre>
+<h2 id="integration-with-development-workflows"><a class="header" href="#integration-with-development-workflows">Integration with Development Workflows</a></h2>
+<h3 id="editor-integration"><a class="header" href="#editor-integration">Editor Integration</a></h3>
+<p>Many editors use <code>rg --files</code> for file discovery:</p>
+<pre><code class="language-bash"># Vim/Neovim with fzf
+" Use ripgrep for file finding
+let $FZF_DEFAULT_COMMAND = 'rg --files'
+
+# VS Code uses ripgrep by default
+# Configure search exclusions in settings.json
+</code></pre>
+<h3 id="cicd-pipelines"><a class="header" href="#cicd-pipelines">CI/CD Pipelines</a></h3>
+<pre><code class="language-bash"># Verify expected files exist
+if ! rg --files | grep -q 'README.md'; then
+  echo "ERROR: README.md missing"
+  exit 1
+fi
+
+# Count TODOs in codebase
+todo_count=$(rg 'TODO|FIXME' --count | awk -F: '{sum+=$2} END {print sum}')
+echo "TODOs in codebase: $todo_count"
+</code></pre>
+<h3 id="build-scripts"><a class="header" href="#build-scripts">Build Scripts</a></h3>
+<pre><code class="language-bash"># Generate file list for build system
+rg --files -t rust | sed 's/^/src\//' &gt; build/sources.txt
+
+# Find all test files
+rg --files -g '*_test.go' &gt; test-files.txt
+</code></pre>
+<h2 id="best-practices-4"><a class="header" href="#best-practices-4">Best Practices</a></h2>
+<ul>
+<li>Use <code>--files</code> to preview search scope before running expensive queries</li>
+<li>Check <code>--type-list</code> to discover available file types instead of guessing</li>
+<li>Generate and install shell completions for better command-line experience</li>
+<li>Use <code>--pcre2-version</code> to verify feature availability in scripts</li>
+<li>Combine <code>--files</code> with other Unix tools for powerful file analysis</li>
+<li>Install man pages locally for offline reference</li>
+</ul>
+<h2 id="troubleshooting-6"><a class="header" href="#troubleshooting-6">Troubleshooting</a></h2>
+<h3 id="completions-not-working"><a class="header" href="#completions-not-working">Completions Not Working</a></h3>
+<p><strong>Issue</strong>: Shell completions not activated after generation</p>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Verify completion file is in correct directory</li>
+<li>Check that completion system is enabled in shell</li>
+<li>Restart shell or source configuration file</li>
+<li>Verify file permissions (should be readable)</li>
+</ul>
+<h3 id="files-mode-showing-unexpected-results"><a class="header" href="#files-mode-showing-unexpected-results">Files Mode Showing Unexpected Results</a></h3>
+<p><strong>Issue</strong>: <code>--files</code> shows more/fewer files than expected</p>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Check ignore files (<code>.gitignore</code>, <code>.ignore</code>)</li>
+<li>Verify <code>--hidden</code> or <code>--no-ignore</code> flags if needed</li>
+<li>Test with different type filters to isolate issue</li>
+</ul>
+<h3 id="pcre2-not-available"><a class="header" href="#pcre2-not-available">PCRE2 Not Available</a></h3>
+<p><strong>Issue</strong>: <code>--pcre2-version</code> returns error</p>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Verify ripgrep was compiled with PCRE2 support</li>
+<li>Check ripgrep installation method (some packages exclude PCRE2)</li>
+<li>Consider reinstalling from source with PCRE2 enabled</li>
+</ul>
+<h2 id="see-also-8"><a class="header" href="#see-also-8">See Also</a></h2>
+<ul>
+<li><a href="common-options.html">Common Options</a> - Frequently used flags</li>
+<li><a href="manual-filtering-types.html">Manual Filtering: File Types</a> - File type filtering details</li>
+<li><a href="troubleshooting.html">Troubleshooting</a> - General troubleshooting guide</li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="advanced-patterns"><a class="header" href="#advanced-patterns">Advanced Patterns</a></h1>
 <p>This chapter covers advanced regex pattern features in ripgrep, including multiline search, PCRE2 engine support, lookaround assertions, backreferences, Unicode patterns, and performance considerations.</p>
@@ -4235,7 +5262,7 @@ rg --sortr created 'deprecated_function'
 </ul>
 <h2 id="multiline-search"><a class="header" href="#multiline-search">Multiline Search</a></h2>
 <p>By default, ripgrep searches line-by-line, and patterns cannot match across line boundaries. The <code>-U</code> or <code>--multiline</code> flag enables multiline mode, allowing patterns to match text that spans multiple lines.</p>
-<h3 id="basic-usage"><a class="header" href="#basic-usage">Basic Usage</a></h3>
+<h3 id="basic-usage-3"><a class="header" href="#basic-usage-3">Basic Usage</a></h3>
 <pre><code class="language-bash"># Search for "foo" followed by "bar" on the next line
 rg -U 'foo\nbar'
 
@@ -4290,7 +5317,7 @@ rg -U 'world(?s:.+)detective'
 <pre><code class="language-bash"># This always works, with or without --multiline-dotall
 rg -U 'world\p{any}+detective'
 </code></pre>
-<h2 id="pcre2-engine"><a class="header" href="#pcre2-engine">PCRE2 Engine</a></h2>
+<h2 id="pcre2-engine-1"><a class="header" href="#pcre2-engine-1">PCRE2 Engine</a></h2>
 <p>Ripgrep supports two regex engines:</p>
 <ol>
 <li><strong>Default engine</strong>: Fast Rust regex with finite automata</li>
@@ -4369,7 +5396,7 @@ rg -Po '(?&lt;=\$)\d+\.?\d*'
 # Extract words between quotes
 rg -Po '(?&lt;=").*?(?=")'
 </code></pre>
-<h3 id="use-cases"><a class="header" href="#use-cases">Use Cases</a></h3>
+<h3 id="use-cases-3"><a class="header" href="#use-cases-3">Use Cases</a></h3>
 <p>Lookaround assertions are useful for:</p>
 <ul>
 <li>Filtering matches based on context</li>
@@ -4405,7 +5432,7 @@ rg -P '(\w+)@(\w+)\.com' -r 'User: $1, Domain: $2'
 <p>Backreferences prevent some regex optimizations, which can make searches slower. Use them only when necessary.</p>
 <h2 id="unicode-patterns"><a class="header" href="#unicode-patterns">Unicode Patterns</a></h2>
 <p>Ripgrep has excellent Unicode support enabled by default. All regex metacharacters are Unicode-aware.</p>
-<h3 id="unicode-character-classes"><a class="header" href="#unicode-character-classes">Unicode Character Classes</a></h3>
+<h3 id="unicode-character-classes-1"><a class="header" href="#unicode-character-classes-1">Unicode Character Classes</a></h3>
 <p>Use <code>\p{Property}</code> syntax to match Unicode character properties:</p>
 <pre><code class="language-bash"># Find emoji
 rg '\p{Emoji}'
@@ -4432,6 +5459,7 @@ rg '\p{Uppercase}+'
 <tr><td><code>\p{any}</code></td><td>Any character (including newlines)</td></tr>
 </tbody></table>
 </div>
+<p><strong>Note on Emoji Matching</strong>: Emoji matching with <code>\p{Emoji}</code> may vary across different regex engines and Unicode versions. Some complex emoji (like multi-codepoint sequences, skin tone modifiers, or zero-width joiners) may require additional pattern logic. Always test emoji patterns with your specific use case and data.</p>
 <h3 id="unicode-aware-metacharacters"><a class="header" href="#unicode-aware-metacharacters">Unicode-Aware Metacharacters</a></h3>
 <p>By default, these metacharacters are Unicode-aware:</p>
 <ul>
@@ -4572,7 +5600,7 @@ rg -i 'foo(?-i:bar)'  # "foo" is case-insensitive, "bar" is case-sensitive
 '
 </code></pre>
 <p><strong>Note</strong>: In shell, you'll need proper quoting for multiline patterns.</p>
-<h2 id="performance-considerations-7"><a class="header" href="#performance-considerations-7">Performance Considerations</a></h2>
+<h2 id="performance-considerations-8"><a class="header" href="#performance-considerations-8">Performance Considerations</a></h2>
 <p>Advanced regex features can impact performance. Understanding these implications helps you write efficient searches.</p>
 <h3 id="multiline-mode-performance"><a class="header" href="#multiline-mode-performance">Multiline Mode Performance</a></h3>
 <p><strong>Memory usage</strong>:</p>
@@ -4599,13 +5627,21 @@ rg -i 'foo(?-i:bar)'  # "foo" is case-insensitive, "bar" is case-sensitive
 <li>More complex matching algorithm</li>
 <li>Less optimized for large-scale text search</li>
 </ul>
+<p><strong>Backtracking Complexity</strong>: PCRE2's backtracking algorithm can exhibit exponential time complexity on certain "pathological" patterns, especially those with:</p>
+<ul>
+<li>Nested quantifiers (e.g., <code>(a+)+</code>)</li>
+<li>Complex alternations with overlapping possibilities</li>
+<li>Patterns that cause extensive backtracking on non-matches</li>
+</ul>
+<p>The default engine uses finite automata which guarantees linear time complexity regardless of pattern complexity. This makes it much more predictable and safer for untrusted input.</p>
 <p><strong>When PCRE2 is worth it</strong>:</p>
 <ul>
 <li>Need lookaround or backreferences</li>
 <li>Pattern complexity requires PCRE2 features</li>
 <li>Search space is limited (specific files/directories)</li>
+<li>You've tested the pattern on representative data and performance is acceptable</li>
 </ul>
-<p><strong>Recommendation</strong>: Use default engine unless you need PCRE2-specific features.</p>
+<p><strong>Recommendation</strong>: Use default engine unless you need PCRE2-specific features. When using PCRE2, test patterns on representative data to ensure acceptable performance, especially before using in production scripts or on large codebases.</p>
 <h3 id="backreferences-and-lookaround"><a class="header" href="#backreferences-and-lookaround">Backreferences and Lookaround</a></h3>
 <p>These features prevent some optimizations:</p>
 <ul>
@@ -4686,7 +5722,7 @@ rg --regex-size-limit 100M 'extremely_complex_pattern'
 <li>Default engine has stricter pattern requirements</li>
 <li>Error messages differ between engines</li>
 </ul>
-<h2 id="practical-examples-5"><a class="header" href="#practical-examples-5">Practical Examples</a></h2>
+<h2 id="practical-examples-6"><a class="header" href="#practical-examples-6">Practical Examples</a></h2>
 <p>Real-world examples demonstrating advanced pattern techniques.</p>
 <h3 id="multi-line-log-parsing"><a class="header" href="#multi-line-log-parsing">Multi-line Log Parsing</a></h3>
 <p>Find ERROR entries with their stack traces:</p>
@@ -4768,7 +5804,7 @@ rg -UP '(?s)fn test_\w+.*?\{(?=.*assert).*?\}'
 </code></pre>
 <h2 id="regex-limits"><a class="header" href="#regex-limits">Regex Limits</a></h2>
 <p>Ripgrep has configurable limits to prevent excessive memory use and compilation time.</p>
-<h3 id="pcre2-version-check"><a class="header" href="#pcre2-version-check">PCRE2 Version Check</a></h3>
+<h3 id="pcre2-version-check-1"><a class="header" href="#pcre2-version-check-1">PCRE2 Version Check</a></h3>
 <p>Before using PCRE2 features, check availability:</p>
 <pre><code class="language-bash"># Show PCRE2 version and JIT status
 rg --pcre2-version
@@ -4777,6 +5813,7 @@ rg --pcre2-version
 # PCRE2 10.42 (JIT: enabled)
 </code></pre>
 <p>If PCRE2 is not compiled in, this command exits with an error.</p>
+<p><strong>JIT Compilation</strong>: The "JIT: enabled" status indicates that PCRE2's Just-In-Time compiler is available. JIT compilation converts regex patterns into native machine code at runtime, providing significant performance improvements (often 2-10x faster) for PCRE2 pattern matching. When JIT is enabled, PCRE2 patterns run much faster, though still typically slower than ripgrep's default finite automata engine.</p>
 <h3 id="regex-size-limit"><a class="header" href="#regex-size-limit">Regex Size Limit</a></h3>
 <p>Controls the maximum size of compiled regex:</p>
 <pre><code class="language-bash"># Default limit is usually sufficient
@@ -4807,6 +5844,34 @@ rg --dfa-size-limit 100M 'pattern'
 <pre><code>error: regex compiled too large
 help: use --regex-size-limit to increase the limit
 </code></pre>
+<h3 id="when-to-increase-limits-vs-simplify-patterns"><a class="header" href="#when-to-increase-limits-vs-simplify-patterns">When to Increase Limits vs Simplify Patterns</a></h3>
+<p>Hitting regex limits is often a sign that your pattern needs simplification, but sometimes large patterns are legitimate. Here's how to decide:</p>
+<p><strong>Increase limits for</strong>:</p>
+<ul>
+<li><strong>Auto-generated patterns</strong>: Patterns produced by tools or scripts (e.g., generated from configuration)</li>
+<li><strong>Large alternations</strong>: Legitimate need to match many alternatives (<code>word1|word2|...|word1000</code>)</li>
+<li><strong>Comprehensive matching</strong>: Domain-specific patterns covering many cases (e.g., all valid email formats, file extensions)</li>
+<li><strong>One-time searches</strong>: Complex ad-hoc queries that won't be reused</li>
+</ul>
+<p><strong>Simplify patterns instead for</strong>:</p>
+<ul>
+<li><strong>Deeply nested groups</strong>: Patterns with excessive nesting usually can be refactored</li>
+<li><strong>Repeated similar logic</strong>: Extract common patterns or use multiple simpler searches</li>
+<li><strong>Unclear complexity</strong>: If you can't explain why the pattern is complex, it's probably poorly designed</li>
+<li><strong>Production scripts</strong>: Patterns used repeatedly should be simple and maintainable</li>
+</ul>
+<p><strong>Simplification strategies</strong>:</p>
+<pre><code class="language-bash"># Instead of huge alternation, use multiple searches
+rg -e 'pattern1' -e 'pattern2' -e 'pattern3'
+
+# Instead of complex nested groups, break into stages
+rg 'simple_pattern1' | rg 'simple_pattern2'
+
+# Use character classes instead of alternations
+# Bad: (a|b|c|d|e)
+# Good: [a-e]
+</code></pre>
+<p><strong>Rule of thumb</strong>: If increasing the limit solves a one-time problem, that's fine. If you're hitting limits regularly, invest time in understanding and simplifying your patterns.</p>
 <h2 id="decision-tree-choosing-the-right-features"><a class="header" href="#decision-tree-choosing-the-right-features">Decision Tree: Choosing the Right Features</a></h2>
 <p>Use this guide to select appropriate flags for your search:</p>
 <pre><code>Do you need to match across line boundaries?
@@ -4885,7 +5950,7 @@ rg pattern
 </ul>
 <h3 id="work-stealing-architecture"><a class="header" href="#work-stealing-architecture">Work Stealing Architecture</a></h3>
 <p>Ripgrep uses a work-stealing scheduler for parallel iteration. When one thread finishes its work early, it can "steal" work from other threads, ensuring all cores stay busy and maximizing throughput.</p>
-<p>This lock-free parallel iteration means ripgrep scales well across many cores without contention overhead.</p>
+<p>This lock-free parallel iteration (using atomic operations for work distribution) means ripgrep scales well across many cores without contention overhead.</p>
 <h3 id="when-parallelism-is-disabled"><a class="header" href="#when-parallelism-is-disabled">When Parallelism is Disabled</a></h3>
 <p>Some operations disable parallel search automatically:</p>
 <ul>
@@ -4920,6 +5985,7 @@ rg --no-mmap pattern
 <li>Working with network file systems</li>
 <li>Memory is constrained</li>
 </ul>
+<p><strong>Platform-specific note</strong>: Memory mapping is disabled by default on macOS due to performance overhead, but can be enabled with <code>--mmap</code> if beneficial for your use case.</p>
 <h2 id="low-level-optimizations"><a class="header" href="#low-level-optimizations">Low-Level Optimizations</a></h2>
 <p>Ripgrep uses several low-level optimizations to maximize search speed.</p>
 <h3 id="simd-acceleration"><a class="header" href="#simd-acceleration">SIMD Acceleration</a></h3>
@@ -4953,13 +6019,13 @@ rg pattern
 <pre><code class="language-bash"># Set DFA cache size limit (in bytes)
 rg --dfa-size-limit 100M pattern
 </code></pre>
-<p>The default is usually sufficient. Increase this if you see warnings about DFA cache thrashing on very large or complex patterns.</p>
+<p>The default is 1 MB (1000000 bytes). Increase this if you see warnings about DFA cache thrashing on very large or complex patterns.</p>
 <h3 id="regex-size-limits-1"><a class="header" href="#regex-size-limits-1">Regex Size Limits</a></h3>
 <p>Limit the compiled size of the regex:</p>
 <pre><code class="language-bash"># Set regex bytecode size limit (in bytes)
 rg --regex-size-limit 10M pattern
 </code></pre>
-<p>Useful in memory-constrained environments or when dealing with extremely large patterns.</p>
+<p>The default is 100 MB. Useful in memory-constrained environments or when dealing with extremely large patterns.</p>
 <h3 id="engine-selection-1"><a class="header" href="#engine-selection-1">Engine Selection</a></h3>
 <p>Choose between regex engines:</p>
 <pre><code class="language-bash"># Use default Rust regex (finite automata)
@@ -4979,6 +6045,8 @@ rg --engine auto pattern
 </ul>
 <h2 id="buffer-and-memory-tuning"><a class="header" href="#buffer-and-memory-tuning">Buffer and Memory Tuning</a></h2>
 <p>Control how ripgrep buffers output and manages memory.</p>
+<h3 id="buffer-size"><a class="header" href="#buffer-size">Buffer Size</a></h3>
+<p>Ripgrep uses a 64 KB default buffer for reading files. This is automatically managed but understanding the buffer size can help diagnose memory usage patterns and performance characteristics.</p>
 <h3 id="buffering-modes-1"><a class="header" href="#buffering-modes-1">Buffering Modes</a></h3>
 <pre><code class="language-bash"># Line buffered output (flush after each line)
 rg --line-buffered pattern
@@ -4988,12 +6056,13 @@ rg --block-buffered pattern
 </code></pre>
 <p>Line buffering is useful when piping to another program that needs immediate output. Block buffering (default) provides better throughput.</p>
 <h3 id="heap-limits"><a class="header" href="#heap-limits">Heap Limits</a></h3>
-<p>Ripgrep has internal heap limit controls to prevent excessive memory usage. These are automatically managed but can be important when:</p>
+<p>Ripgrep has internal heap limit controls to prevent excessive memory usage. While these are automatically managed, you can configure heap allocation behavior through other memory parameters like <code>--dfa-size-limit</code> to indirectly influence heap usage. These controls are important when:</p>
 <ul>
 <li>Searching extremely large files</li>
 <li>Using complex patterns with many capture groups</li>
 <li>Running in memory-constrained environments</li>
 </ul>
+<p>The default heap allocation strategy is eager allocation, which provides good performance for most use cases. In constrained environments, reducing memory limits through flags like <code>--dfa-size-limit</code> and <code>--regex-size-limit</code> helps control heap usage.</p>
 <h2 id="sorting-results-1"><a class="header" href="#sorting-results-1">Sorting Results</a></h2>
 <p>Ripgrep can sort results, but with a performance cost.</p>
 <pre><code class="language-bash"># Sort by file path
@@ -5046,7 +6115,7 @@ rg --sortr path pattern
 <li>Verify optimization effectiveness</li>
 <li>Debug unexpected slowness</li>
 </ul>
-<h2 id="benchmarking-1"><a class="header" href="#benchmarking-1">Benchmarking</a></h2>
+<h2 id="benchmarking-2"><a class="header" href="#benchmarking-2">Benchmarking</a></h2>
 <p>When benchmarking ripgrep, consider these factors:</p>
 <h3 id="warm-vs-cold-cache"><a class="header" href="#warm-vs-cold-cache">Warm vs. Cold Cache</a></h3>
 <p>File system caches dramatically affect performance:</p>
@@ -5174,7 +6243,7 @@ rg --stats pattern  # How much data?
 <p>For most use cases, the defaults are optimal. Use the tuning options described in this chapter when you have specific performance requirements or constraints.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="statistics-and-metrics"><a class="header" href="#statistics-and-metrics">Statistics and Metrics</a></h1>
 <p>ripgrep can output detailed statistics about the search operation, providing insights into performance, match counts, and files processed.</p>
-<h2 id="overview-5"><a class="header" href="#overview-5">Overview</a></h2>
+<h2 id="overview-7"><a class="header" href="#overview-7">Overview</a></h2>
 <p>Statistics are useful for:</p>
 <ul>
 <li>Understanding search performance</li>
@@ -5204,7 +6273,7 @@ rg --stats pattern  # How much data?
 <h3 id="match-statistics"><a class="header" href="#match-statistics">Match Statistics</a></h3>
 <ul>
 <li><strong>Matches</strong>: Total number of pattern matches found</li>
-<li><strong>Matched lines</strong>: Number of unique lines containing matches</li>
+<li><strong>Matched lines</strong>: Number of lines containing matches. With multiline patterns (<code>--multiline</code> or <code>-U</code>), this counts all lines that participate in or are part of any match, not just the first line of each match.</li>
 <li><strong>Files contained matches</strong>: Count of files with at least one match</li>
 </ul>
 <h3 id="search-scope"><a class="header" href="#search-scope">Search Scope</a></h3>
@@ -5218,6 +6287,7 @@ rg --stats pattern  # How much data?
 <li><strong>Seconds spent searching</strong>: Actual search time across all threads</li>
 <li><strong>Seconds total</strong>: Wall-clock time for the entire operation</li>
 </ul>
+<p>The <code>--stats</code> flag itself has minimal performance overhead since ripgrep tracks these metrics internally regardless. Enabling <code>--stats</code> only adds the cost of formatting and printing the final summary.</p>
 <h2 id="understanding-the-metrics"><a class="header" href="#understanding-the-metrics">Understanding the Metrics</a></h2>
 <h3 id="matches-vs-matched-lines"><a class="header" href="#matches-vs-matched-lines">Matches vs. Matched Lines</a></h3>
 <p>A line can contain multiple matches:</p>
@@ -5236,11 +6306,13 @@ echo "the quick brown fox jumps over the lazy dog" | rg --stats 'the'
 <li><strong>Searching time</strong>: Sum of time across all threads (can exceed wall time)</li>
 <li><strong>Total time</strong>: Actual elapsed time</li>
 </ul>
+<p>The "seconds spent searching" metric accumulates CPU time across all threads. With parallel search, this will typically exceed wall-clock time. A ratio close to your thread count indicates good parallelization. For example, if you have 4 threads and the ratio is ~4x, your search is efficiently using all threads.</p>
 <p>Example:</p>
 <pre><code>0.400000 seconds spent searching  (4 threads × 0.1s each)
 0.100000 seconds total  (wall-clock time)
 </code></pre>
-<h2 id="use-cases-1"><a class="header" href="#use-cases-1">Use Cases</a></h2>
+<p>In this case, the 4:1 ratio (0.4s / 0.1s = 4) shows that all 4 threads were fully utilized during the search.</p>
+<h2 id="use-cases-4"><a class="header" href="#use-cases-4">Use Cases</a></h2>
 <h3 id="performance-analysis"><a class="header" href="#performance-analysis">Performance Analysis</a></h3>
 <p>Compare different search strategies:</p>
 <pre><code class="language-bash"># Compare regex vs. fixed string
@@ -5271,7 +6343,7 @@ rg --stats -tjs 'import'
 <pre><code class="language-bash"># Just get statistics, suppress output
 rg --stats -q pattern
 </code></pre>
-<p>Note: When combining <code>--stats</code> with <code>--quiet</code>, ripgrep will search all files completely to collect accurate statistics, even though <code>--quiet</code> alone would normally exit after the first match.</p>
+<p>Note: When combining <code>--stats</code> with <code>--quiet</code>, ripgrep will search all files completely to collect accurate statistics, even though <code>--quiet</code> alone would normally exit after the first match. This means <code>--stats</code> disables <code>--quiet</code>'s early-exit optimization. If you're just checking for pattern existence in a large codebase, using both flags together will be much slower than <code>--quiet</code> alone, as it must search all files to completion.</p>
 <h3 id="statistics-in-json"><a class="header" href="#statistics-in-json">Statistics in JSON</a></h3>
 <p>Statistics are fully supported in JSON output format:</p>
 <pre><code class="language-bash"># Get machine-readable statistics in JSON format
@@ -5282,6 +6354,7 @@ rg --json --stats pattern
   "type": "summary",
   "data": {
     "elapsed_total": {
+      "human": "0.001000s",
       "secs": 0,
       "nanos": 1000000
     },
@@ -5300,7 +6373,8 @@ rg --json --stats pattern
   }
 }
 </code></pre>
-<h2 id="examples-5"><a class="header" href="#examples-5">Examples</a></h2>
+<p>The <code>elapsed_total</code> object includes a <code>human</code> field with a formatted time string for readability, in addition to the precise <code>secs</code> and <code>nanos</code> fields for programmatic use.</p>
+<h2 id="examples-7"><a class="header" href="#examples-7">Examples</a></h2>
 <h3 id="example-1-find-most-common-pattern"><a class="header" href="#example-1-find-most-common-pattern">Example 1: Find Most Common Pattern</a></h3>
 <pre><code class="language-bash"># Compare prevalence of different patterns
 echo "Searching for error handling patterns:"
@@ -5353,14 +6427,22 @@ rg --stats --debug 'pattern' 2&gt;&amp;1 | less
 <li><strong>Low parallelism benefit</strong>: Check if sorting or other options disabled threading</li>
 </ol>
 <h2 id="statistics-in-scripts"><a class="header" href="#statistics-in-scripts">Statistics in Scripts</a></h2>
-<p>Capture statistics for reporting:</p>
+<p>Capture statistics for reporting.</p>
+<p>For production scripts, prefer JSON output for reliable parsing:</p>
+<pre><code class="language-bash">#!/bin/bash
+OUTPUT=$(rg --json --stats 'pattern' | tail -1)
+MATCHES=$(echo "$OUTPUT" | jq '.data.stats.matches')
+FILES=$(echo "$OUTPUT" | jq '.data.stats.searches_with_match')
+echo "Found $MATCHES matches across $FILES files"
+</code></pre>
+<p>Alternatively, you can parse text output for simpler cases:</p>
 <pre><code class="language-bash">#!/bin/bash
 OUTPUT=$(rg --stats 'pattern' 2&gt;&amp;1)
 MATCHES=$(echo "$OUTPUT" | grep "^[0-9]* matches" | cut -d' ' -f1)
 FILES=$(echo "$OUTPUT" | grep "files contained matches" | cut -d' ' -f1)
 echo "Found $MATCHES matches across $FILES files"
 </code></pre>
-<h2 id="best-practices-3"><a class="header" href="#best-practices-3">Best Practices</a></h2>
+<h2 id="best-practices-5"><a class="header" href="#best-practices-5">Best Practices</a></h2>
 <ul>
 <li>Use <code>--stats</code> to verify search coverage</li>
 <li>Compare statistics when optimizing patterns</li>
@@ -5375,7 +6457,7 @@ echo "Found $MATCHES matches across $FILES files"
 <li>Thread time may exceed wall time with parallel execution (this is normal for parallel searches)</li>
 <li>Byte counts include full file scans, not just matched content</li>
 </ul>
-<h2 id="see-also-7"><a class="header" href="#see-also-7">See Also</a></h2>
+<h2 id="see-also-9"><a class="header" href="#see-also-9">See Also</a></h2>
 <ul>
 <li><a href="performance.html">Performance</a> - Performance tuning and optimization</li>
 <li><a href="troubleshooting.html">Troubleshooting</a> - Debugging search issues</li>
@@ -5383,7 +6465,7 @@ echo "Found $MATCHES matches across $FILES files"
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="hyperlinks"><a class="header" href="#hyperlinks">Hyperlinks</a></h1>
 <p>Modern terminals support clickable hyperlinks through OSC 8 escape sequences. ripgrep can generate these hyperlinks for search results, making it easy to jump directly to matches in your editor.</p>
-<h2 id="overview-6"><a class="header" href="#overview-6">Overview</a></h2>
+<h2 id="overview-8"><a class="header" href="#overview-8">Overview</a></h2>
 <p>Hyperlink support allows terminal emulators to display clickable file paths that open directly in your preferred editor or application. This is particularly useful when:</p>
 <ul>
 <li>Reviewing search results interactively</li>
@@ -5400,15 +6482,15 @@ rg --hyperlink-format default pattern
 <p>Instead of writing full hyperlink format strings, ripgrep provides convenient built-in aliases for common editors and schemes:</p>
 <div class="table-wrapper"><table><thead><tr><th>Alias</th><th>Expands to</th></tr></thead><tbody>
 <tr><td><code>default</code></td><td>Platform-aware file:// scheme (see below)</td></tr>
-<tr><td><code>file</code></td><td><code>file://{path}</code></td></tr>
+<tr><td><code>file</code></td><td><code>file://{host}{path}</code></td></tr>
 <tr><td><code>vscode</code></td><td><code>vscode://file/{path}:{line}:{column}</code></td></tr>
 <tr><td><code>vscode-insiders</code></td><td><code>vscode-insiders://file/{path}:{line}:{column}</code></td></tr>
 <tr><td><code>vscodium</code></td><td><code>vscodium://file/{path}:{line}:{column}</code></td></tr>
 <tr><td><code>cursor</code></td><td><code>cursor://file/{path}:{line}:{column}</code></td></tr>
 <tr><td><code>macvim</code></td><td><code>mvim://open?url=file://{path}&amp;line={line}&amp;column={column}</code></td></tr>
 <tr><td><code>textmate</code></td><td><code>txmt://open?url=file://{path}&amp;line={line}&amp;column={column}</code></td></tr>
-<tr><td><code>kitty</code></td><td><code>kitty+kitten://edit/{path}:{line}:{column}</code></td></tr>
-<tr><td><code>grep+</code></td><td><code>x-grepapp://open?file={path}&amp;line={line}&amp;column={column}</code></td></tr>
+<tr><td><code>kitty</code></td><td><code>file://{host}{path}#{line}</code></td></tr>
+<tr><td><code>grep+</code></td><td><code>grep+://{path}:{line}</code></td></tr>
 <tr><td><code>none</code></td><td>Explicitly disable hyperlinks</td></tr>
 </tbody></table>
 </div>
@@ -5418,6 +6500,7 @@ rg --hyperlink-format default pattern
 <li>Windows: <code>file://{path}</code> (omits hostname for compatibility)</li>
 </ul>
 <p>The default alias follows RFC 8089 file:// URI specification and is the recommended choice for general use.</p>
+<p><strong>Note:</strong> The <code>file</code> alias differs from <code>default</code> by always including the hostname, even on Windows. Use <code>default</code> for cross-platform compatibility.</p>
 <p><strong>The <code>none</code> alias</strong> can be used to explicitly disable hyperlinks, which is useful for overriding config file settings:</p>
 <pre><code class="language-bash"># Disable hyperlinks even if config file sets them
 rg --hyperlink-format none pattern
@@ -5503,6 +6586,7 @@ rg --hyperlink-format grep+ pattern
 </code></pre>
 <h3 id="custom-editor-integration"><a class="header" href="#custom-editor-integration">Custom Editor Integration</a></h3>
 <p>For editors not included in the built-in aliases, you can create custom hyperlink formats:</p>
+<p><strong>WARNING:</strong> These are community-suggested formats and may require custom URL scheme handlers to be registered with your OS. They are not built into ripgrep or guaranteed to work.</p>
 <pre><code class="language-bash"># IntelliJ/PyCharm/WebStorm (community format)
 rg --hyperlink-format 'idea://open?file={path}&amp;line={line}' pattern
 
@@ -5523,7 +6607,7 @@ rg --hyperlink-format 'nvim://edit/{path}:+{line}' pattern
 # Or using a custom format
 --hyperlink-format=vscode://file/{path}:{line}:{column}
 </code></pre>
-<h2 id="examples-6"><a class="header" href="#examples-6">Examples</a></h2>
+<h2 id="examples-8"><a class="header" href="#examples-8">Examples</a></h2>
 <h3 id="example-1-vs-code-integration-with-built-in-alias"><a class="header" href="#example-1-vs-code-integration-with-built-in-alias">Example 1: VS Code Integration with Built-in Alias</a></h3>
 <pre><code class="language-bash"># Search with VS Code hyperlinks (using built-in alias)
 rg --hyperlink-format vscode TODO
@@ -5535,7 +6619,7 @@ rg --hyperlink-format default pattern
 </code></pre>
 <p>On Unix/Linux/macOS, this expands to <code>file://{host}{path}</code>. On Windows, it expands to <code>file://{path}</code>.</p>
 <h3 id="example-3-kitty-terminal-editor-integration"><a class="header" href="#example-3-kitty-terminal-editor-integration">Example 3: Kitty Terminal Editor Integration</a></h3>
-<pre><code class="language-bash"># Open results in Kitty's built-in editor
+<pre><code class="language-bash"># Open results using kitty's file:// handler (with line number fragment)
 rg --hyperlink-format kitty pattern
 </code></pre>
 <h3 id="example-4-disabling-hyperlinks"><a class="header" href="#example-4-disabling-hyperlinks">Example 4: Disabling Hyperlinks</a></h3>
@@ -5547,7 +6631,7 @@ rg --hyperlink-format none pattern
 rg --hyperlink-format 'nvim://edit/{path}:+{line}' pattern
 </code></pre>
 <p>Note: Custom formats require URL scheme registration with your operating system.</p>
-<h2 id="best-practices-4"><a class="header" href="#best-practices-4">Best Practices</a></h2>
+<h2 id="best-practices-6"><a class="header" href="#best-practices-6">Best Practices</a></h2>
 <ul>
 <li>Test hyperlinks in your terminal before relying on them</li>
 <li>Configure your terminal to handle custom URL schemes</li>
@@ -5556,7 +6640,7 @@ rg --hyperlink-format 'nvim://edit/{path}:+{line}' pattern
 <li>Set up config file for consistent hyperlink behavior</li>
 <li>Verify URL scheme registration for your editor</li>
 </ul>
-<h2 id="troubleshooting-5"><a class="header" href="#troubleshooting-5">Troubleshooting</a></h2>
+<h2 id="troubleshooting-7"><a class="header" href="#troubleshooting-7">Troubleshooting</a></h2>
 <h3 id="hyperlinks-not-clickable"><a class="header" href="#hyperlinks-not-clickable">Hyperlinks Not Clickable</a></h3>
 <p>Possible causes:</p>
 <ol>
@@ -5619,17 +6703,18 @@ rg --hyperlink-format file pattern | sed 's/.*file:\/\/\([^[:space:]]*\).*/\1/'
 <li>Some terminals may execute arbitrary commands via URL schemes</li>
 <li>Consider disabling hyperlinks in security-sensitive environments</li>
 </ul>
-<h2 id="see-also-8"><a class="header" href="#see-also-8">See Also</a></h2>
+<h2 id="see-also-10"><a class="header" href="#see-also-10">See Also</a></h2>
 <ul>
 <li><a href="output-formats.html">Output Formats</a> - Other output customization options</li>
 <li><a href="configuration-file.html">Configuration File</a> - Setting up persistent configuration</li>
 <li><a href="common-options.html">Common Options</a> - Other frequently used flags</li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="troubleshooting-6"><a class="header" href="#troubleshooting-6">Troubleshooting</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="troubleshooting-8"><a class="header" href="#troubleshooting-8">Troubleshooting</a></h1>
 <p>This chapter helps you diagnose and solve common problems when using ripgrep. Most issues can be resolved by understanding ripgrep's filtering behavior and using the <code>--debug</code> flag to see what's happening behind the scenes.</p>
 <h2 id="quick-troubleshooting-checklist"><a class="header" href="#quick-troubleshooting-checklist">Quick Troubleshooting Checklist</a></h2>
 <p>If you're experiencing unexpected behavior, try these steps in order:</p>
 <ol>
+<li><strong>Run with <code>--files</code></strong> to see which files would be searched (without actually searching)</li>
 <li><strong>Run with <code>--debug</code></strong> to see what files are being searched and why others are skipped</li>
 <li><strong>Try <code>-uuu</code></strong> (unrestricted search) to temporarily disable all filtering</li>
 <li><strong>Use <code>-F</code></strong> to search for literal text instead of a regex pattern</li>
@@ -5647,6 +6732,7 @@ rg --hyperlink-format file pattern | sed 's/.*file:\/\/\([^[:space:]]*\).*/\1/'
 <li>Which ignore files are being loaded (<code>.gitignore</code>, <code>.ignore</code>, etc.)</li>
 <li>Binary file detection results</li>
 <li>Configuration file loading</li>
+<li>Regex engine selection (default Rust regex vs PCRE2)</li>
 </ul>
 <p>Example output:</p>
 <pre><code>$ rg --debug "pattern" mydir
@@ -5661,11 +6747,11 @@ DEBUG|grep_regex::literal|crates/regex/src/literal.rs:58: literal prefixes detec
 <li>You're troubleshooting performance issues</li>
 </ul>
 <h3 id="--trace"><a class="header" href="#--trace"><code>--trace</code></a></h3>
-<p>The <code>--trace</code> flag provides even more detailed output than <code>--debug</code>, including:</p>
+<p>The <code>--trace</code> flag provides even more detailed output than <code>--debug</code>, showing trace-level debug information about all aspects of ripgrep's operation, including:</p>
 <ul>
-<li>Regex matching internals</li>
 <li>Low-level search decisions</li>
 <li>Detailed filter processing</li>
+<li>Internal algorithm behavior</li>
 </ul>
 <p><strong>Warning:</strong> <code>--trace</code> produces very verbose output. Use it only when <code>--debug</code> doesn't provide enough information.</p>
 <h3 id="--stats"><a class="header" href="#--stats"><code>--stats</code></a></h3>
@@ -5690,6 +6776,16 @@ DEBUG|grep_regex::literal|crates/regex/src/literal.rs:58: literal prefixes detec
 </ul>
 <h2 id="no-results-found"><a class="header" href="#no-results-found">No Results Found</a></h2>
 <p>If ripgrep returns zero results when you expect matches, try these troubleshooting steps:</p>
+<h3 id="check-what-files-would-be-searched"><a class="header" href="#check-what-files-would-be-searched">Check What Files Would Be Searched</a></h3>
+<p><strong>First step:</strong> Use the <code>--files</code> flag to see which files ripgrep would search (without actually searching them):</p>
+<pre><code>$ rg --files
+</code></pre>
+<p>This diagnostic flag is crucial for understanding filtering issues. If your expected files aren't in this list, they're being filtered out.</p>
+<p><strong>Combine with other filters:</strong></p>
+<pre><code>$ rg --files -t rust           # See which Rust files would be searched
+$ rg --files -g "*.config"     # See which .config files would be searched
+$ rg --files --hidden          # Include hidden files in the listing
+</code></pre>
 <h3 id="files-filtered-by-gitignore"><a class="header" href="#files-filtered-by-gitignore">Files Filtered by .gitignore</a></h3>
 <p><strong>Problem:</strong> ripgrep respects <code>.gitignore</code> by default and won't search ignored files.</p>
 <p><strong>Diagnosis:</strong> Run with <code>--debug</code> to see if files are being ignored:</p>
@@ -5730,6 +6826,28 @@ DEBUG|grep_searcher::searcher: binary file matches (but not printed): ./myfile.b
 <li>Use <code>-S</code> or <code>--smart-case</code> to search case-insensitively if the pattern is all lowercase</li>
 <li>Check if smart-case is enabled in your configuration file</li>
 </ul>
+<h3 id="file-type-not-recognized"><a class="header" href="#file-type-not-recognized">File Type Not Recognized</a></h3>
+<p><strong>Problem:</strong> Files are being filtered out because their type isn't recognized or matched by your <code>-t</code> filter.</p>
+<p><strong>Diagnosis:</strong> Use <code>--type-list</code> to see all file types ripgrep knows about:</p>
+<pre><code>$ rg --type-list
+</code></pre>
+<p>This shows all available file types and their associated patterns. Check if your file type is listed and what extensions/patterns it matches.</p>
+<p><strong>Example:</strong></p>
+<pre><code>$ rg --type-list | grep -i rust
+rust: *.rs
+
+$ rg --type-list | grep -i python
+py: *.py, *.pyw, *.pyi, *.pyx
+</code></pre>
+<p><strong>Solutions:</strong></p>
+<ul>
+<li>If your file type isn't in the list, use <code>-g</code> glob patterns instead of <code>-t</code>:
+<pre><code>$ rg "pattern" -g "*.myext"
+</code></pre>
+</li>
+<li>Add custom file types in your configuration file</li>
+<li>Check that you're using the correct type name (e.g., <code>py</code> not <code>python</code>)</li>
+</ul>
 <h3 id="pattern-doesnt-match"><a class="header" href="#pattern-doesnt-match">Pattern Doesn't Match</a></h3>
 <p><strong>Problem:</strong> Your regex pattern isn't matching what you expect.</p>
 <p><strong>Diagnosis:</strong></p>
@@ -5742,7 +6860,7 @@ DEBUG|grep_searcher::searcher: binary file matches (but not printed): ./myfile.b
 <pre><code>$ rg "foo.*bar"  # regex search
 $ rg -F "foo.*bar"  # literal search for the exact string "foo.*bar"
 </code></pre>
-<h2 id="performance-issues"><a class="header" href="#performance-issues">Performance Issues</a></h2>
+<h2 id="performance-issues-1"><a class="header" href="#performance-issues-1">Performance Issues</a></h2>
 <p>If ripgrep is slower than expected, try these diagnostic and optimization steps:</p>
 <h3 id="use---stats-to-diagnose"><a class="header" href="#use---stats-to-diagnose">Use --stats to Diagnose</a></h3>
 <p>Always start by running with <code>--stats</code> to see what ripgrep is actually doing:</p>
@@ -5809,6 +6927,13 @@ Compiled regex exceeds size limit of 10485760 bytes.
 <p>Or simplify your pattern:</p>
 <pre><code>$ rg '[a-zA-Z]{1000}'  # Use a smaller character class
 </code></pre>
+<h3 id="dfa-cache-size-limit-exceeded"><a class="header" href="#dfa-cache-size-limit-exceeded">"DFA cache size limit exceeded"</a></h3>
+<p><strong>Cause:</strong> The DFA (Deterministic Finite Automaton) cache used by the regex engine has exceeded its memory limit (default: 1 MB). This can happen with complex patterns or large inputs.</p>
+<p><strong>Solutions:</strong></p>
+<p>Increase the DFA cache size limit with <code>--dfa-size-limit</code>:</p>
+<pre><code>$ rg "complex-pattern" --dfa-size-limit 10M
+</code></pre>
+<p>Or simplify your regex pattern to reduce DFA cache usage.</p>
 <h3 id="permission-denied-or-access-denied"><a class="header" href="#permission-denied-or-access-denied">"Permission denied" or "Access denied"</a></h3>
 <p><strong>Cause:</strong> ripgrep doesn't have permission to read certain files or directories.</p>
 <p><strong>Solutions:</strong></p>
@@ -5874,12 +6999,13 @@ DEBUG|ignore::walk: ignoring ./node_modules: Ignore(IgnoreMatch(GitIgnore, .giti
 </code></pre>
 <h3 id="bypassing-ignore-files"><a class="header" href="#bypassing-ignore-files">Bypassing Ignore Files</a></h3>
 <p>Different flags control different ignore behaviors:</p>
-<pre><code>$ rg -u "pattern"        # Ignore .gitignore but respect .ignore
-$ rg -uu "pattern"       # Ignore all ignore files but skip hidden/binary
-$ rg -uuu "pattern"      # Ignore everything (unrestricted search)
-$ rg --no-ignore-vcs     # Only ignore version control ignore files
-$ rg --no-ignore-global  # Ignore global gitignore
-$ rg --no-ignore-parent  # Ignore parent directory ignore files
+<pre><code>$ rg -u "pattern"             # Ignore .gitignore but respect .ignore
+$ rg -uu "pattern"            # Ignore all ignore files but skip hidden/binary
+$ rg -uuu "pattern"           # Ignore everything (unrestricted search)
+$ rg --no-ignore-vcs          # Only ignore version control ignore files
+$ rg --no-ignore-global       # Ignore global gitignore
+$ rg --no-ignore-parent       # Ignore parent directory ignore files
+$ rg --no-ignore-messages     # Suppress ignore-related error messages
 </code></pre>
 <h3 id="parent-directory-ignore-files-1"><a class="header" href="#parent-directory-ignore-files-1">Parent Directory Ignore Files</a></h3>
 <p>Remember that <code>.gitignore</code> files in parent directories also affect the search. Use <code>--debug</code> to see all ignore files being used.</p>
@@ -5932,7 +7058,7 @@ src/lib.rs
 <p><strong>Understanding the output:</strong></p>
 <ul>
 <li><strong>matches</strong>: Total number of matches found</li>
-<li><strong>matched lines</strong>: Number of lines containing matches (with <code>-c/--count</code>)</li>
+<li><strong>matched lines</strong>: Number of lines containing matches (this metric tracks lines with matches throughout the search, and is particularly relevant when using <code>-c/--count</code> mode)</li>
 <li><strong>files contained matches</strong>: How many files had at least one match</li>
 <li><strong>files searched</strong>: Total files ripgrep examined</li>
 <li><strong>bytes searched</strong>: Total bytes of content searched</li>

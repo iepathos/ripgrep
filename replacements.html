@@ -212,7 +212,7 @@ rg '(\d{3})-(\d{3})-(\d{4})' -r 'Area code: $1'
 <li>The replacement <code>'$2 $1'</code> swaps them</li>
 </ul>
 <h3 id="named-capture-groups"><a class="header" href="#named-capture-groups">Named Capture Groups</a></h3>
-<p>You can also use named capture groups for more readable patterns. The syntax is <code>(?P&lt;name&gt;pattern)</code> in Rust regex (or <code>(?&lt;name&gt;pattern)</code> in PCRE2 mode).</p>
+<p>You can also use named capture groups for more readable patterns. The syntax is <code>(?P&lt;name&gt;pattern)</code> in Rust regex. The alternative syntax <code>(?&lt;name&gt;pattern)</code> is also supported in both Rust regex and PCRE2 mode.</p>
 <pre><code class="language-bash"># Using named groups for clarity
 rg '(?P&lt;year&gt;\d{4})-(?P&lt;month&gt;\d{2})-(?P&lt;day&gt;\d{2})' -r 'Year: ${year}, Month: ${month}'
 
@@ -273,9 +273,33 @@ rg '(\w+)@(\w+\.com)' -o -r '$1 at $2'
 </code></pre>
 <p><strong>With context flags</strong> (<code>-A</code>, <code>-B</code>, <code>-C</code>): Replacements only apply to matched lines, not context lines</p>
 <pre><code class="language-bash"># Replace matches but keep context unchanged
-rg 'error' -r 'ERROR' -C2
+rg 'error' -r 'ERROR' -C1
+# If input is:
+#   info message
+#   error occurred
+#   debug info
+# Output shows:
+#   info message          (context - unchanged)
+#   ERROR occurred        (match - replaced)
+#   debug info            (context - unchanged)
 </code></pre>
 <p><strong>With <code>--json</code></strong>: The JSON output includes a <code>submatches</code> array with replacement text in the <code>match</code> field</p>
+<pre><code class="language-bash"># Example JSON output with replacements
+rg 'error' -r 'ERROR' --json
+# Produces output like:
+# {
+#   "type": "match",
+#   "data": {
+#     "submatches": [
+#       {
+#         "match": {"text": "ERROR"},
+#         "start": 10,
+#         "end": 15
+#       }
+#     ]
+#   }
+# }
+</code></pre>
 <h2 id="practical-examples"><a class="header" href="#practical-examples">Practical Examples</a></h2>
 <h3 id="simple-literal-replacement"><a class="header" href="#simple-literal-replacement">Simple Literal Replacement</a></h3>
 <pre><code class="language-bash"># Replace all instances of old API endpoint

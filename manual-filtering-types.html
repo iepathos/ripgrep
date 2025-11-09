@@ -182,7 +182,7 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="manual-filtering-file-types"><a class="header" href="#manual-filtering-file-types">Manual Filtering: File Types</a></h1>
-<p>File type filtering allows you to search specific file types by language or format. Instead of using glob patterns, you can use predefined types like "rust", "python", or "markdown". Ripgrep ships with 150+ built-in file types and supports custom type definitions. This is more convenient than globs for common cases like "search all Python files" or "exclude all JavaScript files."</p>
+<p>File type filtering allows you to search specific file types by language or format. Instead of using glob patterns, you can use predefined types like "rust", "python", or "markdown". Ripgrep ships with 200+ built-in file types and supports custom type definitions. This is more convenient than globs for common cases like "search all Python files" or "exclude all JavaScript files."</p>
 <h2 id="quick-start"><a class="header" href="#quick-start">Quick Start</a></h2>
 <p>Here are the most common file type filtering commands:</p>
 <pre><code class="language-bash"># Search only Rust files
@@ -271,12 +271,35 @@ rg --type-list
 # ada: *.adb, *.ads
 # agda: *.agda, *.lagda
 # rust: *.rs
-# python: *.py, *.pyi, *.pyw, BUILD, BUILD.bazel, SConstruct, Snakefile
-# javascript: *.js, *.jsx, *.mjs, *.cjs
+# python: *.py, *.pyi
+# javascript: *.js, *.jsx, *.mjs, *.cjs, *.vue
 # ...
 </code></pre>
 <p>The output format is: <code>type_name: glob1, glob2, ...</code></p>
 <p>This shows all built-in types plus any custom types you've defined with <code>--type-add</code>. It's useful for discovering what types are available and what file patterns they match.</p>
+<h3 id="type-aliases"><a class="header" href="#type-aliases">Type Aliases</a></h3>
+<p>Many built-in types have short aliases for convenience. When a type has an alias, both names refer to the same type definition. Common aliases include:</p>
+<ul>
+<li><code>py</code> → <code>python</code></li>
+<li><code>js</code> → <code>javascript</code></li>
+<li><code>ts</code> → <code>typescript</code></li>
+<li><code>md</code> → <code>markdown</code></li>
+<li><code>rs</code> → <code>rust</code></li>
+</ul>
+<p>You can use either the full name or the alias:</p>
+<pre><code class="language-bash"># These are equivalent
+rg pattern -t python
+rg pattern -t py
+
+# These are equivalent
+rg pattern -t javascript
+rg pattern -t js
+</code></pre>
+<p>To see which types have aliases, check the output of <code>--type-list</code>. Types with aliases appear as <code>alias, fullname:</code> in the list.</p>
+<p>You can also search for a specific type's definition:</p>
+<pre><code class="language-bash"># Check what the rust type includes
+rg --type-list | grep rust
+</code></pre>
 <h2 id="custom-type-definitions---type-add"><a class="header" href="#custom-type-definitions---type-add">Custom Type Definitions (--type-add)</a></h2>
 <p>Use <code>--type-add</code> to define your own file types with custom glob patterns:</p>
 <h3 id="basic-custom-types"><a class="header" href="#basic-custom-types">Basic Custom Types</a></h3>
@@ -355,27 +378,28 @@ rg --type-not all pattern
 </code></pre>
 <p>This is the opposite of whitelist mode. It's useful for finding matches in uncommon file formats or files that don't match any standard type.</p>
 <h2 id="built-in-file-types"><a class="header" href="#built-in-file-types">Built-in File Types</a></h2>
-<p>Ripgrep includes 150+ built-in file types. Here are some commonly used ones:</p>
+<p>Ripgrep includes 200+ built-in file types. Here are some commonly used ones:</p>
 <p><strong>Programming Languages:</strong></p>
 <ul>
 <li><code>rust</code>: *.rs</li>
-<li><code>python</code>: *.py, *.pyi, *.pyw</li>
+<li><code>python</code>: *.py, *.pyi</li>
 <li><code>go</code>: *.go</li>
 <li><code>java</code>: *.java, *.jsp, *.jspx</li>
-<li><code>javascript</code> (alias <code>js</code>): *.js, *.jsx, *.mjs, *.cjs</li>
+<li><code>javascript</code> (alias <code>js</code>): *.js, *.jsx, *.mjs, *.cjs, *.vue</li>
 <li><code>typescript</code> (alias <code>ts</code>): *.ts, *.tsx</li>
 <li><code>c</code>: *.c, *.h</li>
 <li><code>cpp</code> (C++): *.cpp, *.cc, *.cxx, *.h, *.hpp</li>
-<li><code>ruby</code>: *.rb, Rakefile, Gemfile</li>
+<li><code>ruby</code>: *.rb, *.rbw, *.rake, *.gemspec, Rakefile, Gemfile, config.ru, .irbrc</li>
 <li><code>php</code>: *.php, *.phtml, *.php3, *.php4, *.php5</li>
 </ul>
 <p><strong>Web Development:</strong></p>
 <ul>
 <li><code>html</code>: *.html, *.htm</li>
-<li><code>css</code>: *.css, *.scss, *.sass</li>
+<li><code>css</code>: *.css, *.scss</li>
 <li><code>json</code>: *.json</li>
 <li><code>xml</code>: *.xml</li>
 </ul>
+<p><strong>Note:</strong> There is a separate <code>sass</code> type that includes *.sass and *.scss files.</p>
 <p><strong>Documentation:</strong></p>
 <ul>
 <li><code>markdown</code> (alias <code>md</code>): *.md, *.markdown</li>

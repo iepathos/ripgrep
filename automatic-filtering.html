@@ -264,6 +264,7 @@ $ rg 'pattern' --no-ignore-global
 <p>By default, <code>.gitignore</code> files are only respected inside Git repositories. Use <code>--no-require-git</code> to respect <code>.gitignore</code> files even outside repositories:</p>
 <pre><code class="language-bash">$ rg 'pattern' --no-require-git
 </code></pre>
+<p>The default behavior can be made explicit with <code>--require-git</code>, which ensures <code>.gitignore</code> files are only respected inside Git repositories.</p>
 <h2 id="hidden-files"><a class="header" href="#hidden-files">Hidden Files</a></h2>
 <p>Ripgrep skips hidden files and directories by default.</p>
 <h3 id="what-is-hidden"><a class="header" href="#what-is-hidden">What is Hidden?</a></h3>
@@ -273,7 +274,7 @@ $ rg 'pattern' --no-ignore-global
 <li>On Windows, it has the "hidden" file attribute set</li>
 </ul>
 <h3 id="searching-hidden-files"><a class="header" href="#searching-hidden-files">Searching Hidden Files</a></h3>
-<p>Use <code>-./--hidden</code> to search hidden files:</p>
+<p>Use <code>-.</code>/<code>--hidden</code> to search hidden files:</p>
 <pre><code class="language-bash">$ rg 'pattern' --hidden
 # Searches all files including .bashrc, .git/, etc.
 </code></pre>
@@ -311,6 +312,24 @@ $ rg 'pattern' --no-ignore-global
 <pre><code class="language-bash">$ rg 'pattern' --no-ignore-parent
 # Only respect ignore files in or below current directory
 </code></pre>
+<h2 id="symlinks"><a class="header" href="#symlinks">Symlinks</a></h2>
+<p>By default, ripgrep does not follow symbolic links during recursive search.</p>
+<h3 id="following-symlinks"><a class="header" href="#following-symlinks">Following Symlinks</a></h3>
+<p>Use <code>-L</code>/<code>--follow</code> to follow symbolic links:</p>
+<pre><code class="language-bash">$ rg 'pattern' --follow
+# Follows symlinks to files and directories
+</code></pre>
+<p><strong>Loop detection</strong>: Ripgrep automatically detects and prevents infinite loops when following symlinks that create circular directory structures.</p>
+<h3 id="symlinks-and-ignore-files"><a class="header" href="#symlinks-and-ignore-files">Symlinks and Ignore Files</a></h3>
+<p>When following symlinks with <code>--follow</code>, ignore files are still respected:</p>
+<ul>
+<li>The symlink target is subject to ignore rules in its actual location</li>
+<li>If a symlinked directory contains <code>.gitignore</code> or <code>.ignore</code> files, they apply to files within that directory</li>
+</ul>
+<p>To follow symlinks while bypassing ignore files:</p>
+<pre><code class="language-bash">$ rg 'pattern' --follow --no-ignore
+# Follow symlinks and ignore all ignore files
+</code></pre>
 <h2 id="disabling-automatic-filtering"><a class="header" href="#disabling-automatic-filtering">Disabling Automatic Filtering</a></h2>
 <p>Ripgrep provides several ways to disable automatic filtering.</p>
 <h3 id="progressive-unrestricted-flags"><a class="header" href="#progressive-unrestricted-flags">Progressive Unrestricted Flags</a></h3>
@@ -333,6 +352,7 @@ $ rg 'pattern' --no-ignore-global
 <tr><td><code>--no-ignore</code></td><td>Disable all standard ignore files</td></tr>
 <tr><td><code>--no-ignore-dot</code></td><td>Disable <code>.ignore</code> and <code>.rgignore</code> files only</td></tr>
 <tr><td><code>--no-ignore-vcs</code></td><td>Disable <code>.gitignore</code> and <code>.git/info/exclude</code> only</td></tr>
+<tr><td><code>--no-ignore-exclude</code></td><td>Disable <code>.git/info/exclude</code> only</td></tr>
 <tr><td><code>--no-ignore-global</code></td><td>Disable global gitignore only</td></tr>
 <tr><td><code>--no-ignore-parent</code></td><td>Don't read ignore files from parent directories</td></tr>
 <tr><td><code>--no-ignore-files</code></td><td>Disable custom ignore files from <code>--ignore-file</code></td></tr>

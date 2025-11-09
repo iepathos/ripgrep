@@ -350,7 +350,7 @@ rg --pre ./preprocessor --pre-glob '*.pdf' --pre-glob '*.doc' 'search term'
 [ -s "$1" ] &amp;&amp; exec pdftotext - - || exec cat
 </code></pre>
 <h3 id="compressed-files"><a class="header" href="#compressed-files">Compressed Files</a></h3>
-<p>Note: ripgrep has built-in support for compressed files via <code>-z/--search-zip</code> (supports gzip, bzip2, xz, lz4, lzma, brotli, zstd). Use <code>--pre</code> for compression formats not covered by <code>-z</code>.</p>
+<p>Note: ripgrep has built-in support for compressed files via <code>-z/--search-zip</code> (supports gzip (.gz, .tgz), bzip2 (.bz2, .tbz2), xz (.xz, .txz), lz4 (.lz4), lzma (.lzma), brotli (.br), zstd (.zst, .zstd), and uncompress (.Z)). Use <code>--pre</code> for compression formats not covered by <code>-z</code>.</p>
 <pre><code class="language-bash">#!/bin/sh
 case $(file "$1") in
   *Zstandard*) exec pzstd -cdq ;;
@@ -384,7 +384,7 @@ esac
 <h2 id="relationship-with--z--search-zip"><a class="header" href="#relationship-with--z--search-zip">Relationship with <code>-z/--search-zip</code></a></h2>
 <p>Ripgrep provides two ways to handle special file formats:</p>
 <ul>
-<li><strong><code>-z/--search-zip</code></strong>: Built-in support for common compressed formats (gzip, bzip2, xz, lz4, lzma, brotli, zstd)</li>
+<li><strong><code>-z/--search-zip</code></strong>: Built-in support for common compressed formats including gzip (.gz, .tgz), bzip2 (.bz2, .tbz2), xz (.xz, .txz), lz4 (.lz4), lzma (.lzma), brotli (.br), zstd (.zst, .zstd), and uncompress (.Z)</li>
 <li><strong><code>--pre</code></strong>: Custom preprocessing for any file transformation</li>
 </ul>
 <p><strong>When to use each:</strong></p>
@@ -407,6 +407,7 @@ rg -z --pre ./pdf-preprocessor --pre-glob '*.pdf' 'search term'
 <li><strong>With <code>--pre-glob</code></strong>: New process only for matching files</li>
 <li><strong>Parallelism helps</strong>: Multiple files processed simultaneously</li>
 </ul>
+<p>Note: The <code>-z/--search-zip</code> flag also spawns decompression processes (one per compressed file), but uses optimized glob matching to automatically detect compression formats by file extension, avoiding the need for manual glob specification.</p>
 <h3 id="optimization-tips"><a class="header" href="#optimization-tips">Optimization Tips</a></h3>
 <ol>
 <li><strong>Use <code>--pre-glob</code></strong> to limit preprocessing to necessary files</li>
@@ -558,7 +559,7 @@ rg --pre ./multi-preprocessor --pre-glob '*.{pdf,doc,docx,xlsx}' 'search term'
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="binary-data.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="compressed-files.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
@@ -572,7 +573,7 @@ rg --pre ./multi-preprocessor --pre-glob '*.{pdf,doc,docx,xlsx}' 'search term'
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="binary-data.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="compressed-files.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 

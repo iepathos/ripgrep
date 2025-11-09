@@ -186,6 +186,7 @@
 <h2 id="quick-troubleshooting-checklist"><a class="header" href="#quick-troubleshooting-checklist">Quick Troubleshooting Checklist</a></h2>
 <p>If you're experiencing unexpected behavior, try these steps in order:</p>
 <ol>
+<li><strong>Run with <code>--files</code></strong> to see which files would be searched (without actually searching)</li>
 <li><strong>Run with <code>--debug</code></strong> to see what files are being searched and why others are skipped</li>
 <li><strong>Try <code>-uuu</code></strong> (unrestricted search) to temporarily disable all filtering</li>
 <li><strong>Use <code>-F</code></strong> to search for literal text instead of a regex pattern</li>
@@ -203,6 +204,7 @@
 <li>Which ignore files are being loaded (<code>.gitignore</code>, <code>.ignore</code>, etc.)</li>
 <li>Binary file detection results</li>
 <li>Configuration file loading</li>
+<li>Regex engine selection (default Rust regex vs PCRE2)</li>
 </ul>
 <p>Example output:</p>
 <pre><code>$ rg --debug "pattern" mydir
@@ -217,11 +219,11 @@ DEBUG|grep_regex::literal|crates/regex/src/literal.rs:58: literal prefixes detec
 <li>You're troubleshooting performance issues</li>
 </ul>
 <h3 id="--trace"><a class="header" href="#--trace"><code>--trace</code></a></h3>
-<p>The <code>--trace</code> flag provides even more detailed output than <code>--debug</code>, including:</p>
+<p>The <code>--trace</code> flag provides even more detailed output than <code>--debug</code>, showing trace-level debug information about all aspects of ripgrep's operation, including:</p>
 <ul>
-<li>Regex matching internals</li>
 <li>Low-level search decisions</li>
 <li>Detailed filter processing</li>
+<li>Internal algorithm behavior</li>
 </ul>
 <p><strong>Warning:</strong> <code>--trace</code> produces very verbose output. Use it only when <code>--debug</code> doesn't provide enough information.</p>
 <h3 id="--stats"><a class="header" href="#--stats"><code>--stats</code></a></h3>
@@ -246,6 +248,16 @@ DEBUG|grep_regex::literal|crates/regex/src/literal.rs:58: literal prefixes detec
 </ul>
 <h2 id="no-results-found"><a class="header" href="#no-results-found">No Results Found</a></h2>
 <p>If ripgrep returns zero results when you expect matches, try these troubleshooting steps:</p>
+<h3 id="check-what-files-would-be-searched"><a class="header" href="#check-what-files-would-be-searched">Check What Files Would Be Searched</a></h3>
+<p><strong>First step:</strong> Use the <code>--files</code> flag to see which files ripgrep would search (without actually searching them):</p>
+<pre><code>$ rg --files
+</code></pre>
+<p>This diagnostic flag is crucial for understanding filtering issues. If your expected files aren't in this list, they're being filtered out.</p>
+<p><strong>Combine with other filters:</strong></p>
+<pre><code>$ rg --files -t rust           # See which Rust files would be searched
+$ rg --files -g "*.config"     # See which .config files would be searched
+$ rg --files --hidden          # Include hidden files in the listing
+</code></pre>
 <h3 id="files-filtered-by-gitignore"><a class="header" href="#files-filtered-by-gitignore">Files Filtered by .gitignore</a></h3>
 <p><strong>Problem:</strong> ripgrep respects <code>.gitignore</code> by default and won't search ignored files.</p>
 <p><strong>Diagnosis:</strong> Run with <code>--debug</code> to see if files are being ignored:</p>
@@ -285,6 +297,28 @@ DEBUG|grep_searcher::searcher: binary file matches (but not printed): ./myfile.b
 <li>Use <code>-i</code> or <code>--ignore-case</code> to make the search case-insensitive</li>
 <li>Use <code>-S</code> or <code>--smart-case</code> to search case-insensitively if the pattern is all lowercase</li>
 <li>Check if smart-case is enabled in your configuration file</li>
+</ul>
+<h3 id="file-type-not-recognized"><a class="header" href="#file-type-not-recognized">File Type Not Recognized</a></h3>
+<p><strong>Problem:</strong> Files are being filtered out because their type isn't recognized or matched by your <code>-t</code> filter.</p>
+<p><strong>Diagnosis:</strong> Use <code>--type-list</code> to see all file types ripgrep knows about:</p>
+<pre><code>$ rg --type-list
+</code></pre>
+<p>This shows all available file types and their associated patterns. Check if your file type is listed and what extensions/patterns it matches.</p>
+<p><strong>Example:</strong></p>
+<pre><code>$ rg --type-list | grep -i rust
+rust: *.rs
+
+$ rg --type-list | grep -i python
+py: *.py, *.pyw, *.pyi, *.pyx
+</code></pre>
+<p><strong>Solutions:</strong></p>
+<ul>
+<li>If your file type isn't in the list, use <code>-g</code> glob patterns instead of <code>-t</code>:
+<pre><code>$ rg "pattern" -g "*.myext"
+</code></pre>
+</li>
+<li>Add custom file types in your configuration file</li>
+<li>Check that you're using the correct type name (e.g., <code>py</code> not <code>python</code>)</li>
 </ul>
 <h3 id="pattern-doesnt-match"><a class="header" href="#pattern-doesnt-match">Pattern Doesn't Match</a></h3>
 <p><strong>Problem:</strong> Your regex pattern isn't matching what you expect.</p>
@@ -365,6 +399,13 @@ Compiled regex exceeds size limit of 10485760 bytes.
 <p>Or simplify your pattern:</p>
 <pre><code>$ rg '[a-zA-Z]{1000}'  # Use a smaller character class
 </code></pre>
+<h3 id="dfa-cache-size-limit-exceeded"><a class="header" href="#dfa-cache-size-limit-exceeded">"DFA cache size limit exceeded"</a></h3>
+<p><strong>Cause:</strong> The DFA (Deterministic Finite Automaton) cache used by the regex engine has exceeded its memory limit (default: 1 MB). This can happen with complex patterns or large inputs.</p>
+<p><strong>Solutions:</strong></p>
+<p>Increase the DFA cache size limit with <code>--dfa-size-limit</code>:</p>
+<pre><code>$ rg "complex-pattern" --dfa-size-limit 10M
+</code></pre>
+<p>Or simplify your regex pattern to reduce DFA cache usage.</p>
 <h3 id="permission-denied-or-access-denied"><a class="header" href="#permission-denied-or-access-denied">"Permission denied" or "Access denied"</a></h3>
 <p><strong>Cause:</strong> ripgrep doesn't have permission to read certain files or directories.</p>
 <p><strong>Solutions:</strong></p>
@@ -430,12 +471,13 @@ DEBUG|ignore::walk: ignoring ./node_modules: Ignore(IgnoreMatch(GitIgnore, .giti
 </code></pre>
 <h3 id="bypassing-ignore-files"><a class="header" href="#bypassing-ignore-files">Bypassing Ignore Files</a></h3>
 <p>Different flags control different ignore behaviors:</p>
-<pre><code>$ rg -u "pattern"        # Ignore .gitignore but respect .ignore
-$ rg -uu "pattern"       # Ignore all ignore files but skip hidden/binary
-$ rg -uuu "pattern"      # Ignore everything (unrestricted search)
-$ rg --no-ignore-vcs     # Only ignore version control ignore files
-$ rg --no-ignore-global  # Ignore global gitignore
-$ rg --no-ignore-parent  # Ignore parent directory ignore files
+<pre><code>$ rg -u "pattern"             # Ignore .gitignore but respect .ignore
+$ rg -uu "pattern"            # Ignore all ignore files but skip hidden/binary
+$ rg -uuu "pattern"           # Ignore everything (unrestricted search)
+$ rg --no-ignore-vcs          # Only ignore version control ignore files
+$ rg --no-ignore-global       # Ignore global gitignore
+$ rg --no-ignore-parent       # Ignore parent directory ignore files
+$ rg --no-ignore-messages     # Suppress ignore-related error messages
 </code></pre>
 <h3 id="parent-directory-ignore-files"><a class="header" href="#parent-directory-ignore-files">Parent Directory Ignore Files</a></h3>
 <p>Remember that <code>.gitignore</code> files in parent directories also affect the search. Use <code>--debug</code> to see all ignore files being used.</p>
@@ -488,7 +530,7 @@ src/lib.rs
 <p><strong>Understanding the output:</strong></p>
 <ul>
 <li><strong>matches</strong>: Total number of matches found</li>
-<li><strong>matched lines</strong>: Number of lines containing matches (with <code>-c/--count</code>)</li>
+<li><strong>matched lines</strong>: Number of lines containing matches (this metric tracks lines with matches throughout the search, and is particularly relevant when using <code>-c/--count</code> mode)</li>
 <li><strong>files contained matches</strong>: How many files had at least one match</li>
 <li><strong>files searched</strong>: Total files ripgrep examined</li>
 <li><strong>bytes searched</strong>: Total bytes of content searched</li>
