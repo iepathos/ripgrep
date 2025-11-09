@@ -3,144 +3,87 @@
   "chapter_title": "Manual Filtering: File Types",
   "chapter_file": "book/src/manual-filtering-types.md",
   "drift_detected": true,
-  "severity": "critical",
-  "quality_assessment": "Chapter is currently a placeholder and needs to be written from scratch. This is critical drift as file type filtering is a core ripgrep feature.",
+  "severity": "medium",
+  "quality_assessment": "Chapter provides comprehensive coverage of file type filtering but contains several outdated or incorrect type definitions in the examples",
   "issues": [
     {
-      "type": "missing_content",
-      "severity": "critical",
-      "section": "Entire Chapter",
-      "description": "Chapter is completely empty - only contains placeholder text. All file type filtering documentation is missing.",
-      "current_content": "This chapter will be populated with content from the codebase analysis.\n\n*This content will be populated by the documentation drift detection workflow.*",
-      "should_be": "Complete chapter covering: -t/--type flag, -T/--type-not flag, --type-add for custom types, --type-clear for clearing types, --type-list for listing types, and the 150+ built-in file types",
-      "fix_suggestion": "Write comprehensive chapter following the style of basics.md and recursive-search.md chapters",
-      "source_reference": "crates/core/flags/defs.rs:6862-7206 (Type, TypeAdd, TypeClear, TypeNot, TypeList flags)"
-    },
-    {
-      "type": "missing_content",
-      "severity": "high",
-      "section": "Introduction and Motivation",
-      "description": "No introduction explaining what file type filtering is and why it's useful",
-      "should_add": "Explain that file types let you filter by language/format (e.g., search only Rust files, exclude JavaScript). More convenient than globs for common cases.",
-      "fix_suggestion": "Add intro section: 'File type filtering allows you to search specific file types by language or format. Instead of using glob patterns, you can use predefined types like \"rust\", \"python\", or \"markdown\". Ripgrep ships with 150+ built-in file types and supports custom type definitions.'",
-      "source_reference": "crates/ignore/src/types.rs:1-85 (module documentation and examples)"
-    },
-    {
-      "type": "missing_content",
-      "severity": "high",
-      "section": "Basic Type Selection (-t/--type)",
-      "description": "No documentation of the -t/--type flag for selecting file types",
-      "should_add": "Document -t/--type flag usage with examples. Show that multiple -t flags can be combined. Mention -t can be used in short form like -trust.",
-      "fix_suggestion": "Add section with examples:\n```bash\n# Search only Rust files\nrg pattern -t rust\n\n# Search Python and JavaScript files\nrg TODO -t python -t js\n\n# Short form: -trust is same as -t rust\nrg error -trust\n```\nExplain that --type has lower precedence than --glob and ignore files.",
-      "source_reference": "crates/core/flags/defs.rs:6862-6934 (Type flag definition and tests)"
-    },
-    {
-      "type": "missing_content",
-      "severity": "high",
-      "section": "Type Negation (-T/--type-not)",
-      "description": "No documentation of the -T/--type-not flag for excluding file types",
-      "should_add": "Document -T/--type-not for excluding file types. Show it can be combined with -t for complex filtering.",
-      "fix_suggestion": "Add section with examples:\n```bash\n# Search all files EXCEPT JavaScript\nrg pattern -T js\n\n# Search Rust but not test files\nrg TODO -t rust -T test\n\n# Exclude multiple types\nrg FIXME -T js -T css -T html\n```\nMention that -T can use short form like -Trust.",
-      "source_reference": "crates/core/flags/defs.rs:7087-7163 (TypeNot flag definition and tests)"
-    },
-    {
-      "type": "missing_content",
-      "severity": "high",
-      "section": "Listing Available Types (--type-list)",
-      "description": "No documentation of --type-list flag for discovering available types",
-      "should_add": "Document --type-list flag and show example output format. Explain that it shows all built-in types plus any custom types defined via --type-add.",
-      "fix_suggestion": "Add section:\n```bash\n# List all available file types\nrg --type-list\n\n# Example output:\nada: *.adb, *.ads\nrust: *.rs\npython: *.py, *.pyi, *.pyw\njavascript: *.js, *.jsx, *.mjs\n...\n```\nExplain format: type_name: glob1, glob2, ...",
-      "source_reference": "crates/core/flags/defs.rs:7167-7206 (TypeList flag definition)"
-    },
-    {
-      "type": "missing_content",
-      "severity": "high",
-      "section": "Custom Type Definitions (--type-add)",
-      "description": "No documentation of --type-add for defining custom file types",
-      "should_add": "Document --type-add syntax for creating custom types. Show basic glob syntax and include directive for composing types.",
-      "fix_suggestion": "Add comprehensive section:\n```bash\n# Define custom type with single glob\nrg --type-add 'foo:*.foo' -t foo pattern\n\n# Define type with multiple extensions\nrg --type-add 'web:*.{html,css,js}' -t web TODO\n\n# Compose type from existing types using include:\nrg --type-add 'src:include:cpp,py,rust' -t src FIXME\n\n# Combine include with additional globs\nrg --type-add 'config:include:json,yaml' --type-add 'config:*.conf' -t config\n```\nNote: Type names must be alphanumeric (letters and numbers only, no punctuation).\nNote: Settings not persisted - use config file for permanent definitions.",
-      "source_reference": "crates/core/flags/defs.rs:6938-7021 (TypeAdd flag definition), crates/ignore/src/types.rs:47-84 (TypesBuilder examples)"
-    },
-    {
-      "type": "missing_content",
+      "type": "incorrect_example",
       "severity": "medium",
-      "section": "Clearing Type Definitions (--type-clear)",
-      "description": "No documentation of --type-clear for removing default globs",
-      "should_add": "Document --type-clear for clearing built-in type definitions before adding custom ones.",
-      "fix_suggestion": "Add section:\n```bash\n# Clear built-in rust type and define your own\nrg --type-clear rust --type-add 'rust:*.rs' -t rust pattern\n\n# Useful for overriding default definitions\nrg --type-clear c --type-add 'c:*.c' -t c TODO\n```\nExplain: Clears globs for specified type, allowing clean override. Can still add globs after clearing.",
-      "source_reference": "crates/core/flags/defs.rs:7025-7083 (TypeClear flag definition)"
+      "section": "Built-in File Types - python",
+      "description": "Chapter claims Python type includes BUILD, BUILD.bazel, SConstruct, Snakefile but this is inaccurate",
+      "current_content": "python: *.py, *.pyi, *.pyw, BUILD, BUILD.bazel, SConstruct, Snakefile",
+      "should_be": "python: *.py, *.pyi",
+      "fix_suggestion": "Update line 253 to show correct Python type definition. Note that BUILD files are part of the 'bazel' type, not 'python'",
+      "source_reference": "crates/ignore/src/default_types.rs:217"
     },
     {
-      "type": "missing_content",
+      "type": "incorrect_example",
       "severity": "medium",
-      "section": "Special Type Values",
-      "description": "No documentation of special 'all' type value",
-      "should_add": "Document that --type=all enables whitelist mode (only search recognized types), and --type-not=all enables blacklist mode (only search unrecognized files).",
-      "fix_suggestion": "Add section:\n```bash\n# Search only files with recognized types (whitelist mode)\nrg --type all pattern\n\n# Search only files WITHOUT recognized types (blacklist mode)\nrg --type-not all pattern\n```\nExplain whitelist/blacklist modes and when they're useful.",
-      "source_reference": "crates/core/flags/defs.rs:6888-6892, 7113-7117 (special 'all' value documentation)"
+      "section": "Built-in File Types - css",
+      "description": "Chapter claims CSS type includes *.sass but it only includes *.css and *.scss",
+      "current_content": "css: *.css, *.scss, *.sass",
+      "should_be": "css: *.css, *.scss",
+      "fix_suggestion": "Update line 265 to remove *.sass. Note there is a separate 'sass' type that includes *.sass and *.scss",
+      "source_reference": "crates/ignore/src/default_types.rs:61"
     },
     {
-      "type": "missing_content",
-      "severity": "medium",
-      "section": "Built-in File Types Reference",
-      "description": "No reference list of the 150+ built-in file types",
-      "should_add": "Include a reference table or appendix showing commonly used built-in types. Direct users to --type-list for complete list.",
-      "fix_suggestion": "Add section listing popular types:\n\nCommonly used built-in types:\n- Programming: rust, python, go, java, javascript, typescript, c, cpp, ruby, php\n- Web: html, css, json, yaml, xml\n- Documentation: markdown, rst, asciidoc\n- Config: config, toml, ini\n- Build: make, cmake, gradle\n\nFor complete list with glob patterns, run: rg --type-list\n\nSee also: crates/ignore/src/default_types.rs for all 150+ definitions.",
-      "source_reference": "crates/ignore/src/default_types.rs:12-200+, .prodigy/book-analysis/features.json:429-450 (built-in types list)"
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "Built-in File Types - javascript",
+      "description": "Chapter doesn't mention that js type also includes *.vue files",
+      "current_content": "javascript (alias js): *.js, *.jsx, *.mjs, *.cjs",
+      "should_be": "javascript (alias js): *.js, *.jsx, *.mjs, *.cjs, *.vue",
+      "fix_suggestion": "Update line 256 to include *.vue in the list",
+      "source_reference": "crates/ignore/src/default_types.rs:118"
     },
     {
-      "type": "missing_content",
-      "severity": "medium",
-      "section": "Practical Examples",
-      "description": "No practical real-world examples showing common use cases",
-      "should_add": "Add practical examples section showing common workflows",
-      "fix_suggestion": "Add examples:\n```bash\n# Find TODOs in source code files only\nrg TODO -t rust -t python -t go\n\n# Search config files for a setting\nrg database -t yaml -t toml -t json\n\n# Search documentation\nrg installation -t markdown -t rst\n\n# Exclude generated files\nrg pattern -T json -T yaml  # if those are generated\n\n# Search web frontend files\nrg --type-add 'frontend:include:js,css,html' -t frontend\n```",
-      "source_reference": "Pattern from other completed chapters like basics.md and recursive-search.md"
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "Built-in File Types - ruby",
+      "description": "Chapter shows simplified Ruby type definition but omits several patterns",
+      "current_content": "ruby: *.rb, Rakefile, Gemfile",
+      "should_be": "ruby: *.rb, *.rbw, *.rake, *.gemspec, Rakefile, Gemfile, config.ru, .irbrc",
+      "fix_suggestion": "Update line 260 to show more complete Ruby type definition or note it's simplified",
+      "source_reference": "crates/ignore/src/default_types.rs (search for ruby)"
     },
     {
       "type": "missing_content",
       "severity": "low",
-      "section": "Type vs Glob Precedence",
-      "description": "No explanation of how --type interacts with --glob and ignore files",
-      "should_add": "Explain that --type has lower precedence than --glob and ignore files",
-      "fix_suggestion": "Add note: Type filtering has lower precedence than glob patterns (--glob) and ignore files (.gitignore, etc.). If a file is excluded by an ignore file, --type won't include it. Use explicit file paths or --no-ignore to override.",
-      "source_reference": "crates/core/flags/defs.rs:6894-6895 (precedence documentation)"
+      "section": "Built-in File Types",
+      "description": "Chapter doesn't mention that some types have aliases (e.g., 'py' is an alias for 'python', 'md' for 'markdown', 'ts' for 'typescript')",
+      "should_add": "Add note explaining that some types have short aliases, with examples like py→python, md→markdown, ts→typescript, js→javascript",
+      "fix_suggestion": "Add subsection or note in 'Built-in File Types' section explaining aliases and how to discover them via --type-list",
+      "source_reference": "crates/ignore/src/default_types.rs:217 (shows py,python as array of names)"
     },
     {
-      "type": "missing_content",
+      "type": "outdated_information",
       "severity": "low",
-      "section": "Configuration File Persistence",
-      "description": "No mention of using configuration files to persist type definitions",
-      "should_add": "Note that type settings can be persisted in configuration files",
-      "fix_suggestion": "Add note: Since --type-add settings aren't persisted across invocations, consider adding them to a ripgrep configuration file (see Configuration chapter). Example config:\n```\n--type-add\nweb:*.{html,css,js}\n--type-add\nconfig:include:json,yaml,toml\n```",
-      "source_reference": "crates/core/flags/defs.rs:6963-6964, 7049-7050 (config file references)"
-    },
-    {
-      "type": "missing_content",
-      "severity": "low",
-      "section": "How Type Matching Works",
-      "description": "No technical explanation of how type matching is implemented",
-      "should_add": "Brief explanation of how types map to glob patterns under the hood",
-      "fix_suggestion": "Add technical note: File types are implemented as named collections of glob patterns. When you use -t rust, ripgrep internally uses the glob *.rs to match files. The TypesBuilder creates a GlobSet for efficient matching. See crates/ignore/src/types.rs for implementation details.",
-      "source_reference": "crates/ignore/src/types.rs:163-181 (Types struct and implementation)"
+      "section": "Introduction",
+      "description": "Chapter claims 150+ built-in types, but current count is 218",
+      "current_content": "Ripgrep ships with 150+ built-in file types",
+      "should_be": "Ripgrep ships with 200+ built-in file types (218 as of current version)",
+      "fix_suggestion": "Update line 3 to reflect current count (200+ is safer than exact number which may change). Alternatively, keep 150+ as conservative estimate",
+      "source_reference": "Verified via rg --type-list | wc -l"
     }
   ],
   "positive_aspects": [
-    "Chapter is correctly identified in the book structure",
-    "Dependencies are properly specified (manual-filtering-globs)",
-    "Topics are well-defined in metadata",
-    "Chapter ID and title are appropriate"
+    "Excellent structure with clear progression from basic to advanced",
+    "Comprehensive coverage of all type-related flags (-t, -T, --type-add, --type-clear)",
+    "Great practical examples showing real-world use cases",
+    "Short form syntax (-trust) correctly documented and explained",
+    "Correct explanation of type name constraints (alphanumeric only)",
+    "Accurate documentation of include: directive for composing types",
+    "Good troubleshooting section addressing common issues",
+    "Correct file path references for implementation details",
+    "Excellent comparison of when to use types vs globs",
+    "Configuration file persistence section is accurate and helpful"
   ],
   "improvement_suggestions": [
-    "Follow the structure and style of completed chapters like basics.md and recursive-search.md",
-    "Start with introduction and motivation explaining why type filtering is useful",
-    "Progress from simple to complex: basic -t usage, then -T, then --type-list, then --type-add/clear",
-    "Include practical examples throughout, not just at the end",
-    "Add a 'Quick Start' section like basics.md has, showing most common type commands",
-    "Include cross-references to related chapters (automatic-filtering, manual-filtering-globs, configuration-file)",
-    "Add warnings about common gotchas (precedence, type names must be alphanumeric, settings not persisted)",
-    "Consider adding a comparison section: 'Type vs Glob filtering' showing when to use each",
-    "Include a troubleshooting subsection for common issues (type not found, custom type not working, etc.)"
+    "Add a subsection explicitly covering type aliases with examples",
+    "Consider adding a table of the most commonly used types with their complete definitions",
+    "Add note that --type-list output shows the authoritative, up-to-date definitions",
+    "Include example showing how to check what a specific type includes (rg --type-list | grep rust)",
+    "Add cross-reference to the separate 'sass' type when discussing CSS type"
   ],
   "metadata": {
     "analyzed_at": "2025-11-08",
@@ -151,17 +94,6 @@
       "custom_types",
       "type_list"
     ],
-    "validation_focus": "Check that --type flag usage and custom type definitions are accurate",
-    "implementation_references": [
-      "crates/core/flags/defs.rs:6862-7206 (CLI flag definitions)",
-      "crates/ignore/src/types.rs (Type matching implementation)",
-      "crates/ignore/src/default_types.rs (Built-in type definitions)"
-    ],
-    "related_chapters": [
-      "manual-filtering-globs",
-      "automatic-filtering",
-      "configuration-file",
-      "recursive-search"
-    ]
+    "validation_focus": "Check that --type flag usage and custom type definitions are accurate"
   }
 }
