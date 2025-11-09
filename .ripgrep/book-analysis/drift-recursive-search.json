@@ -1,0 +1,89 @@
+{
+  "chapter_id": "recursive-search",
+  "chapter_title": "Recursive Search",
+  "chapter_file": "book/src/recursive-search.md",
+  "drift_detected": true,
+  "severity": "low",
+  "quality_assessment": "Chapter is highly accurate and comprehensive. Minor improvements possible by documenting --no-require-git flag and adding cross-references to related topics.",
+  "issues": [
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Interaction with Automatic Filtering",
+      "description": "Chapter doesn't mention --no-require-git flag which affects directory traversal in non-git directories",
+      "should_add": "Document that by default ripgrep only respects .gitignore when inside git repository, and --no-require-git can override this",
+      "fix_suggestion": "Add subsection or note explaining:\n- Default behavior: .gitignore only respected inside git repos\n- --no-require-git: Use .gitignore rules even outside git repos\n- --require-git: Explicitly enforce git repository requirement\nThis is relevant to recursive search because it affects which directories are descended into.",
+      "source_reference": "crates/core/flags/defs.rs:4830-4882 (NoRequireGit flag)"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "How Directory Traversal Works",
+      "description": "Could expand on error handling behavior mentioned briefly",
+      "current_content": "Handles errors gracefully (e.g., permission denied on directories)",
+      "should_be": "Provide concrete example of how permission errors are displayed and that search continues",
+      "fix_suggestion": "The Troubleshooting section mentions permission errors, but could add a note in the main 'How Directory Traversal Works' section with specific example of error message format",
+      "source_reference": "crates/ignore/src/walk.rs (error handling in directory walker)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Summary of Recursion Flags",
+      "description": "Table doesn't include --no-require-git flag",
+      "should_add": "Add --no-require-git and --require-git to the summary table",
+      "fix_suggestion": "Add row to summary table:\n| --no-require-git | | Use .gitignore outside git repositories |\n| --require-git | | Only respect .gitignore inside git repos (default) |",
+      "source_reference": "crates/core/flags/defs.rs:4830-4882"
+    }
+  ],
+  "positive_aspects": [
+    "Excellent progression from basic to advanced concepts",
+    "Clear explanation of depth semantics with concrete examples",
+    "Good directory structure example showing depth behavior",
+    "Accurate documentation of all major flags: --max-depth/-d/--maxdepth, -L/--follow, --one-file-system",
+    "Helpful warnings about symlink loops and file system boundaries",
+    "Good integration with other chapters via cross-references",
+    "Practical examples section covers common use cases",
+    "Troubleshooting section addresses real-world issues",
+    "Implementation details (WalkBuilder, WalkParallel) are accurate",
+    "Correctly explains file vs directory path behavior",
+    "Summary table provides quick reference"
+  ],
+  "improvement_suggestions": [
+    "Add mention of --no-require-git flag in context of directory traversal and filtering interaction",
+    "Consider adding a note about the relationship between recursive search and VCS ignore detection",
+    "Could add example showing difference between searching with/without --no-require-git in non-git directory",
+    "Minor: Could add note about performance characteristics when following symlinks"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-01-08",
+    "feature_inventory": ".ripgrep/book-analysis/features.json",
+    "topics_covered": [
+      "directory_traversal",
+      "default_behavior",
+      "path_specification",
+      "max_depth",
+      "symlink_following",
+      "file_system_boundaries",
+      "ignore_integration"
+    ],
+    "validation_focus": "Confirm recursive search behavior and directory navigation examples are current",
+    "flags_documented": [
+      "--max-depth",
+      "-d",
+      "--maxdepth",
+      "--follow",
+      "-L",
+      "--one-file-system"
+    ],
+    "flags_missing": [
+      "--no-require-git",
+      "--require-git"
+    ],
+    "code_references_verified": [
+      "crates/core/flags/defs.rs:3936-4002 (MaxDepth)",
+      "crates/core/flags/defs.rs:5077-5089 (OneFileSystem)",
+      "crates/ignore/src/walk.rs:489-936 (WalkBuilder)",
+      "crates/core/flags/hiargs.rs:888-891 (follow_links, same_file_system)"
+    ]
+  }
+}
