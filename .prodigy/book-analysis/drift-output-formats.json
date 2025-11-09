@@ -1,0 +1,137 @@
+{
+  "chapter_id": "output-formats",
+  "chapter_title": "Output Formats",
+  "chapter_file": "book/src/output-formats.md",
+  "drift_detected": true,
+  "severity": "medium",
+  "quality_assessment": "Chapter covers the major output formatting features well, but is missing several important flags and options documented in the codebase. Some explanations could be more complete, particularly for JSON output structure and color specifications.",
+  "issues": [
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Color Customization",
+      "description": "Chapter doesn't document the --color ansi option",
+      "should_add": "Document --color ansi option in addition to auto/always/never",
+      "fix_suggestion": "Add 'rg --color ansi pattern   # Use ANSI colors only' to the color control examples",
+      "source_reference": "features.json:174 - Color support (--color auto|always|never|ansi)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "high",
+      "section": "Additional Output Options",
+      "description": "Hyperlink support is completely missing from the chapter",
+      "should_add": "Document --hyperlink-format flag for OSC 8 terminal hyperlink support",
+      "fix_suggestion": "Add new subsection 'Hyperlink Support' explaining --hyperlink-format with examples for clickable file paths in compatible terminals",
+      "source_reference": "features.json:192 - Hyperlink support (--hyperlink-format)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Null Separators",
+      "description": "Chapter documents --null and -0 but is missing --null-data flag",
+      "should_add": "Document --null-data flag which is distinct from --null (affects input line termination)",
+      "fix_suggestion": "Add example: 'rg --null-data pattern  # Use NUL as line terminator instead of newline'",
+      "source_reference": "features.json:188 - Null data (--null-data)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Standard Output Format",
+      "description": "Missing --include-zero flag for including files with zero matches",
+      "should_add": "Document --include-zero flag",
+      "fix_suggestion": "Add to Standard Output Format section: 'rg --include-zero pattern  # Include files with zero matches in output'",
+      "source_reference": "features.json:189 - Include zero matches (--include-zero)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "JSON Output",
+      "description": "Pretty printing flag -p/--pretty is not documented",
+      "should_add": "Document -p/--pretty flag as alternative to --json -p shown in example",
+      "fix_suggestion": "Update JSON output section to explicitly mention '-p' or '--pretty' as a dedicated flag, not just as an option combined with --json",
+      "source_reference": "features.json:233 - -p/--pretty flag"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "medium",
+      "section": "Color Specifications",
+      "description": "Chapter only lists 4 color types (match, path, line, column) but implementation likely has more",
+      "current_content": "Available color types:\n- `match`: Matching text\n- `path`: File paths\n- `line`: Line numbers\n- `column`: Column numbers",
+      "should_be": "Should document all available color types from ColorSpecs data structure",
+      "fix_suggestion": "Verify complete list of color types from codebase and add any missing ones (e.g., context, error, etc.)",
+      "source_reference": "features.json:493 - ColorSpecs (color configuration)"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "medium",
+      "section": "JSON Output Structure",
+      "description": "Chapter mentions message types but doesn't explain them in detail",
+      "current_content": "Each match is represented as a JSON object with fields including:\n- `type`: The type of message (match, context, begin, end, summary)\n- `data`: Match data including path, line number, text, and submatches",
+      "should_be": "Should explain what each message type represents and when it appears",
+      "fix_suggestion": "Add detailed explanation of each JSON message type: 'match' for matches, 'context' for context lines, 'begin' for file start, 'end' for file end, 'summary' for search summary",
+      "source_reference": "features.json:173 - JSON Lines format, features.json:480 - JSON (JSON output printer)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Standard Output Format",
+      "description": "Missing documentation for --no-line-number (-N) flag",
+      "should_add": "Document -N/--no-line-number flag to explicitly disable line numbers",
+      "fix_suggestion": "Add example: 'rg -N pattern  # Disable line numbers'",
+      "source_reference": "features.json:207-208 - -N/--no-line-number"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Standard Output Format",
+      "description": "Missing --with-filename and --no-filename flags for controlling file path display",
+      "should_add": "Document --with-filename and --no-filename flags",
+      "fix_suggestion": "Add subsection explaining how to control file path display with --with-filename and --no-filename, noting auto-detection behavior",
+      "source_reference": "features.json:180 - File path printing (-H/--with-filename, --no-filename)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Additional Output Options",
+      "description": "Missing context separator documentation",
+      "should_add": "Document --context-separator flag",
+      "fix_suggestion": "Add example showing --context-separator usage for customizing separator between context groups",
+      "source_reference": "features.json:182 - Context separators (--context-separator)"
+    }
+  ],
+  "positive_aspects": [
+    "Clear structure with logical progression from basic to advanced options",
+    "Good examples for each feature area",
+    "Practical 'Examples' section showing real-world usage",
+    "Helpful 'Best Practices' section with actionable advice",
+    "Performance considerations section is valuable",
+    "Well-organized with proper headings and code blocks"
+  ],
+  "improvement_suggestions": [
+    "Add comprehensive table of all output-related flags at the beginning",
+    "Expand JSON output section with complete schema documentation",
+    "Add troubleshooting subsection for common output formatting issues",
+    "Include examples of combining multiple output options",
+    "Add cross-references to context-lines.md for context-related flags",
+    "Consider adding a visual diagram showing output format anatomy",
+    "Add note about terminal compatibility for features like hyperlinks and colors"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-08",
+    "feature_inventory": ".prodigy/book-analysis/features.json",
+    "topics_covered": [
+      "json_output",
+      "color_customization",
+      "field_separators",
+      "vimgrep_format",
+      "null_separators",
+      "buffering_modes",
+      "heading_mode"
+    ],
+    "validation_focus": "Check that JSON output, color specs, field separators, and all output formatting options are documented",
+    "issues_count": 10,
+    "high_severity_count": 1,
+    "medium_severity_count": 6,
+    "low_severity_count": 3
+  }
+}
