@@ -40,7 +40,7 @@ The default behavior uses the number of logical CPUs available. Single-threaded 
 
 Ripgrep uses a work-stealing scheduler for parallel iteration. When one thread finishes its work early, it can "steal" work from other threads, ensuring all cores stay busy and maximizing throughput.
 
-This lock-free parallel iteration means ripgrep scales well across many cores without contention overhead.
+This lock-free parallel iteration (using atomic operations for work distribution) means ripgrep scales well across many cores without contention overhead.
 
 ### When Parallelism is Disabled
 
@@ -80,6 +80,8 @@ Avoid memory mapping when:
 - Searching many small files
 - Working with network file systems
 - Memory is constrained
+
+**Platform-specific note**: Memory mapping is disabled by default on macOS due to performance overhead, but can be enabled with `--mmap` if beneficial for your use case.
 
 ## Low-Level Optimizations
 
@@ -135,7 +137,7 @@ The default regex engine uses deterministic finite automata (DFA). Control DFA m
 rg --dfa-size-limit 100M pattern
 ```
 
-The default is usually sufficient. Increase this if you see warnings about DFA cache thrashing on very large or complex patterns.
+The default is 1 MB (1000000 bytes). Increase this if you see warnings about DFA cache thrashing on very large or complex patterns.
 
 ### Regex Size Limits
 
@@ -146,7 +148,7 @@ Limit the compiled size of the regex:
 rg --regex-size-limit 10M pattern
 ```
 
-Useful in memory-constrained environments or when dealing with extremely large patterns.
+The default is 100 MB. Useful in memory-constrained environments or when dealing with extremely large patterns.
 
 ### Engine Selection
 
@@ -173,6 +175,10 @@ rg --engine auto pattern
 
 Control how ripgrep buffers output and manages memory.
 
+### Buffer Size
+
+Ripgrep uses a 64 KB default buffer for reading files. This is automatically managed but understanding the buffer size can help diagnose memory usage patterns and performance characteristics.
+
 ### Buffering Modes
 
 ```bash
@@ -187,10 +193,12 @@ Line buffering is useful when piping to another program that needs immediate out
 
 ### Heap Limits
 
-Ripgrep has internal heap limit controls to prevent excessive memory usage. These are automatically managed but can be important when:
+Ripgrep has internal heap limit controls to prevent excessive memory usage. While these are automatically managed, you can configure heap allocation behavior through other memory parameters like `--dfa-size-limit` to indirectly influence heap usage. These controls are important when:
 - Searching extremely large files
 - Using complex patterns with many capture groups
 - Running in memory-constrained environments
+
+The default heap allocation strategy is eager allocation, which provides good performance for most use cases. In constrained environments, reducing memory limits through flags like `--dfa-size-limit` and `--regex-size-limit` helps control heap usage.
 
 ## Sorting Results
 

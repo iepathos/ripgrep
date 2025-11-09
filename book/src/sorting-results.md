@@ -51,6 +51,8 @@ rg --sortr path pattern
 rg --sortr modified pattern
 ```
 
+**Note**: Reverse path sorting (`--sortr path`) collects and sorts all paths in memory, unlike forward path sorting which can stream results. This means `--sortr path` has higher memory usage than `--sort path`.
+
 ## Sorting by Path
 
 Path sorting uses lexicographic ordering:
@@ -71,6 +73,8 @@ This is useful for:
 - Consistent output in scripts
 - Alphabetical organization
 - Predictable file ordering
+
+**Performance Note**: When using `--sort path` in ascending order (without reverse), ripgrep uses an optimized streaming path that processes paths in their natural traversal order without buffering all results in memory. This makes ascending path sorting more memory-efficient than other sort modes.
 
 ## Sorting by Modified Time
 
@@ -124,8 +128,8 @@ This is useful for:
 
 Sorting affects performance in several ways:
 
-1. **Disables Parallelism**: Sorting requires collecting all results before output, so ripgrep runs single-threaded
-2. **Memory Usage**: All results must be held in memory before sorting
+1. **Disables Parallelism**: Sorting requires collecting all results before output, which automatically disables parallelism in the directory walker, forcing sequential processing. Exception: `--sort path` in ascending order uses an optimized streaming path that avoids this overhead.
+2. **Memory Usage**: All results must be held in memory before sorting (except for `--sort path` in ascending order)
 3. **Startup Delay**: No results appear until the entire search completes
 
 Performance comparison:
@@ -219,6 +223,12 @@ Time-based sorting behavior may vary:
 - **Windows**: All timestamps available but may have different precision
 
 **Error Handling**: When a requested sort criterion is unavailable on the filesystem (for example, creation time on ext4 filesystems), ripgrep will detect this, print an error message, and exit without performing the search. This ensures that you're aware when the requested sorting cannot be reliably performed.
+
+When sorting by timestamps, files with metadata errors (such as permission denied or missing filesystem metadata) are handled gracefully:
+- With ascending sort (`--sort`): Files with errors appear last in the output
+- With descending sort (`--sortr`): Files with errors appear first in the output
+
+This ensures predictable behavior even when some files cannot be fully accessed.
 
 ## See Also
 

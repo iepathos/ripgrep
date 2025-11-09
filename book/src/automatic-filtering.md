@@ -115,6 +115,8 @@ By default, `.gitignore` files are only respected inside Git repositories. Use `
 $ rg 'pattern' --no-require-git
 ```
 
+The default behavior can be made explicit with `--require-git`, which ensures `.gitignore` files are only respected inside Git repositories.
+
 ## Hidden Files
 
 Ripgrep skips hidden files and directories by default.
@@ -127,7 +129,7 @@ A file or directory is considered hidden if:
 
 ### Searching Hidden Files
 
-Use `-./--hidden` to search hidden files:
+Use `-.`/`--hidden` to search hidden files:
 
 ```bash
 $ rg 'pattern' --hidden
@@ -190,6 +192,34 @@ $ rg 'pattern' --no-ignore-parent
 # Only respect ignore files in or below current directory
 ```
 
+## Symlinks
+
+By default, ripgrep does not follow symbolic links during recursive search.
+
+### Following Symlinks
+
+Use `-L`/`--follow` to follow symbolic links:
+
+```bash
+$ rg 'pattern' --follow
+# Follows symlinks to files and directories
+```
+
+**Loop detection**: Ripgrep automatically detects and prevents infinite loops when following symlinks that create circular directory structures.
+
+### Symlinks and Ignore Files
+
+When following symlinks with `--follow`, ignore files are still respected:
+- The symlink target is subject to ignore rules in its actual location
+- If a symlinked directory contains `.gitignore` or `.ignore` files, they apply to files within that directory
+
+To follow symlinks while bypassing ignore files:
+
+```bash
+$ rg 'pattern' --follow --no-ignore
+# Follow symlinks and ignore all ignore files
+```
+
 ## Disabling Automatic Filtering
 
 Ripgrep provides several ways to disable automatic filtering.
@@ -225,6 +255,7 @@ For more precise control, use specific `--no-ignore-*` flags:
 | `--no-ignore` | Disable all standard ignore files |
 | `--no-ignore-dot` | Disable `.ignore` and `.rgignore` files only |
 | `--no-ignore-vcs` | Disable `.gitignore` and `.git/info/exclude` only |
+| `--no-ignore-exclude` | Disable `.git/info/exclude` only |
 | `--no-ignore-global` | Disable global gitignore only |
 | `--no-ignore-parent` | Don't read ignore files from parent directories |
 | `--no-ignore-files` | Disable custom ignore files from `--ignore-file` |

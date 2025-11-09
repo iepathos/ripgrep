@@ -45,7 +45,7 @@ In the first example:
 
 ### Named Capture Groups
 
-You can also use named capture groups for more readable patterns. The syntax is `(?P<name>pattern)` in Rust regex (or `(?<name>pattern)` in PCRE2 mode).
+You can also use named capture groups for more readable patterns. The syntax is `(?P<name>pattern)` in Rust regex. The alternative syntax `(?<name>pattern)` is also supported in both Rust regex and PCRE2 mode.
 
 ```bash
 # Using named groups for clarity
@@ -130,10 +130,36 @@ rg '(\w+)@(\w+\.com)' -o -r '$1 at $2'
 
 ```bash
 # Replace matches but keep context unchanged
-rg 'error' -r 'ERROR' -C2
+rg 'error' -r 'ERROR' -C1
+# If input is:
+#   info message
+#   error occurred
+#   debug info
+# Output shows:
+#   info message          (context - unchanged)
+#   ERROR occurred        (match - replaced)
+#   debug info            (context - unchanged)
 ```
 
 **With `--json`**: The JSON output includes a `submatches` array with replacement text in the `match` field
+
+```bash
+# Example JSON output with replacements
+rg 'error' -r 'ERROR' --json
+# Produces output like:
+# {
+#   "type": "match",
+#   "data": {
+#     "submatches": [
+#       {
+#         "match": {"text": "ERROR"},
+#         "start": 10,
+#         "end": 15
+#       }
+#     ]
+#   }
+# }
+```
 
 ## Practical Examples
 

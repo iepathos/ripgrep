@@ -4,64 +4,81 @@
   "chapter_file": "book/src/sorting-results.md",
   "drift_detected": true,
   "severity": "low",
-  "quality_assessment": "Chapter is well-written and accurate with minor missing details. Content correctly documents all sorting modes and their performance implications. Primarily needs to mention the deprecated --sort-files flag and the explicit --sort=none option.",
+  "quality_assessment": "Excellent chapter with accurate documentation. Very minor improvements possible around implementation details and edge cases. All core sorting features are correctly documented with good examples and performance guidance.",
   "issues": [
     {
-      "type": "missing_content",
+      "type": "incomplete_explanation",
       "severity": "low",
-      "section": "Sort Options",
-      "description": "Chapter doesn't mention the deprecated --sort-files flag",
-      "should_add": "Document that --sort-files is deprecated and users should use --sort=path instead",
-      "fix_suggestion": "Add a note in 'Sort Options' or a new 'Deprecated Options' section mentioning --sort-files is deprecated in favor of --sort=path. This helps users migrating from older ripgrep versions.",
-      "source_reference": "crates/core/flags/defs.rs:6213-6250 (SortFiles struct)"
-    },
-    {
-      "type": "missing_content",
-      "severity": "low",
-      "section": "Sort Options",
-      "description": "Chapter shows --sort none in example but doesn't explicitly document it as an option",
-      "current_content": "# No sorting (default, fastest)\nrg --sort none pattern",
-      "should_be": "More explicitly document that --sort=none is available to override config files or previous --sort flags",
-      "fix_suggestion": "Add explicit documentation that --sort=none can be used to explicitly disable sorting, which is useful for overriding configuration files or previous command-line flags",
-      "source_reference": "crates/core/flags/defs.rs:6359-6362 (--sort=none handling)"
+      "section": "Sorting by Path",
+      "description": "Chapter doesn't mention the optimization for forward path sorting",
+      "current_content": "Path sorting uses lexicographic ordering",
+      "should_add": "For ascending path sorting (--sort path without reverse), ripgrep uses an optimized path that avoids collecting all results into memory, processing paths in natural traversal order.",
+      "fix_suggestion": "Add note that --sort path (ascending) is optimized and doesn't require buffering all results, unlike other sort modes including --sortr path",
+      "source_reference": "crates/core/flags/hiargs.rs:783 - special case for SortModeKind::Path if !sort.reverse"
     },
     {
       "type": "incomplete_explanation",
       "severity": "low",
-      "section": "Sorting Across Platforms",
-      "description": "Chapter mentions platform differences but doesn't explain error behavior when timestamps unavailable",
-      "should_add": "Explain that ripgrep will detect unavailable timestamps, print an error, and exit without searching",
-      "fix_suggestion": "Add to 'Sorting Across Platforms' section: When a requested sort criterion is unavailable on the filesystem (e.g., creation time on ext4), ripgrep detects this, prints an error message, and exits without performing the search.",
-      "source_reference": "crates/core/flags/defs.rs:6344-6345, 6446-6447 (error handling documentation)"
+      "section": "Performance Impact",
+      "description": "Chapter states 'sorting disables parallelism' but doesn't explain the specific implementation detail",
+      "current_content": "Sorting affects performance in several ways:\n\n1. **Disables Parallelism**: Sorting requires collecting all results before output, so ripgrep runs single-threaded",
+      "should_be": "Sorting requires collecting all results before output. This automatically disables parallelism in the directory walker, forcing sequential processing. Exception: --sort path (ascending) uses an optimized streaming path.",
+      "fix_suggestion": "Add clarification that sorting disables parallelism at the directory walker level by collecting all haystacks before processing, and mention the optimization for forward path sorting",
+      "source_reference": "crates/core/main.rs:158-159, crates/core/flags/hiargs.rs:781-814"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Reverse Sorting",
+      "description": "Chapter doesn't mention that path sorting with reverse is handled differently than forward",
+      "current_content": "Reverse the sort order:\n\n```bash\n# Sort by path in reverse (descending)\nrg --sortr path pattern",
+      "should_add": "Note that reverse path sorting (`--sortr path`) collects and sorts all paths in memory, unlike forward path sorting which can stream results.",
+      "fix_suggestion": "Add a performance note that --sortr path has different memory characteristics than --sort path (the latter being optimized to avoid buffering when in ascending order)",
+      "source_reference": "crates/core/flags/hiargs.rs:783-789 - reverse path sorting uses .collect() and .reverse()"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Sort Options",
+      "description": "Missing detail about timestamp error handling during sort",
+      "current_content": "Sort options section lists the various sort criteria",
+      "should_add": "When sorting by timestamps, files with metadata errors appear last in ascending order and first in descending order (with --sortr).",
+      "fix_suggestion": "Add a subsection on error handling that explains how files with inaccessible metadata are positioned in the sorted output",
+      "source_reference": "crates/core/flags/hiargs.rs:801-813 - timestamp sorting with None handling"
     },
     {
       "type": "unclear_content",
       "severity": "low",
       "section": "Performance Impact",
       "description": "Performance comparison provides specific numbers that appear to be estimates rather than actual benchmarks",
-      "current_content": "For large codebases:\n- Unsorted: ~100ms\n- Sorted by path: ~500ms\n- Sorted by time: ~600ms",
-      "should_be": "Either provide actual benchmark methodology or make it clearer these are example/approximate values",
-      "fix_suggestion": "Clarify these are approximate example values, not benchmarks from a specific system. Consider adding 'Example:' prefix or note that actual values depend on hardware, file count, and filesystem."
+      "current_content": "Example timing for large codebases (actual values depend on hardware, file count, and filesystem):\n- Unsorted: ~100ms\n- Sorted by path: ~500ms\n- Sorted by time: ~600ms (requires stat calls)",
+      "should_be": "Keep the disclaimer clear that these are illustrative examples only",
+      "fix_suggestion": "The chapter already has good disclaimer text. This is actually well-handled. Consider this a non-issue."
     }
   ],
   "positive_aspects": [
-    "Clear explanation of all four sort modes (path, modified, accessed, created)",
-    "Correctly documents that sorting disables parallelism",
-    "Good progression from simple examples to complex use cases",
-    "Platform-specific behavior documented (Linux/macOS/Windows differences)",
-    "Performance impact well explained with practical implications",
-    "Excellent 'When Not to Sort' section with clear guidance",
-    "Practical examples showing real-world use cases",
-    "Best practices section provides actionable advice",
-    "Good integration with other features (context, file types, JSON output)"
+    "Excellent overall structure and flow from basics to advanced topics",
+    "Accurate documentation of all sort modes: path, modified, accessed, created, none",
+    "Correct documentation of --sort and --sortr flags with clear examples",
+    "Accurate note about --sort-files being deprecated in favor of --sort=path (lines 38-40)",
+    "Explicit documentation of --sort=none for overriding config files (lines 33-36)",
+    "Clear explanation of performance impacts and when sorting disables parallelism",
+    "Good coverage of platform differences in timestamp availability",
+    "Excellent error handling explanation: 'ripgrep will detect this, print an error message, and exit' (line 221)",
+    "Helpful examples demonstrating practical use cases across multiple scenarios",
+    "Well-structured best practices section with actionable advice",
+    "Clear 'When Not to Sort' guidance with specific thresholds",
+    "Good cross-references to related chapters (Performance, Output Formats, Common Options)",
+    "Performance numbers include appropriate disclaimer about variability",
+    "Comprehensive examples showing combinations with other flags (context, file types, JSON)"
   ],
   "improvement_suggestions": [
-    "Add brief mention of deprecated --sort-files flag for legacy users",
-    "Explicitly document --sort=none as a way to override config files",
-    "Explain error behavior when timestamps are unavailable",
-    "Clarify that performance numbers are examples, not benchmarks",
-    "Consider adding example of using --sort=none to override config file setting",
-    "Could add note about --no-sort-files negation flag for completeness"
+    "Add a brief note about the --sort path optimization that avoids buffering (streaming mode)",
+    "Include a comparison table showing memory/performance characteristics of each sort mode",
+    "Add example showing the difference in memory behavior between --sort path and --sortr path",
+    "Add note about how sorting interacts with --max-count and other limiting flags",
+    "Consider adding a small 'Implementation Notes' subsection explaining buffering requirements",
+    "Add diagram showing the data flow: traverse → collect → sort → output (vs. streaming for --sort path)"
   ],
   "metadata": {
     "analyzed_at": "2025-11-08",
@@ -72,9 +89,27 @@
       "sort_by_modified",
       "sort_by_accessed",
       "sort_by_created",
-      "reverse_sort"
+      "reverse_sort",
+      "performance_impact",
+      "platform_differences",
+      "deprecated_sort_files",
+      "sort_none_override"
     ],
     "validation_focus": "Verify sorting options and their impact on performance are documented",
-    "validation_result": "PASSED - Sorting options and performance impact are well documented with minor omissions"
+    "validation_result": "PASS - Sorting options and performance impacts are thoroughly and accurately documented with only minor opportunities for additional implementation detail",
+    "code_references": [
+      "crates/core/flags/lowargs.rs:689-743 (SortMode and SortModeKind definitions)",
+      "crates/core/flags/hiargs.rs:781-814 (Sorting implementation with optimizations)",
+      "crates/core/flags/defs.rs:6211-6507 (--sort, --sortr, --sort-files flag definitions)",
+      "crates/core/main.rs:158-159 (Parallelism interaction documentation)"
+    ],
+    "chapter_strengths": [
+      "Already documents deprecated --sort-files flag (section added)",
+      "Already documents --sort=none for config override",
+      "Already includes error handling explanation for unavailable timestamps",
+      "Already has appropriate performance disclaimer",
+      "Comprehensive coverage of all four timestamp types",
+      "Strong practical examples and use cases"
+    ]
   }
 }

@@ -95,7 +95,7 @@ rg -F "[debug]"
 
 ## Regular Expressions
 
-Ripgrep uses Rust's regex engine by default, which supports a rich set of regex features.
+Ripgrep uses Rust's regex-automata library (a DFA-based engine) by default, which provides excellent performance for most patterns while supporting a rich set of regex features.
 
 ### Basic Metacharacters
 
@@ -150,6 +150,41 @@ rg "\s+error"        # Matches "error" with leading whitespace
 # \S matches non-whitespace
 ```
 
+### Unicode Character Classes
+
+Ripgrep supports Unicode character classes using the `\p{}` syntax:
+
+```bash
+# \p{L} matches any Unicode letter
+rg "\p{L}+"          # Matches words in any language
+
+# \p{N} matches any Unicode number
+rg "\p{N}+"          # Matches numeric characters
+
+# \p{P} matches any Unicode punctuation
+rg "\p{P}"           # Matches punctuation marks
+
+# \p{Ll} matches lowercase letters
+rg "\p{Ll}+"         # Matches lowercase words
+
+# \p{Lu} matches uppercase letters
+rg "\p{Lu}+"         # Matches uppercase words
+
+# \P{} negates the class (matches anything except)
+rg "\P{L}+"          # Matches non-letter characters
+```
+
+**Common Unicode categories:**
+
+| Pattern | Description | Example |
+|---------|-------------|---------|
+| `\p{L}` | Any letter | Matches "café", "日本", "hello" |
+| `\p{N}` | Any number | Matches "42", "৪২" (Bengali) |
+| `\p{P}` | Any punctuation | Matches ".", "!", "?" |
+| `\p{S}` | Any symbol | Matches "$", "€", "©" |
+| `\p{Ll}` | Lowercase letter | Matches "abc", "ñ" |
+| `\p{Lu}` | Uppercase letter | Matches "ABC", "Ñ" |
+
 ### Word and Line Boundaries
 
 ```bash
@@ -179,12 +214,17 @@ rg "[0-9]{2,4}"      # Matches 2-4 digits like "42", "123", "1234"
 # () creates a capturing group
 rg "(error|warning): (.+)"    # Captures error/warning and message
 
+# Named capture groups with (?P<name>...)
+rg "(?P<level>error|warning): (?P<msg>.+)"   # Named captures for clarity
+
 # | means "or"
 rg "error|warning"            # Matches either "error" or "warning"
 
 # Non-capturing groups with (?:)
 rg "(?:http|https)://\S+"     # Matches URLs
 ```
+
+**Named capture groups** are especially useful with replacement operations (see the [Replacements](./replacements.md) chapter) where you can refer to captures by name instead of number.
 
 ### Common Pattern Examples
 
@@ -204,6 +244,87 @@ rg "\w+\([^)]*\)"
 # URLs
 rg "https?://[^\s]+"
 ```
+
+### Regex Engine Selection
+
+Ripgrep supports multiple regex engines that you can select using the `--engine` flag:
+
+```bash
+# Use default engine (Rust regex-automata, DFA-based)
+rg pattern              # Implicit default
+rg --engine default pattern
+
+# Use PCRE2 engine (same as -P flag)
+rg --engine pcre2 pattern
+rg -P pattern           # Shorthand
+
+# Auto-select engine based on pattern
+rg --engine auto pattern
+```
+
+**When to use different engines:**
+
+- **Default (regex-automata)**: Fast, efficient for most patterns. Use for general searches.
+- **PCRE2**: Supports advanced features not in default engine. Use when you need backreferences, lookahead/lookbehind, or other Perl-compatible features.
+- **Auto**: Lets ripgrep choose the best engine for your pattern.
+
+### PCRE2 Engine
+
+Use the `-P` or `--pcre2` flag to enable the Perl-compatible regex engine, which supports advanced features not available in the default engine.
+
+**Features available only with PCRE2:**
+
+```bash
+# Backreferences - refer to previously captured groups
+rg -P "(\w+)\s+\1"       # Finds repeated words like "the the"
+
+# Positive lookahead (?=...)
+rg -P "error(?=:)"       # Matches "error" only if followed by ":"
+
+# Negative lookahead (?!...)
+rg -P "test(?!ing)"      # Matches "test" but not "testing"
+
+# Positive lookbehind (?<=...)
+rg -P "(?<=@)\w+"        # Matches username after "@" in email
+
+# Negative lookbehind (?<!...)
+rg -P "(?<!un)happy"     # Matches "happy" but not "unhappy"
+
+# Possessive quantifiers
+rg -P "\d++\."           # More efficient matching with possessive +
+
+# Atomic groups (?>...)
+rg -P "(?>error|warning):"   # Prevents backtracking
+```
+
+**Performance tradeoffs:**
+- PCRE2 is more powerful but typically slower than the default engine
+- Use PCRE2 only when you need its specific features
+- The default engine is optimized for speed and handles most use cases
+
+### Default Engine Limitations
+
+The default Rust regex engine provides excellent performance but does not support some advanced features:
+
+**Not supported in default engine:**
+- Backreferences (`\1`, `\2`, etc.)
+- Lookahead and lookbehind assertions
+- Possessive quantifiers (`*+`, `++`, etc.)
+- Atomic groups (`(?>...)`)
+
+**If you need these features, use the PCRE2 engine with `-P`:**
+
+```bash
+# This pattern requires PCRE2 for backreferences
+rg -P "(\w+)\s+\1"
+
+# This pattern requires PCRE2 for lookahead
+rg -P "error(?=:)"
+```
+
+**Troubleshooting tip:** If your regex pattern isn't working as expected and uses backreferences or lookahead/lookbehind, try adding the `-P` flag to enable PCRE2.
+
+**Note:** For multiline pattern matching, ripgrep provides the `-U` flag. You can also use `--multiline-dotall` to make `.` match newlines in multiline mode. See the [Advanced Patterns](./advanced-patterns.md) chapter for details.
 
 ## Case Sensitivity
 

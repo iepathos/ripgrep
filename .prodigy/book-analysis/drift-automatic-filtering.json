@@ -3,154 +3,88 @@
   "chapter_title": "Automatic Filtering",
   "chapter_file": "book/src/automatic-filtering.md",
   "drift_detected": true,
-  "severity": "critical",
-  "quality_assessment": "Chapter is currently a placeholder with no content. This is a fundamental ripgrep feature that needs comprehensive documentation.",
+  "severity": "low",
+  "quality_assessment": "Chapter is comprehensive, well-structured, and highly accurate. It covers all major automatic filtering mechanisms with excellent examples and clear explanations. Only minor enhancements and cross-references would improve it further.",
   "issues": [
     {
       "type": "missing_content",
-      "severity": "critical",
-      "section": "Entire Chapter",
-      "description": "Chapter file contains only placeholder text and no actual documentation",
-      "current_content": "This chapter will be populated with content from the codebase analysis.\n\n*This content will be populated by the documentation drift detection workflow.*",
-      "should_be": "Complete chapter covering all automatic filtering mechanisms",
-      "fix_suggestion": "Write complete chapter covering: ignore file types (.gitignore, .ignore, .rgignore, etc.), hidden files, binary files, symlinks, precedence rules, and examples",
-      "source_reference": "crates/ignore/src/walk.rs:441-468, features.json:file_filtering category"
+      "severity": "low",
+      "section": "Git Repository Requirements",
+      "description": "Chapter mentions --no-require-git but doesn't explain --require-git (the opposite flag)",
+      "current_content": "By default, `.gitignore` files are only respected inside Git repositories. Use `--no-require-git` to respect `.gitignore` files even outside repositories:\n\n```bash\n$ rg 'pattern' --no-require-git\n```",
+      "should_add": "Also mention --require-git as the explicit way to enforce default behavior",
+      "fix_suggestion": "Add note: 'The default behavior can be made explicit with --require-git, which ensures .gitignore files are only respected inside git repositories.'",
+      "source_reference": "features.json:file_filtering.no_require_git"
     },
     {
-      "type": "missing_content",
-      "severity": "critical",
-      "section": "Ignore Files (.gitignore, .ignore, .rgignore)",
-      "description": "No documentation of ripgrep's automatic ignore file handling",
-      "should_add": "Explain that ripgrep respects .gitignore, .ignore, .rgignore files automatically. Document precedence: .ignore > .gitignore > .git/info/exclude > global gitignore > custom ignore files. Show how parent directories are respected.",
-      "fix_suggestion": "Add section explaining ignore file types, precedence rules, and how they work during recursive search. Include examples showing each type.",
-      "source_reference": "crates/ignore/src/walk.rs:441-468, crates/ignore/src/gitignore.rs"
-    },
-    {
-      "type": "missing_content",
-      "severity": "critical",
-      "section": "Hidden Files",
-      "description": "No documentation of automatic hidden file filtering",
-      "should_add": "Explain that hidden files (starting with .) are skipped by default. Show how -./--hidden overrides this. Explain platform-specific hidden file attributes on Windows.",
-      "fix_suggestion": "Add section on hidden file filtering with examples showing default behavior and --hidden flag usage",
-      "source_reference": "crates/ignore/src/walk.rs:798-804, crates/core/flags/defs.rs:2768-2825"
-    },
-    {
-      "type": "missing_content",
-      "severity": "critical",
-      "section": "Binary Files",
-      "description": "No documentation of automatic binary file detection and filtering",
-      "should_add": "Explain NUL byte heuristic for binary detection. Show how --binary, --no-binary, and -a/--text flags control binary handling. Clarify that binary filtering only applies to recursive search.",
-      "fix_suggestion": "Add section explaining binary detection, when it applies (recursive search only), and how to control it with flags",
-      "source_reference": "features.json:file_filtering category, CLI help for --binary flag"
-    },
-    {
-      "type": "missing_content",
-      "severity": "high",
-      "section": "Disabling Automatic Filtering",
-      "description": "No documentation of -u/--unrestricted progressive flags",
-      "should_add": "Document -u (no ignore files), -uu (no ignore + search hidden), -uuu (no ignore + hidden + binary). Show how --no-ignore, --no-ignore-dot, --no-ignore-vcs, etc. provide fine-grained control.",
-      "fix_suggestion": "Add section showing progressive unrestricted flags and individual --no-ignore-* flags with examples",
-      "source_reference": "features.json:file_filtering, crates/core/flags/defs.rs:4319-4437"
-    },
-    {
-      "type": "missing_content",
-      "severity": "high",
-      "section": "Ignore File Precedence Rules",
-      "description": "No explanation of how different ignore files interact",
-      "should_add": "Explain that .ignore files override all .gitignore files regardless of directory hierarchy. Within each type, more nested files have higher precedence. Parent directories are respected by default.",
-      "fix_suggestion": "Add detailed precedence section with examples showing how nested .ignore vs .gitignore files interact",
-      "source_reference": "crates/ignore/src/walk.rs:458-468"
-    },
-    {
-      "type": "missing_content",
-      "severity": "high",
-      "section": "Custom Ignore Files",
-      "description": "No documentation of --ignore-file flag for custom ignore files",
-      "should_add": "Show how --ignore-file can add custom ignore file paths. Explain these have lowest precedence but are never disabled by --no-ignore.",
-      "fix_suggestion": "Add subsection on --ignore-file with examples",
-      "source_reference": "features.json:file_filtering, crates/ignore/src/walk.rs"
-    },
-    {
-      "type": "missing_content",
-      "severity": "high",
-      "section": "VCS-Specific Ignore Files",
-      "description": "No mention of .git/info/exclude or global gitignore",
-      "should_add": "Document that ripgrep respects .git/info/exclude and global gitignore (usually $XDG_CONFIG_HOME/git/ignore). Show how --no-ignore-vcs and --no-ignore-global disable these.",
-      "fix_suggestion": "Add subsection explaining VCS ignore files and global ignore files",
-      "source_reference": "crates/ignore/src/walk.rs:441-443, features.json:file_filtering"
-    },
-    {
-      "type": "missing_content",
-      "severity": "medium",
-      "section": "Whitelist Patterns in Ignore Files",
-      "description": "No explanation of ! prefix for whitelisting in ignore files",
-      "should_add": "Explain that patterns starting with ! in .gitignore/.ignore files whitelist paths, overriding earlier ignore rules.",
-      "fix_suggestion": "Add explanation and example of whitelist patterns",
-      "source_reference": "crates/ignore/src/gitignore.rs:39-40 (is_whitelist field)"
-    },
-    {
-      "type": "missing_content",
-      "severity": "medium",
-      "section": "Interaction with Explicit Paths",
-      "description": "No explanation of how explicit file paths override ignore rules",
-      "should_add": "Document that files specified directly on command line are always searched, even if they would be ignored by .gitignore",
-      "fix_suggestion": "Add note explaining that explicit file paths bypass ignore logic",
-      "source_reference": "CLI help text, book/src/recursive-search.md:23-33"
-    },
-    {
-      "type": "missing_content",
-      "severity": "medium",
-      "section": "No Require Git Flag",
-      "description": "No documentation of --no-require-git flag",
-      "should_add": "Explain --no-require-git allows .gitignore to be respected even outside git repositories",
-      "fix_suggestion": "Add brief mention of --no-require-git in appropriate subsection",
-      "source_reference": "features.json:file_filtering (--no-require-git flag)"
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "Symlinks",
+      "description": "Chapter lists 'symlinks' in topics but doesn't explicitly discuss symlink handling in automatic filtering context",
+      "should_add": "Brief explanation of how symlinks interact with automatic filtering (default: don't follow, -L/--follow flag)",
+      "fix_suggestion": "Add subsection under 'Advanced Filtering' or in 'Common Use Cases' explaining:\n- By default, ripgrep doesn't follow symlinks\n- Use -L/--follow to follow symlinks\n- Loop detection is automatic\n- Interaction with ignore files when following symlinks",
+      "source_reference": "crates/ignore/src/walk.rs:682-704, features.json:file_filtering.symlink_handling"
     },
     {
       "type": "missing_content",
       "severity": "low",
-      "section": "Ignore Messages",
-      "description": "No mention of --no-ignore-messages flag",
-      "should_add": "Document that --no-ignore-messages suppresses errors from malformed ignore files",
-      "fix_suggestion": "Add brief note about --no-ignore-messages for suppressing ignore file errors",
-      "source_reference": "features.json:file_filtering"
+      "section": "Fine-Grained Control Table",
+      "description": "Table doesn't include --no-ignore-exclude flag",
+      "current_content": "| Flag | Effect |\n|------|--------|\n| `--no-ignore` | Disable all standard ignore files |\n| `--no-ignore-dot` | Disable `.ignore` and `.rgignore` files only |\n| `--no-ignore-vcs` | Disable `.gitignore` and `.git/info/exclude` only |\n| `--no-ignore-global` | Disable global gitignore only |\n| `--no-ignore-parent` | Don't read ignore files from parent directories |\n| `--no-ignore-files` | Disable custom ignore files from `--ignore-file` |",
+      "should_add": "Add --no-ignore-exclude to the table",
+      "fix_suggestion": "Add row to table:\n| `--no-ignore-exclude` | Disable .git/info/exclude only |",
+      "source_reference": "features.json:file_filtering, crates/core/flags/defs.rs"
     },
     {
-      "type": "missing_content",
+      "type": "minor_inaccuracy",
       "severity": "low",
-      "section": "Case Insensitive Ignore Files",
-      "description": "No documentation of --ignore-file-case-insensitive flag",
-      "should_add": "Mention --ignore-file-case-insensitive for case-insensitive glob matching in ignore files (useful on Windows)",
-      "fix_suggestion": "Add note about case-insensitive ignore file matching",
-      "source_reference": "features.json:file_filtering, crates/core/flags/defs.rs:3312-3324"
+      "section": "Hidden Files - Typo",
+      "description": "Flag name has incorrect formatting in one place",
+      "current_content": "Use `-./--hidden` to search hidden files:",
+      "should_be": "Use `-.`/`--hidden` to search hidden files:",
+      "fix_suggestion": "Add space or separate backticks: either `-. / --hidden` or `-.`/`--hidden` for better readability",
+      "source_reference": "crates/core/flags/defs.rs:2768 (flag is -. or --hidden)"
     },
     {
-      "type": "missing_content",
+      "type": "incomplete_explanation",
       "severity": "low",
-      "section": "Parent Directory Ignore Files",
-      "description": "No explanation of --no-ignore-parent flag",
-      "should_add": "Explain that --no-ignore-parent prevents reading ignore files from parent directories",
-      "fix_suggestion": "Add brief mention in ignore files section",
-      "source_reference": "features.json:file_filtering, crates/ignore/src/walk.rs:806-815"
+      "section": "Binary Files - Detection Mechanism",
+      "description": "Chapter explains NUL byte heuristic but doesn't specify how many bytes are scanned",
+      "current_content": "Ripgrep uses a NUL byte (`\\0`) heuristic:\n- If a file contains a NUL byte in the first few kilobytes, it's considered binary",
+      "should_be": "More specific about the threshold (though implementation details may vary)",
+      "fix_suggestion": "Consider adding more detail if implementation is stable, or keep vague to allow implementation flexibility. Current wording 'first few kilobytes' is acceptable but could reference --max-columns-preview if that affects binary detection.",
+      "source_reference": "tests/binary.rs comments mention 'first few KB' with mmap, crates/printer/src/summary.rs:684-745"
     }
   ],
   "positive_aspects": [
-    "Chapter is listed in book with appropriate title",
-    "Dependencies correctly identified (recursive-search)",
-    "Topics list is comprehensive and accurate",
-    "File is in correct location in book structure"
+    "Excellent comprehensive coverage of all ignore file types with clear precedence explanation",
+    "Outstanding examples throughout - practical and easy to follow",
+    "Well-organized logical flow from ignore files → hidden → binary → disabling filters",
+    "Thorough documentation of all --no-ignore-* flags with comparison table",
+    "Great troubleshooting section with specific debugging commands",
+    "Clear explanation of whitelist patterns with ! prefix",
+    "Accurate description of -u/-uu/-uuu progressive unrestricted flags",
+    "Good coverage of edge cases (explicit paths, interaction with manual filtering)",
+    "Mentions .rgignore as legacy/replaced, which is correct",
+    "Accurate explanation of binary detection (NUL byte heuristic, recursive search only)",
+    "Proper documentation of Windows hidden file attributes alongside Unix dot-files",
+    "Good coverage of VCS-specific ignore files (.git/info/exclude, global gitignore)",
+    "Excellent 'Common Use Cases' section with real-world examples",
+    "Accurate cross-references to related chapters (manual-filtering-globs, manual-filtering-types)",
+    "Clear explanation of custom ignore files with --ignore-file",
+    "Correct precedence rules: .ignore overrides .gitignore, nested files override parents"
   ],
   "improvement_suggestions": [
-    "Start with clear introduction explaining ripgrep's automatic filtering philosophy",
-    "Use a logical flow: ignore files → hidden files → binary files → disabling filters",
-    "Include visual diagram showing precedence order of different ignore file types",
-    "Provide practical examples for each filtering mechanism",
-    "Show common use cases like 'search everything including hidden/binary'",
-    "Include troubleshooting section for common filtering issues",
-    "Cross-reference to manual-filtering-globs and manual-filtering-types chapters",
-    "Add examples showing how automatic and manual filtering interact",
-    "Include comparison table of all --no-ignore-* flags",
-    "Show real-world examples with .gitignore, .ignore, and custom ignore files"
+    "Add dedicated subsection on symlink handling and interaction with filtering",
+    "Include --no-ignore-exclude in the fine-grained control table",
+    "Mention --require-git as the explicit default opposite of --no-require-git",
+    "Fix minor formatting of -. flag (add space or separate backticks)",
+    "Consider adding visual diagram showing precedence hierarchy (though text explanation is already excellent)",
+    "Could add example showing .ignore overriding .gitignore in practice with file tree",
+    "Consider adding note about performance implications of --hidden and -uuu flags",
+    "Could mention --debug output for troubleshooting filtering issues",
+    "Consider adding link to 'Recursive Search' chapter at the beginning for context",
+    "Could add example showing how ignore files work with --files flag for preview"
   ],
   "metadata": {
     "analyzed_at": "2025-11-08",

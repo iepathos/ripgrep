@@ -3,153 +3,99 @@
   "chapter_title": "File Encoding",
   "chapter_file": "book/src/file-encoding.md",
   "drift_detected": true,
-  "severity": "critical",
-  "quality_assessment": "Chapter is empty placeholder - requires complete content population from existing GUIDE.md documentation",
+  "severity": "low",
+  "quality_assessment": "Excellent chapter with comprehensive coverage of encoding features. Only minor enhancements needed for completeness.",
   "issues": [
     {
       "type": "missing_content",
-      "severity": "critical",
-      "section": "Entire Chapter",
-      "description": "Chapter file is a placeholder with no actual content. Complete encoding documentation exists in GUIDE.md (lines 628-712) but is not present in the book chapter.",
-      "current_content": "# File Encoding\n\nThis chapter will be populated with content from the codebase analysis.\n\n*This content will be populated by the documentation drift detection workflow.*",
-      "should_be": "Comprehensive encoding documentation covering encoding modes, BOM sniffing, UTF-16 support, transcoding, and the --encoding flag",
-      "fix_suggestion": "Migrate the File Encoding section from GUIDE.md (lines 628-712) to book/src/file-encoding.md with appropriate adaptations for the book format",
-      "source_reference": "GUIDE.md:628-712"
-    },
-    {
-      "type": "missing_content",
-      "severity": "high",
-      "section": "Encoding Flag Documentation",
-      "description": "The -E/--encoding flag is not documented in the chapter",
-      "should_add": "Document -E/--encoding flag with values: 'auto' (default), 'none', or any WHATWG encoding label (e.g., 'utf-16', 'latin1', 'gbk')",
-      "fix_suggestion": "Add section explaining the --encoding flag syntax, values, and behavior. Include that 'auto' uses BOM sniffing, 'none' disables encoding detection, and specific labels force transcoding.",
-      "source_reference": "crates/core/flags/defs.rs:1580-1649"
-    },
-    {
-      "type": "missing_content",
-      "severity": "high",
-      "section": "BOM Sniffing",
-      "description": "BOM (Byte Order Mark) sniffing mechanism is not explained",
-      "should_add": "Explain how ripgrep automatically detects UTF-8 and UTF-16 BOMs and transcodes accordingly. Note that BOM sniffing is enabled by default and can be disabled with --encoding=none or --no-encoding.",
-      "fix_suggestion": "Add detailed section on BOM sniffing: what it is, how it works, when it's applied (first 3 bytes), which encodings are detected (UTF-8, UTF-16LE, UTF-16BE), and how it interacts with explicit --encoding values.",
-      "source_reference": "crates/searcher/src/searcher/mod.rs:178-179,541-556"
-    },
-    {
-      "type": "missing_content",
-      "severity": "high",
-      "section": "Transcoding Behavior",
-      "description": "The transcoding process from source encoding to UTF-8 is not documented",
-      "should_add": "Explain that when an encoding is specified or detected, ripgrep transcodes the file content from that encoding to UTF-8 before searching. Invalid bytes are replaced with Unicode replacement character (U+FFFD).",
-      "fix_suggestion": "Add section explaining transcoding: when it occurs, performance implications, how invalid bytes are handled, and that BOM can override explicit --encoding setting.",
-      "source_reference": "crates/searcher/src/searcher/mod.rs:518-556, GUIDE.md:654-667"
-    },
-    {
-      "type": "missing_content",
-      "severity": "medium",
-      "section": "Encoding Modes",
-      "description": "Three distinct encoding modes are not explained",
-      "should_add": "Document three encoding modes: Auto (BOM sniffing only), Some(encoding) (explicit encoding with BOM override), Disabled (no encoding detection, search raw bytes)",
-      "fix_suggestion": "Add section explaining the three encoding modes and how they correspond to command-line flags: Auto (--encoding=auto or --no-encoding), Some (--encoding=<label>), Disabled (--encoding=none).",
-      "source_reference": "crates/core/flags/lowargs.rs:533-548"
-    },
-    {
-      "type": "missing_content",
-      "severity": "medium",
+      "severity": "low",
       "section": "Supported Encodings",
-      "description": "List of supported encodings is not provided",
-      "should_add": "List common encodings and reference to WHATWG Encoding Standard. Include examples: UTF-8, UTF-16LE, UTF-16BE, ISO-8859-1, GBK, EUC-JP, Shift_JIS, etc.",
-      "fix_suggestion": "Add section listing commonly used encodings with examples. Reference the complete list at https://encoding.spec.whatwg.org/#concept-encoding-get and note that all encodings from encoding_rs crate are supported.",
-      "source_reference": "features.json:461-472, crates/core/flags/defs.rs:1607-1609, GUIDE.md:663-667"
+      "description": "Chapter mentions WHATWG standard but doesn't explicitly state that encoding_rs crate provides the implementation",
+      "should_add": "Mention that ripgrep uses the encoding_rs crate (via encoding_rs_io) to implement WHATWG encoding standard support",
+      "fix_suggestion": "Add a note in the 'Supported Encodings' section: 'ripgrep uses the encoding_rs crate, which provides a complete implementation of the WHATWG Encoding Standard.'",
+      "source_reference": "crates/searcher/src/searcher/mod.rs:127, features.json:700 (encoding_rs dependency)"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "BOM Sniffing",
+      "description": "Chapter states 'BOM overrides explicit encoding' but could use a concrete example showing this behavior",
+      "current_content": "**BOM overrides explicit encoding:** Even if you specify `--encoding=latin1`, a file with a UTF-16 BOM will be treated as UTF-16.",
+      "should_be": "Add a concrete example showing the override behavior with sample output",
+      "fix_suggestion": "Add an example after line 107:\n```bash\n# Even though we specify latin1, the UTF-16 BOM is detected and used instead\nrg -E latin1 'pattern' utf16-file-with-bom\n# ripgrep uses UTF-16 (from BOM) not latin1\n```",
+      "source_reference": "crates/searcher/src/searcher/mod.rs:521-524 (encoding with BOM override logic)"
     },
     {
       "type": "missing_content",
-      "severity": "medium",
-      "section": "Practical Examples",
-      "description": "No examples showing how to use encoding features",
-      "should_add": "Provide practical examples: searching UTF-16 files automatically, forcing encoding, disabling BOM sniffing, searching raw bytes",
-      "fix_suggestion": "Add examples section with: 1) Basic UTF-16 search (automatic), 2) Force UTF-16 with --encoding=utf-16, 3) Search raw bytes with --encoding=none, 4) Search Cyrillic text with --encoding=windows-1251",
-      "source_reference": "GUIDE.md:680-710"
+      "severity": "low",
+      "section": "BOM Sniffing",
+      "description": "Chapter doesn't specify that only UTF-8, UTF-16LE, and UTF-16BE BOMs are detected, not all possible BOMs",
+      "should_add": "Clarify that BOM detection is limited to these three encodings specifically",
+      "fix_suggestion": "Enhance the BOM Sniffing section around line 92-96 to state: 'ripgrep detects BOMs for UTF-8, UTF-16 Little Endian, and UTF-16 Big Endian only. Other encodings in the WHATWG standard that have BOMs are not automatically detected and require explicit --encoding specification.'",
+      "source_reference": "crates/searcher/src/searcher/mod.rs:1036-1044 (slice_has_bom function)"
     },
     {
-      "type": "missing_content",
-      "severity": "medium",
+      "type": "missing_best_practice",
+      "severity": "low",
+      "section": "Troubleshooting Common Encoding Issues",
+      "description": "Chapter doesn't mention using --debug flag to understand encoding detection decisions",
+      "should_add": "Recommend using --debug to see what encoding ripgrep detected/used",
+      "fix_suggestion": "Add to the troubleshooting section (around line 286): 'Use --debug flag to see encoding detection: `rg --debug pattern file` will show which encoding was detected via BOM or what transcoding is being performed.'",
+      "source_reference": "crates/core/flags/defs.rs (--debug flag exists and shows encoding info)"
+    },
+    {
+      "type": "unclear_content",
+      "severity": "low",
       "section": "ASCII Compatibility Assumption",
-      "description": "The ASCII compatibility assumption is not explained",
-      "should_add": "Explain that ripgrep assumes files are ASCII-compatible when no encoding is specified. This means ASCII, Latin-1, and UTF-8 work well, but non-ASCII-compatible encodings may not produce useful results without explicit --encoding.",
-      "fix_suggestion": "Add section explaining ASCII compatibility assumption, why it matters, and which encodings are ASCII-compatible (ASCII, Latin-1, UTF-8) vs non-compatible (UTF-16, UTF-32 without BOM).",
-      "source_reference": "GUIDE.md:645-653"
-    },
-    {
-      "type": "missing_content",
-      "severity": "low",
-      "section": "Performance Implications",
-      "description": "Performance impact of transcoding is not mentioned",
-      "should_add": "Note that transcoding adds a performance penalty compared to searching UTF-8 directly",
-      "fix_suggestion": "Add brief note in relevant sections that transcoding has performance overhead and searches will be slower than native UTF-8 searches.",
-      "source_reference": "GUIDE.md:656-658"
-    },
-    {
-      "type": "missing_content",
-      "severity": "low",
-      "section": "Interaction with Unicode Regex Features",
-      "description": "How encoding interacts with Unicode regex features (\\w, ., etc.) is not explained",
-      "should_add": "Explain that Unicode regex features like \\w and . work on the UTF-8 transcoded version, and that (?-u) flag can disable Unicode matching within patterns.",
-      "fix_suggestion": "Add section explaining regex Unicode features work on UTF-8 content, and cross-reference to the advanced patterns chapter for (?-u) flag usage.",
-      "source_reference": "GUIDE.md:648-653, 694-710"
-    },
-    {
-      "type": "missing_content",
-      "severity": "low",
-      "section": "Short Flag",
-      "description": "Short form -E is not mentioned",
-      "should_add": "Document that -E is the short form of --encoding",
-      "fix_suggestion": "When documenting --encoding flag, include that -E is the short form (e.g., 'rg -E utf-16 pattern' is equivalent to 'rg --encoding utf-16 pattern')",
-      "source_reference": "crates/core/flags/defs.rs:1589-1590"
-    },
-    {
-      "type": "missing_content",
-      "severity": "low",
-      "section": "Negated Flag",
-      "description": "The --no-encoding flag is not documented",
-      "should_add": "Document that --no-encoding resets encoding back to automatic mode (equivalent to --encoding=auto)",
-      "fix_suggestion": "Add note that --no-encoding flag can be used to reset encoding to auto mode, useful in combination with configuration files or when overriding earlier flags.",
-      "source_reference": "crates/core/flags/defs.rs:1594-1596, 1636-1638"
+      "description": "Section explains the assumption well but could clarify why it matters for performance",
+      "current_content": "**By default, ripgrep assumes files are ASCII-compatible.** This is a critical assumption that affects how searches work.",
+      "should_be": "Explain the performance benefit: avoiding transcoding overhead for ASCII-compatible files",
+      "fix_suggestion": "Add after line 138: 'This assumption is a performance optimization: ASCII-compatible files can be searched directly without transcoding overhead, making searches significantly faster than if every file required transcoding to UTF-8.'",
+      "source_reference": "crates/searcher/src/searcher/mod.rs:529-532 (when no BOM found, search as-is for performance)"
     }
   ],
   "positive_aspects": [
-    "GUIDE.md has comprehensive, well-written encoding documentation that can be adapted",
-    "Implementation is robust with clear encoding modes and BOM handling",
-    "encoding_rs crate provides broad encoding support via WHATWG standard",
-    "Feature inventory accurately captures encoding capabilities"
+    "Comprehensive coverage of all three encoding modes (Auto, Explicit, Disabled)",
+    "Excellent explanation of BOM sniffing mechanism and byte sequences",
+    "Clear documentation of --encoding flag with multiple examples",
+    "Good coverage of transcoding behavior and invalid byte handling",
+    "Helpful troubleshooting section with practical solutions",
+    "Accurate description of ASCII compatibility assumption and its implications",
+    "Good practical examples covering common use cases (UTF-16, GBK, Cyrillic, etc.)",
+    "Clear explanation of interaction with Unicode regex features",
+    "Performance considerations section is helpful and accurate",
+    "Good coverage of flag interactions (--text, --no-encoding, (?-u))"
   ],
   "improvement_suggestions": [
-    "Migrate existing GUIDE.md encoding content to book chapter as foundation",
-    "Add visual diagram showing encoding detection flow (BOM check -> explicit encoding -> default UTF-8)",
-    "Include troubleshooting section for common encoding issues",
-    "Add comparison table of encoding modes (Auto vs Explicit vs None)",
-    "Cross-reference with Binary Data chapter for --text flag interaction",
-    "Link to advanced patterns chapter for (?-u) Unicode flag usage",
-    "Add section on common encoding pitfalls (e.g., Windows-1252 vs Latin-1)",
-    "Include examples for different platforms (Windows UTF-16, Unix UTF-8, legacy encodings)"
+    "Add a mention of encoding_rs crate in the Supported Encodings section for transparency",
+    "Include a concrete example showing BOM override behavior",
+    "Clarify that only UTF-8/UTF-16LE/UTF-16BE BOMs are auto-detected",
+    "Add --debug flag recommendation to troubleshooting for encoding issues",
+    "Explain the performance benefit of the ASCII compatibility assumption",
+    "Consider adding a decision tree diagram: 'When does ripgrep transcode?' showing BOM detection -> explicit encoding -> pass-through flow",
+    "Could add a note about how to verify file encoding before searching (using file command or hexdump)",
+    "Consider mentioning common encoding detection mistakes (e.g., assuming UTF-8 when file is actually latin1)"
   ],
   "metadata": {
     "analyzed_at": "2025-11-08",
     "feature_inventory": ".prodigy/book-analysis/features.json",
-    "topics_covered": [],
-    "topics_missing": [
-      "encoding modes",
+    "topics_covered": [
+      "encoding modes (auto/explicit/disabled)",
       "BOM sniffing",
-      "UTF-16 support",
       "transcoding",
-      "--encoding flag",
-      "supported encodings",
-      "ASCII compatibility",
-      "performance implications"
+      "ASCII compatibility assumption",
+      "supported encodings (WHATWG)",
+      "Unicode regex features",
+      "performance considerations",
+      "troubleshooting encoding issues"
     ],
     "validation_focus": "Verify encoding behavior and --encoding flag documentation is complete",
-    "existing_documentation": "GUIDE.md:628-712 contains comprehensive encoding documentation",
-    "dependencies": [
-      "basics"
+    "code_references_checked": [
+      "crates/core/flags/defs.rs (Encoding flag definition)",
+      "crates/core/flags/lowargs.rs (EncodingMode enum)",
+      "crates/searcher/src/searcher/mod.rs (Encoding struct, BOM detection, transcoding)",
+      "tests/feature.rs (encoding tests)",
+      "features.json (encoding dependencies and feature summary)"
     ]
   }
 }

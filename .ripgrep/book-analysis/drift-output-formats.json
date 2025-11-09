@@ -1,0 +1,108 @@
+{
+  "chapter_id": "output-formats",
+  "chapter_title": "Output Formats",
+  "chapter_file": "book/src/output-formats.md",
+  "drift_detected": true,
+  "severity": "medium",
+  "quality_assessment": "Chapter provides good coverage of output formatting options but contains one significant error about --pretty flag and misses some available features. Most content is accurate and well-organized.",
+  "issues": [
+    {
+      "type": "incorrect_example",
+      "severity": "high",
+      "section": "JSON Output",
+      "description": "Chapter incorrectly describes --pretty/-p as pretty-printing JSON output",
+      "current_content": "# Pretty-printed JSON (using -p or --pretty)\nrg --json -p pattern\nrg --pretty pattern",
+      "should_be": "--pretty is a convenience alias for --color=always --heading --line-number, NOT for pretty JSON",
+      "fix_suggestion": "Remove the misleading JSON pretty-print example at lines 43-45. If discussing --pretty, explain it's for human-readable colored output (--color=always --heading --line-number), not JSON formatting. JSON output is always in JSON Lines format.",
+      "source_reference": "crates/core/flags/defs.rs:5660-5671"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "medium",
+      "section": "Hyperlink Support",
+      "description": "Chapter mentions 'default' format and custom format but doesn't list all 5 available hyperlink formats",
+      "current_content": "# Enable hyperlinks with default format\nrg --hyperlink-format default pattern\n\n# Custom hyperlink format\nrg --hyperlink-format file://{path} pattern",
+      "should_be": "Document all available formats: default, file, grep, kitty, vscode",
+      "fix_suggestion": "Add a list of available hyperlink formats after line 161: 'Available formats: default, file, grep, kitty, vscode. Each format is optimized for different terminal emulators or tools.'",
+      "source_reference": "features.json:262-267"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Buffering Modes",
+      "description": "Chapter doesn't mention 'auto' buffering mode which is the default",
+      "current_content": "# Line-buffered output (flush after each line)\nrg --line-buffered pattern\n\n# Block-buffered output (default)\nrg --block-buffered pattern",
+      "should_be": "Document auto mode as the default that automatically chooses based on whether output is a tty",
+      "fix_suggestion": "Update line 146 to clarify that auto-detection is the actual default, and block buffering is used when not connected to a tty. Add explanation that auto mode intelligently selects line vs block buffering.",
+      "source_reference": "features.json:58-62"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Additional Output Options",
+      "description": "Chapter doesn't document --path-separator option for customizing path separators",
+      "should_add": "Document --path-separator for custom path separators in output",
+      "fix_suggestion": "Add subsection under 'Additional Output Options' for path separator customization, similar to field separators section.",
+      "source_reference": "features.json:40, crates/core/flags/defs.rs"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Additional Output Options",
+      "description": "Chapter doesn't document --stats flag for showing search statistics",
+      "should_add": "Document --stats for displaying search statistics including files searched, matches found, and time elapsed",
+      "fix_suggestion": "Add subsection about statistics output mode with --stats flag. This is useful for performance analysis and understanding search scope.",
+      "source_reference": "features.json:250, 367"
+    },
+    {
+      "type": "unclear_content",
+      "severity": "low",
+      "section": "Color Customization",
+      "description": "Chapter mentions 'ansi' as a color option but this isn't clearly documented in implementation",
+      "current_content": "rg --color ansi pattern    # Use ANSI colors only",
+      "should_verify": "Verify if 'ansi' is a valid --color option or if this should be removed",
+      "fix_suggestion": "Check if 'ansi' is a valid color choice. If not, remove line 69. The standard options are: auto, always, never.",
+      "source_reference": "crates/core/flags/defs.rs (Color flag definition)"
+    }
+  ],
+  "positive_aspects": [
+    "Comprehensive coverage of major output formatting options",
+    "Clear examples for each feature with practical bash commands",
+    "Good organization with logical grouping of related features",
+    "Helpful JSON output structure explanation with message types",
+    "Excellent color customization documentation with specific color types and attributes",
+    "Practical examples section showing real-world usage patterns",
+    "Best practices section provides valuable guidance",
+    "Good cross-references to related chapters"
+  ],
+  "improvement_suggestions": [
+    "Verify and correct the --pretty flag documentation (critical)",
+    "Add all available hyperlink format options",
+    "Clarify buffering mode defaults (auto mode)",
+    "Add --path-separator documentation",
+    "Add --stats flag documentation for performance analysis",
+    "Consider adding a troubleshooting section for common output formatting issues",
+    "Add examples of combining multiple formatting options",
+    "Consider adding a comparison table of different output modes (standard, JSON, vimgrep, etc.)"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-01-08",
+    "feature_inventory": ".ripgrep/book-analysis/features.json",
+    "topics_covered": [
+      "json_output",
+      "color_customization",
+      "field_separators",
+      "vimgrep_format",
+      "null_separators",
+      "buffering_modes",
+      "heading_mode",
+      "hyperlinks",
+      "only_matching",
+      "byte_offsets",
+      "trim",
+      "max_columns",
+      "context_separator"
+    ],
+    "validation_focus": "Check that JSON output, color specs, field separators, and all output formatting options are documented"
+  }
+}

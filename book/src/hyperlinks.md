@@ -26,15 +26,15 @@ Instead of writing full hyperlink format strings, ripgrep provides convenient bu
 | Alias | Expands to |
 |-------|-----------|
 | `default` | Platform-aware file:// scheme (see below) |
-| `file` | `file://{path}` |
+| `file` | `file://{host}{path}` |
 | `vscode` | `vscode://file/{path}:{line}:{column}` |
 | `vscode-insiders` | `vscode-insiders://file/{path}:{line}:{column}` |
 | `vscodium` | `vscodium://file/{path}:{line}:{column}` |
 | `cursor` | `cursor://file/{path}:{line}:{column}` |
 | `macvim` | `mvim://open?url=file://{path}&line={line}&column={column}` |
 | `textmate` | `txmt://open?url=file://{path}&line={line}&column={column}` |
-| `kitty` | `kitty+kitten://edit/{path}:{line}:{column}` |
-| `grep+` | `x-grepapp://open?file={path}&line={line}&column={column}` |
+| `kitty` | `file://{host}{path}#{line}` |
+| `grep+` | `grep+://{path}:{line}` |
 | `none` | Explicitly disable hyperlinks |
 
 **The `default` alias** is platform-aware and expands differently per platform:
@@ -42,6 +42,8 @@ Instead of writing full hyperlink format strings, ripgrep provides convenient bu
 - Windows: `file://{path}` (omits hostname for compatibility)
 
 The default alias follows RFC 8089 file:// URI specification and is the recommended choice for general use.
+
+**Note:** The `file` alias differs from `default` by always including the hostname, even on Windows. Use `default` for cross-platform compatibility.
 
 **The `none` alias** can be used to explicitly disable hyperlinks, which is useful for overriding config file settings:
 
@@ -148,6 +150,8 @@ rg --hyperlink-format grep+ pattern
 
 For editors not included in the built-in aliases, you can create custom hyperlink formats:
 
+**WARNING:** These are community-suggested formats and may require custom URL scheme handlers to be registered with your OS. They are not built into ripgrep or guaranteed to work.
+
 ```bash
 # IntelliJ/PyCharm/WebStorm (community format)
 rg --hyperlink-format 'idea://open?file={path}&line={line}' pattern
@@ -198,7 +202,7 @@ On Unix/Linux/macOS, this expands to `file://{host}{path}`. On Windows, it expan
 ### Example 3: Kitty Terminal Editor Integration
 
 ```bash
-# Open results in Kitty's built-in editor
+# Open results using kitty's file:// handler (with line number fragment)
 rg --hyperlink-format kitty pattern
 ```
 
