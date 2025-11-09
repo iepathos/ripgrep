@@ -19,19 +19,50 @@ Use the `--hyperlink-format` flag to enable hyperlink generation:
 rg --hyperlink-format default pattern
 ```
 
-## Hyperlink Formats
+## Built-in Aliases
 
-ripgrep supports custom hyperlink formats using a template syntax:
+Instead of writing full hyperlink format strings, ripgrep provides convenient built-in aliases for common editors and schemes:
+
+| Alias | Expands to |
+|-------|-----------|
+| `default` | Platform-aware file:// scheme (see below) |
+| `file` | `file://{path}` |
+| `vscode` | `vscode://file/{path}:{line}:{column}` |
+| `vscode-insiders` | `vscode-insiders://file/{path}:{line}:{column}` |
+| `vscodium` | `vscodium://file/{path}:{line}:{column}` |
+| `cursor` | `cursor://file/{path}:{line}:{column}` |
+| `macvim` | `mvim://open?url=file://{path}&line={line}&column={column}` |
+| `textmate` | `txmt://open?url=file://{path}&line={line}&column={column}` |
+| `kitty` | `kitty+kitten://edit/{path}:{line}:{column}` |
+| `grep+` | `x-grepapp://open?file={path}&line={line}&column={column}` |
+| `none` | Explicitly disable hyperlinks |
+
+**The `default` alias** is platform-aware and expands differently per platform:
+- Unix/Linux/macOS: `file://{host}{path}` (includes hostname)
+- Windows: `file://{path}` (omits hostname for compatibility)
+
+The default alias follows RFC 8089 file:// URI specification and is the recommended choice for general use.
+
+**The `none` alias** can be used to explicitly disable hyperlinks, which is useful for overriding config file settings:
 
 ```bash
-# Default format (file path only)
+# Disable hyperlinks even if config file sets them
+rg --hyperlink-format none pattern
+```
+
+## Hyperlink Formats
+
+You can use built-in aliases or create custom hyperlink formats using a template syntax:
+
+```bash
+# Using a built-in alias
+rg --hyperlink-format vscode pattern
+
+# Using default platform-aware format
 rg --hyperlink-format default pattern
 
 # Custom format with line number
 rg --hyperlink-format 'file://{path}:{line}' pattern
-
-# VS Code integration
-rg --hyperlink-format 'vscode://file/{path}:{line}:{column}' pattern
 ```
 
 ## Format Variables
@@ -41,6 +72,10 @@ Available variables for hyperlink templates:
 - `{path}`: Absolute or relative file path
 - `{line}`: Line number of the match
 - `{column}`: Column number of the match
+- `{host}`: Machine hostname (automatically populated by ripgrep from your system hostname)
+- `{wslprefix}`: WSL distro prefix like `wsl$/Ubuntu` (Windows only, set when running in WSL)
+
+The `{host}` variable is useful for network file shares or remote development environments. The `{wslprefix}` variable enables proper file:// URLs when working in Windows Subsystem for Linux.
 
 ## Terminal Support
 
@@ -72,26 +107,59 @@ Different URL schemes enable different behaviors:
 Open files in default application:
 
 ```bash
+# Using the built-in 'file' alias
+rg --hyperlink-format file pattern
+
+# Equivalent custom format
 rg --hyperlink-format 'file://{path}' pattern
 ```
 
 ### Editor Schemes
 
-Open files directly in specific editors:
+Open files directly in specific editors using built-in aliases:
 
 ```bash
 # VS Code
-rg --hyperlink-format 'vscode://file/{path}:{line}:{column}' pattern
+rg --hyperlink-format vscode pattern
 
-# IntelliJ/PyCharm/WebStorm
+# VS Code Insiders
+rg --hyperlink-format vscode-insiders pattern
+
+# VSCodium
+rg --hyperlink-format vscodium pattern
+
+# Cursor
+rg --hyperlink-format cursor pattern
+
+# MacVim
+rg --hyperlink-format macvim pattern
+
+# TextMate
+rg --hyperlink-format textmate pattern
+
+# Kitty terminal editor integration
+rg --hyperlink-format kitty pattern
+
+# grep+ macOS application
+rg --hyperlink-format grep+ pattern
+```
+
+### Custom Editor Integration
+
+For editors not included in the built-in aliases, you can create custom hyperlink formats:
+
+```bash
+# IntelliJ/PyCharm/WebStorm (community format)
 rg --hyperlink-format 'idea://open?file={path}&line={line}' pattern
 
-# Sublime Text
+# Sublime Text (community format)
 rg --hyperlink-format 'subl://open?url=file://{path}&line={line}' pattern
 
-# Atom
-rg --hyperlink-format 'atom://open/?path={path}&line={line}' pattern
+# Neovim remote (community format)
+rg --hyperlink-format 'nvim://edit/{path}:+{line}' pattern
 ```
+
+Note: Custom editor formats may require additional URL scheme registration with your operating system.
 
 ## Configuration
 
@@ -99,42 +167,56 @@ Set up hyperlinks globally via your ripgrep config file:
 
 ```bash
 # ~/.ripgreprc or $RIPGREP_CONFIG_PATH
+
+# Using a built-in alias (recommended)
+--hyperlink-format=vscode
+
+# Or using a custom format
 --hyperlink-format=vscode://file/{path}:{line}:{column}
 ```
 
 ## Examples
 
-### Example 1: VS Code Integration
+### Example 1: VS Code Integration with Built-in Alias
 
 ```bash
-# Search with VS Code hyperlinks
-rg --hyperlink-format 'vscode://file/{path}:{line}:{column}' TODO
+# Search with VS Code hyperlinks (using built-in alias)
+rg --hyperlink-format vscode TODO
 ```
 
-Click on any result to open the file at the exact line in VS Code.
+Click on any result to open the file at the exact line in VS Code. This is equivalent to the full format `vscode://file/{path}:{line}:{column}` but more concise.
 
-### Example 2: File System Links
+### Example 2: Using the Default Platform-Aware Format
 
 ```bash
-# Open files in default application
-rg --hyperlink-format 'file://{path}' pattern
+# Use default format (includes hostname on Unix, omits on Windows)
+rg --hyperlink-format default pattern
 ```
 
-### Example 3: Custom Editor Integration
+On Unix/Linux/macOS, this expands to `file://{host}{path}`. On Windows, it expands to `file://{path}`.
+
+### Example 3: Kitty Terminal Editor Integration
 
 ```bash
-# Neovim remote integration
+# Open results in Kitty's built-in editor
+rg --hyperlink-format kitty pattern
+```
+
+### Example 4: Disabling Hyperlinks
+
+```bash
+# Explicitly disable hyperlinks (useful to override config file)
+rg --hyperlink-format none pattern
+```
+
+### Example 5: Custom Editor Integration
+
+```bash
+# Neovim remote integration (custom format)
 rg --hyperlink-format 'nvim://edit/{path}:+{line}' pattern
 ```
 
-### Example 4: Web-based Code Viewer
-
-```bash
-# Link to GitHub blob view (requires full URL construction in shell)
-rg pattern | while read line; do
-  # Custom processing to generate GitHub URLs
-done
-```
+Note: Custom formats require URL scheme registration with your operating system.
 
 ## Best Practices
 
@@ -191,6 +273,19 @@ rg --hyperlink-format 'file://{path}' pattern "$(pwd)"
 
 ## Advanced Usage
 
+### Escaping Special Characters
+
+To include literal braces in your hyperlink format, use double braces:
+
+```bash
+# Include literal { and } characters in format
+rg --hyperlink-format 'myscheme://{{literal}}/{path}' pattern
+
+# This expands to: myscheme://{literal}/path/to/file
+```
+
+Use `{{` for a literal `{` and `}}` for a literal `}`.
+
 ### Conditional Hyperlinks
 
 Only use hyperlinks when output is to terminal:
@@ -198,7 +293,7 @@ Only use hyperlinks when output is to terminal:
 ```bash
 # In shell script
 if [ -t 1 ]; then
-  rg --hyperlink-format 'vscode://file/{path}:{line}:{column}' pattern
+  rg --hyperlink-format vscode pattern
 else
   rg pattern
 fi
@@ -210,7 +305,7 @@ Process hyperlinks with other tools:
 
 ```bash
 # Extract paths from hyperlinks
-rg --hyperlink-format 'file://{path}' pattern | sed 's/.*file:\/\/\([^[:space:]]*\).*/\1/'
+rg --hyperlink-format file pattern | sed 's/.*file:\/\/\([^[:space:]]*\).*/\1/'
 ```
 
 ## Security Considerations
