@@ -4,23 +4,26 @@ ripgrep provides built-in support for searching compressed files through the `-z
 
 ## Overview
 
-The `-z` or `--search-zip` flag enables ripgrep to transparently search inside compressed files across seven different compression formats. When enabled, ripgrep automatically detects the compression format based on file extension and decompresses the content during search.
+The `-z` or `--search-zip` flag enables ripgrep to transparently search inside compressed files across eight different compression formats. When enabled, ripgrep automatically detects the compression format based on file extension and uses the appropriate external decompression tool during search.
 
-This feature differs from the custom `--pre` preprocessor in that it's built directly into ripgrep for better performance and requires no external tools or scripts.
+This feature differs from the custom `--pre` preprocessor in that it uses built-in rules for common compression formats and integrates seamlessly with ripgrep's parallel search capabilities.
 
 ## Supported Compression Formats
 
 ripgrep's `-z` flag supports the following compression formats:
 
-| Format | Extensions | Description |
-|--------|-----------|-------------|
-| **Brotli** | `.br` | Modern compression algorithm with high compression ratios |
-| **Bzip2** | `.bz2`, `.tbz2` | Block-sorting compression, good for text |
-| **Gzip** | `.gz`, `.tgz` | Widely used compression, fast decompression |
-| **LZ4** | `.lz4` | Extremely fast compression and decompression |
-| **LZMA** | `.lzma` | High compression ratio, slower than others |
-| **XZ** | `.xz` | LZMA-based with additional features |
-| **Zstandard** | `.zst` | Modern algorithm balancing speed and compression ratio |
+| Format | Extensions | External Tool | Description |
+|--------|-----------|---------------|-------------|
+| **Brotli** | `.br` | `brotli` | Modern compression algorithm with high compression ratios |
+| **Bzip2** | `.bz2`, `.tbz2` | `bzip2` | Block-sorting compression, good for text |
+| **Gzip** | `.gz`, `.tgz` | `gzip` | Widely used compression, fast decompression |
+| **LZ4** | `.lz4` | `lz4` | Extremely fast compression and decompression |
+| **LZMA** | `.lzma` | `xz` | High compression ratio, slower than others |
+| **XZ** | `.xz`, `.txz` | `xz` | LZMA-based with additional features |
+| **Zstandard** | `.zst`, `.zstd` | `zstd` | Modern algorithm balancing speed and compression ratio |
+| **Compress** | `.Z` | `uncompress` | Legacy Unix compress format |
+
+**Note**: The external decompression tools must be available in your system's PATH for the corresponding formats to work.
 
 ## Basic Usage
 
@@ -62,19 +65,23 @@ rg -z 'TODO' backup.tar.bz2
 
 ripgrep detects the compression format based on file extension:
 
-1. Checks file extension against known compression formats
-2. Selects appropriate decompression algorithm
-3. Spawns decompression process
-4. Searches decompressed content stream
-5. Reports matches with original compressed filename
+1. Checks file extension against known compression formats (using glob patterns)
+2. Selects the appropriate external decompression command (`gzip -d -c`, `xz -d -c`, etc.)
+3. Spawns the decompression command as a child process
+4. Reads decompressed content from the command's stdout
+5. Searches the decompressed stream
+6. Reports matches with the original compressed filename
 
 ### Out-of-Process Decompression
 
-Decompression happens in separate processes to:
-- Isolate decompression failures
-- Enable parallel decompression across files
-- Maintain ripgrep's performance characteristics
-- Handle corrupted archives gracefully
+Decompression happens in separate child processes using external tools to:
+- Isolate decompression failures (corrupted files won't crash ripgrep)
+- Enable parallel decompression across multiple files
+- Leverage optimized native decompression tools
+- Handle missing decompression tools gracefully (falls back to treating as binary)
+- Avoid security issues on Windows by resolving commands via PATH
+
+**Note**: If a decompression tool is not available in PATH, ripgrep will fall back to reading the file without decompression and log a debug message.
 
 ## Combining with Other Flags
 
@@ -136,15 +143,32 @@ tar xzf archive.tar.gz
 time rg 'pattern' extracted/
 ```
 
+## External Dependencies
+
+The `-z/--search-zip` feature requires external decompression tools to be installed and available in your system's PATH:
+
+| Format | Required Tool | Installation Examples |
+|--------|--------------|----------------------|
+| Gzip | `gzip` | Usually pre-installed on Unix systems |
+| Bzip2 | `bzip2` | `apt install bzip2` / `brew install bzip2` |
+| XZ/LZMA | `xz` | `apt install xz-utils` / `brew install xz` |
+| LZ4 | `lz4` | `apt install liblz4-tool` / `brew install lz4` |
+| Brotli | `brotli` | `apt install brotli` / `brew install brotli` |
+| Zstandard | `zstd` | `apt install zstd` / `brew install zstd` |
+| Compress | `uncompress` | Usually in `ncompress` package |
+
+If a required tool is missing, ripgrep will skip decompression for that file and treat it as binary data.
+
 ## Comparison with Preprocessor
 
 ripgrep offers two ways to handle special file formats:
 
 | Feature | `-z/--search-zip` | `--pre` |
 |---------|-------------------|---------|
-| **Setup** | Built-in, no configuration | Requires custom script |
-| **Performance** | Optimized, no process spawning overhead | Process per file |
-| **Formats** | 7 compression formats only | Any format with conversion tool |
+| **Setup** | Built-in glob patterns | Requires custom script |
+| **Dependencies** | External decompression tools | Any tools your script needs |
+| **Performance** | Process per file | Process per file |
+| **Formats** | 8 compression formats | Any format with conversion tool |
 | **Flexibility** | Fixed format support | Unlimited extensibility |
 | **Use case** | Standard compressed files | Custom formats (PDF, Office, etc.) |
 
@@ -152,13 +176,14 @@ ripgrep offers two ways to handle special file formats:
 
 **Use `-z/--search-zip` for:**
 - Standard compressed archives (`.gz`, `.xz`, `.zst`, etc.)
-- Best performance with built-in formats
-- No external dependencies
+- Built-in glob pattern matching
+- Systems where decompression tools are already installed
 
 **Use `--pre` for:**
 - Custom file formats (PDF, Word documents, etc.)
 - Encryption/decryption workflows
 - Format conversions not supported by `-z`
+- When you need custom preprocessing logic
 
 ### Combining Both
 
@@ -209,24 +234,36 @@ rg -z -t rust -C 5 'unsafe' archive.tar.gz
 - Verify file has correct extension (`.gz`, `.xz`, etc.)
 - Check that `-z` flag is enabled
 - Ensure file is actually compressed (use `file` command)
+- Verify the required decompression tool is in PATH (e.g., `which gzip`)
+
+### Missing Decompression Tool
+
+**Issue**: File treated as binary instead of being decompressed
+
+**Solutions**:
+- Check if the tool is installed: `which gzip` / `which xz` / `which zstd`
+- Install the missing tool (see External Dependencies section)
+- Enable debug logging to see which tools are missing: `RUST_LOG=debug rg -z 'pattern'`
 
 ### Decompression Errors
 
 **Issue**: Errors about decompression failures
 
 **Solutions**:
-- Verify archive is not corrupted
+- Verify archive is not corrupted (test with native tool: `gzip -t file.gz`)
 - Check that compression format matches extension
-- Try decompressing manually to validate
+- Try decompressing manually to validate: `gzip -dc file.gz | less`
+- Check stderr output from the decompression process
 
 ### Performance Issues
 
 **Issue**: Search is very slow with `-z`
 
 **Solutions**:
-- Use file type filtering to reduce decompressed files
+- Use file type filtering to reduce files being decompressed
 - Consider extracting archives for repeated searches
 - Check if archives are unusually large
+- Use faster compression formats (LZ4, Zstandard) for new archives
 
 ## Best Practices
 
