@@ -1,0 +1,73 @@
+{
+  "chapter_id": "binary-data",
+  "chapter_title": "Binary Data",
+  "chapter_file": "book/src/binary-data.md",
+  "drift_detected": false,
+  "severity": "low",
+  "quality_assessment": "Excellent chapter with accurate, comprehensive coverage of binary data handling. Only minor organizational improvements suggested.",
+  "issues": [
+    {
+      "type": "unclear_content",
+      "severity": "low",
+      "section": "Binary Modes - SearchAndSuppress Mode",
+      "description": "The chapter explains that '--binary' applies 'SearchAndSuppress' mode, but this could be slightly clearer about when NUL-to-newline conversion happens",
+      "current_content": "In this mode, **NUL bytes are replaced with line terminators** during searching.",
+      "should_be": "In this mode, **NUL bytes are replaced with line terminators** during buffered searching (not with memory maps).",
+      "fix_suggestion": "Add clarification that the convert() strategy only applies to buffered search, as documented in the library code comments",
+      "source_reference": "crates/searcher/src/searcher/mod.rs:93-94"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "Flags Reference - --binary",
+      "description": "Could be clearer that implicit files with --binary use convert() strategy, not just 'behave like explicit files'",
+      "current_content": "Applies `SearchAndSuppress` mode to implicit files, making them behave like explicit files.",
+      "should_be": "Applies `SearchAndSuppress` mode to implicit files (using convert() strategy for buffered search), making them emit warnings instead of silently quitting.",
+      "fix_suggestion": "Clarify the exact behavior difference: implicit files switch from quit() to convert() with --binary",
+      "source_reference": "crates/core/flags/hiargs.rs:1159-1174"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Edge Cases and Gotchas",
+      "description": "Could mention that binary detection is disabled when --null-data is used",
+      "should_add": "Binary detection is automatically disabled when using --null-data flag, since NUL bytes are being used as line terminators.",
+      "fix_suggestion": "Add a note in the Edge Cases section about --null-data interaction",
+      "source_reference": "crates/core/flags/hiargs.rs:1160"
+    }
+  ],
+  "positive_aspects": [
+    "Exceptionally thorough and accurate documentation of binary detection behavior",
+    "Excellent explanation of the implicit vs explicit file distinction",
+    "Clear, practical examples for each mode and flag",
+    "Accurate documentation of mmap vs buffered search differences",
+    "Comprehensive troubleshooting section with real solutions",
+    "Detailed flowchart visualization of binary detection logic",
+    "Library API section is accurate and helpful",
+    "Warning message formats match implementation exactly",
+    "Performance considerations are well explained",
+    "Edge cases like -l, -q, -c interactions are documented"
+  ],
+  "improvement_suggestions": [
+    "Consider adding a 'Quick Reference' table at the top showing flag combinations and their effects",
+    "Could add a note about --null-data disabling binary detection",
+    "Minor clarification about convert() strategy only working with buffered search",
+    "Consider adding example showing --binary with glob patterns vs explicit files side-by-side"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-08",
+    "feature_inventory": ".ripgrep/book-analysis/features.json",
+    "topics_covered": [
+      "binary_detection",
+      "binary_mode",
+      "text_mode",
+      "nul_bytes",
+      "explicit_vs_implicit_files",
+      "mmap_vs_buffered",
+      "binary_flags",
+      "library_api"
+    ],
+    "validation_focus": "Check that binary file handling modes and --binary/--text flags are explained",
+    "validation_result": "PASS - Binary file handling modes (Auto, SearchAndSuppress, AsText) and flags (--binary, --text, --no-binary, --no-text) are comprehensively and accurately explained with correct technical details"
+  }
+}
