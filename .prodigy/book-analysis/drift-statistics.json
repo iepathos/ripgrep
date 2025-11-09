@@ -1,0 +1,128 @@
+{
+  "chapter_id": "statistics",
+  "chapter_title": "Statistics and Metrics",
+  "chapter_file": "book/src/statistics.md",
+  "drift_detected": true,
+  "severity": "medium",
+  "quality_assessment": "Chapter provides good explanation of statistics output and use cases, but has some inaccuracies in the output format description and field naming. Missing important details about actual field names from implementation.",
+  "issues": [
+    {
+      "type": "outdated_information",
+      "severity": "high",
+      "section": "Statistics Output Format (lines 28-37)",
+      "description": "Example output shows incorrect field labels that don't match actual ripgrep implementation",
+      "current_content": "3 matches\n2 matched lines\n1 files contained matches\n5 files searched\n150 bytes printed\n1500 bytes searched\n0.025 seconds spent searching\n0.001 seconds spent in main thread",
+      "should_be": "3 matches\n2 matched lines\n1 files contained matches\n5 files searched\n150 bytes printed\n1500 bytes searched\n0.025000 seconds spent searching\n0.001000 seconds total",
+      "fix_suggestion": "Update example output to match actual format from crates/core/main.rs:461-481. Note that the time fields use different labels: 'seconds spent searching' vs 'seconds total' (not 'main thread')",
+      "source_reference": "crates/core/main.rs:461-481"
+    },
+    {
+      "type": "incorrect_example",
+      "severity": "medium",
+      "section": "Performance Metrics (lines 54-56)",
+      "description": "Section refers to 'Seconds spent in main thread' but actual output says 'seconds total'",
+      "current_content": "- **Seconds spent searching**: Actual search time across all threads\n- **Seconds spent in main thread**: Wall-clock time for the entire operation",
+      "should_be": "- **Seconds spent searching**: Actual search time across all threads\n- **Seconds total**: Wall-clock time for the entire operation",
+      "fix_suggestion": "Update field name to match actual implementation",
+      "source_reference": "crates/core/main.rs:471"
+    },
+    {
+      "type": "incorrect_example",
+      "severity": "medium",
+      "section": "Thread Time vs Wall Time (lines 77-87)",
+      "description": "Example uses incorrect field name 'seconds spent in main thread'",
+      "current_content": "0.400 seconds spent searching  (4 threads × 0.1s each)\n0.100 seconds spent in main thread  (wall-clock time)",
+      "should_be": "0.400000 seconds spent searching  (4 threads × 0.1s each)\n0.100000 seconds total  (wall-clock time)",
+      "fix_suggestion": "Correct field name and show actual 6-decimal precision used by ripgrep",
+      "source_reference": "crates/core/main.rs:470-471"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Statistics Output Format",
+      "description": "Chapter doesn't mention that stats are written to stdout (not stderr as might be expected for diagnostic info)",
+      "should_add": "Add note that statistics are printed to stdout after all search results. While most diagnostic output goes to stderr, --stats output goes to stdout.",
+      "fix_suggestion": "Add subsection clarifying that stats go to stdout and appear after search results",
+      "source_reference": "crates/core/main.rs:434-483"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Statistics in JSON (lines 140-146)",
+      "description": "Section claims JSON stats are 'not currently supported directly' but they are fully supported",
+      "current_content": "# Machine-readable statistics (not currently supported directly)\n# Workaround: Parse stats from stderr",
+      "should_be": "Statistics ARE supported in JSON output via --json --stats",
+      "fix_suggestion": "Replace workaround example with actual JSON stats usage. Show --json --stats produces summary message with type: 'summary' containing stats object and elapsed_total",
+      "source_reference": "crates/core/main.rs:441-459, tests/json.rs:253-262"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Statistics Output Format",
+      "description": "Doesn't specify the exact time precision format (6 decimal places)",
+      "should_add": "Note that time values are formatted with 6 decimal place precision (e.g., 0.025000)",
+      "fix_suggestion": "Add detail about time formatting in the Performance Metrics section",
+      "source_reference": "crates/core/main.rs:470-471"
+    },
+    {
+      "type": "incorrect_example",
+      "severity": "low",
+      "section": "Limitations (lines 236-242)",
+      "description": "States 'Statistics are written to stderr, not stdout' which is incorrect",
+      "current_content": "- Statistics are written to stderr, not stdout",
+      "should_be": "- Statistics are written to stdout after search results",
+      "fix_suggestion": "Correct the output destination for stats",
+      "source_reference": "crates/core/main.rs:434-483"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Use Cases",
+      "description": "Could mention that --stats with --quiet forces complete search even though quiet normally exits early",
+      "should_add": "Add note that combining --quiet and --stats forces ripgrep to search all files to collect complete statistics, even though --quiet alone would exit after first match",
+      "fix_suggestion": "Add to 'Combining with Other Options' section explaining interaction with --quiet",
+      "source_reference": "crates/printer/src/summary.rs:256-258, tests/summary.rs:1128-1149"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Key Metrics",
+      "description": "Doesn't mention the actual Stats struct fields from implementation",
+      "should_add": "The implementation tracks: elapsed (Duration), searches (u64), searches_with_match (u64), bytes_searched (u64), bytes_printed (u64), matched_lines (u64), matches (u64)",
+      "fix_suggestion": "Add technical details section showing the actual data structure for advanced users",
+      "source_reference": "crates/printer/src/stats.rs:13-21"
+    }
+  ],
+  "positive_aspects": [
+    "Clear structure progressing from basics to advanced use cases",
+    "Good explanation of the difference between matches and matched lines",
+    "Excellent practical examples showing real-world usage patterns",
+    "Helpful interpretation guidance for understanding results",
+    "Comprehensive coverage of performance tips based on statistics",
+    "Good best practices section",
+    "Examples cover important use cases like performance benchmarking and codebase analysis"
+  ],
+  "improvement_suggestions": [
+    "Update all example outputs to match exact format from implementation",
+    "Add example showing --json --stats output format",
+    "Include note about stats appearing after search results in stdout",
+    "Show actual test output to verify examples",
+    "Add cross-references to Performance and JSON Output chapters",
+    "Consider adding a 'Common Mistakes' section about misinterpreting thread time vs wall time",
+    "Add example showing how --stats affects --quiet behavior"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-08",
+    "feature_inventory": ".prodigy/book-analysis/features.json",
+    "topics_covered": [
+      "stats_flag",
+      "search_metrics",
+      "performance_data",
+      "match_counts",
+      "output_format",
+      "json_stats"
+    ],
+    "validation_focus": "Check that --stats output format and interpretation are explained",
+    "validation_result": "Output format examples need correction to match actual implementation. Field names and precision format are inaccurate."
+  }
+}
