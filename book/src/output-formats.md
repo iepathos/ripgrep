@@ -17,8 +17,19 @@ rg pattern
 # With line numbers (default in many cases)
 rg -n pattern
 
+# Disable line numbers
+rg -N pattern
+rg --no-line-number pattern
+
 # With column numbers
 rg --column pattern
+
+# Control file path display
+rg --with-filename pattern   # Always show file paths
+rg --no-filename pattern     # Never show file paths
+
+# Include files with zero matches
+rg --include-zero pattern
 ```
 
 ## JSON Output
@@ -29,15 +40,22 @@ JSON output is useful for programmatic consumption and integration with other to
 # Output results as JSON Lines (one JSON object per line)
 rg --json pattern
 
-# Pretty-printed JSON
+# Pretty-printed JSON (using -p or --pretty)
 rg --json -p pattern
+rg --pretty pattern
 ```
 
 ### JSON Output Structure
 
-Each match is represented as a JSON object with fields including:
-- `type`: The type of message (match, context, begin, end, summary)
-- `data`: Match data including path, line number, text, and submatches
+Each line of JSON output is a separate object with a `type` field indicating the kind of message:
+
+- **`match`**: Represents a matching line with match data including path, line number, text, and submatches
+- **`context`**: Context lines around matches (when using `-A`, `-B`, or `-C` flags)
+- **`begin`**: Marks the beginning of results for a file
+- **`end`**: Marks the end of results for a file
+- **`summary`**: Search summary with statistics like total matches and files searched
+
+Each message type has a corresponding `data` field containing type-specific information. For `match` messages, the data includes file path, line number, matching text, and submatch positions.
 
 ## Color Customization
 
@@ -48,6 +66,7 @@ ripgrep supports extensive color customization:
 rg --color always pattern  # Always use colors
 rg --color never pattern   # Never use colors
 rg --color auto pattern    # Auto-detect (default)
+rg --color ansi pattern    # Use ANSI colors only
 
 # Custom color specifications
 rg --colors 'match:fg:red' --colors 'match:bg:yellow' pattern
@@ -62,9 +81,11 @@ Available color types:
 - `column`: Column numbers
 
 Color attributes:
-- Foreground: `fg:color`
-- Background: `bg:color`
+- Foreground: `fg:color` (e.g., `fg:red`, `fg:blue`, `fg:green`)
+- Background: `bg:color` (e.g., `bg:yellow`, `bg:white`)
 - Style: `none`, `bold`, `intense`, `underline`
+
+Colors can be specified using standard color names (black, blue, green, red, cyan, magenta, yellow, white) or 256-color palette codes.
 
 ## Field Separators
 
@@ -109,6 +130,9 @@ rg --null pattern
 
 # Print NUL byte after each file path
 rg -0 pattern
+
+# Use NUL as line terminator instead of newline
+rg --null-data pattern
 ```
 
 ## Buffering Modes
@@ -124,6 +148,20 @@ rg --block-buffered pattern
 ```
 
 ## Additional Output Options
+
+### Hyperlink Support
+
+ripgrep supports OSC 8 terminal hyperlinks for clickable file paths in compatible terminals:
+
+```bash
+# Enable hyperlinks with default format
+rg --hyperlink-format default pattern
+
+# Custom hyperlink format
+rg --hyperlink-format file://{path} pattern
+```
+
+This feature allows compatible terminals (like iTerm2, WezTerm, or recent versions of GNOME Terminal) to make file paths clickable, opening them directly in your editor or file manager.
 
 ### Only Matching Text
 
@@ -161,6 +199,15 @@ rg --max-columns 100 pattern
 
 # Show preview of long lines
 rg --max-columns-preview pattern
+```
+
+### Context Separators
+
+Customize the separator used between groups of context lines:
+
+```bash
+# Custom context separator
+rg --context-separator '---' -C 2 pattern
 ```
 
 ## Examples
