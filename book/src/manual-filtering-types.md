@@ -1,6 +1,6 @@
 # Manual Filtering: File Types
 
-File type filtering allows you to search specific file types by language or format. Instead of using glob patterns, you can use predefined types like "rust", "python", or "markdown". Ripgrep ships with 150+ built-in file types and supports custom type definitions. This is more convenient than globs for common cases like "search all Python files" or "exclude all JavaScript files."
+File type filtering allows you to search specific file types by language or format. Instead of using glob patterns, you can use predefined types like "rust", "python", or "markdown". Ripgrep ships with 200+ built-in file types and supports custom type definitions. This is more convenient than globs for common cases like "search all Python files" or "exclude all JavaScript files."
 
 ## Quick Start
 
@@ -121,14 +121,45 @@ rg --type-list
 # ada: *.adb, *.ads
 # agda: *.agda, *.lagda
 # rust: *.rs
-# python: *.py, *.pyi, *.pyw, BUILD, BUILD.bazel, SConstruct, Snakefile
-# javascript: *.js, *.jsx, *.mjs, *.cjs
+# python: *.py, *.pyi
+# javascript: *.js, *.jsx, *.mjs, *.cjs, *.vue
 # ...
 ```
 
 The output format is: `type_name: glob1, glob2, ...`
 
 This shows all built-in types plus any custom types you've defined with `--type-add`. It's useful for discovering what types are available and what file patterns they match.
+
+### Type Aliases
+
+Many built-in types have short aliases for convenience. When a type has an alias, both names refer to the same type definition. Common aliases include:
+
+- `py` → `python`
+- `js` → `javascript`
+- `ts` → `typescript`
+- `md` → `markdown`
+- `rs` → `rust`
+
+You can use either the full name or the alias:
+
+```bash
+# These are equivalent
+rg pattern -t python
+rg pattern -t py
+
+# These are equivalent
+rg pattern -t javascript
+rg pattern -t js
+```
+
+To see which types have aliases, check the output of `--type-list`. Types with aliases appear as `alias, fullname:` in the list.
+
+You can also search for a specific type's definition:
+
+```bash
+# Check what the rust type includes
+rg --type-list | grep rust
+```
 
 ## Custom Type Definitions (--type-add)
 
@@ -246,25 +277,27 @@ This is the opposite of whitelist mode. It's useful for finding matches in uncom
 
 ## Built-in File Types
 
-Ripgrep includes 150+ built-in file types. Here are some commonly used ones:
+Ripgrep includes 200+ built-in file types. Here are some commonly used ones:
 
 **Programming Languages:**
 - `rust`: *.rs
-- `python`: *.py, *.pyi, *.pyw
+- `python`: *.py, *.pyi
 - `go`: *.go
 - `java`: *.java, *.jsp, *.jspx
-- `javascript` (alias `js`): *.js, *.jsx, *.mjs, *.cjs
+- `javascript` (alias `js`): *.js, *.jsx, *.mjs, *.cjs, *.vue
 - `typescript` (alias `ts`): *.ts, *.tsx
 - `c`: *.c, *.h
 - `cpp` (C++): *.cpp, *.cc, *.cxx, *.h, *.hpp
-- `ruby`: *.rb, Rakefile, Gemfile
+- `ruby`: *.rb, *.rbw, *.rake, *.gemspec, Rakefile, Gemfile, config.ru, .irbrc
 - `php`: *.php, *.phtml, *.php3, *.php4, *.php5
 
 **Web Development:**
 - `html`: *.html, *.htm
-- `css`: *.css, *.scss, *.sass
+- `css`: *.css, *.scss
 - `json`: *.json
 - `xml`: *.xml
+
+**Note:** There is a separate `sass` type that includes *.sass and *.scss files.
 
 **Documentation:**
 - `markdown` (alias `md`): *.md, *.markdown
