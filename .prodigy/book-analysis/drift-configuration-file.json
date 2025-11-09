@@ -1,0 +1,128 @@
+{
+  "chapter_id": "configuration-file",
+  "chapter_title": "Configuration File",
+  "chapter_file": "book/src/configuration-file.md",
+  "drift_detected": true,
+  "severity": "critical",
+  "quality_assessment": "Chapter is completely empty and needs to be written from scratch. All configuration file functionality is missing from documentation.",
+  "issues": [
+    {
+      "type": "missing_content",
+      "severity": "critical",
+      "section": "Environment Variable Setup",
+      "description": "No documentation of RIPGREP_CONFIG_PATH environment variable",
+      "should_add": "Document that users must set RIPGREP_CONFIG_PATH environment variable to enable config file support. Explain that ripgrep does not auto-discover config files in predetermined locations.",
+      "fix_suggestion": "Add section explaining: 1) Config files are not loaded by default, 2) Must set RIPGREP_CONFIG_PATH to file path, 3) Empty value disables config loading, 4) Show example: export RIPGREP_CONFIG_PATH=\"$HOME/.ripgreprc\"",
+      "source_reference": "crates/core/flags/config.rs:17-25 - args() function checks RIPGREP_CONFIG_PATH"
+    },
+    {
+      "type": "missing_content",
+      "severity": "critical",
+      "section": "Config File Format",
+      "description": "No documentation of config file syntax and parsing rules",
+      "should_add": "Document the two-rule format: 1) Every line is a shell argument after trimming whitespace, 2) Lines starting with # are comments (optionally preceded by whitespace)",
+      "fix_suggestion": "Add detailed section on config file syntax with rules: one argument per line, no escaping, lines are verbatim arguments, # for comments, whitespace trimming, empty lines allowed",
+      "source_reference": "crates/core/flags/config.rs:78-102 - parse_reader() function implements parsing logic"
+    },
+    {
+      "type": "missing_content",
+      "severity": "critical",
+      "section": "Config File Example",
+      "description": "No example configuration file provided",
+      "should_add": "Provide comprehensive example showing various flag types: flags with values (--max-columns=150), multi-line format for flags with values, comments, custom types (--type-add), color configuration, common settings",
+      "fix_suggestion": "Include the example from GUIDE.md lines 565-590 which demonstrates: max-columns with preview, type-add for web files, --hidden flag, glob patterns, color configuration, smart-case",
+      "source_reference": "GUIDE.md:565-590 - Comprehensive example configuration"
+    },
+    {
+      "type": "missing_content",
+      "severity": "high",
+      "section": "Flag Precedence",
+      "description": "No explanation of how config file flags interact with command-line flags",
+      "should_add": "Explain that config file arguments are prepended to CLI arguments, so CLI flags override config file settings. Later flags override earlier ones.",
+      "fix_suggestion": "Add section explaining precedence: config file args come first, CLI args come after, later flags win. Example: config has --max-columns=150, CLI --max-columns=0 overrides it to unlimited.",
+      "source_reference": "crates/core/flags/parse.rs:100-103 - Config args are prepended; GUIDE.md:610-614 - Explains override behavior"
+    },
+    {
+      "type": "missing_content",
+      "severity": "high",
+      "section": "--no-config Flag",
+      "description": "No documentation of --no-config flag to disable config file loading",
+      "should_add": "Document --no-config flag that prevents reading configuration files and ignores RIPGREP_CONFIG_PATH. Useful for ensuring clean runs without config influence.",
+      "fix_suggestion": "Add section on --no-config: prevents all config file reading, ignores RIPGREP_CONFIG_PATH, disables future auto-discovery features if added",
+      "source_reference": "crates/core/flags/defs.rs:4276-4307 - NoConfig flag implementation; crates/core/flags/parse.rs:87-91 - Early exit when --no-config is set"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Debugging Config Files",
+      "description": "No guidance on troubleshooting config file issues",
+      "should_add": "Explain that --debug flag shows which config file was loaded and what arguments were read from it. Helpful for diagnosing config issues.",
+      "fix_suggestion": "Add troubleshooting section: use --debug to see config file path and parsed arguments, check RIPGREP_CONFIG_PATH value, verify file exists and is readable",
+      "source_reference": "crates/core/flags/config.rs:41-45 - Debug logging of config args; GUIDE.md:616-619 - Mentions --debug for config debugging"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Config File Formatting Details",
+      "description": "No explanation of how to format flags with values",
+      "should_add": "Explain two valid formats for flags with values: 1) --flag=value on one line, 2) --flag on one line, value on next line. Explain why --flag value on one line doesn't work (parser sees value as separate argument).",
+      "fix_suggestion": "Add section on formatting flags with values: show both --max-columns=150 and two-line format, explain why space-separated doesn't work in config files, note it's purely stylistic preference",
+      "source_reference": "GUIDE.md:592-601 - Explains the two valid formats and why they work"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Error Handling",
+      "description": "No documentation of what happens when config file has errors",
+      "should_add": "Explain that ripgrep reports errors for individual lines but continues parsing. File read errors prevent all config loading. Invalid UTF-8 handling differs by platform (Unix allows, Windows rejects).",
+      "fix_suggestion": "Add error handling section: parse errors reported per line with line numbers, file not found stops config loading, invalid UTF-8 platform-dependent behavior",
+      "source_reference": "crates/core/flags/config.rs:26-47 - Error handling in args() and parse(); config.rs:104-170 - Tests showing error behavior"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Use Cases and Best Practices",
+      "description": "No guidance on when/why to use config files vs aliases",
+      "should_add": "Explain that config files are useful when shell aliases aren't convenient, for setting project-specific defaults, or for complex configurations that are hard to maintain as aliases.",
+      "fix_suggestion": "Add introductory section on when to use config files: cross-shell consistency, complex multi-flag configurations, project-specific settings, avoiding cluttering shell configs",
+      "source_reference": "GUIDE.md:543-545 - Mentions config files solve issues when shell aliases aren't convenient"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Relationship to FAQ",
+      "description": "No cross-reference to FAQ entry about config files",
+      "should_add": "Add reference to FAQ section on configuration files for quick answers",
+      "fix_suggestion": "Include link to FAQ.md#config at beginning or end of chapter",
+      "source_reference": "FAQ.md:32-37 - FAQ entry points to GUIDE.md configuration section"
+    }
+  ],
+  "positive_aspects": [
+    "Chapter has correct title and placeholder structure",
+    "Book infrastructure is in place and ready for content"
+  ],
+  "improvement_suggestions": [
+    "Start with simple example, then explain the rules and format",
+    "Show common use cases (colors, file types, search preferences)",
+    "Include troubleshooting section with --debug tip",
+    "Add platform-specific notes (Windows vs Unix paths, UTF-8 handling)",
+    "Consider adding a quick reference table of common config patterns",
+    "Link to related chapters on specific flags (colors, file types, etc.)",
+    "Include warning about config file affecting all ripgrep invocations",
+    "Show how to temporarily disable config with --no-config",
+    "Mention that config file uses same syntax as command-line flags"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-08",
+    "feature_inventory": ".prodigy/book-analysis/features.json",
+    "topics_covered": [],
+    "validation_focus": "Ensure configuration file format and environment variable setup are documented",
+    "existing_documentation": {
+      "guide_md": "Comprehensive section at GUIDE.md:541-626",
+      "faq_md": "Brief entry at FAQ.md:32-37",
+      "implementation": "crates/core/flags/config.rs (complete implementation)",
+      "flag_definition": "crates/core/flags/defs.rs:4276-4307 (--no-config)",
+      "parsing_logic": "crates/core/flags/parse.rs:64-113 (integration with CLI parsing)"
+    }
+  }
+}
