@@ -89,11 +89,14 @@ This mode is useful when searching for byte sequences or when you want complete 
 
 ## BOM Sniffing
 
-A **Byte Order Mark (BOM)** is a special sequence of bytes at the start of a file that indicates its encoding:
+A **Byte Order Mark (BOM)** is a special sequence of bytes at the start of a file that indicates its encoding.
 
+**ripgrep detects BOMs for these encodings only:**
 * `EF BB BF` - UTF-8 BOM
 * `FF FE` - UTF-16 Little Endian BOM
 * `FE FF` - UTF-16 Big Endian BOM
+
+Other encodings in the WHATWG standard that have BOMs are not automatically detected and require explicit `--encoding` specification.
 
 **How it works:**
 
@@ -105,6 +108,12 @@ A **Byte Order Mark (BOM)** is a special sequence of bytes at the start of a fil
 **BOM sniffing is enabled by default** in auto mode and can be disabled with `--encoding=none`.
 
 **BOM overrides explicit encoding:** Even if you specify `--encoding=latin1`, a file with a UTF-16 BOM will be treated as UTF-16.
+
+```bash
+# Even though we specify latin1, the UTF-16 BOM is detected and used instead
+rg -E latin1 'pattern' utf16-file-with-bom
+# ripgrep uses UTF-16 (from BOM) not latin1
+```
 
 ## Transcoding
 
@@ -137,6 +146,8 @@ rg -E utf-16 'Шерлок' some-utf16-file
 
 **By default, ripgrep assumes files are ASCII-compatible.** This is a critical assumption that affects how searches work.
 
+This assumption is a performance optimization: ASCII-compatible files can be searched directly without transcoding overhead, making searches significantly faster than if every file required transcoding to UTF-8.
+
 **ASCII-compatible encodings:**
 * ASCII itself
 * Latin-1 (ISO-8859-1)
@@ -166,7 +177,7 @@ rg -E utf-16 'hello' utf16-file-no-bom
 
 ## Supported Encodings
 
-ripgrep supports all encodings from the [WHATWG Encoding Standard](https://encoding.spec.whatwg.org/#concept-encoding-get) via the `encoding_rs` crate.
+ripgrep supports all encodings from the [WHATWG Encoding Standard](https://encoding.spec.whatwg.org/#concept-encoding-get) via the `encoding_rs` crate. The `encoding_rs` crate provides a complete implementation of the WHATWG Encoding Standard, ensuring reliable encoding detection and transcoding.
 
 **Common encodings:**
 
@@ -284,9 +295,10 @@ For more details on regex flags, see the [Advanced Patterns](./advanced-patterns
 **Likely cause:** Encoding mismatch
 
 **Solutions:**
-1. Check if file has a BOM: `hexdump -C file | head -n 1`
-2. Try explicit encoding: `rg -E utf-16 pattern file`
-3. Try disabling encoding: `rg -E none pattern file` (search raw bytes)
+1. Use `--debug` to see encoding detection: `rg --debug pattern file` (shows which encoding was detected or transcoding performed)
+2. Check if file has a BOM: `hexdump -C file | head -n 1`
+3. Try explicit encoding: `rg -E utf-16 pattern file`
+4. Try disabling encoding: `rg -E none pattern file` (search raw bytes)
 
 ### Getting garbled output
 
