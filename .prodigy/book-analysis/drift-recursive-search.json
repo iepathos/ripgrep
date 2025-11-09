@@ -1,0 +1,123 @@
+{
+  "chapter_id": "recursive-search",
+  "chapter_title": "Recursive Search",
+  "chapter_file": "book/src/recursive-search.md",
+  "drift_detected": true,
+  "severity": "critical",
+  "quality_assessment": "Chapter is completely empty - only contains placeholder text. This is a critical gap as recursive search is a fundamental ripgrep feature and the default behavior.",
+  "issues": [
+    {
+      "type": "missing_content",
+      "severity": "critical",
+      "section": "Entire Chapter",
+      "description": "Chapter contains only placeholder text 'This content will be populated by the documentation drift detection workflow.' - no actual content exists",
+      "should_add": "Complete chapter explaining ripgrep's recursive directory traversal, which is the default behavior when searching directories",
+      "fix_suggestion": "Create comprehensive chapter covering: (1) Default recursive behavior when given directory paths, (2) How ripgrep traverses directories using WalkBuilder/WalkParallel, (3) Controlling depth with --max-depth/-d flag, (4) Path specification and how directories are handled vs files, (5) Interaction with ignore files during traversal, (6) Symlink following with -L/--follow, (7) One file system restriction with --one-file-system, (8) Examples showing recursive search in action",
+      "source_reference": "crates/ignore/src/walk.rs:WalkBuilder, crates/core/flags/defs.rs:3936-4002 (MaxDepth flag)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "high",
+      "section": "Default Recursive Behavior",
+      "description": "Chapter should explain that ripgrep searches directories recursively by default",
+      "should_add": "Explanation that when you provide a directory path as an argument, ripgrep automatically descends into all subdirectories (unless limited by --max-depth or ignore files)",
+      "fix_suggestion": "Add section explaining: 'When you specify a directory as a search path, ripgrep will recursively search all files within that directory and its subdirectories. For example, `rg pattern dir/` will search all files under dir/.'",
+      "source_reference": "rg --help output: 'ripgrep (rg) recursively searches the current directory', 'A file or directory to search. Directories are searched recursively.'"
+    },
+    {
+      "type": "missing_content",
+      "severity": "high",
+      "section": "Max Depth Control",
+      "description": "Chapter should document the --max-depth/-d flag for controlling recursion depth",
+      "should_add": "Documentation of --max-depth NUM flag (short form: -d) and its alias --maxdepth",
+      "fix_suggestion": "Add section explaining --max-depth: 'Limit the depth of directory traversal. A value of 0 only searches the explicitly given paths themselves (no recursion). A value of 1 searches only the direct children of the given directory. For example, `rg --max-depth 0 dir/` is a no-op because dir/ will not be descended into. `rg --max-depth 1 dir/` will search only the direct children of dir/.'",
+      "source_reference": "crates/core/flags/defs.rs:3936-4002, crates/ignore/src/walk.rs:486 (max_depth field)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Path Specification",
+      "description": "Chapter should explain how file vs directory paths are handled differently",
+      "should_add": "Explanation of how ripgrep handles file paths (searches the file directly) vs directory paths (recursive search)",
+      "fix_suggestion": "Add section: 'ripgrep treats file and directory paths differently. File paths specified on the command line are searched directly and override glob/ignore rules. Directory paths trigger recursive traversal. You can mix both: `rg pattern file.txt dir/` searches file.txt directly and recursively searches dir/.'",
+      "source_reference": "rg --help: 'File paths specified on the command line override glob and ignore rules', crates/ignore/src/walk.rs:WalkBuilder"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Directory Traversal Implementation",
+      "description": "Chapter should explain the traversal mechanism and parallel walking",
+      "should_add": "High-level explanation of how ripgrep walks directories (using WalkBuilder and parallel traversal)",
+      "fix_suggestion": "Add technical background: 'ripgrep uses an efficient parallel directory walker that respects ignore files. The walker is configured with options like max_depth, follow_links, same_file_system, and integrates with the ignore file system to skip filtered paths during traversal.'",
+      "source_reference": "crates/ignore/src/walk.rs:483-507 (WalkBuilder struct), features.json:file_filtering category"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Symlink Handling",
+      "description": "Chapter should document -L/--follow flag for following symbolic links during traversal",
+      "should_add": "Documentation of -L/--follow flag and its interaction with recursive search",
+      "fix_suggestion": "Add section: 'By default, ripgrep does not follow symbolic links to directories. Use -L/--follow to enable following symlinks during recursive directory traversal. Be careful with -L as it can cause infinite loops if symlinks create cycles.'",
+      "source_reference": "crates/ignore/src/walk.rs:489 (follow_links field), features.json:130 (-L/--follow flag)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "File System Boundaries",
+      "description": "Chapter should document --one-file-system flag",
+      "should_add": "Documentation of --one-file-system flag to restrict traversal to a single file system",
+      "fix_suggestion": "Add section: 'Use --one-file-system to prevent ripgrep from crossing file system boundaries during recursive search. This is useful when searching from the root directory to avoid traversing mounted file systems.'",
+      "source_reference": "crates/ignore/src/walk.rs:490 (same_file_system field), features.json:118 (--one-file-system)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Examples",
+      "description": "Chapter needs practical examples of recursive search in action",
+      "should_add": "Multiple examples showing different recursive search scenarios",
+      "fix_suggestion": "Add examples section with: (1) Basic recursive search: `rg TODO src/`, (2) Limited depth: `rg --max-depth 2 FIXME ./`, (3) Multiple paths: `rg pattern dir1/ dir2/ file.txt`, (4) Following symlinks: `rg -L pattern /var/`, (5) Single filesystem: `rg --one-file-system pattern /`",
+      "source_reference": "crates/core/flags/defs.rs:3968-3970 (examples in MaxDepth documentation)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Interaction with Ignore Files",
+      "description": "Chapter should note how recursive search interacts with automatic filtering",
+      "should_add": "Cross-reference to automatic-filtering.md explaining how ignore files affect recursive traversal",
+      "fix_suggestion": "Add note: 'During recursive traversal, ripgrep respects gitignore and other ignore files. See the Automatic Filtering chapter for details on how ignore files are processed during directory walking.'",
+      "source_reference": "features.json:160-165 (file_filtering documented_in_existing_chapters includes both recursive-search and automatic-filtering)"
+    }
+  ],
+  "positive_aspects": [
+    "Chapter ID and title are appropriate for the topic",
+    "Topic areas identified (directory_traversal, default_behavior, path_specification) correctly represent what should be covered",
+    "Listed as dependency for other chapters (basics) which makes sense architecturally"
+  ],
+  "improvement_suggestions": [
+    "Start with a simple example showing the difference between searching a single file vs a directory",
+    "Include a diagram or visual showing how directory traversal descends through folder hierarchies",
+    "Provide performance notes about parallel directory walking",
+    "Add troubleshooting tips for common issues (symlink loops, permission errors during traversal)",
+    "Include table summarizing all recursion-related flags (--max-depth, -L/--follow, --one-file-system)",
+    "Add 'See Also' section linking to automatic-filtering.md (ignore rules), manual-filtering-globs.md (path patterns), and performance.md (parallel traversal)"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-08",
+    "feature_inventory": ".prodigy/book-analysis/features.json",
+    "topics_covered": [
+      "directory_traversal",
+      "default_behavior",
+      "path_specification"
+    ],
+    "validation_focus": "Confirm recursive search behavior and directory navigation examples are current",
+    "related_features": [
+      "file_filtering (WalkBuilder, max_depth, follow_links, one_file_system)",
+      "core_cli (path arguments)"
+    ],
+    "implementation_files": [
+      "crates/ignore/src/walk.rs (WalkBuilder, WalkParallel, DirEntry)",
+      "crates/core/flags/defs.rs (MaxDepth, Follow, OneFileSystem flags)",
+      "crates/core/flags/hiargs.rs (walker configuration)"
+    ]
+  }
+}
