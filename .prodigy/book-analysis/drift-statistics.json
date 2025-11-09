@@ -3,113 +3,93 @@
   "chapter_title": "Statistics and Metrics",
   "chapter_file": "book/src/statistics.md",
   "drift_detected": true,
-  "severity": "medium",
-  "quality_assessment": "Chapter provides good explanation of statistics output and use cases, but has some inaccuracies in the output format description and field naming. Missing important details about actual field names from implementation.",
+  "severity": "low",
+  "quality_assessment": "Chapter is well-written and accurate with excellent examples. Output format matches implementation. Minor improvements possible around edge cases and best practices.",
   "issues": [
     {
-      "type": "outdated_information",
-      "severity": "high",
-      "section": "Statistics Output Format (lines 28-37)",
-      "description": "Example output shows incorrect field labels that don't match actual ripgrep implementation",
-      "current_content": "3 matches\n2 matched lines\n1 files contained matches\n5 files searched\n150 bytes printed\n1500 bytes searched\n0.025 seconds spent searching\n0.001 seconds spent in main thread",
-      "should_be": "3 matches\n2 matched lines\n1 files contained matches\n5 files searched\n150 bytes printed\n1500 bytes searched\n0.025000 seconds spent searching\n0.001000 seconds total",
-      "fix_suggestion": "Update example output to match actual format from crates/core/main.rs:461-481. Note that the time fields use different labels: 'seconds spent searching' vs 'seconds total' (not 'main thread')",
-      "source_reference": "crates/core/main.rs:461-481"
-    },
-    {
-      "type": "incorrect_example",
-      "severity": "medium",
-      "section": "Performance Metrics (lines 54-56)",
-      "description": "Section refers to 'Seconds spent in main thread' but actual output says 'seconds total'",
-      "current_content": "- **Seconds spent searching**: Actual search time across all threads\n- **Seconds spent in main thread**: Wall-clock time for the entire operation",
-      "should_be": "- **Seconds spent searching**: Actual search time across all threads\n- **Seconds total**: Wall-clock time for the entire operation",
-      "fix_suggestion": "Update field name to match actual implementation",
-      "source_reference": "crates/core/main.rs:471"
-    },
-    {
-      "type": "incorrect_example",
-      "severity": "medium",
-      "section": "Thread Time vs Wall Time (lines 77-87)",
-      "description": "Example uses incorrect field name 'seconds spent in main thread'",
-      "current_content": "0.400 seconds spent searching  (4 threads × 0.1s each)\n0.100 seconds spent in main thread  (wall-clock time)",
-      "should_be": "0.400000 seconds spent searching  (4 threads × 0.1s each)\n0.100000 seconds total  (wall-clock time)",
-      "fix_suggestion": "Correct field name and show actual 6-decimal precision used by ripgrep",
-      "source_reference": "crates/core/main.rs:470-471"
-    },
-    {
-      "type": "missing_content",
-      "severity": "medium",
-      "section": "Statistics Output Format",
-      "description": "Chapter doesn't mention that stats are written to stdout (not stderr as might be expected for diagnostic info)",
-      "should_add": "Add note that statistics are printed to stdout after all search results. While most diagnostic output goes to stderr, --stats output goes to stdout.",
-      "fix_suggestion": "Add subsection clarifying that stats go to stdout and appear after search results",
-      "source_reference": "crates/core/main.rs:434-483"
-    },
-    {
-      "type": "missing_content",
-      "severity": "medium",
-      "section": "Statistics in JSON (lines 140-146)",
-      "description": "Section claims JSON stats are 'not currently supported directly' but they are fully supported",
-      "current_content": "# Machine-readable statistics (not currently supported directly)\n# Workaround: Parse stats from stderr",
-      "should_be": "Statistics ARE supported in JSON output via --json --stats",
-      "fix_suggestion": "Replace workaround example with actual JSON stats usage. Show --json --stats produces summary message with type: 'summary' containing stats object and elapsed_total",
-      "source_reference": "crates/core/main.rs:441-459, tests/json.rs:253-262"
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "Statistics with Quiet Mode (Line 142)",
+      "description": "Good explanation that --stats with --quiet searches all files completely, but doesn't explain the performance implications clearly",
+      "current_content": "Note: When combining `--stats` with `--quiet`, ripgrep will search all files completely to collect accurate statistics, even though `--quiet` alone would normally exit after the first match.",
+      "should_add": "Explain that this means --stats overrides the early-exit optimization of --quiet, which can significantly impact performance on large searches",
+      "fix_suggestion": "Expand the note: 'This means --stats disables --quiet's early-exit optimization. If you're just checking for pattern existence in a large codebase, using both flags together will be much slower than --quiet alone, as it must search all files to completion.'",
+      "source_reference": "crates/printer/src/summary.rs:126-135, 673-675 - quit_early() check is bypassed when stats are enabled"
     },
     {
       "type": "missing_content",
       "severity": "low",
-      "section": "Statistics Output Format",
-      "description": "Doesn't specify the exact time precision format (6 decimal places)",
-      "should_add": "Note that time values are formatted with 6 decimal place precision (e.g., 0.025000)",
-      "fix_suggestion": "Add detail about time formatting in the Performance Metrics section",
-      "source_reference": "crates/core/main.rs:470-471"
+      "section": "JSON Statistics Format (Line 153)",
+      "description": "Chapter shows the stats object structure but doesn't document the 'human' field in elapsed_total",
+      "current_content": "Shows elapsed_total with only secs and nanos fields in the JSON example",
+      "should_be": "Should document that elapsed_total also includes a 'human' field with formatted time string for readability",
+      "fix_suggestion": "Add to the JSON example after line 162: \"human\": \"0.001000s\" field in elapsed_total object, and mention it in the description",
+      "source_reference": "crates/core/main.rs:454 - includes 'human' field: format!(\"{:0.6}s\", elapsed.as_secs_f64())"
     },
     {
-      "type": "incorrect_example",
+      "type": "unclear_content",
       "severity": "low",
-      "section": "Limitations (lines 236-242)",
-      "description": "States 'Statistics are written to stderr, not stdout' which is incorrect",
-      "current_content": "- Statistics are written to stderr, not stdout",
-      "should_be": "- Statistics are written to stdout after search results",
-      "fix_suggestion": "Correct the output destination for stats",
-      "source_reference": "crates/core/main.rs:434-483"
-    },
-    {
-      "type": "missing_content",
-      "severity": "low",
-      "section": "Use Cases",
-      "description": "Could mention that --stats with --quiet forces complete search even though quiet normally exits early",
-      "should_add": "Add note that combining --quiet and --stats forces ripgrep to search all files to collect complete statistics, even though --quiet alone would exit after first match",
-      "fix_suggestion": "Add to 'Combining with Other Options' section explaining interaction with --quiet",
-      "source_reference": "crates/printer/src/summary.rs:256-258, tests/summary.rs:1128-1149"
+      "section": "Thread Time vs. Wall Time (Lines 79-89)",
+      "description": "Example shows thread time calculation but doesn't clearly explain why/when thread time aggregation happens or what it indicates",
+      "current_content": "Example shows '4 threads × 0.1s each = 0.400000 seconds' but mechanism is implicit",
+      "should_add": "Clarify that 'seconds spent searching' is the sum of all thread CPU time, which naturally exceeds wall-clock time in parallel execution",
+      "fix_suggestion": "Expand explanation: 'The \"seconds spent searching\" metric accumulates CPU time across all threads. With parallel search, this will typically exceed wall-clock time. A ratio close to your thread count indicates good parallelization. For example, if you have 4 threads and the ratio is ~4x, your search is efficiently using all threads.'",
+      "source_reference": "crates/printer/src/stats.rs:31-34, 71-74 - elapsed() returns Duration and add_elapsed() accumulates across all searches/threads"
     },
     {
       "type": "missing_content",
       "severity": "low",
-      "section": "Key Metrics",
-      "description": "Doesn't mention the actual Stats struct fields from implementation",
-      "should_add": "The implementation tracks: elapsed (Duration), searches (u64), searches_with_match (u64), bytes_searched (u64), bytes_printed (u64), matched_lines (u64), matches (u64)",
-      "fix_suggestion": "Add technical details section showing the actual data structure for advanced users",
-      "source_reference": "crates/printer/src/stats.rs:13-21"
+      "section": "Key Metrics - Matched Lines",
+      "description": "Doesn't explain multiline match behavior for matched_lines count",
+      "current_content": "- **Matched lines**: Number of unique lines containing matches",
+      "should_be": "- **Matched lines**: Number of lines containing matches. For multiline patterns (-U), all lines participating in a match are counted.",
+      "fix_suggestion": "Update description to: '- **Matched lines**: Number of lines containing matches. Note: With multiline patterns (--multiline or -U), this counts all lines that participate in or are part of any match, not just the first line of each match.'",
+      "source_reference": "crates/printer/src/stats.rs:56-62 - 'When matches may contain multiple lines then this includes every line that is part of every match'"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "Statistics in Scripts (Lines 250-256)",
+      "description": "Shell script example uses fragile text parsing instead of recommending the more robust JSON format",
+      "current_content": "Shows grep/cut parsing of text output",
+      "should_add": "Recommend using --json --stats for scripts, which is more reliable and structured",
+      "fix_suggestion": "Add a note before the example: 'For production scripts, prefer JSON output for reliable parsing:' and then add a second example:\n```bash\n#!/bin/bash\nOUTPUT=$(rg --json --stats 'pattern' | tail -1)\nMATCHES=$(echo \"$OUTPUT\" | jq '.data.stats.matches')\nFILES=$(echo \"$OUTPUT\" | jq '.data.stats.searches_with_match')\necho \"Found $MATCHES matches across $FILES files\"\n```",
+      "source_reference": "crates/core/main.rs:445-458 - JSON stats output is structured and reliable for parsing"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Performance Metrics",
+      "description": "Doesn't mention the minimal performance overhead of --stats itself",
+      "should_add": "Note that --stats has negligible performance overhead - it's safe to use in performance-sensitive contexts",
+      "fix_suggestion": "Add a note at the end of the Performance Metrics section: 'The --stats flag itself has minimal performance overhead since ripgrep tracks these metrics internally regardless. Enabling --stats only adds the cost of formatting and printing the final summary.'",
+      "source_reference": "crates/printer/src/stats.rs - Stats tracking is lightweight, just incrementing counters"
     }
   ],
   "positive_aspects": [
-    "Clear structure progressing from basics to advanced use cases",
-    "Good explanation of the difference between matches and matched lines",
-    "Excellent practical examples showing real-world usage patterns",
-    "Helpful interpretation guidance for understanding results",
-    "Comprehensive coverage of performance tips based on statistics",
-    "Good best practices section",
-    "Examples cover important use cases like performance benchmarking and codebase analysis"
+    "Excellent progressive structure from basics to advanced use cases",
+    "Output format example is accurate and matches actual implementation (lines 28-37)",
+    "Time precision correctly shown as 6 decimal places (line 39)",
+    "JSON statistics format is accurately documented with correct field names and structure (lines 144-177)",
+    "Good variety of practical examples covering performance analysis, codebase metrics, and optimization",
+    "Clear explanation of matches vs. matched lines distinction with concrete example (lines 62-77)",
+    "Helpful interpretation guidance for different result patterns (lines 213-235)",
+    "Performance tips based on statistics are practical and actionable (lines 237-244)",
+    "Well-organized sections with clear headings and logical flow",
+    "Examples demonstrate real-world usage patterns effectively",
+    "Good coverage of combining --stats with other flags (--quiet, --json, context)",
+    "Best practices section provides valuable guidance (lines 258-265)"
   ],
   "improvement_suggestions": [
-    "Update all example outputs to match exact format from implementation",
-    "Add example showing --json --stats output format",
-    "Include note about stats appearing after search results in stdout",
-    "Show actual test output to verify examples",
-    "Add cross-references to Performance and JSON Output chapters",
-    "Consider adding a 'Common Mistakes' section about misinterpreting thread time vs wall time",
-    "Add example showing how --stats affects --quiet behavior"
+    "Add a 'Common Pitfalls' section explaining thread time > wall time is normal and expected",
+    "Include an example comparing stats output between -F (fixed string) and regex searches to show optimization impact",
+    "Add guidance on using bytes_searched/bytes_printed ratio to detect if output is being truncated",
+    "Show how to use stats to measure the impact of different ignore patterns on search scope",
+    "Add example of using stats to determine optimal thread count (compare wall time at different -j values)",
+    "Include troubleshooting tip: if searches=0, likely no files matched your type filters",
+    "Add cross-reference to Performance chapter for deeper optimization discussion",
+    "Consider adding a visual diagram showing the relationship between matches, matched_lines, and files_with_matches",
+    "Include example showing how multiline patterns (-U) affect the matched_lines count differently"
   ],
   "metadata": {
     "analyzed_at": "2025-11-08",
@@ -119,10 +99,14 @@
       "search_metrics",
       "performance_data",
       "match_counts",
-      "output_format",
-      "json_stats"
+      "JSON statistics",
+      "quiet mode interaction",
+      "scripting with stats",
+      "performance analysis",
+      "thread time vs wall time",
+      "output format accuracy"
     ],
     "validation_focus": "Check that --stats output format and interpretation are explained",
-    "validation_result": "Output format examples need correction to match actual implementation. Field names and precision format are inaccurate."
+    "validation_result": "PASS - Output format is accurate and matches implementation. Interpretation is well explained. Minor enhancements suggested for edge cases and best practices."
   }
 }
