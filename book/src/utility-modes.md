@@ -79,6 +79,8 @@ rg --files --hidden
 rg --files --no-ignore
 ```
 
+**Note**: The `--files` flag takes precedence over `--type-list`. If you specify both flags, ripgrep will list files rather than displaying type definitions.
+
 ## Type List Mode
 
 The `--type-list` flag displays all built-in file type definitions.
@@ -133,15 +135,25 @@ rg --type-add 'config:*.{yml,yaml,toml,json}' --type-list | grep config
 rg --type-add 'config:*.{yml,yaml,toml}' -t config 'database_url'
 ```
 
+**Note**: The `--type-list` output reflects any custom types added via `--type-add` and respects `--type-clear` if used to remove built-in types. This makes it useful for verifying your type configuration:
+
+```bash
+# Clear all types and add only custom ones
+rg --type-clear --type-add 'web:*.{html,css,js}' --type-list
+
+# Verify custom type is available
+rg --type-add 'config:*.{yml,yaml}' --type-list | grep config
+```
+
 ## Generation Mode
 
-The `--generate` flag creates shell completions and man pages for ripgrep.
+The `--generate` flag creates shell completions and man pages for ripgrep. All generated output is written to stdout, allowing you to pipe or redirect it as needed.
 
 ### Supported Shells
 
 ripgrep can generate completions for:
 - Bash
-- Zsh  
+- Zsh
 - Fish
 - PowerShell
 
@@ -226,14 +238,14 @@ Check ripgrep version and feature availability.
 ### Version Flag
 
 ```bash
-# Show version
+# Show version (verbose output)
 rg --version
 
-# Short form
+# Short form (compact output)
 rg -V
 ```
 
-**Example output:**
+**Example output from `rg --version`:**
 ```
 ripgrep 14.1.0
 -SIMD -AVX (compiled)
@@ -244,6 +256,8 @@ The output shows:
 - ripgrep version number
 - Compile-time features
 - Runtime CPU features detected
+
+**Note**: The `--version` flag provides more verbose output including feature information, while `-V` provides a more compact version string. Use `--version` when you need to check feature support, and `-V` when you only need the version number.
 
 ### PCRE2 Version Check
 

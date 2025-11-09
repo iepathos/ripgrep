@@ -1,0 +1,41 @@
+{
+  "chapter_id": "utility-modes",
+  "chapter_title": "Utility Modes",
+  "chapter_file": "book/src/utility-modes.md",
+  "drift_detected": false,
+  "severity": "low",
+  "quality_assessment": "Excellent chapter with accurate documentation and comprehensive examples. All utility modes are correctly documented and aligned with implementation.",
+  "issues": [],
+  "positive_aspects": [
+    "Accurate documentation of all utility modes (--files, --type-list, --generate, --version, --pcre2-version)",
+    "Comprehensive coverage of all shell completion options (Bash, Zsh, Fish, PowerShell)",
+    "Excellent practical examples showing real-world usage patterns",
+    "Clear explanations of use cases for each utility mode",
+    "Correct documentation of --generate options: man, complete-bash, complete-zsh, complete-fish, complete-powershell",
+    "Accurate description of --files mode and its interaction with filters",
+    "Proper documentation of --type-list output format and custom type verification",
+    "Correct explanation of version flags (-V/--version) and --pcre2-version",
+    "Helpful integration examples with editors, CI/CD, and build scripts",
+    "Good troubleshooting section addressing common issues",
+    "Accurate cross-references to related chapters"
+  ],
+  "improvement_suggestions": [
+    "Could add note about --files overriding --type-list (documented in implementation but not explicitly called out in chapter)",
+    "Could mention that --version and -V have different output verbosity levels (--version is more verbose)",
+    "Could add example showing how --type-list respects --type-add and --type-clear flags (mentioned in doc_long but not demonstrated)",
+    "Could add note about --generate output going to stdout (mentioned in doc but could be more prominent in examples)"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-08",
+    "feature_inventory": ".prodigy/book-analysis/features.json",
+    "topics_covered": [
+      "files_mode",
+      "type_list",
+      "shell_completions",
+      "man_pages",
+      "generate_flag",
+      "version_info"
+    ],
+    "validation_focus": "Ensure utility modes like --files, --type-list, --generate, --version are documented with usage examples"
+  }
+}
