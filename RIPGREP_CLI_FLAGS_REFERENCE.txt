@@ -1,0 +1,279 @@
+================================================================================
+RIPGREP CLI - COMPREHENSIVE FLAG REFERENCE
+================================================================================
+
+TOTAL: 104 Flags organized into 7 categories
+
+
+================================================================================
+INPUT FLAGS (6 flags)
+================================================================================
+Pattern sources and input file specification
+
+  -f/--file                                    [VALUE]   Search patterns from file
+  --pcre2-version                              [VALUE]   Print PCRE2 version info
+  --pre                                        [VALUE]   Search output of COMMAND
+  -p/--pre-glob                                [VALUE]   Limit preprocessor to files
+  -e/--regexp                                  [VALUE]   Specify search pattern
+  -z/--search-zip                              [VALUE]   Search in compressed files
+
+
+================================================================================
+SEARCH FLAGS (31 flags)
+================================================================================
+Pattern matching behavior and search modes
+
+  --auto-hybrid-regex                          [SWITCH]  Auto-choose regex engine (DEPRECATED)
+  -b/--byte-offset                             [VALUE]   Print byte offset
+  --count-matches                              [SWITCH]  Show match count per file
+  --crlf                                       [VALUE]   Use CRLF line terminators
+  --debug                                      [VALUE]   Show debug messages
+  --dfa-size-limit                             [VALUE]   Regex DFA size limit
+  -E/--encoding                                [VALUE]   Text encoding of files
+  --engine                                     [VALUE]   Regex engine choice
+  -F/--fixed-strings                           [VALUE]   Treat patterns as literals
+  -i/--iglob                                   [VALUE]   Case-insensitive glob
+  -v/--include-zero                            [VALUE]   Include zero-match files
+  -m/--max-columns-preview                     [VALUE]   Preview truncated lines
+  -m/--max-count                               [VALUE]   Max matching lines
+  --max-filesize                               [VALUE]   Skip files larger than NUM
+  -U/--mmap                                    [SWITCH]  Use memory maps
+  -U/--multiline                               [VALUE]   Multiline matching
+  -I/--no-filename                             [VALUE]   Never print file path
+  -N/--no-line-number                          [VALUE]   Suppress line numbers
+  --no-messages                                [VALUE]   Suppress error messages
+  --no-require-git                             [VALUE]   Use .gitignore outside git
+  --no-unicode                                 [VALUE]   Disable Unicode mode
+  -0/--null                                    [VALUE]   Print NUL after paths
+  -P/--passthru                                [SWITCH]  Print all lines
+  -P/--pcre2                                   [SWITCH]  Enable PCRE2 engine
+  -q/--quiet                                   [VALUE]   Suppress all output
+  --regex-size-limit                           [VALUE]   Regex size limit
+  -S/--smart-case                              [SWITCH]  Auto case-insensitive
+  --stats                                      [VALUE]   Print search statistics
+  -a/--stop-on-nonmatch                        [VALUE]   Stop on non-match
+  -a/--text                                    [SWITCH]  Search binary as text
+  -w/--word-regexp                             [SWITCH]  Word boundary matching
+
+
+================================================================================
+FILTER FLAGS (23 flags)
+================================================================================
+File and directory filtering, traversal, and ignore rules
+
+  --binary                                     [SWITCH]  Search binary files
+  -F/--fixed-strings                           [VALUE]   Literal string matching
+  -g/--glob                                    [VALUE]   Include/exclude by glob
+  -h/--help                                    [SWITCH]  Show help
+  -i/--ignore-case                             [VALUE]   Case insensitive search
+  --ignore-file                                [VALUE]   Specify ignore file
+  -d/--max-depth                               [VALUE]   Max directory depth
+  --no-config                                  [VALUE]   Don't read config files
+  --no-ignore                                  [VALUE]   Disable all ignore files
+  --no-ignore-dot                              [VALUE]   Skip .ignore/.rgignore
+  --no-ignore-exclude                          [VALUE]   Skip exclusion files
+  --no-ignore-files                            [VALUE]   Skip --ignore-file args
+  --no-ignore-messages                         [VALUE]   Suppress ignore errors
+  --no-ignore-parent                           [VALUE]   Skip parent ignore files
+  --no-pcre2-unicode                           [VALUE]   PCRE2 no-Unicode (DEPRECATED)
+  --null-data                                  [VALUE]   Use NUL as line terminator
+  -t/--trim                                    [VALUE]   Trim prefix whitespace
+  -t/--type                                    [VALUE]   Search file type
+  --type-add                                   [VALUE]   Add type definition
+  -T/--type-clear                              [VALUE]   Clear type definition
+  -u/--type-list                               [SWITCH]  List all file types
+  -T/--type-not                                [VALUE]   Skip file type
+  -u/--unrestricted                            [VALUE]   Reduce restrictions
+
+
+================================================================================
+OUTPUT FLAGS (33 flags)
+================================================================================
+Output formatting, colors, separators, and line/field options
+
+  -A/--after-context                           [VALUE]   Lines after match
+  -B/--before-context                          [VALUE]   Lines before match
+  -b/--block-buffered                          [SWITCH]  Block buffering
+  -s/--case-sensitive                          [VALUE]   Case sensitive (default)
+  --color                                      [VALUE]   When to use color
+  --colors                                     [VALUE]   Color customization
+  -C/--column                                  [VALUE]   Show column numbers
+  -C/--context                                 [VALUE]   Context lines
+  --context-separator                          [VALUE]   Context separator
+  --field-context-separator                    [VALUE]   Context field separator
+  --field-match-separator                      [VALUE]   Match field separator
+  --glob-case-insensitive                      [VALUE]   Glob case insensitive
+  -h/--heading                                 [VALUE]   Group by file
+  -./--hidden                                  [VALUE]   Search hidden files
+  --hostname-bin                               [VALUE]   Get hostname program
+  --hyperlink-format                           [VALUE]   Hyperlink format
+  --ignore-file-case-insensitive               [VALUE]   Ignore case insensitive
+  -n/--line-buffered                           [SWITCH]  Line buffering
+  -n/--line-number                             [VALUE]   Show line numbers
+  -x/--line-regexp                             [VALUE]   Line boundary matching
+  -M/--max-columns                             [VALUE]   Max line length
+  -o/--one-file-system                         [VALUE]   Skip other filesystems
+  -o/--only-matching                           [VALUE]   Show only match
+  -//--path-separator                          [VALUE]   Path separator
+  -p/--pretty                                  [SWITCH]  Pretty output
+  -r/--replace                                 [VALUE]   Replace matches
+  --sort                                       [VALUE]   Sort ascending
+  --sort-files                                 [VALUE]   Sort by file (DEPRECATED)
+  --sortr                                      [VALUE]   Sort descending
+  --trace                                      [VALUE]   Trace messages
+  -V/--version                                 [SWITCH]  Print version
+  -H/--vimgrep                                 [VALUE]   Vim-compatible format
+  -H/--with-filename                           [SWITCH]  Show file path
+
+
+================================================================================
+OUTPUT MODE FLAGS (5 flags)
+================================================================================
+Alternative output modes (mutually exclusive)
+
+  -c/--count                                   [SWITCH]  Show match count
+  -l/--files                                   [SWITCH]  List files
+  -l/--files-with-matches                      [SWITCH]  List matching files
+  -v/--invert-match                            [VALUE]   Invert matching
+  --json                                       [SWITCH]  JSON output format
+
+
+================================================================================
+LOGGING FLAGS (3 flags)
+================================================================================
+Debug logging, statistics, and diagnostic output
+
+  --no-ignore-global                           [VALUE]   Skip global ignore
+  --no-ignore-vcs                              [VALUE]   Skip VCS ignore
+  -j/--threads                                 [VALUE]   Thread count
+
+
+================================================================================
+OTHER BEHAVIOR FLAGS (3 flags)
+================================================================================
+Special behaviors and utility functions
+
+  -L/--follow                                  [VALUE]   Follow symlinks
+  --generate                                   [VALUE]   Generate docs/completions
+  --multiline-dotall                           [VALUE]   . matches newlines
+
+
+================================================================================
+ENUMS & MODES
+================================================================================
+
+SEARCH MODES (SearchMode enum)
+  Standard              - Default: find and print matches
+  FilesWithMatches      - Show file paths with matches (-l)
+  FilesWithoutMatch     - Show file paths without matches (-L)
+  Count                 - Count matching lines per file (-c)
+  CountMatches          - Count all matches per file (--count-matches)
+  JSON                  - JSON Lines format (--json)
+
+CASE MODES (CaseMode enum)
+  Sensitive             - Default: case-sensitive matching
+  Insensitive           - Case-insensitive matching (-i)
+  Smart                 - Auto case-insensitive for lowercase (-S)
+
+REGEX ENGINES (EngineChoice enum)
+  Default               - Rust regex engine (default)
+  Auto                  - Auto-select engine (--auto-hybrid-regex, deprecated)
+  PCRE2                 - PCRE2 engine (-P/--pcre2)
+
+BINARY MODES (BinaryMode enum)
+  Auto                  - Skip binary files (default)
+  SearchAndSuppress     - Search but suppress matches (--binary)
+  AsText                - Treat as text (-a/--text)
+
+BUFFER MODES (BufferMode enum)
+  Auto                  - Auto-select based on tty (default)
+  Line                  - Line buffering (-n/--line-buffered)
+  Block                 - Block buffering (-b/--block-buffered)
+
+ENCODING MODES (EncodingMode enum)
+  Auto                  - BOM sniffing + UTF-8 default
+  Some(Encoding)        - Force specific encoding (-E/--encoding)
+  Disabled              - Raw bytes, no detection (--no-encoding)
+
+MMAP MODES (MmapMode enum)
+  Auto                  - Heuristic-based (default)
+  AlwaysTryMmap         - Force memory maps (-U/--mmap)
+  Never                 - Never use memory maps
+
+SORT MODES (SortModeKind enum)
+  Path                  - Sort by file path (--sort)
+  LastModified          - Sort by modified time (--sort modified)
+  LastAccessed          - Sort by access time (--sort accessed)
+  Created               - Sort by creation time (--sort created)
+
+COLOR CHOICES (ColorChoice enum)
+  Never                 - No colors (--color never)
+  Auto                  - Auto-detect (default)
+  Always                - Always color (--color always)
+  Ansi                  - Force ANSI (--color ansi)
+
+LOGGING MODES (LoggingMode enum)
+  Debug                 - Debug messages (--debug)
+  Trace                 - Detailed trace messages (--trace)
+
+SPECIAL MODES (SpecialMode enum)
+  HelpShort             - Condensed help (-h)
+  HelpLong              - Full help (--help)
+  VersionShort          - Version string (-V)
+  VersionLong           - Detailed version (--version)
+  VersionPCRE2          - PCRE2 version (--pcre2-version)
+
+GENERATION MODES (GenerateMode enum)
+  Man                   - Generate man page (--generate man)
+  CompleteBash          - Bash completions (--generate complete-bash)
+  CompleteZsh           - Zsh completions (--generate complete-zsh)
+  CompleteFish          - Fish completions (--generate complete-fish)
+  CompletePowerShell    - PowerShell completions (--generate complete-powershell)
+
+
+================================================================================
+ARCHITECTURE
+================================================================================
+
+File: crates/core/flags/lowargs.rs
+  LowArgs struct       - Container for parsed CLI arguments
+  SearchMode enum      - Type of search operation
+  CaseMode enum        - Case matching behavior
+  EngineChoice enum    - Regex engine selection
+  BinaryMode enum      - Binary file handling
+  BufferMode enum      - Output buffering strategy
+  EncodingMode enum    - Character encoding handling
+  MmapMode enum        - Memory map usage
+  SortModeKind enum    - Sorting criteria
+  LoggingMode enum     - Logging verbosity
+  SpecialMode enum     - Special CLI modes
+  GenerateMode enum    - Generation target
+  ColorChoice enum     - Color output control
+
+File: crates/core/flags/defs.rs
+  Flag trait           - Unified flag definition interface
+  Category enum        - Flag organization categories
+  104 Flag impls       - One per command-line flag
+
+Flag trait provides:
+  is_switch()          - Boolean flag or value flag
+  name_short()         - Optional single-char name
+  name_long()          - Required long flag name
+  name_negated()       - Optional negation form
+  doc_category()       - Flag category for documentation
+  doc_short()          - Terse description
+  doc_long()           - Full documentation
+  doc_choices()        - Valid values for restricted flags
+  update()             - Parse and update LowArgs
+
+Categories organize flags for help/documentation:
+  Input               - Pattern and file input sources
+  Search              - Search behavior configuration
+  Filter              - File filtering and ignore rules
+  Output              - Output formatting options
+  OutputModes         - Alternative output modes
+  Logging             - Debug and diagnostic output
+  OtherBehaviors      - Miscellaneous features
+
+
+================================================================================
