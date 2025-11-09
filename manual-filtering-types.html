@@ -1,0 +1,598 @@
+<!DOCTYPE HTML>
+<html lang="en" class="dark sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Manual Filtering: File Types - ripgrep User Guide</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="A comprehensive guide to using ripgrep, a line-oriented search tool">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "dark";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('dark')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">ripgrep User Guide</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/BurntSushi/ripgrep" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/iepathos/ripgrep/edit/master/book/src/manual-filtering-types.md" title="Suggest an edit" aria-label="Suggest an edit" rel="edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="manual-filtering-file-types"><a class="header" href="#manual-filtering-file-types">Manual Filtering: File Types</a></h1>
+<p>File type filtering allows you to search specific file types by language or format. Instead of using glob patterns, you can use predefined types like "rust", "python", or "markdown". Ripgrep ships with 150+ built-in file types and supports custom type definitions. This is more convenient than globs for common cases like "search all Python files" or "exclude all JavaScript files."</p>
+<h2 id="quick-start"><a class="header" href="#quick-start">Quick Start</a></h2>
+<p>Here are the most common file type filtering commands:</p>
+<pre><code class="language-bash"># Search only Rust files
+rg pattern -t rust
+
+# Search Python and JavaScript files
+rg TODO -t python -t js
+
+# Search all files EXCEPT JavaScript
+rg pattern -T js
+
+# List all available file types
+rg --type-list
+
+# Define and use a custom file type
+rg --type-add 'web:*.{html,css,js}' -t web pattern
+
+# Search only files with recognized types (whitelist mode)
+rg --type all pattern
+</code></pre>
+<h2 id="basic-type-selection--t--type"><a class="header" href="#basic-type-selection--t--type">Basic Type Selection (-t/--type)</a></h2>
+<p>Use <code>-t</code> or <code>--type</code> to search only files matching a specific file type:</p>
+<pre><code class="language-bash"># Search only Rust files (*.rs)
+rg pattern -t rust
+
+# Search only Python files (*.py, *.pyi, *.pyw)
+rg TODO -t python
+
+# Search only JSON files
+rg "api_key" -t json
+</code></pre>
+<h3 id="multiple-type-selection"><a class="header" href="#multiple-type-selection">Multiple Type Selection</a></h3>
+<p>You can specify multiple <code>-t</code> flags to search multiple file types:</p>
+<pre><code class="language-bash"># Search Python and JavaScript files
+rg TODO -t python -t js
+
+# Search web-related files
+rg "function" -t html -t css -t javascript
+
+# Search configuration files
+rg "database" -t yaml -t toml -t json
+</code></pre>
+<h3 id="short-form-syntax"><a class="header" href="#short-form-syntax">Short Form Syntax</a></h3>
+<p>The <code>-t</code> flag supports a compact short form where you can combine <code>-t</code> with the type name:</p>
+<pre><code class="language-bash"># These are equivalent
+rg error -t rust
+rg error -trust
+
+# Multiple types in short form
+rg TODO -tpython -tgo -trust
+</code></pre>
+<p>This is particularly useful for quick searches at the command line.</p>
+<h2 id="type-negation--t--type-not"><a class="header" href="#type-negation--t--type-not">Type Negation (-T/--type-not)</a></h2>
+<p>Use <code>-T</code> or <code>--type-not</code> to exclude files matching a specific file type:</p>
+<pre><code class="language-bash"># Search all files EXCEPT JavaScript
+rg pattern -T js
+
+# Exclude multiple types
+rg FIXME -T json -T yaml -T html
+
+# Exclude test files (if defined in built-in types)
+rg TODO -T test
+</code></pre>
+<h3 id="combining--t-and--t"><a class="header" href="#combining--t-and--t">Combining -t and -T</a></h3>
+<p>You can combine <code>-t</code> and <code>-T</code> flags for complex filtering:</p>
+<pre><code class="language-bash"># Search Rust files but not test files
+rg TODO -t rust -T test
+
+# Search source code but exclude minified JavaScript
+rg pattern -t js -T jsmin
+
+# Search all Python files except those in __pycache__
+rg error -t python -T pyc
+</code></pre>
+<p>The <code>-T</code> flag also supports short form syntax like <code>-t</code>:</p>
+<pre><code class="language-bash"># These are equivalent
+rg pattern -T rust
+rg pattern -Trust
+</code></pre>
+<h2 id="listing-available-types---type-list"><a class="header" href="#listing-available-types---type-list">Listing Available Types (--type-list)</a></h2>
+<p>Use <code>--type-list</code> to see all available file types and their associated glob patterns:</p>
+<pre><code class="language-bash"># List all available file types
+rg --type-list
+
+# Example output:
+# ada: *.adb, *.ads
+# agda: *.agda, *.lagda
+# rust: *.rs
+# python: *.py, *.pyi, *.pyw, BUILD, BUILD.bazel, SConstruct, Snakefile
+# javascript: *.js, *.jsx, *.mjs, *.cjs
+# ...
+</code></pre>
+<p>The output format is: <code>type_name: glob1, glob2, ...</code></p>
+<p>This shows all built-in types plus any custom types you've defined with <code>--type-add</code>. It's useful for discovering what types are available and what file patterns they match.</p>
+<h2 id="custom-type-definitions---type-add"><a class="header" href="#custom-type-definitions---type-add">Custom Type Definitions (--type-add)</a></h2>
+<p>Use <code>--type-add</code> to define your own file types with custom glob patterns:</p>
+<h3 id="basic-custom-types"><a class="header" href="#basic-custom-types">Basic Custom Types</a></h3>
+<pre><code class="language-bash"># Define a custom type with a single extension
+rg --type-add 'foo:*.foo' -t foo pattern
+
+# Define a type with multiple extensions
+rg --type-add 'web:*.{html,css,js}' -t web TODO
+
+# Define a type for specific filenames
+rg --type-add 'config:Makefile,*.conf' -t config pattern
+</code></pre>
+<p>The syntax is: <code>--type-add 'name:glob_pattern'</code></p>
+<p><strong>Important:</strong> Type names must consist only of Unicode letters or numbers. Punctuation characters are not allowed.</p>
+<pre><code class="language-bash"># Valid type names
+rg --type-add 'web:*.html' -t web pattern
+rg --type-add 'mytype123:*.txt' -t mytype123 pattern
+
+# Invalid type names (will fail)
+rg --type-add 'my-type:*.txt' pattern      # hyphen not allowed
+rg --type-add 'my_type:*.txt' pattern      # underscore not allowed
+</code></pre>
+<h3 id="composing-types-with-include"><a class="header" href="#composing-types-with-include">Composing Types with include:</a></h3>
+<p>You can create types that include other types using the special <code>include:</code> directive:</p>
+<pre><code class="language-bash"># Create a type that combines C++ and Python
+rg --type-add 'src:include:cpp,py' -t src FIXME
+
+# Compose multiple built-in types
+rg --type-add 'code:include:rust,python,go,java' -t code pattern
+
+# Include types and add extra globs
+rg --type-add 'config:include:json,yaml' --type-add 'config:*.conf' -t config
+</code></pre>
+<p>The <code>include:</code> directive lets you build on existing type definitions. This is particularly useful for creating project-specific type categories like "all source files" or "all config files."</p>
+<h3 id="multiple-definitions-for-same-type"><a class="header" href="#multiple-definitions-for-same-type">Multiple Definitions for Same Type</a></h3>
+<p>You can use <code>--type-add</code> multiple times for the same type to add additional globs:</p>
+<pre><code class="language-bash"># Start with JSON and YAML
+rg --type-add 'config:include:json,yaml'
+# Add .conf files
+rg --type-add 'config:*.conf'
+# Add .ini files
+rg --type-add 'config:*.ini'
+# Now use it
+rg -t config "database"
+</code></pre>
+<p>All the globs accumulate for that type.</p>
+<h2 id="clearing-type-definitions---type-clear"><a class="header" href="#clearing-type-definitions---type-clear">Clearing Type Definitions (--type-clear)</a></h2>
+<p>Use <code>--type-clear</code> to remove the built-in glob definitions for a file type before adding your own:</p>
+<pre><code class="language-bash"># Clear built-in rust type and define your own
+rg --type-clear rust --type-add 'rust:*.rs' -t rust pattern
+
+# Override the default C type definition
+rg --type-clear c --type-add 'c:*.c' -t c TODO
+</code></pre>
+<p>This is useful when you want to completely override a default type definition rather than extend it. After clearing, the type has no globs until you add them with <code>--type-add</code>.</p>
+<pre><code class="language-bash"># Without --type-clear: adds to existing globs
+rg --type-add 'rust:*.foo' -t rust pattern   # Searches *.rs AND *.foo
+
+# With --type-clear: replaces existing globs
+rg --type-clear rust --type-add 'rust:*.foo' -t rust pattern   # Only *.foo
+</code></pre>
+<h2 id="special-type-values"><a class="header" href="#special-type-values">Special Type Values</a></h2>
+<h3 id="whitelist-mode---type-all"><a class="header" href="#whitelist-mode---type-all">Whitelist Mode (--type all)</a></h3>
+<p>Use <code>--type all</code> to enable whitelist mode, where ripgrep only searches files with recognized types:</p>
+<pre><code class="language-bash"># Search only files with recognized types
+rg --type all pattern
+
+# Equivalent to providing -t for every known type
+rg -t rust -t python -t javascript -t ... pattern
+</code></pre>
+<p>This is useful when you want to skip unrecognized files (like binaries or obscure formats) and only search files that ripgrep knows about.</p>
+<h3 id="blacklist-mode---type-not-all"><a class="header" href="#blacklist-mode---type-not-all">Blacklist Mode (--type-not all)</a></h3>
+<p>Use <code>--type-not all</code> to enable blacklist mode, where ripgrep only searches files WITHOUT recognized types:</p>
+<pre><code class="language-bash"># Search only files WITHOUT recognized types
+rg --type-not all pattern
+</code></pre>
+<p>This is the opposite of whitelist mode. It's useful for finding matches in uncommon file formats or files that don't match any standard type.</p>
+<h2 id="built-in-file-types"><a class="header" href="#built-in-file-types">Built-in File Types</a></h2>
+<p>Ripgrep includes 150+ built-in file types. Here are some commonly used ones:</p>
+<p><strong>Programming Languages:</strong></p>
+<ul>
+<li><code>rust</code>: *.rs</li>
+<li><code>python</code>: *.py, *.pyi, *.pyw</li>
+<li><code>go</code>: *.go</li>
+<li><code>java</code>: *.java, *.jsp, *.jspx</li>
+<li><code>javascript</code> (alias <code>js</code>): *.js, *.jsx, *.mjs, *.cjs</li>
+<li><code>typescript</code> (alias <code>ts</code>): *.ts, *.tsx</li>
+<li><code>c</code>: *.c, *.h</li>
+<li><code>cpp</code> (C++): *.cpp, *.cc, *.cxx, *.h, *.hpp</li>
+<li><code>ruby</code>: *.rb, Rakefile, Gemfile</li>
+<li><code>php</code>: *.php, *.phtml, *.php3, *.php4, *.php5</li>
+</ul>
+<p><strong>Web Development:</strong></p>
+<ul>
+<li><code>html</code>: *.html, *.htm</li>
+<li><code>css</code>: *.css, *.scss, *.sass</li>
+<li><code>json</code>: *.json</li>
+<li><code>xml</code>: *.xml</li>
+</ul>
+<p><strong>Documentation:</strong></p>
+<ul>
+<li><code>markdown</code> (alias <code>md</code>): *.md, *.markdown</li>
+<li><code>rst</code>: *.rst</li>
+<li><code>asciidoc</code>: *.adoc, *.asciidoc</li>
+</ul>
+<p><strong>Configuration:</strong></p>
+<ul>
+<li><code>yaml</code>: *.yaml, *.yml</li>
+<li><code>toml</code>: *.toml</li>
+<li><code>ini</code>: *.ini</li>
+<li><code>config</code>: Various config file patterns</li>
+</ul>
+<p><strong>Build Systems:</strong></p>
+<ul>
+<li><code>make</code>: Makefile, *.mk, *.mak</li>
+<li><code>cmake</code>: CMakeLists.txt, *.cmake</li>
+</ul>
+<p>For a complete list with exact glob patterns, run:</p>
+<pre><code class="language-bash">rg --type-list
+</code></pre>
+<p>The complete definitions are in <code>crates/ignore/src/default_types.rs</code> in the ripgrep source code.</p>
+<h2 id="practical-examples"><a class="header" href="#practical-examples">Practical Examples</a></h2>
+<h3 id="search-source-code-files"><a class="header" href="#search-source-code-files">Search Source Code Files</a></h3>
+<pre><code class="language-bash"># Find TODOs in source code files
+rg TODO -t rust -t python -t go
+
+# Search for function definitions across multiple languages
+rg "^fn |^def |^func " -t rust -t python -t go
+</code></pre>
+<h3 id="search-configuration-files"><a class="header" href="#search-configuration-files">Search Configuration Files</a></h3>
+<pre><code class="language-bash"># Find database configuration
+rg "database" -t yaml -t toml -t json
+
+# Search for API keys in config files
+rg "api_key" -t yaml -t json -t ini
+</code></pre>
+<h3 id="search-documentation"><a class="header" href="#search-documentation">Search Documentation</a></h3>
+<pre><code class="language-bash"># Find installation instructions
+rg "installation" -t markdown -t rst
+
+# Search for examples in docs
+rg "example" -t md -t asciidoc
+</code></pre>
+<h3 id="exclude-generated-or-vendor-files"><a class="header" href="#exclude-generated-or-vendor-files">Exclude Generated or Vendor Files</a></h3>
+<pre><code class="language-bash"># Search source but exclude test files
+rg pattern -t rust -T test
+
+# Search code but skip minified JavaScript
+rg function -t js -T jsmin
+</code></pre>
+<h3 id="project-specific-type-categories"><a class="header" href="#project-specific-type-categories">Project-Specific Type Categories</a></h3>
+<pre><code class="language-bash"># Create a "frontend" type for web development
+rg --type-add 'frontend:include:js,css,html' -t frontend "TODO"
+
+# Create a "backend" type for server code
+rg --type-add 'backend:include:rust,python' -t backend "FIXME"
+
+# Create an "infra" type for infrastructure files
+rg --type-add 'infra:*.{tf,tfvars,yaml,yml}' -t infra "region"
+</code></pre>
+<h2 id="type-vs-glob-filtering"><a class="header" href="#type-vs-glob-filtering">Type vs Glob Filtering</a></h2>
+<p>While file types are convenient, sometimes you need glob patterns for more precise control. Here's when to use each:</p>
+<p><strong>Use <code>-t/--type</code> when:</strong></p>
+<ul>
+<li>Searching common file types (languages, formats)</li>
+<li>You want concise, readable commands</li>
+<li>Working with well-known file extensions</li>
+<li>Building on existing type definitions</li>
+</ul>
+<p><strong>Use <code>-g/--glob</code> when:</strong></p>
+<ul>
+<li>You need specific path patterns (e.g., <code>src/**/*.rs</code>)</li>
+<li>Filtering by directory names</li>
+<li>Complex inclusion/exclusion rules</li>
+<li>Custom file naming conventions</li>
+</ul>
+<p>You can combine both approaches:</p>
+<pre><code class="language-bash"># Search Rust files only in the src/ directory
+rg pattern -t rust -g 'src/**'
+
+# Search Python files but exclude test directories
+rg pattern -t python -g '!tests/**'
+</code></pre>
+<h2 id="type-filtering-precedence"><a class="header" href="#type-filtering-precedence">Type Filtering Precedence</a></h2>
+<p><strong>Important:</strong> Type filtering has lower precedence than glob patterns and ignore files.</p>
+<pre><code class="language-bash"># If src/file.rs is in .gitignore, -t won't include it
+rg pattern -t rust  # Won't search src/file.rs if it's ignored
+
+# Explicit file paths override ignore rules
+rg pattern src/file.rs  # Will search even if ignored
+
+# Glob patterns have higher precedence than types
+rg pattern -t rust -g '!*.rs'  # Won't search ANY Rust files
+</code></pre>
+<p>To search files that would normally be ignored:</p>
+<pre><code class="language-bash"># Disable ignore files
+rg pattern -t rust --no-ignore
+
+# Search specific file regardless of ignore rules
+rg pattern path/to/file.rs
+</code></pre>
+<h2 id="configuration-file-persistence"><a class="header" href="#configuration-file-persistence">Configuration File Persistence</a></h2>
+<p>Type settings are not persisted between invocations. Each time you run <code>rg</code>, you need to specify <code>--type-add</code> again.</p>
+<p>For permanent custom types, add them to a ripgrep configuration file:</p>
+<p><strong>~/.ripgreprc or .ripgreprc:</strong></p>
+<pre><code>--type-add
+web:*.{html,css,js}
+--type-add
+config:include:json,yaml,toml
+--type-add
+docs:include:markdown,rst,asciidoc
+</code></pre>
+<p>Then ripgrep will automatically load these type definitions for every search.</p>
+<p>See the Configuration chapter for more details on configuration files.</p>
+<h2 id="how-type-matching-works"><a class="header" href="#how-type-matching-works">How Type Matching Works</a></h2>
+<p>Under the hood, file types are implemented as named collections of glob patterns. When you use <code>-t rust</code>, ripgrep internally applies the glob pattern <code>*.rs</code> to match files.</p>
+<p>The type system is built on the <code>Types</code> struct in <code>crates/ignore/src/types.rs</code>, which:</p>
+<ol>
+<li>Maintains a mapping of type names to glob patterns</li>
+<li>Builds a <code>GlobSet</code> for efficient pattern matching</li>
+<li>Supports composition via the <code>include:</code> directive</li>
+<li>Handles precedence between multiple type rules</li>
+</ol>
+<p>This design allows ripgrep to efficiently filter millions of files by type with minimal overhead.</p>
+<p>For implementation details, see:</p>
+<ul>
+<li><code>crates/core/flags/defs.rs</code>: CLI flag definitions</li>
+<li><code>crates/ignore/src/types.rs</code>: Type matching implementation</li>
+<li><code>crates/ignore/src/default_types.rs</code>: Built-in type definitions</li>
+</ul>
+<h2 id="troubleshooting"><a class="header" href="#troubleshooting">Troubleshooting</a></h2>
+<h3 id="type-not-found"><a class="header" href="#type-not-found">Type not found</a></h3>
+<pre><code class="language-bash">$ rg -t mytype pattern
+error: invalid value 'mytype' for '--type &lt;TYPE&gt;'
+</code></pre>
+<p><strong>Solution:</strong> Use <code>--type-list</code> to see available types, or define it with <code>--type-add</code>:</p>
+<pre><code class="language-bash">rg --type-add 'mytype:*.mt' -t mytype pattern
+</code></pre>
+<h3 id="custom-type-not-working"><a class="header" href="#custom-type-not-working">Custom type not working</a></h3>
+<pre><code class="language-bash">$ rg --type-add 'my-type:*.foo' -t my-type pattern
+error: invalid type name
+</code></pre>
+<p><strong>Solution:</strong> Type names must be alphanumeric only (no hyphens, underscores, or other punctuation):</p>
+<pre><code class="language-bash">rg --type-add 'mytype:*.foo' -t mytype pattern
+</code></pre>
+<h3 id="type-matches-unwanted-files"><a class="header" href="#type-matches-unwanted-files">Type matches unwanted files</a></h3>
+<pre><code class="language-bash">$ rg -t python pattern
+# Searches too many files
+</code></pre>
+<p><strong>Solution:</strong> Check what globs the type uses with <code>--type-list</code>, then either:</p>
+<ul>
+<li>Use <code>--type-clear</code> and redefine it</li>
+<li>Combine with <code>-g</code> for more precise filtering</li>
+<li>Create a custom type with exactly the globs you want</li>
+</ul>
+<h3 id="type-settings-disappear"><a class="header" href="#type-settings-disappear">Type settings disappear</a></h3>
+<pre><code class="language-bash">$ rg --type-add 'web:*.html'
+$ rg -t web pattern  # Later invocation
+error: invalid value 'web' for '--type &lt;TYPE&gt;'
+</code></pre>
+<p><strong>Solution:</strong> Type definitions aren't persisted. Either:</p>
+<ul>
+<li>Add <code>--type-add</code> to every command</li>
+<li>Put type definitions in a configuration file (~/.ripgreprc)</li>
+<li>Use shell aliases for commonly used custom types</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="manual-filtering-globs.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="replacements.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="manual-filtering-globs.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="replacements.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

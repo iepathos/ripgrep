@@ -1,0 +1,435 @@
+<!DOCTYPE HTML>
+<html lang="en" class="dark sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Manual Filtering: Globs - ripgrep User Guide</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="A comprehensive guide to using ripgrep, a line-oriented search tool">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "dark";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('dark')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">ripgrep User Guide</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/BurntSushi/ripgrep" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/iepathos/ripgrep/edit/master/book/src/manual-filtering-globs.md" title="Suggest an edit" aria-label="Suggest an edit" rel="edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="manual-filtering-globs"><a class="header" href="#manual-filtering-globs">Manual Filtering: Globs</a></h1>
+<p>Glob patterns provide powerful manual control over which files ripgrep searches. The <code>-g/--glob</code> flag lets you include or exclude files using familiar wildcard syntax, always overriding automatic ignore logic from <code>.gitignore</code> and other sources.</p>
+<p>While <a href="automatic-filtering.html">automatic filtering</a> handles most common cases, glob patterns give you precise control when you need it. They're especially useful for one-off searches where you want to specify exactly which files to search or skip.</p>
+<h2 id="basic-glob-syntax"><a class="header" href="#basic-glob-syntax">Basic Glob Syntax</a></h2>
+<p>Glob patterns use several standard wildcards:</p>
+<ul>
+<li><code>*</code> - Matches zero or more characters (except <code>/</code>)</li>
+<li><code>?</code> - Matches exactly one character (except <code>/</code>)</li>
+<li><code>[ab]</code> - Matches one character from the set (a or b)</li>
+<li><code>{a,b}</code> - Matches either alternative (a or b)</li>
+</ul>
+<h3 id="wildcard-examples"><a class="header" href="#wildcard-examples">Wildcard Examples</a></h3>
+<p>Match all Rust files:</p>
+<pre><code class="language-bash">rg -g '*.rs' 'fn main'
+</code></pre>
+<p>Match files with single character before extension:</p>
+<pre><code class="language-bash">rg -g 'file?.txt' pattern
+</code></pre>
+<p>Match files starting with lowercase letters:</p>
+<pre><code class="language-bash">rg -g '[a-z]*' pattern
+</code></pre>
+<p>Match either Rust or TOML files:</p>
+<pre><code class="language-bash">rg -g '*.{rs,toml}' pattern
+</code></pre>
+<h2 id="character-classes"><a class="header" href="#character-classes">Character Classes</a></h2>
+<p>Character classes <code>[...]</code> provide flexible character matching:</p>
+<ul>
+<li><code>[ab]</code> - Matches <code>a</code> or <code>b</code></li>
+<li><code>[!ab]</code> - Matches any character except <code>a</code> or <code>b</code></li>
+<li><code>[a-z]</code> - Matches any character in the range (lowercase letters)</li>
+<li><code>[0-9]</code> - Matches any digit</li>
+</ul>
+<p>Examples:</p>
+<pre><code class="language-bash"># Match files starting with digits
+rg -g '[0-9]*' pattern
+
+# Match files NOT starting with dots (hidden files)
+rg -g '[!.]*' pattern
+
+# Match files with alphanumeric names
+rg -g '[a-zA-Z0-9]*' pattern
+</code></pre>
+<h2 id="recursive-matching-with-"><a class="header" href="#recursive-matching-with-">Recursive Matching with <code>**</code></a></h2>
+<p>The <code>**</code> wildcard matches zero or more directories, enabling recursive searches:</p>
+<pre><code class="language-bash"># Match foo in any directory
+rg -g '**/foo' pattern
+
+# Match all files under foo/
+rg -g 'foo/**' pattern
+
+# Match bar in any subdirectory of foo/
+rg -g 'foo/**/bar' pattern
+</code></pre>
+<h3 id="common-pitfall-directory-matching"><a class="header" href="#common-pitfall-directory-matching">Common Pitfall: Directory Matching</a></h3>
+<p>A frequent mistake is using <code>-g foo</code> to search directory <code>foo</code>. This glob matches files named exactly <code>foo</code>, not files inside the directory:</p>
+<pre><code class="language-bash"># ❌ Wrong: doesn't match foo/bar.rs
+rg -g 'foo' pattern
+
+# ✅ Correct: matches all files under foo/
+rg -g 'foo/**' pattern
+</code></pre>
+<p>Always use <code>foo/**</code> to match files within a directory.</p>
+<h2 id="include-and-exclude-patterns"><a class="header" href="#include-and-exclude-patterns">Include and Exclude Patterns</a></h2>
+<p>Prefix a glob with <code>!</code> to exclude files that match:</p>
+<pre><code class="language-bash"># Search all Rust files except tests
+rg -g '*.rs' -g '!test*.rs' pattern
+
+# Search src/ but exclude generated code
+rg -g 'src/**' -g '!**/generated/**' pattern
+</code></pre>
+<h3 id="precedence-rules"><a class="header" href="#precedence-rules">Precedence Rules</a></h3>
+<p>When multiple globs are specified, later patterns take precedence over earlier ones:</p>
+<pre><code class="language-bash"># Include all .rs files, then exclude test files
+rg -g '*.rs' -g '!**/tests/**' pattern
+
+# Exclude tests, but re-include integration tests
+rg -g '!**/tests/**' -g '**/tests/integration/**' pattern
+</code></pre>
+<p>This allows building complex filters by layering include and exclude patterns.</p>
+<h2 id="multiple-glob-patterns"><a class="header" href="#multiple-glob-patterns">Multiple Glob Patterns</a></h2>
+<p>The <code>-g/--glob</code> flag can be used multiple times. Each pattern applies independently, and a file is searched if any include pattern matches and no exclude pattern matches:</p>
+<pre><code class="language-bash"># Search both Rust and Python files
+rg -g '*.rs' -g '*.py' pattern
+
+# Search source files but exclude tests and examples
+rg -g 'src/**' -g '!**/tests/**' -g '!**/examples/**' pattern
+</code></pre>
+<p>Think of multiple <code>-g</code> flags as building up a filter set that refines which files to search.</p>
+<h2 id="brace-expansion"><a class="header" href="#brace-expansion">Brace Expansion</a></h2>
+<p>Ripgrep extends standard glob syntax with brace expansion for alternatives:</p>
+<pre><code class="language-bash"># Match either Rust or TOML files
+rg -g '*.{rs,toml}' pattern
+
+# Match multiple source directories
+rg -g '{src,lib,bin}/**/*.rs' pattern
+
+# Match multiple file patterns
+rg -g '{Cargo.toml,Cargo.lock,*.rs}' pattern
+</code></pre>
+<p><strong>Note:</strong> Empty alternatives like <code>{,c}</code> are not supported. This is a ripgrep extension beyond standard <code>.gitignore</code> syntax.</p>
+<h2 id="case-insensitive-globs"><a class="header" href="#case-insensitive-globs">Case-Insensitive Globs</a></h2>
+<p>Two flags control case sensitivity for glob matching:</p>
+<ul>
+<li><code>--iglob GLOB</code> - Single case-insensitive glob pattern</li>
+<li><code>--glob-case-insensitive</code> - Makes all <code>-g</code> patterns case-insensitive</li>
+</ul>
+<p>Examples:</p>
+<pre><code class="language-bash"># Match .html, .HTML, .Html, etc.
+rg --iglob '*.html' pattern
+
+# Make all globs case-insensitive
+rg --glob-case-insensitive -g '*.rs' -g '*.toml' pattern
+</code></pre>
+<p>Use <code>--iglob</code> when you need one case-insensitive pattern, or <code>--glob-case-insensitive</code> when all your patterns should ignore case.</p>
+<h2 id="gitignore-compatibility"><a class="header" href="#gitignore-compatibility">Gitignore Compatibility</a></h2>
+<p>Glob patterns use the same syntax as <code>.gitignore</code> files, making them familiar if you already use Git:</p>
+<ul>
+<li>Patterns match file paths relative to the search root</li>
+<li><code>*</code> doesn't match directory separators</li>
+<li><code>**</code> matches zero or more directories</li>
+<li><code>!</code> prefix for negation</li>
+</ul>
+<p>This compatibility means you can often copy patterns from <code>.gitignore</code> files directly into <code>-g</code> flags.</p>
+<h2 id="escaping-metacharacters"><a class="header" href="#escaping-metacharacters">Escaping Metacharacters</a></h2>
+<p>To match special characters literally, use character class notation:</p>
+<pre><code class="language-bash"># Match files with literal asterisk in name
+rg -g '*[*]*' pattern
+
+# Match files with literal question mark
+rg -g '*[?]*' pattern
+</code></pre>
+<p><strong>Note:</strong> Backslash escaping behavior is platform-dependent. Character classes provide reliable cross-platform escaping.</p>
+<h2 id="glob-override-behavior"><a class="header" href="#glob-override-behavior">Glob Override Behavior</a></h2>
+<p><strong>Important:</strong> Glob patterns always override automatic filtering from <code>.gitignore</code>, <code>.ignore</code>, and other sources. When you use <code>-g</code>, you're taking explicit control:</p>
+<pre><code class="language-bash"># Search all .rs files, even if .gitignore excludes them
+rg -g '*.rs' pattern
+
+# Search ignored directories
+rg -g 'target/**/*.rs' pattern
+</code></pre>
+<p>This override behavior gives you ultimate control when automatic filtering is too restrictive.</p>
+<h2 id="practical-examples"><a class="header" href="#practical-examples">Practical Examples</a></h2>
+<h3 id="search-only-rust-files"><a class="header" href="#search-only-rust-files">Search Only Rust Files</a></h3>
+<pre><code class="language-bash">rg -g '*.rs' 'use std'
+</code></pre>
+<h3 id="search-all-files-in-src"><a class="header" href="#search-all-files-in-src">Search All Files in src/</a></h3>
+<pre><code class="language-bash">rg -g 'src/**' 'TODO'
+</code></pre>
+<h3 id="exclude-test-directories"><a class="header" href="#exclude-test-directories">Exclude Test Directories</a></h3>
+<pre><code class="language-bash">rg -g '!**/test/**' -g '!**/tests/**' pattern
+</code></pre>
+<h3 id="combine-multiple-patterns"><a class="header" href="#combine-multiple-patterns">Combine Multiple Patterns</a></h3>
+<pre><code class="language-bash"># Search Rust and TOML in src/, excluding tests
+rg -g 'src/**/*.{rs,toml}' -g '!**/tests/**' pattern
+</code></pre>
+<h3 id="search-configuration-files"><a class="header" href="#search-configuration-files">Search Configuration Files</a></h3>
+<pre><code class="language-bash">rg -g '*.{toml,json,yaml,yml}' 'database'
+</code></pre>
+<h3 id="search-only-migration-files"><a class="header" href="#search-only-migration-files">Search Only Migration Files</a></h3>
+<pre><code class="language-bash">rg -g '**/migrations/**/*.sql' 'CREATE TABLE'
+</code></pre>
+<h2 id="comparison-globs-vs-type-filters"><a class="header" href="#comparison-globs-vs-type-filters">Comparison: Globs vs Type Filters</a></h2>
+<p>Globs provide more flexibility than type filters (<code>-t</code>), but type filters are more concise for common cases:</p>
+<div class="table-wrapper"><table><thead><tr><th>Goal</th><th>Type Filter</th><th>Glob Pattern</th></tr></thead><tbody>
+<tr><td>Search Rust files</td><td><code>-t rust</code></td><td><code>-g '*.rs'</code></td></tr>
+<tr><td>Search multiple types</td><td><code>-t rust -t python</code></td><td><code>-g '*.{rs,py}'</code></td></tr>
+<tr><td>Search specific directory</td><td>N/A</td><td><code>-g 'src/**'</code></td></tr>
+<tr><td>Exclude pattern</td><td><code>-T rust</code></td><td><code>-g '!*.rs'</code></td></tr>
+<tr><td>Complex filtering</td><td>N/A</td><td><code>-g 'src/**/*.rs' -g '!**/tests/**'</code></td></tr>
+</tbody></table>
+</div>
+<p>Use type filters when searching by file type. Use globs when you need path-based filtering or complex include/exclude logic.</p>
+<h2 id="preview-files-with---files"><a class="header" href="#preview-files-with---files">Preview Files with --files</a></h2>
+<p>Before running a search, preview which files match your globs using <code>--files</code>:</p>
+<pre><code class="language-bash"># See which files would be searched
+rg --files -g '*.rs' -g '!**/tests/**'
+</code></pre>
+<p>This helps verify your glob patterns match the files you expect.</p>
+<h2 id="performance-considerations"><a class="header" href="#performance-considerations">Performance Considerations</a></h2>
+<p>Glob patterns are evaluated for every file in the search tree. More specific patterns perform better than broad ones:</p>
+<pre><code class="language-bash"># ✅ Specific pattern (faster)
+rg -g 'src/**/*.rs' pattern
+
+# ❌ Broad pattern requiring more exclusions (slower)
+rg -g '**/*.rs' -g '!target/**' -g '!.git/**' -g '!vendor/**' pattern
+</code></pre>
+<p>When possible, use include patterns that target specific directories rather than exclude patterns that filter out large portions of the file tree.</p>
+<h2 id="summary"><a class="header" href="#summary">Summary</a></h2>
+<p>Glob patterns give you precise control over which files ripgrep searches:</p>
+<ul>
+<li>Use <code>-g/--glob</code> for manual file filtering</li>
+<li>Globs override all automatic ignore logic</li>
+<li>Support standard wildcards: <code>*</code>, <code>?</code>, <code>[...]</code>, <code>{a,b}</code></li>
+<li>Use <code>**</code> for recursive directory matching</li>
+<li>Prefix with <code>!</code> to exclude files</li>
+<li>Later patterns take precedence over earlier ones</li>
+<li>Compatible with <code>.gitignore</code> syntax</li>
+</ul>
+<p>For most searches, <a href="automatic-filtering.html">automatic filtering</a> handles file selection. Use globs when you need explicit control over which files to search or skip.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="automatic-filtering.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="manual-filtering-types.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="automatic-filtering.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="manual-filtering-types.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

@@ -1,0 +1,684 @@
+<!DOCTYPE HTML>
+<html lang="en" class="dark sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Common Options - ripgrep User Guide</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="A comprehensive guide to using ripgrep, a line-oriented search tool">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "dark";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('dark')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">ripgrep User Guide</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/BurntSushi/ripgrep" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/iepathos/ripgrep/edit/master/book/src/common-options.md" title="Suggest an edit" aria-label="Suggest an edit" rel="edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="common-options"><a class="header" href="#common-options">Common Options</a></h1>
+<p>This chapter covers the most frequently used ripgrep flags that you'll need on a daily basis. For a complete list of all options, run <code>rg --help</code>. For a concise reference of just the common flags, use <code>rg -h</code>.</p>
+<h2 id="search-basics"><a class="header" href="#search-basics">Search Basics</a></h2>
+<p>These flags control how patterns are interpreted and matched against text.</p>
+<h3 id="case-sensitivity"><a class="header" href="#case-sensitivity">Case Sensitivity</a></h3>
+<p>By default, ripgrep uses <strong>smart case</strong>: if your pattern is all lowercase, the search is case-insensitive; if it contains any uppercase letters, the search becomes case-sensitive.</p>
+<ul>
+<li>
+<p><strong><code>-i, --ignore-case</code></strong>: Force case-insensitive search regardless of pattern</p>
+<pre><code class="language-bash"># Find "error", "ERROR", "Error", etc.
+rg -i error
+</code></pre>
+<p>Useful when searching prose or when you want to catch all case variations.</p>
+</li>
+<li>
+<p><strong><code>-s, --case-sensitive</code></strong>: Force case-sensitive search</p>
+<pre><code class="language-bash"># Only find exact case match "Error"
+rg -s Error
+</code></pre>
+<p>Useful when searching code where case matters (e.g., distinguishing <code>Error</code> from <code>error</code>).</p>
+</li>
+<li>
+<p><strong><code>-S, --smart-case</code></strong>: Enable smart case (the default)</p>
+<pre><code class="language-bash">rg -S pattern  # Lowercase pattern → case-insensitive
+rg -S Pattern  # Uppercase present → case-sensitive
+</code></pre>
+</li>
+</ul>
+<h3 id="pattern-types"><a class="header" href="#pattern-types">Pattern Types</a></h3>
+<p>By default, ripgrep treats patterns as regular expressions. These flags change that behavior:</p>
+<ul>
+<li>
+<p><strong><code>-F, --fixed-strings</code></strong>: Treat pattern as a literal string, not a regex</p>
+<pre><code class="language-bash"># Find literal text "(.*)" without regex interpretation
+rg -F '(.*)'
+</code></pre>
+<p>Useful when searching for text containing regex special characters like <code>.*</code>, <code>[]</code>, <code>()</code>, etc.</p>
+</li>
+<li>
+<p><strong><code>-w, --word-regexp</code></strong>: Only match whole words</p>
+<pre><code class="language-bash"># Find "test" as a word, not "testing" or "attest"
+rg -w test
+</code></pre>
+<p>Uses word boundaries to ensure the pattern isn't part of a larger word.</p>
+</li>
+<li>
+<p><strong><code>-x, --line-regexp</code></strong>: Only match complete lines</p>
+<pre><code class="language-bash"># Find lines that contain exactly "import sys"
+rg -x 'import sys'
+</code></pre>
+</li>
+</ul>
+<h3 id="invert-match"><a class="header" href="#invert-match">Invert Match</a></h3>
+<ul>
+<li><strong><code>-v, --invert-match</code></strong>: Show lines that DON'T match the pattern
+<pre><code class="language-bash"># Show all lines except comments
+rg -v '^#'
+
+# Find files without TODOs
+rg -v TODO
+</code></pre>
+Useful for filtering out noise or finding the absence of something.</li>
+</ul>
+<h3 id="multiple-patterns"><a class="header" href="#multiple-patterns">Multiple Patterns</a></h3>
+<ul>
+<li>
+<p><strong><code>-e, --regexp PATTERN</code></strong>: Specify multiple patterns (match any)</p>
+<pre><code class="language-bash"># Find lines with "error" OR "warning"
+rg -e error -e warning
+</code></pre>
+</li>
+<li>
+<p><strong><code>-f, --file FILE</code></strong>: Read patterns from a file (one per line)</p>
+<pre><code class="language-bash"># Search for all patterns listed in patterns.txt
+rg -f patterns.txt
+</code></pre>
+</li>
+</ul>
+<h2 id="output-formatting"><a class="header" href="#output-formatting">Output Formatting</a></h2>
+<p>These flags control what information is displayed with each match.</p>
+<h3 id="line-numbers-and-filenames"><a class="header" href="#line-numbers-and-filenames">Line Numbers and Filenames</a></h3>
+<ul>
+<li>
+<p><strong><code>-n, --line-number</code></strong>: Show line numbers (default when searching files)</p>
+<pre><code class="language-bash">rg -n pattern
+# Output: file.txt:42:matching line
+</code></pre>
+</li>
+<li>
+<p><strong><code>-N, --no-line-number</code></strong>: Hide line numbers</p>
+<pre><code class="language-bash">rg -N pattern
+</code></pre>
+</li>
+<li>
+<p><strong><code>-H, --with-filename</code></strong>: Show filenames (default when searching multiple files)</p>
+<pre><code class="language-bash">rg -H pattern
+</code></pre>
+</li>
+<li>
+<p><strong><code>-I, --no-filename</code></strong>: Hide filenames</p>
+<pre><code class="language-bash">rg -I pattern
+</code></pre>
+</li>
+<li>
+<p><strong><code>--column</code></strong>: Show column numbers of matches</p>
+<pre><code class="language-bash">rg --column pattern
+# Output: file.txt:42:7:matching line
+#                    ^ column number
+</code></pre>
+</li>
+</ul>
+<h3 id="context-lines"><a class="header" href="#context-lines">Context Lines</a></h3>
+<p>Show lines before and/or after each match to understand the surrounding code:</p>
+<ul>
+<li>
+<p><strong><code>-A NUM, --after-context NUM</code></strong>: Show NUM lines after each match</p>
+<pre><code class="language-bash"># Show 3 lines after each match
+rg -A 3 'fn main'
+</code></pre>
+</li>
+<li>
+<p><strong><code>-B NUM, --before-context NUM</code></strong>: Show NUM lines before each match</p>
+<pre><code class="language-bash"># Show 2 lines before each match
+rg -B 2 'panic!'
+</code></pre>
+</li>
+<li>
+<p><strong><code>-C NUM, --context NUM</code></strong>: Show NUM lines before AND after each match</p>
+<pre><code class="language-bash"># Show 5 lines of context around each match
+rg -C 5 'struct Config'
+</code></pre>
+</li>
+</ul>
+<p>When showing context, ripgrep prints <code>--</code> as a separator between match groups.</p>
+<h3 id="match-output"><a class="header" href="#match-output">Match Output</a></h3>
+<ul>
+<li>
+<p><strong><code>-o, --only-matching</code></strong>: Print only the matched part of lines, not the full line</p>
+<pre><code class="language-bash"># Extract email addresses
+rg -o '\b\w+@\w+\.\w+\b'
+
+# Extract function names
+rg -o 'fn \w+' | rg -o '\w+$'
+</code></pre>
+<p>Useful for extracting specific data from files.</p>
+</li>
+<li>
+<p><strong><code>-r, --replace REPLACEMENT</code></strong>: Replace matched text in output (doesn't modify files)</p>
+<pre><code class="language-bash"># Show how lines would look with replacements
+rg 'foo' -r 'bar'
+
+# Use capture groups
+rg '(\w+)@(\w+)' -r '$2@$1'
+</code></pre>
+<p>This changes the display only. To modify files, use other tools like <code>sed</code>. See the <a href="./replacements.html">Replacements chapter</a> for more details.</p>
+</li>
+</ul>
+<h3 id="color-and-formatting"><a class="header" href="#color-and-formatting">Color and Formatting</a></h3>
+<ul>
+<li>
+<p><strong><code>--color WHEN</code></strong>: Control colored output</p>
+<ul>
+<li><code>auto</code> (default): Color if outputting to terminal</li>
+<li><code>always</code>: Force color even when piping</li>
+<li><code>never</code>: Disable color (useful for scripts)</li>
+</ul>
+<pre><code class="language-bash"># Force color for paging
+rg --color always pattern | less -R
+
+# Disable color for clean output
+rg --color never pattern &gt; results.txt
+</code></pre>
+</li>
+<li>
+<p><strong><code>-p, --pretty</code></strong>: Alias for <code>--color always --heading --line-number</code></p>
+<pre><code class="language-bash"># Human-friendly output with grouping and colors
+rg -p pattern
+</code></pre>
+<p>This is a convenient shorthand for readable output when piping to a pager.</p>
+</li>
+</ul>
+<h2 id="file-filtering"><a class="header" href="#file-filtering">File Filtering</a></h2>
+<p>These flags control which files are searched.</p>
+<h3 id="file-type-filtering"><a class="header" href="#file-type-filtering">File Type Filtering</a></h3>
+<ul>
+<li>
+<p><strong><code>-t, --type TYPE</code></strong>: Only search files of this type</p>
+<pre><code class="language-bash"># Search only Rust files
+rg -trust pattern
+
+# Search Python and JavaScript files
+rg -tpy -tjs pattern
+</code></pre>
+</li>
+<li>
+<p><strong><code>-T, --type-not TYPE</code></strong>: Exclude files of this type</p>
+<pre><code class="language-bash"># Search everything except log files
+rg -Tlog pattern
+</code></pre>
+</li>
+<li>
+<p><strong><code>--type-list</code></strong>: Show all supported file types</p>
+<pre><code class="language-bash">rg --type-list
+</code></pre>
+</li>
+</ul>
+<p>Ripgrep knows about common file extensions for popular languages and formats. You can also define custom types in your <a href="./configuration-file.html">configuration file</a>.</p>
+<h3 id="glob-patterns"><a class="header" href="#glob-patterns">Glob Patterns</a></h3>
+<ul>
+<li>
+<p><strong><code>-g, --glob PATTERN</code></strong>: Include/exclude files matching glob pattern</p>
+<pre><code class="language-bash"># Only search .rs files
+rg -g '*.rs' pattern
+
+# Search .py files in src/ directory tree
+rg -g 'src/**/*.py' pattern
+
+# Exclude minified JavaScript
+rg -g '!*.min.js' pattern
+
+# Combine multiple globs
+rg -g '*.{rs,toml}' pattern
+</code></pre>
+<p>Use <code>!</code> prefix to exclude. Globs use <code>*</code> for any chars and <code>**</code> for directory recursion.</p>
+</li>
+<li>
+<p><strong><code>--iglob PATTERN</code></strong>: Like <code>--glob</code> but case-insensitive</p>
+</li>
+</ul>
+<h3 id="unrestricted-search"><a class="header" href="#unrestricted-search">Unrestricted Search</a></h3>
+<p>The <code>-u</code> flag progressively removes ripgrep's smart filtering. Each <code>-u</code> adds more:</p>
+<ul>
+<li>
+<p><strong><code>-u</code></strong>: Don't respect <code>.gitignore</code> and other ignore files</p>
+<pre><code class="language-bash"># Search ignored files like those in .gitignore
+rg -u pattern
+</code></pre>
+</li>
+<li>
+<p><strong><code>-uu</code></strong>: Also search hidden files and binary files</p>
+<pre><code class="language-bash"># Search everything including hidden and binary files
+rg -uu pattern
+</code></pre>
+</li>
+<li>
+<p><strong><code>-uuu</code></strong>: Also don't filter out anything</p>
+<pre><code class="language-bash"># The kitchen sink - search absolutely everything
+rg -uuu pattern
+</code></pre>
+</li>
+</ul>
+<p>Use <code>-u</code> when you need to search <code>.gitignore</code>d files, <code>-uu</code> when you also need hidden/binary files, and <code>-uuu</code> for maximum coverage.</p>
+<h3 id="hidden-files-and-symlinks"><a class="header" href="#hidden-files-and-symlinks">Hidden Files and Symlinks</a></h3>
+<ul>
+<li>
+<p><strong><code>--hidden, -.</code></strong>: Search hidden files and directories (those starting with <code>.</code>)</p>
+<pre><code class="language-bash"># Search .config files
+rg --hidden 'database'
+</code></pre>
+<p>By default, hidden files are skipped.</p>
+</li>
+<li>
+<p><strong><code>-L, --follow</code></strong>: Follow symbolic links</p>
+<pre><code class="language-bash">rg -L pattern
+</code></pre>
+<p>By default, symlinks are not followed (to avoid cycles and duplication).</p>
+</li>
+</ul>
+<h3 id="directory-depth"><a class="header" href="#directory-depth">Directory Depth</a></h3>
+<ul>
+<li><strong><code>-d, --max-depth NUM</code></strong>: Limit directory recursion depth
+<pre><code class="language-bash"># Search only current directory (no subdirectories)
+rg -d 1 pattern
+
+# Descend at most 3 levels
+rg -d 3 pattern
+</code></pre>
+</li>
+</ul>
+<h3 id="file-size-limits"><a class="header" href="#file-size-limits">File Size Limits</a></h3>
+<ul>
+<li><strong><code>--max-filesize NUM+SUFFIX</code></strong>: Ignore files larger than this size
+<pre><code class="language-bash"># Skip files larger than 100KB
+rg --max-filesize 100K pattern
+
+# Skip files larger than 5MB
+rg --max-filesize 5M pattern
+</code></pre>
+Suffixes: <code>K</code> (kilobytes), <code>M</code> (megabytes), <code>G</code> (gigabytes).</li>
+</ul>
+<h2 id="output-modes"><a class="header" href="#output-modes">Output Modes</a></h2>
+<p>Instead of showing matching lines, these flags produce alternative output formats.</p>
+<h3 id="counting"><a class="header" href="#counting">Counting</a></h3>
+<ul>
+<li>
+<p><strong><code>-c, --count</code></strong>: Show count of matching lines per file</p>
+<pre><code class="language-bash">rg -c 'TODO'
+# src/main.rs:5
+# src/lib.rs:12
+</code></pre>
+</li>
+<li>
+<p><strong><code>--count-matches</code></strong>: Show count of all matches (not just lines)</p>
+<pre><code class="language-bash"># Count total occurrences, not just lines
+rg --count-matches 'TODO'
+</code></pre>
+<p>Difference: if a line has 3 matches, <code>-c</code> counts it as 1, <code>--count-matches</code> counts it as 3.</p>
+</li>
+</ul>
+<h3 id="listing-files"><a class="header" href="#listing-files">Listing Files</a></h3>
+<ul>
+<li>
+<p><strong><code>-l, --files-with-matches</code></strong>: Only print filenames containing matches</p>
+<pre><code class="language-bash"># List files with TODOs
+rg -l 'TODO'
+</code></pre>
+</li>
+<li>
+<p><strong><code>--files-without-match</code></strong>: Only print filenames with NO matches</p>
+<pre><code class="language-bash"># Find files missing copyright headers
+rg --files-without-match 'Copyright'
+</code></pre>
+</li>
+<li>
+<p><strong><code>--files</code></strong>: List all files that would be searched (ignore pattern)</p>
+<pre><code class="language-bash"># Show which files ripgrep would search
+rg --files
+
+# List all Rust files
+rg --files -trust
+</code></pre>
+</li>
+</ul>
+<h3 id="quiet-mode"><a class="header" href="#quiet-mode">Quiet Mode</a></h3>
+<ul>
+<li><strong><code>-q, --quiet</code></strong>: Suppress all output, exit with code 0 if match found
+<pre><code class="language-bash"># Use in scripts for conditional logic
+if rg -q 'deprecated' src/; then
+  echo "Found deprecated code!"
+fi
+</code></pre>
+Exits immediately on first match for performance.</li>
+</ul>
+<h2 id="performance-and-limits"><a class="header" href="#performance-and-limits">Performance and Limits</a></h2>
+<h3 id="match-limits"><a class="header" href="#match-limits">Match Limits</a></h3>
+<ul>
+<li><strong><code>-m, --max-count NUM</code></strong>: Stop after NUM matches per file
+<pre><code class="language-bash"># Show just first 5 matches in each file
+rg -m 5 pattern
+</code></pre>
+Useful for quick sampling or improving performance on large codebases.</li>
+</ul>
+<h3 id="parallelism"><a class="header" href="#parallelism">Parallelism</a></h3>
+<ul>
+<li><strong><code>-j, --threads NUM</code></strong>: Number of threads to use (default: auto-detect)
+<pre><code class="language-bash"># Use 4 threads
+rg -j 4 pattern
+
+# Single-threaded (for debugging)
+rg -j 1 pattern
+</code></pre>
+</li>
+</ul>
+<h3 id="memory-mapped-io"><a class="header" href="#memory-mapped-io">Memory-Mapped I/O</a></h3>
+<ul>
+<li><strong><code>--mmap</code></strong>: Use memory-mapped I/O (sometimes faster)</li>
+<li><strong><code>--no-mmap</code></strong>: Don't use memory mapping (the default)
+<pre><code class="language-bash"># Try mmap for potentially faster searches
+rg --mmap pattern
+</code></pre>
+Memory mapping can be faster on some systems but uses more memory.</li>
+</ul>
+<h2 id="getting-help"><a class="header" href="#getting-help">Getting Help</a></h2>
+<ul>
+<li>
+<p><strong><code>-h</code></strong>: Show short help with the most common flags</p>
+<pre><code class="language-bash">rg -h
+</code></pre>
+<p>This is a condensed version showing just what you need most often.</p>
+</li>
+<li>
+<p><strong><code>--help</code></strong>: Show comprehensive help with all flags and detailed descriptions</p>
+<pre><code class="language-bash">rg --help
+</code></pre>
+</li>
+<li>
+<p><strong><code>-V, --version</code></strong>: Show version information</p>
+<pre><code class="language-bash">rg -V
+</code></pre>
+</li>
+<li>
+<p><strong><code>--type-list</code></strong>: List all recognized file types</p>
+<pre><code class="language-bash">rg --type-list
+</code></pre>
+</li>
+</ul>
+<h2 id="quick-reference"><a class="header" href="#quick-reference">Quick Reference</a></h2>
+<p>Here are the most essential flags for daily use:</p>
+<div class="table-wrapper"><table><thead><tr><th>Flag</th><th>Purpose</th><th>Example</th></tr></thead><tbody>
+<tr><td><code>-i</code></td><td>Case-insensitive search</td><td><code>rg -i error</code></td></tr>
+<tr><td><code>-w</code></td><td>Match whole words only</td><td><code>rg -w test</code></td></tr>
+<tr><td><code>-F</code></td><td>Literal string (not regex)</td><td><code>rg -F '(.*)'</code></td></tr>
+<tr><td><code>-v</code></td><td>Invert match (non-matching lines)</td><td><code>rg -v TODO</code></td></tr>
+<tr><td><code>-c</code></td><td>Count matches per file</td><td><code>rg -c pattern</code></td></tr>
+<tr><td><code>-l</code></td><td>List files with matches</td><td><code>rg -l pattern</code></td></tr>
+<tr><td><code>-A/-B/-C</code></td><td>Show context lines</td><td><code>rg -C 3 pattern</code></td></tr>
+<tr><td><code>-t</code></td><td>Filter by file type</td><td><code>rg -trust pattern</code></td></tr>
+<tr><td><code>-g</code></td><td>Filter by glob pattern</td><td><code>rg -g '*.rs' pattern</code></td></tr>
+<tr><td><code>-u</code></td><td>Search ignored files</td><td><code>rg -u pattern</code></td></tr>
+<tr><td><code>--hidden</code></td><td>Search hidden files</td><td><code>rg --hidden pattern</code></td></tr>
+</tbody></table>
+</div>
+<h2 id="combining-flags"><a class="header" href="#combining-flags">Combining Flags</a></h2>
+<p>Many flags work well together:</p>
+<pre><code class="language-bash"># Case-insensitive search in Python files only, with context
+rg -i -tpy -C 2 'database connection'
+
+# Count TODOs in Rust files, including ignored files
+rg -c -trust -u 'TODO'
+
+# List JavaScript files containing "deprecated", exclude minified files
+rg -l -tjs -g '!*.min.js' 'deprecated'
+
+# Pretty output with context, search hidden config files
+rg -p -C 5 --hidden 'password'
+</code></pre>
+<h2 id="comparison-with-grep"><a class="header" href="#comparison-with-grep">Comparison with grep</a></h2>
+<p>If you're coming from <code>grep</code>, here are some equivalents:</p>
+<div class="table-wrapper"><table><thead><tr><th>grep</th><th>ripgrep</th><th>Notes</th></tr></thead><tbody>
+<tr><td><code>grep -r</code></td><td><code>rg</code></td><td>Recursive by default</td></tr>
+<tr><td><code>grep -i</code></td><td><code>rg -i</code></td><td>Case-insensitive</td></tr>
+<tr><td><code>grep -n</code></td><td><code>rg -n</code></td><td>Line numbers (default in rg)</td></tr>
+<tr><td><code>grep -v</code></td><td><code>rg -v</code></td><td>Invert match</td></tr>
+<tr><td><code>grep -c</code></td><td><code>rg -c</code></td><td>Count matches</td></tr>
+<tr><td><code>grep -l</code></td><td><code>rg -l</code></td><td>List files with matches</td></tr>
+<tr><td><code>grep -w</code></td><td><code>rg -w</code></td><td>Word boundaries</td></tr>
+<tr><td><code>grep -F</code></td><td><code>rg -F</code></td><td>Fixed strings (literal)</td></tr>
+<tr><td><code>grep -A/-B/-C</code></td><td><code>rg -A/-B/-C</code></td><td>Context lines</td></tr>
+</tbody></table>
+</div>
+<p>Ripgrep respects <code>.gitignore</code> by default (use <code>-u</code> to disable), shows colors automatically, and is generally faster.</p>
+<h2 id="see-also"><a class="header" href="#see-also">See Also</a></h2>
+<ul>
+<li><a href="./regex.html">Regular Expressions</a> - Learn ripgrep's regex syntax</li>
+<li><a href="./replacements.html">Replacements</a> - Detailed guide to the <code>-r</code> flag and capture groups</li>
+<li><a href="./configuration-file.html">Configuration File</a> - Set default flags and custom file types</li>
+<li><a href="./file-encoding.html">File Encoding</a> - Handle different text encodings</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="preprocessor.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="context-lines.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="preprocessor.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="context-lines.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

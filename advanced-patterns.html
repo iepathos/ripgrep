@@ -1,0 +1,873 @@
+<!DOCTYPE HTML>
+<html lang="en" class="dark sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Advanced Patterns - ripgrep User Guide</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="A comprehensive guide to using ripgrep, a line-oriented search tool">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "dark";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('dark')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">ripgrep User Guide</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/BurntSushi/ripgrep" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/iepathos/ripgrep/edit/master/book/src/advanced-patterns.md" title="Suggest an edit" aria-label="Suggest an edit" rel="edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="advanced-patterns"><a class="header" href="#advanced-patterns">Advanced Patterns</a></h1>
+<p>This chapter covers advanced regex pattern features in ripgrep, including multiline search, PCRE2 engine support, lookaround assertions, backreferences, Unicode patterns, and performance considerations.</p>
+<h2 id="table-of-contents"><a class="header" href="#table-of-contents">Table of Contents</a></h2>
+<ul>
+<li><a href="#multiline-search">Multiline Search</a></li>
+<li><a href="#pcre2-engine">PCRE2 Engine</a></li>
+<li><a href="#lookaround-assertions">Lookaround Assertions</a></li>
+<li><a href="#backreferences">Backreferences</a></li>
+<li><a href="#unicode-patterns">Unicode Patterns</a></li>
+<li><a href="#engine-selection">Engine Selection</a></li>
+<li><a href="#named-capture-groups">Named Capture Groups</a></li>
+<li><a href="#inline-regex-flags">Inline Regex Flags</a></li>
+<li><a href="#performance-considerations">Performance Considerations</a></li>
+<li><a href="#limitations-and-gotchas">Limitations and Gotchas</a></li>
+<li><a href="#practical-examples">Practical Examples</a></li>
+<li><a href="#regex-limits">Regex Limits</a></li>
+</ul>
+<h2 id="multiline-search"><a class="header" href="#multiline-search">Multiline Search</a></h2>
+<p>By default, ripgrep searches line-by-line, and patterns cannot match across line boundaries. The <code>-U</code> or <code>--multiline</code> flag enables multiline mode, allowing patterns to match text that spans multiple lines.</p>
+<h3 id="basic-usage"><a class="header" href="#basic-usage">Basic Usage</a></h3>
+<pre><code class="language-bash"># Search for "foo" followed by "bar" on the next line
+rg -U 'foo\nbar'
+
+# Match patterns spanning multiple lines
+rg -U 'struct.*\{.*field'
+</code></pre>
+<h3 id="how-multiline-mode-works"><a class="header" href="#how-multiline-mode-works">How Multiline Mode Works</a></h3>
+<p>When multiline mode is enabled:</p>
+<ol>
+<li>Ripgrep reads entire files into memory instead of processing line-by-line</li>
+<li>The pattern can include <code>\n</code> to match newlines</li>
+<li>The <code>.</code> metacharacter still does <strong>not</strong> match newlines by default (see <a href="#multiline-dotall-mode">Multiline Dotall</a>)</li>
+<li>Use <code>\p{any}</code> to match any character including newlines</li>
+</ol>
+<h3 id="memory-implications"><a class="header" href="#memory-implications">Memory Implications</a></h3>
+<p><strong>Important</strong>: Multiline mode requires reading entire files into memory, which has performance implications:</p>
+<ul>
+<li>Cannot use memory mapping for stdin</li>
+<li>Large files consume more memory</li>
+<li>Slower than line-by-line search for most cases</li>
+</ul>
+<p>However, ripgrep automatically optimizes when possible. If your pattern contains <code>\n</code> but doesn't actually need to match across lines, the memory penalty is avoided.</p>
+<h3 id="when-to-use-multiline"><a class="header" href="#when-to-use-multiline">When to Use Multiline</a></h3>
+<p>Use multiline mode when:</p>
+<ul>
+<li>Searching for patterns that span lines (e.g., multi-line log entries)</li>
+<li>Matching code blocks with specific structure</li>
+<li>Finding XML/JSON elements spanning multiple lines</li>
+</ul>
+<p><strong>Example</strong>: Finding multi-line function definitions</p>
+<pre><code class="language-bash">rg -U 'fn \w+\(.*\).*\{.*\}'
+</code></pre>
+<h2 id="multiline-dotall-mode"><a class="header" href="#multiline-dotall-mode">Multiline Dotall Mode</a></h2>
+<p>Even in multiline mode, the <code>.</code> metacharacter does <strong>not</strong> match newlines by default. To make <code>.</code> match newlines, use the <code>--multiline-dotall</code> flag.</p>
+<h3 id="using-multiline-dotall"><a class="header" href="#using-multiline-dotall">Using Multiline Dotall</a></h3>
+<pre><code class="language-bash"># This FAILS - . doesn't match \n
+rg -U 'world.+detective'
+
+# This SUCCEEDS - . now matches \n
+rg -U --multiline-dotall 'world.+detective'
+</code></pre>
+<h3 id="alternative-inline-syntax"><a class="header" href="#alternative-inline-syntax">Alternative: Inline Syntax</a></h3>
+<p>You can enable dotall mode inline using the <code>(?s)</code> flag:</p>
+<pre><code class="language-bash"># Enable dotall for the entire pattern
+rg -U '(?s)world.+detective'
+
+# Enable dotall for specific part only
+rg -U 'world(?s:.+)detective'
+</code></pre>
+<h3 any="">Using \p</h3>
+<p>The <code>\p{any}</code> Unicode character class always matches any character including newlines, regardless of dotall mode:</p>
+<pre><code class="language-bash"># This always works, with or without --multiline-dotall
+rg -U 'world\p{any}+detective'
+</code></pre>
+<h2 id="pcre2-engine"><a class="header" href="#pcre2-engine">PCRE2 Engine</a></h2>
+<p>Ripgrep supports two regex engines:</p>
+<ol>
+<li><strong>Default engine</strong>: Fast Rust regex with finite automata</li>
+<li><strong>PCRE2 engine</strong>: Provides advanced features like lookaround and backreferences</li>
+</ol>
+<h3 id="enabling-pcre2"><a class="header" href="#enabling-pcre2">Enabling PCRE2</a></h3>
+<p>Use the <code>-P</code> or <code>--pcre2</code> flag to enable the PCRE2 engine:</p>
+<pre><code class="language-bash"># Use PCRE2 for lookahead
+rg -P 'foo(?=bar)'
+
+# Check if PCRE2 is available
+rg --pcre2-version
+</code></pre>
+<h3 id="pcre2-availability"><a class="header" href="#pcre2-availability">PCRE2 Availability</a></h3>
+<p>PCRE2 is an optional compile-time feature. Check availability with:</p>
+<pre><code class="language-bash">rg --pcre2-version
+</code></pre>
+<p>If PCRE2 is not compiled in, this command exits with an error.</p>
+<h3 id="default-vs-pcre2-features"><a class="header" href="#default-vs-pcre2-features">Default vs PCRE2 Features</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Feature</th><th>Default Engine</th><th>PCRE2 Engine</th></tr></thead><tbody>
+<tr><td>Basic regex</td><td>✓</td><td>✓</td></tr>
+<tr><td>Character classes</td><td>✓</td><td>✓</td></tr>
+<tr><td>Quantifiers</td><td>✓</td><td>✓</td></tr>
+<tr><td>Unicode support</td><td>✓</td><td>✓</td></tr>
+<tr><td>Named captures</td><td>✓</td><td>✓</td></tr>
+<tr><td>Lookahead/Lookbehind</td><td>✗</td><td>✓</td></tr>
+<tr><td>Backreferences</td><td>✗</td><td>✓</td></tr>
+<tr><td>Performance</td><td>Faster</td><td>Slower</td></tr>
+<tr><td>Error messages</td><td>Better</td><td>Less helpful</td></tr>
+</tbody></table>
+</div>
+<h3 id="when-to-use-pcre2"><a class="header" href="#when-to-use-pcre2">When to Use PCRE2</a></h3>
+<p>Use PCRE2 when you need:</p>
+<ul>
+<li>Lookahead or lookbehind assertions</li>
+<li>Backreferences for matching repeated patterns</li>
+<li>Complex pattern features not in the default engine</li>
+</ul>
+<p>For most searches, the default engine is faster and sufficient.</p>
+<h3 id="pcre2-error-messages"><a class="header" href="#pcre2-error-messages">PCRE2 Error Messages</a></h3>
+<p><strong>Warning</strong>: PCRE2 provides less helpful error messages than the default engine. If you get cryptic errors, try your pattern with the default engine first to debug.</p>
+<h2 id="lookaround-assertions"><a class="header" href="#lookaround-assertions">Lookaround Assertions</a></h2>
+<p>Lookaround assertions match patterns based on surrounding context without including that context in the match. <strong>Requires PCRE2</strong> (<code>-P</code> flag).</p>
+<h3 id="types-of-lookaround"><a class="header" href="#types-of-lookaround">Types of Lookaround</a></h3>
+<ol>
+<li><strong>Positive Lookahead</strong> <code>(?=...)</code>: Assert pattern ahead matches</li>
+<li><strong>Negative Lookahead</strong> <code>(?!...)</code>: Assert pattern ahead doesn't match</li>
+<li><strong>Positive Lookbehind</strong> <code>(?&lt;=...)</code>: Assert pattern behind matches</li>
+<li><strong>Negative Lookbehind</strong> <code>(?&lt;!...)</code>: Assert pattern behind doesn't match</li>
+</ol>
+<h3 id="lookahead-examples"><a class="header" href="#lookahead-examples">Lookahead Examples</a></h3>
+<pre><code class="language-bash"># Find lines ending with 'o' before the last word
+rg -P '.*o(?!.*\s)'
+
+# Find "foo" only if followed by "bar"
+rg -P 'foo(?=bar)'
+
+# Find "foo" NOT followed by "bar"
+rg -P 'foo(?!bar)'
+</code></pre>
+<h3 id="lookbehind-examples"><a class="header" href="#lookbehind-examples">Lookbehind Examples</a></h3>
+<pre><code class="language-bash"># Find "bar" preceded by "foo" on previous line (requires multiline)
+rg -UP '(?&lt;=foo\n)bar'
+
+# Find digits preceded by "$"
+rg -P '(?&lt;=\$)\d+'
+
+# Find words NOT preceded by "un"
+rg -P '(?&lt;!un)\w+able'
+</code></pre>
+<h3 id="combining-with---only-matching"><a class="header" href="#combining-with---only-matching">Combining with --only-matching</a></h3>
+<p>Lookaround is powerful when combined with <code>-o</code>/<code>--only-matching</code> for precise extraction:</p>
+<pre><code class="language-bash"># Extract numbers preceded by "$"
+rg -Po '(?&lt;=\$)\d+\.?\d*'
+
+# Extract words between quotes
+rg -Po '(?&lt;=").*?(?=")'
+</code></pre>
+<h3 id="use-cases"><a class="header" href="#use-cases">Use Cases</a></h3>
+<p>Lookaround assertions are useful for:</p>
+<ul>
+<li>Filtering matches based on context</li>
+<li>Extracting specific parts without surrounding text</li>
+<li>Complex validation patterns</li>
+<li>Finding patterns with specific neighboring content</li>
+</ul>
+<h2 id="backreferences"><a class="header" href="#backreferences">Backreferences</a></h2>
+<p>Backreferences allow you to match previously captured groups. <strong>Requires PCRE2</strong> (<code>-P</code> flag).</p>
+<h3 id="numbered-backreferences"><a class="header" href="#numbered-backreferences">Numbered Backreferences</a></h3>
+<pre><code class="language-bash"># Find repeated words (word followed by same word)
+rg -P '(\w+)\s+\1'
+
+# Find repeated patterns
+rg -P '(\d{3})-\1'
+</code></pre>
+<p>The <code>\1</code> refers to the first capture group, <code>\2</code> to the second, etc.</p>
+<h3 id="named-backreferences"><a class="header" href="#named-backreferences">Named Backreferences</a></h3>
+<p>Use named captures with <code>(?P&lt;name&gt;...)</code> and reference with <code>\k&lt;name&gt;</code>:</p>
+<pre><code class="language-bash"># Find repeated words using named captures
+rg -P '(?P&lt;word&gt;\w+)\s+\k&lt;word&gt;'
+</code></pre>
+<h3 id="backreferences-in-replacements"><a class="header" href="#backreferences-in-replacements">Backreferences in Replacements</a></h3>
+<p>Backreferences are particularly useful with the <code>-r</code> flag for replacements:</p>
+<pre><code class="language-bash"># Swap two words
+rg -P '(\w+)\s+(\w+)' -r '$2 $1'
+
+# Transform patterns
+rg -P '(\w+)@(\w+)\.com' -r 'User: $1, Domain: $2'
+</code></pre>
+<p>See the <a href="./replacements.html">Replacements chapter</a> for more details.</p>
+<h3 id="performance-note"><a class="header" href="#performance-note">Performance Note</a></h3>
+<p>Backreferences prevent some regex optimizations, which can make searches slower. Use them only when necessary.</p>
+<h2 id="unicode-patterns"><a class="header" href="#unicode-patterns">Unicode Patterns</a></h2>
+<p>Ripgrep has excellent Unicode support enabled by default. All regex metacharacters are Unicode-aware.</p>
+<h3 id="unicode-character-classes"><a class="header" href="#unicode-character-classes">Unicode Character Classes</a></h3>
+<p>Use <code>\p{Property}</code> syntax to match Unicode character properties:</p>
+<pre><code class="language-bash"># Find emoji
+rg '\p{Emoji}'
+
+# Find Greek text
+rg '\p{Greek}+'
+
+# Find alphabetic characters (all scripts)
+rg '\p{Alphabetic}+'
+
+# Find uppercase letters (all scripts)
+rg '\p{Uppercase}+'
+</code></pre>
+<h3 id="common-unicode-properties"><a class="header" href="#common-unicode-properties">Common Unicode Properties</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Property</th><th>Matches</th></tr></thead><tbody>
+<tr><td><code>\p{Emoji}</code></td><td>Emoji characters</td></tr>
+<tr><td><code>\p{Greek}</code></td><td>Greek script</td></tr>
+<tr><td><code>\p{Han}</code></td><td>Chinese characters</td></tr>
+<tr><td><code>\p{Cyrillic}</code></td><td>Cyrillic script</td></tr>
+<tr><td><code>\p{Alphabetic}</code></td><td>Alphabetic characters</td></tr>
+<tr><td><code>\p{Uppercase}</code></td><td>Uppercase letters</td></tr>
+<tr><td><code>\p{Lowercase}</code></td><td>Lowercase letters</td></tr>
+<tr><td><code>\p{White_Space}</code></td><td>Whitespace</td></tr>
+<tr><td><code>\p{any}</code></td><td>Any character (including newlines)</td></tr>
+</tbody></table>
+</div>
+<h3 id="unicode-aware-metacharacters"><a class="header" href="#unicode-aware-metacharacters">Unicode-Aware Metacharacters</a></h3>
+<p>By default, these metacharacters are Unicode-aware:</p>
+<ul>
+<li><code>\w</code>: Matches all Unicode word characters (not just ASCII)</li>
+<li><code>\s</code>: Matches all Unicode whitespace</li>
+<li><code>\d</code>: Matches Unicode decimal digits</li>
+<li><code>\b</code>: Unicode word boundaries</li>
+</ul>
+<pre><code class="language-bash"># Match Unicode word characters (includes accented letters, etc.)
+rg '\w+'
+
+# Match Unicode whitespace
+rg '\s+'
+</code></pre>
+<h3 id="case-insensitive-unicode"><a class="header" href="#case-insensitive-unicode">Case-Insensitive Unicode</a></h3>
+<p>The <code>-i</code> flag performs Unicode case folding:</p>
+<pre><code class="language-bash"># Matches "café", "CAFÉ", "Café", etc.
+rg -i 'café'
+
+# Works across all scripts
+rg -i 'Σ'  # Matches Σ and σ (Greek)
+</code></pre>
+<h3 id="disabling-unicode"><a class="header" href="#disabling-unicode">Disabling Unicode</a></h3>
+<p>For ASCII-only searches with better performance, use <code>--no-unicode</code>:</p>
+<pre><code class="language-bash"># ASCII-only mode (faster for ASCII text)
+rg --no-unicode '\w+'
+</code></pre>
+<p><strong>Note</strong>: <code>--no-unicode</code> affects the entire search, not individual patterns.</p>
+<h2 id="engine-selection"><a class="header" href="#engine-selection">Engine Selection</a></h2>
+<p>The <code>--engine</code> flag allows you to explicitly choose which regex engine to use, or let ripgrep choose automatically.</p>
+<h3 id="engine-options"><a class="header" href="#engine-options">Engine Options</a></h3>
+<pre><code class="language-bash"># Use default Rust regex engine (fastest)
+rg --engine=default 'pattern'
+
+# Use PCRE2 engine (advanced features)
+rg --engine=pcre2 'pattern'
+
+# Automatically choose based on pattern (recommended for complex patterns)
+rg --engine=auto 'pattern'
+</code></pre>
+<h3 id="auto-engine-selection"><a class="header" href="#auto-engine-selection">Auto Engine Selection</a></h3>
+<p>The <code>auto</code> option analyzes your pattern and chooses the appropriate engine:</p>
+<ul>
+<li>Uses <strong>PCRE2</strong> if pattern requires lookaround or backreferences</li>
+<li>Uses <strong>default</strong> engine otherwise for better performance</li>
+</ul>
+<pre><code class="language-bash"># Uses PCRE2 automatically (requires lookahead)
+rg --engine=auto 'foo(?=bar)'
+
+# Uses default engine automatically (no PCRE2 features)
+rg --engine=auto 'foo.*bar'
+</code></pre>
+<h3 id="tradeoffs"><a class="header" href="#tradeoffs">Tradeoffs</a></h3>
+<p><strong>Explicit engine choice</strong> (<code>default</code> or <code>pcre2</code>):</p>
+<ul>
+<li>Predictable performance</li>
+<li>Clear error messages if features unavailable</li>
+<li>Recommended for scripts and automation</li>
+</ul>
+<p><strong>Auto engine</strong> (<code>auto</code>):</p>
+<ul>
+<li>Convenient for interactive use</li>
+<li>May have surprising performance changes with pattern modifications</li>
+<li>Good for complex ad-hoc queries</li>
+</ul>
+<h3 id="deprecated-flag"><a class="header" href="#deprecated-flag">Deprecated Flag</a></h3>
+<p><strong>Note</strong>: <code>--auto-hybrid-regex</code> is deprecated. Use <code>--engine=auto</code> instead.</p>
+<h2 id="named-capture-groups"><a class="header" href="#named-capture-groups">Named Capture Groups</a></h2>
+<p>Named capture groups make complex patterns more readable and are essential for sophisticated replacements.</p>
+<h3 id="defining-named-captures"><a class="header" href="#defining-named-captures">Defining Named Captures</a></h3>
+<p>Both engines support named capture groups with <code>(?P&lt;name&gt;...)</code> syntax:</p>
+<pre><code class="language-bash"># Define named groups
+rg '(?P&lt;func&gt;\w+)\((?P&lt;args&gt;.*)\)'
+</code></pre>
+<h3 id="using-named-captures-in-replacements"><a class="header" href="#using-named-captures-in-replacements">Using Named Captures in Replacements</a></h3>
+<p>Reference named captures in replacements with <code>$name</code> or <code>${name}</code>:</p>
+<pre><code class="language-bash"># Extract function names
+rg '(?P&lt;func&gt;\w+)\(' -r 'Function: $func'
+
+# Restructure matches
+rg '(?P&lt;first&gt;\w+), (?P&lt;last&gt;\w+)' -r '$last, $first'
+
+# Use braces for disambiguation
+rg '(?P&lt;word&gt;\w+)' -r '${word}s'  # Pluralize
+</code></pre>
+<h3 id="named-vs-numbered-captures"><a class="header" href="#named-vs-numbered-captures">Named vs Numbered Captures</a></h3>
+<pre><code class="language-bash"># Numbered captures ($1, $2, ...)
+rg '(\w+)@(\w+)\.com' -r 'User: $1, Domain: $2'
+
+# Named captures (more readable for complex patterns)
+rg '(?P&lt;user&gt;\w+)@(?P&lt;domain&gt;\w+)\.com' -r 'User: $user, Domain: $domain'
+</code></pre>
+<p>Named captures are particularly valuable for:</p>
+<ul>
+<li>Complex patterns with many capture groups</li>
+<li>Making replacement expressions self-documenting</li>
+<li>Maintaining readability in large patterns</li>
+</ul>
+<p>See the <a href="./replacements.html">Replacements chapter</a> for more examples.</p>
+<h2 id="inline-regex-flags"><a class="header" href="#inline-regex-flags">Inline Regex Flags</a></h2>
+<p>Inline flags allow you to control regex behavior within the pattern itself.</p>
+<h3 id="common-inline-flags"><a class="header" href="#common-inline-flags">Common Inline Flags</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Flag</th><th>Effect</th></tr></thead><tbody>
+<tr><td><code>(?s)</code></td><td>Dotall: <code>.</code> matches newlines</td></tr>
+<tr><td><code>(?i)</code></td><td>Case-insensitive</td></tr>
+<tr><td><code>(?m)</code></td><td>Multi-line: <code>^</code> and <code>$</code> match line boundaries</td></tr>
+<tr><td><code>(?x)</code></td><td>Verbose: allow whitespace and comments</td></tr>
+<tr><td><code>(?-s)</code></td><td>Disable dotall</td></tr>
+<tr><td><code>(?-i)</code></td><td>Case-sensitive</td></tr>
+</tbody></table>
+</div>
+<h3 id="inline-flag-syntax"><a class="header" href="#inline-flag-syntax">Inline Flag Syntax</a></h3>
+<p>Two ways to use inline flags:</p>
+<ol>
+<li><strong>For entire pattern</strong>: <code>(?flags)pattern</code></li>
+<li><strong>For specific part</strong>: <code>(?flags:pattern)</code></li>
+</ol>
+<pre><code class="language-bash"># Dotall for entire pattern
+rg -U '(?s)world.+detective'
+
+# Dotall only for middle part
+rg -U 'world(?s:.+)detective'
+
+# Case-insensitive for specific part
+rg 'foo(?i:bar|baz)qux'  # Matches "foobarqux", "fooBarqux", "fooBAZqux"
+</code></pre>
+<h3 id="flag-precedence"><a class="header" href="#flag-precedence">Flag Precedence</a></h3>
+<p>Inline flags override command-line flags:</p>
+<pre><code class="language-bash"># -i flag overridden by (?-i) in pattern
+rg -i 'foo(?-i:bar)'  # "foo" is case-insensitive, "bar" is case-sensitive
+</code></pre>
+<h3 id="verbose-mode-example"><a class="header" href="#verbose-mode-example">Verbose Mode Example</a></h3>
+<p>The <code>(?x)</code> flag enables verbose mode with comments:</p>
+<pre><code class="language-bash">rg '(?x)
+    \d{3}    # Area code
+    -        # Separator
+    \d{4}    # Number
+'
+</code></pre>
+<p><strong>Note</strong>: In shell, you'll need proper quoting for multiline patterns.</p>
+<h2 id="performance-considerations"><a class="header" href="#performance-considerations">Performance Considerations</a></h2>
+<p>Advanced regex features can impact performance. Understanding these implications helps you write efficient searches.</p>
+<h3 id="multiline-mode-performance"><a class="header" href="#multiline-mode-performance">Multiline Mode Performance</a></h3>
+<p><strong>Memory usage</strong>:</p>
+<ul>
+<li>Multiline mode reads entire files into memory</li>
+<li>Cannot use memory mapping</li>
+<li>Large files can consume significant RAM</li>
+</ul>
+<p><strong>Automatic optimization</strong>:</p>
+<ul>
+<li>Ripgrep detects when patterns don't actually need multiline mode</li>
+<li>Avoids memory penalty when possible</li>
+</ul>
+<p><strong>Recommendations</strong>:</p>
+<ul>
+<li>Use multiline mode only when actually matching across lines</li>
+<li>Test on large files if memory is a concern</li>
+<li>Consider line-based alternatives when possible</li>
+</ul>
+<h3 id="pcre2-engine-performance"><a class="header" href="#pcre2-engine-performance">PCRE2 Engine Performance</a></h3>
+<p><strong>Generally slower</strong> than default engine:</p>
+<ul>
+<li>Backtracking regex implementation vs finite automata</li>
+<li>More complex matching algorithm</li>
+<li>Less optimized for large-scale text search</li>
+</ul>
+<p><strong>When PCRE2 is worth it</strong>:</p>
+<ul>
+<li>Need lookaround or backreferences</li>
+<li>Pattern complexity requires PCRE2 features</li>
+<li>Search space is limited (specific files/directories)</li>
+</ul>
+<p><strong>Recommendation</strong>: Use default engine unless you need PCRE2-specific features.</p>
+<h3 id="backreferences-and-lookaround"><a class="header" href="#backreferences-and-lookaround">Backreferences and Lookaround</a></h3>
+<p>These features prevent some optimizations:</p>
+<ul>
+<li>Backreferences require backtracking</li>
+<li>Lookaround can be expensive for complex patterns</li>
+<li>May scan more text than simple patterns</li>
+</ul>
+<p><strong>Use sparingly</strong> for best performance.</p>
+<h3 id="performance-testing"><a class="header" href="#performance-testing">Performance Testing</a></h3>
+<p>Use <code>--stats</code> flag to see performance metrics:</p>
+<pre><code class="language-bash">rg --stats -U 'pattern'
+</code></pre>
+<p>This shows:</p>
+<ul>
+<li>Files searched</li>
+<li>Bytes searched</li>
+<li>Matches found</li>
+<li>Search time</li>
+</ul>
+<h3 id="performance-tips"><a class="header" href="#performance-tips">Performance Tips</a></h3>
+<ol>
+<li><strong>Prefer default engine</strong> when possible</li>
+<li><strong>Avoid multiline</strong> unless necessary</li>
+<li><strong>Test with <code>--stats</code></strong> on representative data</li>
+<li><strong>Use specific file types</strong> to limit search space (<code>-t</code>)</li>
+<li><strong>Profile complex patterns</strong> before using in production scripts</li>
+</ol>
+<h2 id="limitations-and-gotchas"><a class="header" href="#limitations-and-gotchas">Limitations and Gotchas</a></h2>
+<p>Common pitfalls and limitations when using advanced regex features.</p>
+<h3 id="pcre2-silent-failures"><a class="header" href="#pcre2-silent-failures">PCRE2 Silent Failures</a></h3>
+<p><strong>Critical gotcha</strong>: PCRE2 may silently fail to match when using <code>\n</code> without <code>--multiline</code>:</p>
+<pre><code class="language-bash"># May not work as expected
+rg -P 'foo\nbar'
+
+# Correct: use both -P and -U
+rg -PU 'foo\nbar'
+</code></pre>
+<p>The default engine gives better error messages for this case.</p>
+<h3 id="dotall-confusion"><a class="header" href="#dotall-confusion">Dotall Confusion</a></h3>
+<p><strong>Remember</strong>: <code>.</code> does <strong>not</strong> match newlines by default, even in multiline mode:</p>
+<pre><code class="language-bash"># FAILS - . doesn't match \n
+rg -U 'foo.+bar'
+
+# SUCCEEDS - need --multiline-dotall
+rg -U --multiline-dotall 'foo.+bar'
+
+# ALTERNATIVE - use (?s) inline flag
+rg -U '(?s)foo.+bar'
+
+# ALTERNATIVE - use \p{any}
+rg -U 'foo\p{any}+bar'
+</code></pre>
+<h3 id="forgetting--p-flag"><a class="header" href="#forgetting--p-flag">Forgetting -P Flag</a></h3>
+<p>Lookaround and backreferences <strong>require</strong> <code>-P</code> flag:</p>
+<pre><code class="language-bash"># ERROR - lookahead requires PCRE2
+rg 'foo(?=bar)'
+
+# CORRECT
+rg -P 'foo(?=bar)'
+</code></pre>
+<h3 id="unicode-scope"><a class="header" href="#unicode-scope">Unicode Scope</a></h3>
+<p><code>--no-unicode</code> affects <strong>all</strong> patterns globally, not individual patterns:</p>
+<pre><code class="language-bash"># Both patterns are ASCII-only
+rg --no-unicode -e 'pattern1' -e 'pattern2'
+</code></pre>
+<p>You cannot mix Unicode and ASCII-only patterns in a single search.</p>
+<h3 id="regex-size-limits"><a class="header" href="#regex-size-limits">Regex Size Limits</a></h3>
+<p>Extremely complex patterns may hit size limits:</p>
+<pre><code class="language-bash"># Error: "compiled regex exceeds size limit"
+# Solution: use --regex-size-limit
+rg --regex-size-limit 100M 'extremely_complex_pattern'
+</code></pre>
+<p>See <a href="#regex-limits">Regex Limits</a> section below.</p>
+<h3 id="engine-specific-behavior"><a class="header" href="#engine-specific-behavior">Engine-Specific Behavior</a></h3>
+<p>Some patterns behave differently between engines:</p>
+<ul>
+<li>Test PCRE2 patterns with <code>-P</code> before relying on them</li>
+<li>Default engine has stricter pattern requirements</li>
+<li>Error messages differ between engines</li>
+</ul>
+<h2 id="practical-examples"><a class="header" href="#practical-examples">Practical Examples</a></h2>
+<p>Real-world examples demonstrating advanced pattern techniques.</p>
+<h3 id="multi-line-log-parsing"><a class="header" href="#multi-line-log-parsing">Multi-line Log Parsing</a></h3>
+<p>Find ERROR entries with their stack traces:</p>
+<pre><code class="language-bash"># Find ERROR with following context lines
+rg -U 'ERROR.*\n.*stack trace'
+
+# Find ERROR with complete stack trace (multiple lines)
+rg -U --multiline-dotall 'ERROR.*?at .*?\)'
+</code></pre>
+<h3 id="function-usage-analysis"><a class="header" href="#function-usage-analysis">Function Usage Analysis</a></h3>
+<p>Find function definitions that use specific features:</p>
+<pre><code class="language-bash"># Find functions using a specific API (requires PCRE2 + multiline)
+rg -UP '(?s)fn (\w+).*?\{(?=.*use_api).*?\}'
+
+# Find functions with TODO comments
+rg -UP '(?s)fn (\w+).*?\{(?=.*TODO).*?\}'
+</code></pre>
+<h3 id="extracting-specific-content"><a class="header" href="#extracting-specific-content">Extracting Specific Content</a></h3>
+<p>Use lookaround with <code>--only-matching</code> for precise extraction:</p>
+<pre><code class="language-bash"># Extract dollar amounts
+rg -Po '(?&lt;=\$)\d+\.?\d*'
+
+# Extract email usernames (without domain)
+rg -Po '\w+(?=@\w+\.com)'
+
+# Extract content between quotes
+rg -Po '(?&lt;=").*?(?=")'
+
+# Extract XML/HTML tag content
+rg -Po '(?&lt;=&lt;title&gt;).*?(?=&lt;/title&gt;)'
+</code></pre>
+<h3 id="finding-repeated-patterns"><a class="header" href="#finding-repeated-patterns">Finding Repeated Patterns</a></h3>
+<p>Use backreferences to find duplications:</p>
+<pre><code class="language-bash"># Find repeated words
+rg -P '\b(\w+)\s+\1\b'
+
+# Find repeated numbers
+rg -P '(\d{3})-\1'
+
+# Find repeated lines (requires multiline)
+rg -UP '^(.+)$\n\1$'
+</code></pre>
+<h3 id="unicode-script-searches"><a class="header" href="#unicode-script-searches">Unicode Script Searches</a></h3>
+<p>Search for specific writing systems:</p>
+<pre><code class="language-bash"># Find Chinese text
+rg '\p{Han}+'
+
+# Find mixed script text (Latin + Cyrillic)
+rg '\p{Latin}.*\p{Cyrillic}'
+
+# Find emoji
+rg '\p{Emoji}'
+
+# Find right-to-left script (Arabic, Hebrew)
+rg '\p{Arabic}|\p{Hebrew}'
+</code></pre>
+<h3 id="complex-replacements"><a class="header" href="#complex-replacements">Complex Replacements</a></h3>
+<p>Use named captures for readable transformations:</p>
+<pre><code class="language-bash"># Transform dates from YYYY-MM-DD to MM/DD/YYYY
+rg '(?P&lt;year&gt;\d{4})-(?P&lt;month&gt;\d{2})-(?P&lt;day&gt;\d{2})' -r '$month/$day/$year'
+
+# Extract and restructure email addresses
+rg '(?P&lt;user&gt;\w+)@(?P&lt;domain&gt;\w+)\.com' -r 'User: $user, Domain: $domain'
+
+# Format log entries
+rg '(?P&lt;time&gt;\d{2}:\d{2}:\d{2}) (?P&lt;level&gt;\w+) (?P&lt;msg&gt;.+)' \
+   -r '[$level] $time - $msg'
+</code></pre>
+<h3 id="combining-multiline-and-pcre2"><a class="header" href="#combining-multiline-and-pcre2">Combining Multiline and PCRE2</a></h3>
+<p>Powerful queries combining multiple features:</p>
+<pre><code class="language-bash"># Find struct definitions with specific fields (multiline + lookahead)
+rg -UP '(?s)struct (\w+).*?\{(?=.*field_name).*?\}'
+
+# Find functions calling deprecated APIs with context
+rg -UP '(?s)fn (\w+).*?\{(?=.*deprecated_api).*?\}' -A 2 -B 2
+
+# Match code blocks with specific patterns
+rg -UP '(?s)fn test_\w+.*?\{(?=.*assert).*?\}'
+</code></pre>
+<h2 id="regex-limits"><a class="header" href="#regex-limits">Regex Limits</a></h2>
+<p>Ripgrep has configurable limits to prevent excessive memory use and compilation time.</p>
+<h3 id="pcre2-version-check"><a class="header" href="#pcre2-version-check">PCRE2 Version Check</a></h3>
+<p>Before using PCRE2 features, check availability:</p>
+<pre><code class="language-bash"># Show PCRE2 version and JIT status
+rg --pcre2-version
+
+# Output example:
+# PCRE2 10.42 (JIT: enabled)
+</code></pre>
+<p>If PCRE2 is not compiled in, this command exits with an error.</p>
+<h3 id="regex-size-limit"><a class="header" href="#regex-size-limit">Regex Size Limit</a></h3>
+<p>Controls the maximum size of compiled regex:</p>
+<pre><code class="language-bash"># Default limit is usually sufficient
+# Increase for extremely complex patterns
+rg --regex-size-limit 100M 'very_complex_pattern'
+</code></pre>
+<p><strong>When you might need this</strong>:</p>
+<ul>
+<li>Very large alternations (<code>pattern1|pattern2|...|pattern1000</code>)</li>
+<li>Extremely complex nested patterns</li>
+<li>Auto-generated regexes</li>
+</ul>
+<p><strong>Error message</strong>:</p>
+<pre><code>error: compiled regex exceeds size limit
+</code></pre>
+<h3 id="dfa-size-limit"><a class="header" href="#dfa-size-limit">DFA Size Limit</a></h3>
+<p>Controls DFA (deterministic finite automaton) size for the default engine:</p>
+<pre><code class="language-bash"># Increase DFA size limit
+rg --dfa-size-limit 100M 'pattern'
+</code></pre>
+<p><strong>When you might need this</strong>:</p>
+<ul>
+<li>Complex patterns with many possible states</li>
+<li>Large character class combinations</li>
+</ul>
+<h3 id="automatic-limit-suggestions"><a class="header" href="#automatic-limit-suggestions">Automatic Limit Suggestions</a></h3>
+<p>When you hit a limit, ripgrep's error message suggests the appropriate flag to increase it:</p>
+<pre><code>error: regex compiled too large
+help: use --regex-size-limit to increase the limit
+</code></pre>
+<h2 id="decision-tree-choosing-the-right-features"><a class="header" href="#decision-tree-choosing-the-right-features">Decision Tree: Choosing the Right Features</a></h2>
+<p>Use this guide to select appropriate flags for your search:</p>
+<pre><code>Do you need to match across line boundaries?
+├─ Yes → Use -U (--multiline)
+│   └─ Does . need to match newlines?
+│       ├─ Yes → Add --multiline-dotall or use (?s)
+│       └─ No → Just -U is sufficient
+└─ No → Default line-by-line search
+
+Do you need lookaround or backreferences?
+├─ Yes → Use -P (--pcre2)
+│   └─ Matching across lines?
+│       └─ Yes → Use -PU together
+└─ No → Default engine is faster
+
+Do you need Unicode character classes?
+├─ Yes → Default behavior (Unicode enabled)
+└─ No → Use --no-unicode for ASCII-only (faster)
+
+Complex pattern with multiple features?
+└─ Consider --engine=auto for automatic selection
+</code></pre>
+<h2 id="summary"><a class="header" href="#summary">Summary</a></h2>
+<p>Advanced regex features in ripgrep provide powerful search capabilities:</p>
+<ul>
+<li><strong>Multiline mode</strong> (<code>-U</code>) for patterns spanning lines</li>
+<li><strong>PCRE2 engine</strong> (<code>-P</code>) for lookaround and backreferences</li>
+<li><strong>Unicode support</strong> for international text with <code>\p{Property}</code></li>
+<li><strong>Named captures</strong> for readable complex patterns</li>
+<li><strong>Inline flags</strong> for fine-grained control</li>
+</ul>
+<p><strong>Key principles</strong>:</p>
+<ol>
+<li>Use default engine unless you need PCRE2 features</li>
+<li>Avoid multiline mode for performance unless necessary</li>
+<li>Test complex patterns with <code>--stats</code> to understand performance</li>
+<li>Combine features thoughtfully for powerful queries</li>
+<li>Remember gotchas (. doesn't match \n by default, PCRE2 needs -P)</li>
+</ol>
+<p>For most searches, simple patterns with the default engine are sufficient. Use advanced features when the problem requires them, understanding the performance tradeoffs.</p>
+<p><strong>Related chapters</strong>:</p>
+<ul>
+<li><a href="./basics.html">Basic Usage</a> - Fundamental regex patterns</li>
+<li><a href="./replacements.html">Replacements</a> - Using captures in replacements</li>
+<li><a href="./file-encoding.html">File Encoding</a> - Handling different encodings</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="sorting-results.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="performance.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="sorting-results.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="performance.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

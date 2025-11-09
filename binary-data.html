@@ -1,0 +1,579 @@
+<!DOCTYPE HTML>
+<html lang="en" class="dark sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Binary Data - ripgrep User Guide</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="A comprehensive guide to using ripgrep, a line-oriented search tool">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "dark";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('dark')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">ripgrep User Guide</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/BurntSushi/ripgrep" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/iepathos/ripgrep/edit/master/book/src/binary-data.md" title="Suggest an edit" aria-label="Suggest an edit" rel="edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="binary-data"><a class="header" href="#binary-data">Binary Data</a></h1>
+<p>Binary data handling is one of ripgrep's most important and nuanced features. Understanding how ripgrep detects and processes binary files is crucial for getting the results you expect, whether you're searching source code or working with mixed file types.</p>
+<h2 id="what-is-binary-detection"><a class="header" href="#what-is-binary-detection">What is Binary Detection?</a></h2>
+<p>Binary detection is a <strong>heuristic process</strong> that identifies whether a file contains binary (non-text) data and handles it differently from plain text files. The primary motivation is that binary files—like executables, images, or compressed archives—often produce nonsensical or disruptive output when searched with textual patterns.</p>
+<p>Ripgrep uses a simple but effective heuristic: <strong>the presence of NUL bytes</strong> (<code>\x00</code>). When a NUL byte is encountered, the file is considered binary. While not perfect (some text encodings may contain NUL bytes, and some binary formats may not), this heuristic works well in practice since:</p>
+<ul>
+<li>Text files rarely contain NUL bytes</li>
+<li>Binary files typically do contain NUL bytes</li>
+<li>The check is extremely fast</li>
+</ul>
+<p><strong>Important:</strong> Binary detection is <strong>disabled by default</strong> in the <code>grep-searcher</code> library but <strong>enabled by default</strong> in ripgrep's CLI for implicit file searches (recursive directory traversal). This means if you use ripgrep as a library, you need to explicitly enable binary detection if you want it.</p>
+<h2 id="binary-modes"><a class="header" href="#binary-modes">Binary Modes</a></h2>
+<p>Ripgrep supports three distinct binary handling modes, controlled by the <code>--binary</code> and <code>--text</code> flags:</p>
+<h3 id="auto-mode-default"><a class="header" href="#auto-mode-default">Auto Mode (Default)</a></h3>
+<p>The default mode automatically determines the binary handling strategy based on how the file is specified:</p>
+<ul>
+<li><strong>Explicit files</strong> (e.g., <code>rg pattern file.bin</code>): Uses <code>SearchAndSuppress</code> mode—the file is searched, but if binary data is detected, a warning is shown instead of the matches</li>
+<li><strong>Implicit files</strong> (e.g., <code>rg pattern</code> in a directory, or <code>rg pattern -g '*.bin'</code>): Quits searching immediately when binary data is detected, no output or warning</li>
+</ul>
+<p>This dual behavior balances precision (don't waste time on binary files) with recall (if the user explicitly named a file, they probably want to search it).</p>
+<h3 id="searchandsuppress-mode"><a class="header" href="#searchandsuppress-mode">SearchAndSuppress Mode</a></h3>
+<p>When you use the <code>--binary</code> flag, ripgrep will search binary files but suppress matches and emit warnings when NUL bytes are found:</p>
+<pre><code class="language-bash"># Search binary files in directory, showing warnings
+rg --binary pattern
+</code></pre>
+<p>In this mode, <strong>NUL bytes are replaced with line terminators</strong> during searching. This is a memory-saving heuristic: true binary data isn't line-oriented, so treating it as such without this replacement could result in impractically large "lines" (imagine a 100MB binary file with no line breaks).</p>
+<h3 id="astext-mode"><a class="header" href="#astext-mode">AsText Mode</a></h3>
+<p>The <code>--text</code> (or <code>-a</code>) flag completely disables binary detection, treating all files as plain text:</p>
+<pre><code class="language-bash"># Force search binary files as text
+rg --text pattern
+rg -a pattern
+</code></pre>
+<p><strong>⚠️ Warning:</strong> This may print raw binary data to your terminal, including escape sequences that could corrupt your terminal display or cause unexpected behavior. Use with caution and consider piping to <code>cat -v</code> or similar if you need to inspect the output safely.</p>
+<p>The <code>--text</code> flag overrides <code>--binary</code> if both are specified.</p>
+<h2 id="how-binary-detection-works"><a class="header" href="#how-binary-detection-works">How Binary Detection Works</a></h2>
+<p>Binary detection behavior depends on the search mode ripgrep uses:</p>
+<h3 id="buffered-search-default-or---no-mmap"><a class="header" href="#buffered-search-default-or---no-mmap">Buffered Search (Default, or <code>--no-mmap</code>)</a></h3>
+<p>When ripgrep reads files using a fixed-size buffer (the default for most files, or explicitly with <code>--no-mmap</code>):</p>
+<ol>
+<li>As each buffer is filled from the file, ripgrep scans it for NUL bytes</li>
+<li>If a NUL byte is found, the file is classified as binary</li>
+<li>Depending on the mode, ripgrep either stops searching or shows a warning</li>
+<li>This happens <strong>continuously</strong> as the file is read, so binary detection is thorough</li>
+</ol>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash"># Buffered search with binary detection
+rg --no-mmap "pattern" file.bin
+</code></pre>
+<h3 id="memory-mapped-search---mmap"><a class="header" href="#memory-mapped-search---mmap">Memory-Mapped Search (<code>--mmap</code>)</a></h3>
+<p>When ripgrep uses memory mapping (explicit with <code>--mmap</code>, or automatically for some files):</p>
+<ol>
+<li>Only the <strong>first ~64KB</strong> of the file is scanned for NUL bytes initially</li>
+<li>Additionally, <strong>matching lines and context lines</strong> are scanned for NUL bytes</li>
+<li>If a NUL byte is found in either location, the file is classified as binary</li>
+<li>This is more conservative (less thorough) but much more efficient for large files</li>
+</ol>
+<p><strong>Why the difference?</strong> Memory efficiency. Scanning an entire 10GB memory-mapped file for NUL bytes would be wasteful if ripgrep can make a reasonable determination from the first 64KB.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash"># Memory-mapped search - only checks first 64KB + matches
+rg --mmap "pattern" largefile.bin
+</code></pre>
+<h2 id="implicit-vs-explicit-files"><a class="header" href="#implicit-vs-explicit-files">Implicit vs. Explicit Files</a></h2>
+<p>One of the most important concepts in ripgrep's binary handling is the distinction between <strong>implicit</strong> and <strong>explicit</strong> files:</p>
+<div class="table-wrapper"><table><thead><tr><th>File Type</th><th>How Specified</th><th>Binary Behavior</th><th>Warning Message</th></tr></thead><tbody>
+<tr><td><strong>Explicit</strong></td><td><code>rg pattern file.txt</code> or <code>cat file.txt | rg pattern</code></td><td>Search continues, warning shown if binary data found</td><td><code>binary file matches (found "\0" byte around offset N)</code></td></tr>
+<tr><td><strong>Implicit</strong></td><td><code>rg pattern</code> (recursive), <code>rg pattern -g '*.txt'</code></td><td>Search stops immediately, warning shown if binary data found after a match</td><td><code>WARNING: stopped searching binary file after match (found "\0" byte around offset N)</code></td></tr>
+</tbody></table>
+</div>
+<p><strong>Why this distinction?</strong> It's about user intent:</p>
+<ul>
+<li>If you explicitly name a file, you probably want to search it even if it's binary</li>
+<li>If ripgrep discovers a file during recursive search, it should skip binary files to avoid wasting time and producing garbage output</li>
+</ul>
+<p><strong>Example - Implicit (recursive search):</strong></p>
+<pre><code class="language-bash"># Recursive search stops at binary files
+$ rg "Project Gutenberg" -g 'hay'
+hay:1:The Project Gutenberg EBook of A Study In Scarlet
+hay: WARNING: stopped searching binary file after match (found "\0" byte around offset 77041)
+</code></pre>
+<p><strong>Example - Explicit file:</strong></p>
+<pre><code class="language-bash"># Explicit file shows warning but continues
+$ rg "Project Gutenberg" hay
+1:The Project Gutenberg EBook of A Study In Scarlet
+binary file matches (found "\0" byte around offset 77041)
+</code></pre>
+<p><strong>Making implicit files behave like explicit files:</strong></p>
+<p>Use the <code>--binary</code> flag to make recursively-discovered files emit warnings instead of being silently skipped:</p>
+<pre><code class="language-bash"># Recursive search with binary warnings
+rg --binary "pattern" -g '*.bin'
+</code></pre>
+<h2 id="flags-reference"><a class="header" href="#flags-reference">Flags Reference</a></h2>
+<h3 id="--binary"><a class="header" href="#--binary"><code>--binary</code></a></h3>
+<p><strong>Purpose:</strong> Search binary files and show warnings instead of skipping them.</p>
+<p><strong>Effect:</strong> Applies <code>SearchAndSuppress</code> mode to implicit files, making them behave like explicit files.</p>
+<p><strong>When to use:</strong></p>
+<ul>
+<li>You want to know which binary files contain matches</li>
+<li>You're searching in directories that mix text and binary files</li>
+<li>You suspect binary files might contain text patterns you care about</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash"># Show warnings for binary files in recursive search
+rg --binary TODO
+</code></pre>
+<p><strong>Important:</strong> This flag <strong>only affects implicit files</strong> (those found via recursive search or globs). Explicit file arguments already get warnings by default.</p>
+<h3 id="--text---a"><a class="header" href="#--text---a"><code>--text</code> / <code>-a</code></a></h3>
+<p><strong>Purpose:</strong> Completely disable binary detection, treating all files as text.</p>
+<p><strong>Effect:</strong> Sets <code>AsText</code> mode—no NUL byte detection, no special handling.</p>
+<p><strong>When to use:</strong></p>
+<ul>
+<li>Searching files with unusual encodings that contain NUL bytes</li>
+<li>Searching data formats that are technically binary but human-readable (some JSON variants, etc.)</li>
+<li>Debugging when you suspect binary detection is interfering</li>
+</ul>
+<p><strong>⚠️ Caution:</strong> Can print raw binary data that may corrupt your terminal.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash"># Treat everything as text, even binaries
+rg --text "pattern" binary_file.bin
+</code></pre>
+<h3 id="--no-binary"><a class="header" href="#--no-binary"><code>--no-binary</code></a></h3>
+<p><strong>Purpose:</strong> Disable the <code>--binary</code> flag.</p>
+<p><strong>Effect:</strong> Reverts to default <code>Auto</code> mode behavior.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash"># Explicitly disable binary warnings
+rg --no-binary "pattern"
+</code></pre>
+<h3 id="--no-text"><a class="header" href="#--no-text"><code>--no-text</code></a></h3>
+<p><strong>Purpose:</strong> Disable the <code>--text</code> flag.</p>
+<p><strong>Effect:</strong> Re-enables binary detection if <code>--text</code> was set.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash"># Re-enable binary detection
+rg --no-text "pattern"
+</code></pre>
+<h2 id="edge-cases-and-gotchas"><a class="header" href="#edge-cases-and-gotchas">Edge Cases and Gotchas</a></h2>
+<h3 id="performance-optimizations"><a class="header" href="#performance-optimizations">Performance Optimizations</a></h3>
+<p>Ripgrep makes several performance optimizations that can affect binary detection:</p>
+<h4 id="1---files-with-matches---l"><a class="header" href="#1---files-with-matches---l">1. <code>--files-with-matches</code> / <code>-l</code></a></h4>
+<p>When using <code>-l</code> (just list filenames), ripgrep can list a binary file before detecting the NUL byte, because it stops reading after the first match:</p>
+<pre><code class="language-bash"># Binary file might be listed even if it's binary
+rg -l "pattern"
+</code></pre>
+<p>This is an acceptable tradeoff: showing the filename is still useful, and the performance gain from stopping early is significant.</p>
+<h4 id="2---quiet---q"><a class="header" href="#2---quiet---q">2. <code>--quiet</code> / <code>-q</code></a></h4>
+<p>Similar to <code>-l</code>, quiet mode may skip binary detection because it exits immediately upon finding any match:</p>
+<pre><code class="language-bash"># May exit before detecting binary data
+rg --quiet "pattern"
+</code></pre>
+<h4 id="3---count---c"><a class="header" href="#3---count---c">3. <code>--count</code> / <code>-c</code></a></h4>
+<p>Count mode scans the entire file to count all matches, so binary detection works correctly:</p>
+<pre><code class="language-bash"># Binary detection works properly with count
+rg -c "pattern"
+</code></pre>
+<h3 id="matches-before-nul-bytes"><a class="header" href="#matches-before-nul-bytes">Matches Before NUL Bytes</a></h3>
+<p>If a match occurs in the same buffer as a NUL byte but <strong>before</strong> the NUL byte, that match may not be printed. This is because ripgrep processes the buffer sequentially and classifies it as binary before outputting the match.</p>
+<p><strong>Example scenario:</strong></p>
+<pre><code>Buffer contents: "match_text ... \x00 ..."
+                     ^           ^
+                  match here   NUL here
+</code></pre>
+<p>The match might not be shown because the buffer is classified as binary before the match is output.</p>
+<h2 id="for-library-users"><a class="header" href="#for-library-users">For Library Users</a></h2>
+<p>If you're using the <code>grep-searcher</code> crate in your own Rust code, binary detection works differently:</p>
+<h3 id="default-behavior"><a class="header" href="#default-behavior">Default Behavior</a></h3>
+<p>Binary detection is <strong>disabled by default</strong> in the library (unlike the CLI):</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use grep_searcher::SearcherBuilder;
+
+// By default, no binary detection
+let searcher = SearcherBuilder::new().build();
+<span class="boring">}</span></code></pre></pre>
+<h3 id="enabling-binary-detection"><a class="header" href="#enabling-binary-detection">Enabling Binary Detection</a></h3>
+<p>Use the <code>BinaryDetection</code> API to configure detection:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use grep_searcher::{BinaryDetection, SearcherBuilder};
+
+// Quit on NUL byte (stop searching)
+let searcher = SearcherBuilder::new()
+    .binary_detection(BinaryDetection::quit(b'\x00'))
+    .build();
+
+// Convert NUL bytes to line terminators
+let searcher = SearcherBuilder::new()
+    .binary_detection(BinaryDetection::convert(b'\x00'))
+    .build();
+
+// No binary detection (default)
+let searcher = SearcherBuilder::new()
+    .binary_detection(BinaryDetection::none())
+    .build();
+<span class="boring">}</span></code></pre></pre>
+<h3 id="api-methods"><a class="header" href="#api-methods">API Methods</a></h3>
+<ul>
+<li><strong><code>BinaryDetection::none()</code></strong>: No binary detection (default for library)</li>
+<li><strong><code>BinaryDetection::quit(byte)</code></strong>: Stop searching when <code>byte</code> is found</li>
+<li><strong><code>BinaryDetection::convert(byte)</code></strong>: Replace <code>byte</code> with line terminator</li>
+</ul>
+<p><strong>Note:</strong> The <code>convert</code> strategy only works with buffered search, not memory-mapped search.</p>
+<h2 id="performance-considerations"><a class="header" href="#performance-considerations">Performance Considerations</a></h2>
+<p>Binary detection has minimal performance impact:</p>
+<ul>
+<li><strong>Detection overhead:</strong> Extremely low—just a byte-by-byte scan during normal reading</li>
+<li><strong>Performance benefit:</strong> Can be significant by skipping binary files early, especially in recursive searches</li>
+<li><strong>Memory impact:</strong> The NUL-to-newline conversion in <code>SearchAndSuppress</code> mode prevents excessive memory usage from treating binary data as single giant lines</li>
+</ul>
+<p><strong>When to use each mode:</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Mode</th><th>Use When</th><th>Performance Profile</th></tr></thead><tbody>
+<tr><td><strong>Auto (default)</strong></td><td>General-purpose searching</td><td>Best balance: skips binaries but searches explicit files</td></tr>
+<tr><td><strong><code>--binary</code></strong></td><td>Need to know about binary matches</td><td>Slightly slower: searches more files, but still stops early</td></tr>
+<tr><td><strong><code>--text</code></strong></td><td>Files incorrectly detected as binary</td><td>Potentially slower: may search irrelevant data</td></tr>
+<tr><td><strong>Disabled (library)</strong></td><td>Complete control needed</td><td>Fastest, but may produce garbage output</td></tr>
+</tbody></table>
+</div>
+<h2 id="examples"><a class="header" href="#examples">Examples</a></h2>
+<h3 id="example-1-default-behavior-implicit-files"><a class="header" href="#example-1-default-behavior-implicit-files">Example 1: Default Behavior (Implicit Files)</a></h3>
+<pre><code class="language-bash"># Recursive search - binary files are silently skipped
+$ rg "config"
+src/config.rs:10:pub struct Config {
+</code></pre>
+<p>No output for <code>compiled.bin</code> because it's binary and implicit.</p>
+<h3 id="example-2-with---binary-flag"><a class="header" href="#example-2-with---binary-flag">Example 2: With <code>--binary</code> Flag</a></h3>
+<pre><code class="language-bash"># Recursive search - binary files show warnings
+$ rg --binary "config"
+src/config.rs:10:pub struct Config {
+compiled.bin: WARNING: stopped searching binary file after match (found "\0" byte around offset 1234)
+</code></pre>
+<h3 id="example-3-explicit-file-always-searched"><a class="header" href="#example-3-explicit-file-always-searched">Example 3: Explicit File (Always Searched)</a></h3>
+<pre><code class="language-bash"># Explicit file - shows binary warning
+$ rg "signature" compiled.bin
+binary file matches (found "\0" byte around offset 2048)
+</code></pre>
+<h3 id="example-4-force-text-mode"><a class="header" href="#example-4-force-text-mode">Example 4: Force Text Mode</a></h3>
+<pre><code class="language-bash"># Search binary as text (may show garbage)
+$ rg --text "signature" compiled.bin
+[raw binary output, possibly terminal corruption]
+</code></pre>
+<h3 id="example-5-memory-map-vs-buffered"><a class="header" href="#example-5-memory-map-vs-buffered">Example 5: Memory Map vs. Buffered</a></h3>
+<pre><code class="language-bash"># With mmap (only checks first 64KB + matches)
+$ rg --mmap "pattern" largefile.bin
+# Match near start of file: shown
+# Binary data after 64KB: might not be detected unless pattern matches
+
+# With buffered reading (thorough detection)
+$ rg --no-mmap "pattern" largefile.bin
+# All buffers scanned for NUL bytes
+</code></pre>
+<h3 id="example-6-stdin-input"><a class="header" href="#example-6-stdin-input">Example 6: stdin Input</a></h3>
+<pre><code class="language-bash"># stdin is treated like explicit file
+$ cat binary.bin | rg "pattern"
+binary file matches (found "\0" byte around offset 512)
+</code></pre>
+<h2 id="decision-flowchart"><a class="header" href="#decision-flowchart">Decision Flowchart</a></h2>
+<p>Here's how ripgrep decides what to do with binary data:</p>
+<pre><code>                    ┌─────────────────┐
+                    │ File to search  │
+                    └────────┬────────┘
+                             │
+                   ┌─────────▼──────────┐
+                   │ --text flag set?   │
+                   └─────────┬──────────┘
+                             │
+                    ┌────────┴────────┐
+                    │                 │
+                   Yes               No
+                    │                 │
+                    ▼                 ▼
+            ┌───────────────┐  ┌──────────────────┐
+            │ Treat as text │  │ Binary detection │
+            │ (no detection)│  │ enabled          │
+            └───────────────┘  └─────────┬────────┘
+                                         │
+                               ┌─────────▼──────────┐
+                               │ File explicit or   │
+                               │ implicit?          │
+                               └─────────┬──────────┘
+                                         │
+                                ┌────────┴────────┐
+                                │                 │
+                            Explicit          Implicit
+                                │                 │
+                                ▼                 ▼
+                      ┌──────────────────┐  ┌─────────────────┐
+                      │ SearchAndSuppress│  │ --binary flag?  │
+                      │ (show warning)   │  └────────┬────────┘
+                      └──────────────────┘           │
+                                            ┌────────┴────────┐
+                                            │                 │
+                                           Yes               No
+                                            │                 │
+                                            ▼                 ▼
+                                  ┌──────────────────┐  ┌────────────┐
+                                  │ SearchAndSuppress│  │ Quit early │
+                                  │ (show warning)   │  │ (silent)   │
+                                  └──────────────────┘  └────────────┘
+</code></pre>
+<h2 id="troubleshooting"><a class="header" href="#troubleshooting">Troubleshooting</a></h2>
+<h3 id="i-expected-a-match-but-got-a-binary-warning"><a class="header" href="#i-expected-a-match-but-got-a-binary-warning">"I expected a match but got a binary warning"</a></h3>
+<p><strong>Cause:</strong> The file contains a NUL byte and is being treated as binary.</p>
+<p><strong>Solution:</strong> Use <code>--text</code> to force text mode:</p>
+<pre><code class="language-bash">rg --text "pattern" file
+</code></pre>
+<h3 id="my-utf-16-file-isnt-being-searched"><a class="header" href="#my-utf-16-file-isnt-being-searched">"My UTF-16 file isn't being searched"</a></h3>
+<p><strong>Cause:</strong> UTF-16 encoding uses NUL bytes, triggering binary detection.</p>
+<p><strong>Solution:</strong> Use <code>--text</code> or convert the file to UTF-8 first:</p>
+<pre><code class="language-bash"># Force text mode
+rg --text "pattern" utf16file.txt
+
+# Or use --encoding (if supported)
+rg --encoding utf-16le "pattern" utf16file.txt
+</code></pre>
+<h3 id="binary-detection-seems-inconsistent-with-large-files"><a class="header" href="#binary-detection-seems-inconsistent-with-large-files">"Binary detection seems inconsistent with large files"</a></h3>
+<p><strong>Cause:</strong> Memory-mapped mode only checks the first 64KB + matches.</p>
+<p><strong>Solution:</strong> Use <code>--no-mmap</code> to force buffered reading:</p>
+<pre><code class="language-bash">rg --no-mmap "pattern" largefile
+</code></pre>
+<h3 id="recursive-search-misses-files-that-explicit-search-finds"><a class="header" href="#recursive-search-misses-files-that-explicit-search-finds">"Recursive search misses files that explicit search finds"</a></h3>
+<p><strong>Cause:</strong> Implicit files are silently skipped when binary, explicit files show warnings.</p>
+<p><strong>Solution:</strong> Use <code>--binary</code> to see warnings for implicit files:</p>
+<pre><code class="language-bash">rg --binary "pattern"
+</code></pre>
+<h2 id="related-topics"><a class="header" href="#related-topics">Related Topics</a></h2>
+<ul>
+<li><strong><a href="./file-encoding.html">File Encoding</a></strong>: Understanding how ripgrep handles different text encodings, which can interact with binary detection</li>
+<li><strong><a href="./manual-filtering.html#file-types">Manual Filtering: File Types</a></strong>: Controlling which file types are searched, complementing binary detection</li>
+<li><strong><a href="./compressed-files.html">Compressed Files</a></strong>: Using <code>--search-zip</code> to search inside compressed archives (which are binary but may contain text)</li>
+</ul>
+<h2 id="summary"><a class="header" href="#summary">Summary</a></h2>
+<p>Binary data handling in ripgrep balances three concerns:</p>
+<ol>
+<li><strong>Performance</strong>: Skip irrelevant binary files quickly</li>
+<li><strong>User intent</strong>: Search files the user explicitly names</li>
+<li><strong>Safety</strong>: Avoid corrupting the terminal with binary output</li>
+</ol>
+<p>Key takeaways:</p>
+<ul>
+<li>Binary detection uses NUL bytes as the heuristic</li>
+<li>Implicit files (recursive) are skipped silently; explicit files show warnings</li>
+<li>Use <code>--binary</code> to see warnings for all files</li>
+<li>Use <code>--text</code> to force searching everything as text (with caution)</li>
+<li>Memory-mapped and buffered searches detect binaries differently</li>
+<li>Library users must explicitly enable binary detection</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="file-encoding.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="preprocessor.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="file-encoding.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="preprocessor.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>
