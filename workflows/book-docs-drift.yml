@@ -1,0 +1,80 @@
+# Workflow to detect and fix documentation drift in the ripgrep book
+# This workflow analyzes the codebase and updates book/src/*.md files
+# to reflect the latest supported features and syntax.
+
+name: ripgrep-book-docs-drift-detection
+mode: mapreduce
+
+# Environment variables for parameterization
+env:
+  # Project configuration
+  PROJECT_NAME: "ripgrep"
+  PROJECT_CONFIG: ".prodigy/book-config.json"
+  FEATURES_PATH: ".prodigy/book-analysis/features.json"
+
+  # Book-specific settings
+  BOOK_DIR: "book"
+  ANALYSIS_DIR: ".prodigy/book-analysis"
+  CHAPTERS_FILE: "workflows/data/ripgrep-chapters.json"
+
+  # Workflow settings
+  MAX_PARALLEL: "3"
+
+# Setup phase: Analyze codebase for feature coverage
+setup:
+  - shell: "mkdir -p $ANALYSIS_DIR"
+
+  # Step 1: Analyze codebase for workflow features, command types, and configuration
+  # Note: May not commit if features haven't changed since last analysis
+  - claude: "/prodigy-analyze-features-for-book --project $PROJECT_NAME --config $PROJECT_CONFIG"
+
+  # Step 2: Detect documentation gaps and create missing chapters
+  # Note: May not commit if no gaps found, which is a successful outcome
+  - claude: "/prodigy-detect-documentation-gaps --project $PROJECT_NAME --config $PROJECT_CONFIG --features $FEATURES_PATH --chapters $CHAPTERS_FILE --book-dir $BOOK_DIR"
+
+# Map phase: Analyze and fix each book chapter for drift
+map:
+  input: "${CHAPTERS_FILE}"
+  json_path: "$.chapters[*]"
+
+  agent_template:
+    # Step 1: Analyze the chapter for drift
+    - claude: "/prodigy-analyze-book-chapter-drift --project $PROJECT_NAME --json '${item}' --features $FEATURES_PATH"
+      commit_required: true
+
+    # Step 2: Fix the drift in this chapter
+    - claude: "/prodigy-fix-chapter-drift --project $PROJECT_NAME --chapter-id ${item.id}"
+      commit_required: true
+
+  max_parallel: ${MAX_PARALLEL}
+
+# Reduce phase: Validate and handle any merge conflicts
+reduce:
+  # Rebuild the book to ensure all chapters compile together
+  - shell: "cd book && mdbook build"
+    on_failure:
+      # Only needed if there are build errors (broken links, etc)
+      claude: "/prodigy-fix-book-build-errors --project $PROJECT_NAME"
+      commit_required: true
+
+  # Clean up temporary analysis files
+  - shell: "rm -rf ${ANALYSIS_DIR}"
+  - shell: "git add -A && git commit -m 'chore: remove temporary book analysis files for ${PROJECT_NAME}' || true"
+ 
+
+# Error handling
+error_policy:
+  on_item_failure: dlq
+  continue_on_failure: true
+  max_failures: 2
+  error_collection: aggregate
+
+# Custom merge workflow - cleanup and validation before merging
+merge:
+  commands:
+    # Step 3: Fetch latest changes and merge master into worktree
+    - shell: "git fetch origin"
+    - claude: "/prodigy-merge-master --project ${PROJECT_NAME}"
+
+    # Step 4: Merge worktree back to original branch
+    - claude: "/prodigy-merge-worktree ${merge.source_branch} ${merge.target_branch}"

@@ -1,0 +1,65 @@
+{
+  "project_name": "ripgrep",
+  "project_type": "cli_tool",
+  "book_dir": "book",
+  "book_src": "book/src",
+  "book_build_dir": "book/book",
+  "analysis_targets": [
+    {
+      "area": "core_cli",
+      "source_files": ["crates/cli/src/"],
+      "feature_categories": ["command_line_options", "search_modes", "output_formats"],
+      "language": "rust"
+    },
+    {
+      "area": "search_engine",
+      "source_files": ["crates/searcher/src/", "crates/grep/src/"],
+      "feature_categories": ["search_algorithms", "pattern_matching", "performance"],
+      "language": "rust"
+    },
+    {
+      "area": "file_filtering",
+      "source_files": ["crates/ignore/src/", "crates/globset/src/"],
+      "feature_categories": ["gitignore_handling", "glob_patterns", "file_type_filtering"],
+      "language": "rust"
+    },
+    {
+      "area": "output_formatting",
+      "source_files": ["crates/printer/src/"],
+      "feature_categories": ["output_modes", "color_support", "replacements"],
+      "language": "rust"
+    },
+    {
+      "area": "regex_support",
+      "source_files": ["crates/regex/src/", "crates/matcher/src/", "crates/pcre2/src/"],
+      "feature_categories": ["regex_syntax", "unicode_support", "encoding"],
+      "language": "rust"
+    }
+  ],
+  "chapter_file": "workflows/data/ripgrep-chapters.json",
+  "custom_analysis": {
+    "include_examples": true,
+    "include_best_practices": true,
+    "include_troubleshooting": true,
+    "analyze_dependencies": true,
+    "extract_code_comments": true,
+    "include_performance_notes": true
+  },
+  "gap_detection": {
+    "severity_levels": {
+      "missing_required_section": "high",
+      "outdated_example": "medium",
+      "incomplete_coverage": "medium",
+      "missing_optional_section": "low"
+    },
+    "ignore_patterns": [
+      "internal/*",
+      "deprecated/*"
+    ],
+    "required_sections": [
+      "description",
+      "examples",
+      "options"
+    ]
+  }
+}

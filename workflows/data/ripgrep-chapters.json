@@ -1,0 +1,124 @@
+{
+  "chapters": [
+    {
+      "id": "introduction",
+      "title": "Introduction",
+      "file": "book/src/introduction.md",
+      "topics": ["overview", "installation", "quick_start"],
+      "validation": "Ensure introduction covers what ripgrep is, why use it, and basic installation",
+      "dependencies": []
+    },
+    {
+      "id": "basics",
+      "title": "Basics",
+      "file": "book/src/basics.md",
+      "topics": ["pattern_matching", "literal_strings", "regular_expressions", "output_format"],
+      "validation": "Verify examples of basic search patterns and regex syntax with working examples",
+      "dependencies": ["introduction"]
+    },
+    {
+      "id": "recursive-search",
+      "title": "Recursive Search",
+      "file": "book/src/recursive-search.md",
+      "topics": ["directory_traversal", "default_behavior", "path_specification"],
+      "validation": "Confirm recursive search behavior and directory navigation examples are current",
+      "dependencies": ["basics"]
+    },
+    {
+      "id": "automatic-filtering",
+      "title": "Automatic Filtering",
+      "file": "book/src/automatic-filtering.md",
+      "topics": ["gitignore", "ignore_files", "rgignore", "hidden_files", "binary_files", "symlinks"],
+      "validation": "Ensure all ignore mechanisms (.gitignore, .ignore, .rgignore) are documented with examples",
+      "dependencies": ["recursive-search"]
+    },
+    {
+      "id": "manual-filtering-globs",
+      "title": "Manual Filtering: Globs",
+      "file": "book/src/manual-filtering-globs.md",
+      "topics": ["glob_patterns", "include_exclude", "glob_syntax"],
+      "validation": "Verify glob pattern examples match current implementation",
+      "dependencies": ["automatic-filtering"]
+    },
+    {
+      "id": "manual-filtering-types",
+      "title": "Manual Filtering: File Types",
+      "file": "book/src/manual-filtering-types.md",
+      "topics": ["file_types", "type_definitions", "custom_types", "type_list"],
+      "validation": "Check that --type flag usage and custom type definitions are accurate",
+      "dependencies": ["manual-filtering-globs"]
+    },
+    {
+      "id": "replacements",
+      "title": "Replacements",
+      "file": "book/src/replacements.md",
+      "topics": ["replace_flag", "capturing_groups", "output_modification"],
+      "validation": "Verify replacement examples and capturing group syntax are correct",
+      "dependencies": ["basics"]
+    },
+    {
+      "id": "configuration-file",
+      "title": "Configuration File",
+      "file": "book/src/configuration-file.md",
+      "topics": ["config_file", "ripgrep_config_path", "config_syntax", "flag_precedence"],
+      "validation": "Ensure configuration file format and environment variable setup are documented",
+      "dependencies": []
+    },
+    {
+      "id": "file-encoding",
+      "title": "File Encoding",
+      "file": "book/src/file-encoding.md",
+      "topics": ["encoding", "utf8", "utf16", "bom_sniffing", "transcoding"],
+      "validation": "Verify encoding behavior and --encoding flag documentation is complete",
+      "dependencies": ["basics"]
+    },
+    {
+      "id": "binary-data",
+      "title": "Binary Data",
+      "file": "book/src/binary-data.md",
+      "topics": ["binary_detection", "binary_mode", "text_mode", "nul_bytes"],
+      "validation": "Check that binary file handling modes and --binary/--text flags are explained",
+      "dependencies": ["file-encoding"]
+    },
+    {
+      "id": "preprocessor",
+      "title": "Preprocessor",
+      "file": "book/src/preprocessor.md",
+      "topics": ["pre_flag", "file_transformation", "pdf_search", "compressed_files"],
+      "validation": "Ensure preprocessor examples (pdftotext, etc.) are working and documented",
+      "dependencies": []
+    },
+    {
+      "id": "common-options",
+      "title": "Common Options",
+      "file": "book/src/common-options.md",
+      "topics": ["flags", "command_options", "frequently_used", "help"],
+      "validation": "Verify all commonly used flags are documented with current syntax",
+      "dependencies": ["basics"]
+    },
+    {
+      "id": "advanced-patterns",
+      "title": "Advanced Patterns",
+      "file": "book/src/advanced-patterns.md",
+      "topics": ["multiline", "pcre2", "lookahead", "lookbehind", "unicode"],
+      "validation": "Check advanced regex features including PCRE2 support",
+      "dependencies": ["basics", "file-encoding"]
+    },
+    {
+      "id": "performance",
+      "title": "Performance",
+      "file": "book/src/performance.md",
+      "topics": ["benchmarks", "optimization", "memory_maps", "parallelism"],
+      "validation": "Ensure performance characteristics and tuning options are explained",
+      "dependencies": []
+    },
+    {
+      "id": "troubleshooting",
+      "title": "Troubleshooting",
+      "file": "book/src/troubleshooting.md",
+      "topics": ["common_issues", "debug_flag", "no_results", "performance_issues"],
+      "validation": "Verify troubleshooting guide covers common problems and debug flag usage",
+      "dependencies": ["common-options"]
+    }
+  ]
+}
