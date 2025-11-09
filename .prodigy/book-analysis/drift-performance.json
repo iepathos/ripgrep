@@ -3,155 +3,111 @@
   "chapter_title": "Performance",
   "chapter_file": "book/src/performance.md",
   "drift_detected": true,
-  "severity": "critical",
-  "quality_assessment": "Chapter is completely empty - all performance content is missing. This is a placeholder that needs comprehensive documentation of ripgrep's performance characteristics and tuning options.",
+  "severity": "low",
+  "quality_assessment": "Excellent chapter with comprehensive coverage of performance features. Minor issues are mostly missing implementation details that would help users fine-tune performance.",
   "issues": [
     {
-      "type": "missing_content",
-      "severity": "critical",
-      "section": "Entire Chapter",
-      "description": "The entire Performance chapter is a placeholder with no actual content",
-      "current_content": "# Performance\n\nThis chapter will be populated with content from the codebase analysis.\n\n*This content will be populated by the documentation drift detection workflow.*",
-      "should_add": "Comprehensive documentation of all performance-related features, benchmarks, optimization techniques, and tuning options",
-      "fix_suggestion": "Create complete chapter covering: parallelism, threading, memory mapping, SIMD optimizations, buffer tuning, sorting performance, statistics, and benchmarking guidance",
-      "source_reference": "features.json:performance_tuning category (lines 323-358)"
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "DFA Size Limits",
+      "description": "Chapter mentions DFA size limit but doesn't specify the actual default value",
+      "current_content": "The default is usually sufficient.",
+      "should_be": "The default is 1 MB (1000000 bytes).",
+      "fix_suggestion": "Add the specific default value to help users understand when they might need to adjust it",
+      "source_reference": "features.json:443 - dfa_size_limit: 1 MB"
     },
     {
       "type": "missing_content",
-      "severity": "high",
-      "section": "Parallel Search and Threading",
-      "description": "No documentation of ripgrep's parallel search capabilities and threading model",
-      "should_add": "Explain default multi-threaded behavior, thread count control (-j/--threads), single-threaded mode, work stealing, lock-free parallel iteration",
-      "fix_suggestion": "Add section: 'Parallel Search' explaining how ripgrep uses multiple threads by default, how to control thread count, when to use single-threaded mode, and the work-stealing architecture",
-      "source_reference": "features.json:performance_tuning capabilities (lines 326-328, 341)"
-    },
-    {
-      "type": "missing_content",
-      "severity": "high",
+      "severity": "low",
       "section": "Memory Mapping",
-      "description": "No documentation of memory mapping feature and when it's used",
-      "should_add": "Explain --mmap flag, automatic memory mapping selection based on file size, performance tradeoffs, --no-mmap option",
-      "fix_suggestion": "Add section: 'Memory Mapping' explaining how ripgrep uses memory-mapped I/O for large files, when it's beneficial, and how to control it with --mmap/--no-mmap flags",
-      "source_reference": "features.json:performance_tuning (line 329), search_engine (line 66), notes (line 505)"
-    },
-    {
-      "type": "missing_content",
-      "severity": "high",
-      "section": "SIMD and Literal Optimizations",
-      "description": "No documentation of SIMD optimizations and literal extraction performance features",
-      "should_add": "Explain how ripgrep uses SIMD for fast literal matching, literal extraction from regex patterns, automatic optimization selection",
-      "fix_suggestion": "Add section: 'Low-Level Optimizations' covering SIMD-accelerated searching, literal extraction optimization, and how ripgrep automatically chooses the fastest strategy",
-      "source_reference": "features.json:search_engine (line 76), performance_tuning (lines 336-337)"
-    },
-    {
-      "type": "missing_content",
-      "severity": "medium",
-      "section": "Sorting Performance",
-      "description": "No documentation of sorting options and their performance impact",
-      "should_add": "Explain --sort and --sortr flags, available sort keys (path, modified, accessed, created), impact on parallelism",
-      "fix_suggestion": "Add section: 'Sorting Results' explaining how --sort disables parallel search for deterministic ordering, available sort keys, and performance tradeoffs",
-      "source_reference": "features.json:performance_tuning (lines 332-333), notes (line 506)"
-    },
-    {
-      "type": "missing_content",
-      "severity": "medium",
-      "section": "Buffer and Heap Tuning",
-      "description": "No documentation of buffer size control and heap limits",
-      "should_add": "Explain buffer size optimization, heap limit configuration, line buffer optimization, --line-buffered and --block-buffered flags",
-      "fix_suggestion": "Add section: 'Buffer and Memory Tuning' covering buffer size control, heap limits, and buffering modes for different use cases",
-      "source_reference": "features.json:performance_tuning (lines 330-331, 339, 342), output_formatting (line 194)"
-    },
-    {
-      "type": "missing_content",
-      "severity": "medium",
-      "section": "DFA and Regex Size Limits",
-      "description": "No documentation of DFA size limits and regex size limits for controlling regex engine memory",
-      "should_add": "Explain --dfa-size-limit and --regex-size-limit flags, when to adjust them, impact on performance and memory usage",
-      "fix_suggestion": "Add section: 'Regex Engine Tuning' explaining DFA size limits, regex size limits, and when to adjust these for very large patterns or memory-constrained environments",
-      "source_reference": "features.json:search_engine (lines 71-72), performance_tuning (lines 334-335)"
-    },
-    {
-      "type": "missing_content",
-      "severity": "medium",
-      "section": "Statistics and Profiling",
-      "description": "No documentation of --stats flag for performance analysis",
-      "should_add": "Explain --stats flag, what statistics are reported, how to interpret them for performance tuning",
-      "fix_suggestion": "Add section: 'Performance Statistics' showing how to use --stats to see search timing, bytes searched, matches found, and other metrics for performance analysis",
-      "source_reference": "features.json:search_engine (line 75), performance_tuning (line 343), output_formatting (line 195)"
-    },
-    {
-      "type": "missing_content",
-      "severity": "medium",
-      "section": "Benchmarking Guidance",
-      "description": "No guidance on benchmarking ripgrep or comparing performance",
-      "should_add": "Provide best practices for benchmarking, common performance comparisons, factors affecting speed",
-      "fix_suggestion": "Add section: 'Benchmarking' with guidance on fair performance testing, warm vs cold cache, file system effects, and how to measure ripgrep's actual performance in different scenarios",
-      "source_reference": "Chapter topics include 'benchmarks'"
-    },
-    {
-      "type": "missing_content",
-      "severity": "medium",
-      "section": "Binary Detection Performance",
-      "description": "No documentation of binary detection strategies and their performance impact",
-      "should_add": "Explain binary detection using NUL byte heuristics, performance impact, --binary flag",
-      "fix_suggestion": "Add subsection in relevant section explaining how binary detection works, its performance characteristics, and when to use --binary flag",
-      "source_reference": "features.json:performance_tuning (line 338), notes (line 510)"
+      "description": "macOS-specific memory mapping behavior not documented",
+      "should_add": "Note that memory mapping is disabled by default on macOS due to performance overhead, but can be enabled with --mmap if beneficial for your use case.",
+      "fix_suggestion": "Add platform-specific note in the Memory Mapping section explaining macOS default behavior",
+      "source_reference": "features.json:422-424 - macos: Disabled by default due to overhead"
     },
     {
       "type": "missing_content",
       "severity": "low",
-      "section": "Engine Selection Performance",
-      "description": "No documentation of performance differences between default and PCRE2 engines",
-      "should_add": "Explain performance characteristics of default Rust regex vs PCRE2, when to use each",
-      "fix_suggestion": "Add section or note about regex engine performance tradeoffs: finite automata (default) vs backtracking (PCRE2), and --engine auto selection",
-      "source_reference": "features.json:search_engine (lines 59-62)"
+      "section": "Buffer and Memory Tuning",
+      "description": "Default buffer size not mentioned",
+      "should_add": "Ripgrep uses a 64 KB default buffer for reading files. This is automatically managed but understanding the buffer size can help diagnose memory usage.",
+      "fix_suggestion": "Add subsection on buffer size configuration in the Buffer and Memory Tuning section",
+      "source_reference": "features.json:419 - buffer_size: 64 KB default"
     },
     {
-      "type": "missing_content",
+      "type": "incomplete_explanation",
       "severity": "low",
-      "section": "Cross-Platform Performance",
-      "description": "No mention of performance characteristics on different platforms",
-      "should_add": "Note any significant performance differences between Windows, macOS, and Linux",
-      "fix_suggestion": "Add note about cross-platform performance if there are significant differences worth mentioning",
-      "source_reference": "features.json:notes (line 508)"
+      "section": "Work Stealing Architecture",
+      "description": "Lock-free implementation detail could be more explicit",
+      "current_content": "This lock-free parallel iteration means ripgrep scales well across many cores without contention overhead.",
+      "should_be": "This lock-free parallel iteration (using atomic operations for work distribution) means ripgrep scales well across many cores without contention overhead.",
+      "fix_suggestion": "Clarify that the lock-free implementation uses atomic operations for work distribution",
+      "source_reference": "features.json:416 - thread_safety: Lock-free when possible"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "Regex Size Limits",
+      "description": "Chapter mentions regex size limit but doesn't specify the actual default value",
+      "current_content": "Useful in memory-constrained environments or when dealing with extremely large patterns.",
+      "should_be": "The default is 100 MB. Useful in memory-constrained environments or when dealing with extremely large patterns.",
+      "fix_suggestion": "Add the specific default value (100 MB) to help users understand when this limit might be reached",
+      "source_reference": "features.json:444 - regex_size_limit: 100 MB"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "Heap Limits",
+      "description": "Heap limits mentioned but no configuration details provided",
+      "current_content": "Ripgrep has internal heap limit controls to prevent excessive memory usage. These are automatically managed but can be important when...",
+      "should_be": "Ripgrep has internal heap limit controls to prevent excessive memory usage. While these are automatically managed, you can configure heap allocation behavior through the --heap-limit flag (if exposed) or by adjusting other memory parameters like --dfa-size-limit.",
+      "fix_suggestion": "Add information on how heap limits can be influenced, even if indirectly through other flags",
+      "source_reference": "features.json:420 - heap_allocation: Eager (default), Error(limit) for constraints"
     }
   ],
   "positive_aspects": [
-    "Chapter is correctly listed in book structure",
-    "Chapter has appropriate topics identified (benchmarks, optimization, memory_maps, parallelism)",
-    "Validation focus is clear and appropriate"
+    "Excellent coverage of parallel search architecture with work-stealing explanation",
+    "Clear explanation of memory mapping tradeoffs and when to use/avoid it",
+    "Comprehensive SIMD acceleration section with automatic detection note",
+    "Well-explained regex engine comparison (DFA vs PCRE2) with performance characteristics",
+    "Practical performance tips organized by use case (large codebases, network file systems, memory-constrained)",
+    "Good troubleshooting section with concrete debugging steps",
+    "Helpful benchmarking guidance including warm vs cold cache considerations",
+    "Clear explanation of literal extraction optimization",
+    "Accurate documentation of sorting performance impact",
+    "Good coverage of buffer modes and their use cases",
+    "Comprehensive statistics section with example output",
+    "Well-organized with clear progression from concepts to practical tips"
   ],
   "improvement_suggestions": [
-    "Start with high-level overview of ripgrep's performance philosophy and architecture",
-    "Include practical examples showing before/after performance with different flags",
-    "Add real benchmark results or methodology for users to run their own",
-    "Include common performance pitfalls and anti-patterns",
-    "Show example --stats output with interpretation",
-    "Add troubleshooting section for performance issues",
-    "Include links to related chapters (regex engines, file filtering, etc.)",
-    "Consider subsections: Threading, Memory, I/O, Regex Engine, Profiling, Benchmarking",
-    "Add practical use cases: optimizing for large codebases, network file systems, memory-constrained environments"
+    "Add a table summarizing all performance-related flags with their defaults and impacts",
+    "Include more real-world benchmarking examples comparing different flag combinations",
+    "Add a decision tree for choosing thread count based on workload characteristics",
+    "Include performance profiles for different search scenarios (many small files vs few large files)",
+    "Add examples of --stats output interpretation for different bottleneck scenarios",
+    "Consider adding a 'Performance Checklist' for users optimizing their searches",
+    "Link to the relevant source files in crates/searcher and crates/grep for advanced users"
   ],
   "metadata": {
     "analyzed_at": "2025-11-08",
     "feature_inventory": ".prodigy/book-analysis/features.json",
-    "topics_covered": [],
-    "topics_expected": ["benchmarks", "optimization", "memory_maps", "parallelism"],
+    "topics_covered": [
+      "Parallel search with work-stealing",
+      "Memory mapping strategies",
+      "SIMD acceleration",
+      "Regex engine selection and tuning",
+      "Buffer and memory management",
+      "Sorting performance",
+      "Statistics and benchmarking",
+      "Performance tips by use case",
+      "Common performance pitfalls",
+      "Troubleshooting slow searches"
+    ],
     "validation_focus": "Ensure performance characteristics and tuning options are explained",
-    "related_feature_categories": ["performance_tuning", "search_engine"],
-    "cli_flags_to_document": [
-      "-j/--threads",
-      "--mmap",
-      "--no-mmap",
-      "--sort",
-      "--sortr",
-      "--dfa-size-limit",
-      "--regex-size-limit",
-      "--line-buffered",
-      "--block-buffered",
-      "--stats",
-      "--engine",
-      "--binary"
+    "feature_areas_referenced": [
+      "performance_tuning (features.json lines 410-448)",
+      "search_engine (features.json lines 71-148)",
+      "regex_support (features.json lines 320-382)"
     ]
   }
 }
