@@ -1,0 +1,112 @@
+{
+  "chapter_id": "manual-filtering-globs",
+  "chapter_title": "Manual Filtering: Globs",
+  "chapter_file": "book/src/manual-filtering-globs.md",
+  "drift_detected": true,
+  "severity": "medium",
+  "quality_assessment": "Chapter is generally accurate and comprehensive, but lacks coverage of the ignore hierarchy interaction and has a minor terminology inconsistency with exclude patterns. The content is well-structured with excellent examples, but could benefit from explaining how globs interact with the broader ignore system.",
+  "issues": [
+    {
+      "type": "incomplete_explanation",
+      "severity": "medium",
+      "section": "Glob Override Behavior (lines 188-200)",
+      "description": "Chapter states globs 'always override automatic filtering' but doesn't explain the full precedence hierarchy from features.json",
+      "current_content": "**Important:** Glob patterns always override automatic filtering from `.gitignore`, `.ignore`, and other sources.",
+      "should_add": "Explain the complete ignore hierarchy: Override patterns (--include/--exclude) > Custom ignore files > .ignore > .gitignore > .git/info/exclude > Global gitignore > Explicit ignore files > Hidden file detection",
+      "fix_suggestion": "Add a subsection explaining where --glob/-g fits in the precedence order. Clarify that --glob is an 'override pattern' at the top of the hierarchy.",
+      "source_reference": "features.json:154-163 (file_filtering.ignore_hierarchy.precedence_order)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Performance Considerations (lines 260-272)",
+      "description": "Chapter mentions performance but doesn't explain the 7 optimized glob strategies that ripgrep uses internally",
+      "should_add": "Optional advanced note about how ripgrep optimizes glob patterns into different matching strategies (literal, basename_literal, extension, prefix, suffix, required_extension, regex) for better performance",
+      "fix_suggestion": "Add an optional 'Advanced: Glob Optimization' callout box explaining that ripgrep automatically optimizes simple patterns (like '*.rs') into faster matching strategies than complex regex patterns",
+      "source_reference": "features.json:170-207 (file_filtering.glob_matching.strategies)"
+    },
+    {
+      "type": "unclear_content",
+      "severity": "low",
+      "section": "Include and Exclude Patterns (lines 88-98)",
+      "description": "The section title says 'Include and Exclude Patterns' but there's no explicit 'include' flag - all patterns are includes by default, with '!' prefix for excludes",
+      "current_content": "## Include and Exclude Patterns\n\nPrefix a glob with `!` to exclude files that match:",
+      "should_be": "## Including and Excluding Files\n\nBy default, glob patterns include files. Prefix a glob with `!` to exclude files that match:",
+      "fix_suggestion": "Retitle the section to avoid implying there are separate include/exclude flags. Clarify that -g/--glob handles both cases based on presence of '!' prefix.",
+      "source_reference": "crates/core/flags/defs.rs:2522-2531 (Glob flag documentation)"
+    },
+    {
+      "type": "outdated_information",
+      "severity": "low",
+      "section": "Brace Expansion (line 143)",
+      "description": "Chapter states 'Empty alternatives like {,c} are not supported' which is confirmed in source, but should note this is a known limitation",
+      "current_content": "**Note:** Empty alternatives like `{,c}` are not supported. This is a ripgrep extension beyond standard `.gitignore` syntax.",
+      "should_be": "**Note:** Empty alternatives like `{,c}` are not currently supported (as of ripgrep 14.1+). Brace expansion is a ripgrep extension beyond standard `.gitignore` syntax.",
+      "fix_suggestion": "Add version context to indicate this is a current limitation, not a documentation error. This helps readers understand it might be supported in future versions.",
+      "source_reference": "crates/core/flags/defs.rs:2537-2542"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Case-Insensitive Globs (lines 145-161)",
+      "description": "Chapter documents --iglob and --glob-case-insensitive but doesn't mention the negated form --no-glob-case-insensitive",
+      "should_add": "Mention that --glob-case-insensitive has a negated form --no-glob-case-insensitive that can restore case-sensitive matching",
+      "fix_suggestion": "Add example: 'Use --no-glob-case-insensitive to restore case-sensitive matching after earlier use of --glob-case-insensitive'",
+      "source_reference": "crates/core/flags/defs.rs:2603-2605 (name_negated for GlobCaseInsensitive)"
+    },
+    {
+      "type": "incorrect_example",
+      "severity": "low",
+      "section": "Practical Examples - Exclude Test Directories (line 215)",
+      "description": "Example shows both 'test' and 'tests' exclusions, but doesn't explain why both are needed",
+      "current_content": "### Exclude Test Directories\n```bash\nrg -g '!**/test/**' -g '!**/tests/**' pattern\n```",
+      "should_be": "### Exclude Test Directories\n```bash\n# Exclude both common test directory naming conventions\nrg -g '!**/test/**' -g '!**/tests/**' pattern\n```",
+      "fix_suggestion": "Add comment explaining that different projects use different naming conventions (test vs tests), so both exclusions may be needed for comprehensive filtering",
+      "source_reference": "Common convention from features.json best_practices"
+    }
+  ],
+  "positive_aspects": [
+    "Excellent structure progressing from basic to advanced concepts",
+    "Comprehensive coverage of glob syntax with clear examples for each feature",
+    "Good use of visual markers (✅/❌) to highlight correct vs incorrect usage",
+    "Practical examples section is very helpful and covers real-world use cases",
+    "Clear explanation of common pitfall with directory matching (foo vs foo/**)",
+    "Comparison table with type filters provides good context for when to use each approach",
+    "Performance considerations section helps users make informed choices",
+    "Preview with --files flag is a valuable troubleshooting tip",
+    "Gitignore compatibility section helps users transfer existing knowledge",
+    "Escaping metacharacters section addresses a common pain point"
+  ],
+  "improvement_suggestions": [
+    "Add a quick reference box at the top summarizing key glob wildcards and special syntax",
+    "Include a troubleshooting subsection for common glob mistakes beyond just the directory pitfall",
+    "Add cross-references to automatic filtering chapter to help readers understand when to use each approach",
+    "Consider adding a 'glob patterns cheatsheet' table for quick reference",
+    "Add examples showing how globs interact with --hidden and --no-ignore flags",
+    "Include a note about shell glob expansion and why quotes are important around glob patterns",
+    "Add example showing how to use globs to search only in recently modified files (though this requires combining with other features)",
+    "Consider adding a visual diagram showing the precedence hierarchy for ignore patterns"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-08",
+    "feature_inventory": ".prodigy/book-analysis/features.json",
+    "topics_covered": [
+      "Basic glob syntax (* ? [...] {...})",
+      "Character classes and ranges",
+      "Recursive matching with **",
+      "Include/exclude with ! prefix",
+      "Multiple glob patterns",
+      "Brace expansion",
+      "Case-insensitive globs (--iglob, --glob-case-insensitive)",
+      "Gitignore compatibility",
+      "Escaping metacharacters",
+      "Glob override behavior",
+      "Performance considerations",
+      "Comparison with type filters"
+    ],
+    "validation_focus": "Verify glob pattern examples match current implementation",
+    "example_count": 23,
+    "code_blocks": 20,
+    "cross_references": 2
+  }
+}
