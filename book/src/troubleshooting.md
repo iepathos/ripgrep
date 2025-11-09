@@ -6,12 +6,13 @@ This chapter helps you diagnose and solve common problems when using ripgrep. Mo
 
 If you're experiencing unexpected behavior, try these steps in order:
 
-1. **Run with `--debug`** to see what files are being searched and why others are skipped
-2. **Try `-uuu`** (unrestricted search) to temporarily disable all filtering
-3. **Use `-F`** to search for literal text instead of a regex pattern
-4. **Try `-i`** to make the search case-insensitive
-5. **Check `--stats`** to see how many files were searched and matches found
-6. **Review the FAQ** and GUIDE for common issues
+1. **Run with `--files`** to see which files would be searched (without actually searching)
+2. **Run with `--debug`** to see what files are being searched and why others are skipped
+3. **Try `-uuu`** (unrestricted search) to temporarily disable all filtering
+4. **Use `-F`** to search for literal text instead of a regex pattern
+5. **Try `-i`** to make the search case-insensitive
+6. **Check `--stats`** to see how many files were searched and matches found
+7. **Review the FAQ** and GUIDE for common issues
 
 ## Debug Flags
 
@@ -26,6 +27,7 @@ The `--debug` flag shows detailed information about ripgrep's search decisions, 
 - Which ignore files are being loaded (`.gitignore`, `.ignore`, etc.)
 - Binary file detection results
 - Configuration file loading
+- Regex engine selection (default Rust regex vs PCRE2)
 
 Example output:
 
@@ -43,11 +45,11 @@ Use `--debug` when:
 
 ### `--trace`
 
-The `--trace` flag provides even more detailed output than `--debug`, including:
+The `--trace` flag provides even more detailed output than `--debug`, showing trace-level debug information about all aspects of ripgrep's operation, including:
 
-- Regex matching internals
 - Low-level search decisions
 - Detailed filter processing
+- Internal algorithm behavior
 
 **Warning:** `--trace` produces very verbose output. Use it only when `--debug` doesn't provide enough information.
 
@@ -77,6 +79,24 @@ Use `--stats` to:
 ## No Results Found
 
 If ripgrep returns zero results when you expect matches, try these troubleshooting steps:
+
+### Check What Files Would Be Searched
+
+**First step:** Use the `--files` flag to see which files ripgrep would search (without actually searching them):
+
+```
+$ rg --files
+```
+
+This diagnostic flag is crucial for understanding filtering issues. If your expected files aren't in this list, they're being filtered out.
+
+**Combine with other filters:**
+
+```
+$ rg --files -t rust           # See which Rust files would be searched
+$ rg --files -g "*.config"     # See which .config files would be searched
+$ rg --files --hidden          # Include hidden files in the listing
+```
 
 ### Files Filtered by .gitignore
 
@@ -127,6 +147,36 @@ DEBUG|grep_searcher::searcher: binary file matches (but not printed): ./myfile.b
 - Use `-i` or `--ignore-case` to make the search case-insensitive
 - Use `-S` or `--smart-case` to search case-insensitively if the pattern is all lowercase
 - Check if smart-case is enabled in your configuration file
+
+### File Type Not Recognized
+
+**Problem:** Files are being filtered out because their type isn't recognized or matched by your `-t` filter.
+
+**Diagnosis:** Use `--type-list` to see all file types ripgrep knows about:
+
+```
+$ rg --type-list
+```
+
+This shows all available file types and their associated patterns. Check if your file type is listed and what extensions/patterns it matches.
+
+**Example:**
+
+```
+$ rg --type-list | grep -i rust
+rust: *.rs
+
+$ rg --type-list | grep -i python
+py: *.py, *.pyw, *.pyi, *.pyx
+```
+
+**Solutions:**
+- If your file type isn't in the list, use `-g` glob patterns instead of `-t`:
+  ```
+  $ rg "pattern" -g "*.myext"
+  ```
+- Add custom file types in your configuration file
+- Check that you're using the correct type name (e.g., `py` not `python`)
 
 ### Pattern Doesn't Match
 
@@ -263,6 +313,20 @@ Or simplify your pattern:
 $ rg '[a-zA-Z]{1000}'  # Use a smaller character class
 ```
 
+### "DFA cache size limit exceeded"
+
+**Cause:** The DFA (Deterministic Finite Automaton) cache used by the regex engine has exceeded its memory limit (default: 1 MB). This can happen with complex patterns or large inputs.
+
+**Solutions:**
+
+Increase the DFA cache size limit with `--dfa-size-limit`:
+
+```
+$ rg "complex-pattern" --dfa-size-limit 10M
+```
+
+Or simplify your regex pattern to reduce DFA cache usage.
+
 ### "Permission denied" or "Access denied"
 
 **Cause:** ripgrep doesn't have permission to read certain files or directories.
@@ -363,12 +427,13 @@ DEBUG|ignore::walk: ignoring ./node_modules: Ignore(IgnoreMatch(GitIgnore, .giti
 Different flags control different ignore behaviors:
 
 ```
-$ rg -u "pattern"        # Ignore .gitignore but respect .ignore
-$ rg -uu "pattern"       # Ignore all ignore files but skip hidden/binary
-$ rg -uuu "pattern"      # Ignore everything (unrestricted search)
-$ rg --no-ignore-vcs     # Only ignore version control ignore files
-$ rg --no-ignore-global  # Ignore global gitignore
-$ rg --no-ignore-parent  # Ignore parent directory ignore files
+$ rg -u "pattern"             # Ignore .gitignore but respect .ignore
+$ rg -uu "pattern"            # Ignore all ignore files but skip hidden/binary
+$ rg -uuu "pattern"           # Ignore everything (unrestricted search)
+$ rg --no-ignore-vcs          # Only ignore version control ignore files
+$ rg --no-ignore-global       # Ignore global gitignore
+$ rg --no-ignore-parent       # Ignore parent directory ignore files
+$ rg --no-ignore-messages     # Suppress ignore-related error messages
 ```
 
 ### Parent Directory Ignore Files
@@ -443,7 +508,7 @@ src/lib.rs
 
 **Understanding the output:**
 - **matches**: Total number of matches found
-- **matched lines**: Number of lines containing matches (with `-c/--count`)
+- **matched lines**: Number of lines containing matches (this metric tracks lines with matches throughout the search, and is particularly relevant when using `-c/--count` mode)
 - **files contained matches**: How many files had at least one match
 - **files searched**: Total files ripgrep examined
 - **bytes searched**: Total bytes of content searched
