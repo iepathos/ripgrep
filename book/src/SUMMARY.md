@@ -13,11 +13,13 @@
 - [Configuration File](configuration-file.md)
 - [File Encoding](file-encoding.md)
 - [Binary Data](binary-data.md)
+- [Compressed Files](compressed-files.md)
 - [Preprocessor](preprocessor.md)
 - [Common Options](common-options.md)
 - [Context Lines](context-lines.md)
 - [Output Formats](output-formats.md)
 - [Sorting Results](sorting-results.md)
+- [Utility Modes](utility-modes.md)
 
 # Advanced Topics
 

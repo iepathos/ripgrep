@@ -169,6 +169,26 @@
       "dependencies": ["common-options"],
       "auto_generated": true,
       "source_feature": "hyperlinks"
+    },
+    {
+      "id": "compressed-files",
+      "title": "Compressed Files",
+      "file": "book/src/compressed-files.md",
+      "topics": ["search_zip_flag", "compression_formats", "automatic_decompression", "brotli", "bzip2", "gzip", "lz4", "lzma", "xz", "zstandard"],
+      "validation": "Check that -z/--search-zip flag is documented with all 7 supported compression formats and examples",
+      "dependencies": ["basics"],
+      "auto_generated": true,
+      "source_feature": "compression_preprocessing"
+    },
+    {
+      "id": "utility-modes",
+      "title": "Utility Modes",
+      "file": "book/src/utility-modes.md",
+      "topics": ["files_mode", "type_list", "shell_completions", "man_pages", "generate_flag", "version_info"],
+      "validation": "Ensure utility modes like --files, --type-list, --generate, --version are documented with usage examples",
+      "dependencies": ["common-options"],
+      "auto_generated": true,
+      "source_feature": "special_modes"
     }
   ]
 }
