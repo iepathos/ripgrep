@@ -107,13 +107,16 @@ Other encodings in the WHATWG standard that have BOMs are not automatically dete
 
 **BOM sniffing is enabled by default** in auto mode and can be disabled with `--encoding=none`.
 
-**BOM overrides explicit encoding:** Even if you specify `--encoding=latin1`, a file with a UTF-16 BOM will be treated as UTF-16.
+!!! warning "BOM Override Behavior"
+    Even if you specify an explicit encoding like `--encoding=latin1`, a file with a BOM will override your setting. For example:
 
-```bash
-# Even though we specify latin1, the UTF-16 BOM is detected and used instead
-rg -E latin1 'pattern' utf16-file-with-bom
-# ripgrep uses UTF-16 (from BOM) not latin1
-```
+    ```bash
+    # Even though we specify latin1, the UTF-16 BOM is detected and used instead
+    rg -E latin1 'pattern' utf16-file-with-bom
+    # ripgrep uses UTF-16 (from BOM) not latin1
+    ```
+
+    This ensures files are read correctly, but may be unexpected if you're trying to force a specific encoding.
 
 ## Transcoding
 
@@ -144,9 +147,10 @@ rg -E utf-16 'Шерлок' some-utf16-file
 
 ## ASCII Compatibility Assumption
 
-**By default, ripgrep assumes files are ASCII-compatible.** This is a critical assumption that affects how searches work.
+!!! note "Performance Optimization"
+    **By default, ripgrep assumes files are ASCII-compatible.** This is a critical assumption that affects how searches work.
 
-This assumption is a performance optimization: ASCII-compatible files can be searched directly without transcoding overhead, making searches significantly faster than if every file required transcoding to UTF-8.
+    This assumption is a performance optimization: ASCII-compatible files can be searched directly without transcoding overhead, making searches significantly faster than if every file required transcoding to UTF-8.
 
 **ASCII-compatible encodings:**
 * ASCII itself
@@ -163,17 +167,16 @@ In these encodings, bytes 0x00-0x7F represent the same ASCII characters, so ASCI
 
 These encodings require explicit `--encoding` specification or a BOM for reliable searching.
 
-**Why it matters:**
+!!! warning "Why it matters"
+    If you search UTF-16 text without BOM detection or explicit encoding, your ASCII pattern will be looking for single bytes, but UTF-16 represents each character with two bytes. The pattern won't match.
 
-If you search UTF-16 text without BOM detection or explicit encoding, your ASCII pattern will be looking for single bytes, but UTF-16 represents each character with two bytes. The pattern won't match.
+    ```bash
+    # Won't work - searching for ASCII bytes in UTF-16 file without BOM
+    rg 'hello' utf16-file-no-bom
 
-```bash
-# Won't work - searching for ASCII bytes in UTF-16 file without BOM
-rg 'hello' utf16-file-no-bom
-
-# Works - explicit encoding specified
-rg -E utf-16 'hello' utf16-file-no-bom
-```
+    # Works - explicit encoding specified
+    rg -E utf-16 'hello' utf16-file-no-bom
+    ```
 
 ## Supported Encodings
 
@@ -199,45 +202,55 @@ ripgrep supports all encodings from the [WHATWG Encoding Standard](https://encod
 
 ## Practical Examples
 
-### Automatic UTF-16 Search
+=== "UTF-16 Files"
 
-Most UTF-16 files have a BOM, so this works automatically:
+    **Automatic detection (with BOM):**
 
-```bash
-rg 'pattern' utf16-file-with-bom
-```
+    Most UTF-16 files have a BOM, so this works automatically:
 
-### Force UTF-16 Encoding
+    ```bash
+    rg 'pattern' utf16-file-with-bom
+    ```
 
-For UTF-16 files without a BOM:
+    **Force UTF-16 (without BOM):**
 
-```bash
-rg -E utf-16 'pattern' utf16-file-no-bom
-```
+    For UTF-16 files without a BOM:
 
-### Search Legacy Encoded Files
+    ```bash
+    rg -E utf-16 'pattern' utf16-file-no-bom
+    ```
 
-Search files encoded in Windows-1251 (Cyrillic):
+=== "Legacy Encodings"
 
-```bash
-rg -E windows-1251 'текст' legacy-cyrillic-files/
-```
+    **Cyrillic (Windows-1251):**
 
-### Search Raw Bytes
+    ```bash
+    rg -E windows-1251 'текст' legacy-cyrillic-files/
+    ```
 
-Disable all encoding detection and search raw byte sequences:
+    **Chinese (GBK):**
 
-```bash
-rg -E none '(?-u)\x00\x48\x00\x65\x00\x6c\x00\x6c\x00\x6f' utf16-file
-```
+    ```bash
+    rg -E gbk '搜索' chinese-files/
+    ```
 
-The `(?-u)` flag disables Unicode mode in the regex, allowing byte-level matching.
+    **Japanese (Shift JIS):**
 
-### Search GBK-Encoded Chinese Text
+    ```bash
+    rg -E shift_jis '検索' japanese-files/
+    ```
 
-```bash
-rg -E gbk '搜索' chinese-files/
-```
+=== "Raw Bytes"
+
+    **Search raw byte sequences:**
+
+    Disable all encoding detection and search raw bytes:
+
+    ```bash
+    rg -E none '(?-u)\x00\x48\x00\x65\x00\x6c\x00\x6c\x00\x6f' utf16-file
+    ```
+
+    The `(?-u)` flag disables Unicode mode in the regex, allowing byte-level matching.
 
 ## Unicode Regex Features and Encoding
 
@@ -270,23 +283,27 @@ This is useful when:
 * Mixing ASCII and Unicode patterns
 * Searching raw bytes with `--encoding=none`
 
-For more details on regex flags, see the [Advanced Patterns](./advanced-patterns.md) chapter.
+For more details on regex flags, see the [Advanced Patterns](./advanced-patterns/) chapter.
 
 ## Performance Considerations
 
-**Transcoding overhead:**
-* Transcoding from non-UTF-8 encodings adds processing time
-* UTF-16 transcoding can significantly slow down searches on large files
-* For best performance, convert files to UTF-8 if possible
+!!! tip "Performance Best Practices"
+    **Transcoding overhead:**
 
-**BOM sniffing cost:**
-* Minimal - only reads first 3 bytes of each file
-* Negligible impact on performance
+    * Transcoding from non-UTF-8 encodings adds processing time
+    * UTF-16 transcoding can significantly slow down searches on large files
+    * For best performance, convert files to UTF-8 if possible
 
-**Tips for better performance:**
-* Use UTF-8 files when possible (no transcoding needed)
-* If searching many files in the same encoding, consider bulk conversion to UTF-8
-* Use `--encoding=none` only when necessary (skips BOM detection overhead)
+    **BOM sniffing cost:**
+
+    * Minimal - only reads first 3 bytes of each file
+    * Negligible impact on performance
+
+    **Tips for better performance:**
+
+    * Use UTF-8 files when possible (no transcoding needed)
+    * If searching many files in the same encoding, consider bulk conversion to UTF-8
+    * Use `--encoding=none` only when necessary (skips BOM detection overhead)
 
 ## Troubleshooting Common Encoding Issues
 
@@ -324,7 +341,7 @@ For more details on regex flags, see the [Advanced Patterns](./advanced-patterns
 * Forces ripgrep to search binary files as if they were text
 * Encoding detection and transcoding still apply
 * Useful in combination: `rg -a -E utf-16 pattern binary-file`
-* See [Binary Data](./binary-data.md) chapter for details
+* See [Binary Data](./binary-data/) chapter for details
 
 **`--no-encoding` flag:**
 * Resets encoding to `auto` mode
@@ -334,7 +351,7 @@ For more details on regex flags, see the [Advanced Patterns](./advanced-patterns
 **Unicode regex flags:**
 * `(?-u)` disables Unicode mode for a pattern section
 * Works on the transcoded UTF-8 version of files
-* See [Advanced Patterns](./advanced-patterns.md) chapter
+* See [Advanced Patterns](./advanced-patterns/) chapter
 
 ## Summary
 
