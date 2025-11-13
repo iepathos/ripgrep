@@ -39,19 +39,45 @@ Use the `--max-depth` flag (short form: `-d`, alias: `--maxdepth`) to limit how 
 
 ```bash
 # Only search direct children of dir/ (depth 1)
-rg --max-depth 1 pattern dir/
+rg --max-depth 1 pattern dir/            # (1)!
 
 # Only search paths explicitly given (depth 0 - no recursion)
-rg --max-depth 0 pattern dir/
+rg --max-depth 0 pattern dir/            # (2)!
 
 # Limit to 3 levels deep
-rg -d 3 FIXME ./
+rg -d 3 FIXME ./                         # (3)!
 ```
+
+1. Searches only files directly inside `dir/`, not subdirectories
+2. No recursion - only searches explicitly named paths (usually not useful for directories)
+3. Short form `-d` is equivalent to `--max-depth`
 
 !!! info "Depth Semantics"
     - `--max-depth 0`: Only searches the explicitly given paths themselves (no recursion). If you specify a directory with depth 0, it's effectively a no-op because the directory won't be descended into.
     - `--max-depth 1`: Searches only the direct children of the given directory
     - `--max-depth 2`: Searches children and grandchildren, etc.
+
+```mermaid
+graph TD
+    Root[dir/] --> File1[file1.txt<br/>Depth 1]
+    Root --> SubDir[subdir/<br/>Depth 1]
+    SubDir --> File2[file2.txt<br/>Depth 2]
+    SubDir --> Deeper[deeper/<br/>Depth 2]
+    Deeper --> File3[file3.txt<br/>Depth 3]
+
+    style File1 fill:#e8f5e9
+    style File2 fill:#fff3e0
+    style File3 fill:#ffebee
+    style Root fill:#e1f5ff
+    style SubDir fill:#e1f5ff
+    style Deeper fill:#e1f5ff
+
+    classDef depth0 stroke:#4caf50,stroke-width:4px
+    classDef depth1 stroke:#ff9800,stroke-width:4px
+    classDef depth2 stroke:#f44336,stroke-width:4px
+```
+
+**Figure**: Directory structure showing depth levels - green (depth 1), orange (depth 2), red (depth 3).
 
 Example showing depth behavior:
 
@@ -132,6 +158,39 @@ Under the hood, ripgrep uses an efficient parallel directory walker (`WalkBuilde
 - Handles errors gracefully (e.g., permission denied on directories)
 
 This implementation allows ripgrep to efficiently search large directory trees while respecting ignore rules and user-specified filters.
+
+```mermaid
+flowchart TD
+    Start[Start Search] --> PathType{Path Type?}
+
+    PathType -->|File| SearchFile[Search File Directly<br/>Override ignore rules]
+    PathType -->|Directory| CheckDepth{max-depth<br/>reached?}
+
+    CheckDepth -->|Yes| Skip[Skip Directory]
+    CheckDepth -->|No| CheckIgnore{Ignored by<br/>.gitignore?}
+
+    CheckIgnore -->|Yes| Skip
+    CheckIgnore -->|No| CheckFS{File system<br/>boundary?}
+
+    CheckFS -->|Yes + one-file-system| Skip
+    CheckFS -->|No or unrestricted| CheckSymlink{Symbolic<br/>link?}
+
+    CheckSymlink -->|Yes + no --follow| Skip
+    CheckSymlink -->|No or --follow| Descend[Descend into Directory]
+
+    Descend --> Parallel[Parallel Walker<br/>Process Entries]
+    Parallel --> PathType
+
+    SearchFile --> Complete[Complete]
+    Skip --> Complete
+
+    style SearchFile fill:#e8f5e9
+    style Descend fill:#e1f5ff
+    style Skip fill:#fff3e0
+    style Parallel fill:#f3e5f5
+```
+
+**Figure**: Directory traversal decision flow showing how ripgrep processes paths and respects filtering rules.
 
 ## Practical Examples
 
@@ -225,6 +284,9 @@ If recursive search is slower than expected:
 - Ensure ignore files are working (`.gitignore` should skip `node_modules`, `target/`, etc.)
 - Use `--max-depth` to limit traversal scope
 - Consider using more specific path arguments
+
+!!! tip "Performance Optimization"
+    For large projects, ensure your `.gitignore` properly excludes common large directories like `node_modules/`, `target/`, `.git/`, or `build/`. These directories can contain thousands of files that dramatically slow down searches.
 
 ## See Also
 
