@@ -1,0 +1,83 @@
+{
+  "item_type": "auto-discovered",
+  "page_id": "modes",
+  "page_title": "modes",
+  "page_file": "docs/binary-data/modes.md",
+  "drift_detected": false,
+  "severity": "low",
+  "quality_assessment": "Documentation is accurate and comprehensive. Minor enhancements could improve visual appeal and user engagement through MkDocs Material features.",
+  "issues": [],
+  "positive_aspects": [
+    "Accurate description of all three binary modes (Auto, SearchAndSuppress, AsText)",
+    "Clear explanation of the dual behavior in Auto mode for explicit vs implicit files",
+    "Good performance considerations section with practical guidance",
+    "Helpful table comparing when to use each mode",
+    "Correct warnings about terminal corruption with --text flag",
+    "Code implementation matches documentation exactly (BinaryMode enum in lowargs.rs)"
+  ],
+  "improvement_suggestions": [
+    "Add MkDocs Material admonitions for the warning about --text corrupting terminal (currently uses plain warning emoji)",
+    "Consider adding a mermaid diagram showing the flow of binary mode selection",
+    "Add code annotations to the example commands to explain what's happening",
+    "Consider adding tabbed content to show examples for each mode side-by-side",
+    "Link to the explicit-implicit.md page when mentioning 'dual behavior' for better cross-referencing"
+  ],
+  "enhancement_opportunities": [
+    {
+      "type": "visual_enhancement",
+      "section": "AsText Mode",
+      "current": "Plain warning emoji and text",
+      "suggested": "Use MkDocs Material warning admonition",
+      "example": "!!! warning \"Terminal Corruption Risk\"\n    This may print raw binary data to your terminal..."
+    },
+    {
+      "type": "cross_reference",
+      "section": "Auto Mode (Default)",
+      "description": "Add explicit link to explicit-implicit.md when discussing dual behavior",
+      "suggested": "See [Explicit vs Implicit Files](./explicit-implicit.md) for details on this distinction."
+    },
+    {
+      "type": "visual_diagram",
+      "section": "Performance Considerations",
+      "description": "Add a mermaid flowchart showing decision tree for binary mode selection",
+      "benefit": "Visual learners can better understand the mode selection logic"
+    },
+    {
+      "type": "code_annotation",
+      "section": "SearchAndSuppress Mode",
+      "description": "Add numbered code annotations to explain the behavior",
+      "example": "rg --binary pattern  # (1)!\n\n1. Searches binary files but shows warnings when NUL bytes found"
+    }
+  ],
+  "cross_references": [
+    "detection",
+    "explicit-implicit",
+    "flags",
+    "examples"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-13T20:53:28Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": [
+      "binary_handling",
+      "binary_modes",
+      "auto_mode",
+      "search_and_suppress",
+      "as_text_mode",
+      "performance"
+    ],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "code_references_verified": [
+      "crates/core/flags/lowargs.rs:233-252 (BinaryMode enum)",
+      "crates/core/flags/defs.rs:429-469 (Binary flag implementation)",
+      "crates/core/flags/defs.rs:6633-6673 (Text flag implementation)"
+    ],
+    "links_validated": {
+      "total_internal_links": 1,
+      "broken_links": 0,
+      "valid_links": [
+        "./index.md"
+      ]
+    }
+  }
+}
