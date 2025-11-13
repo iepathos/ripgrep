@@ -38,14 +38,18 @@ These flags control which files are searched.
   ```bash
   # Source: crates/core/flags/defs.rs:6936-6969
   # Define a custom type 'web' for web files
-  rg --type-add 'web:*.{html,css,js}' -tweb pattern
+  rg --type-add 'web:*.{html,css,js}' -tweb pattern    # (1)!
 
   # Define 'config' type for configuration files
-  rg --type-add 'config:*.{yml,yaml,toml,json}' -tconfig 'port'
+  rg --type-add 'config:*.{yml,yaml,toml,json}' -tconfig 'port'    # (2)!
 
   # Combine with multiple type definitions
-  rg --type-add 'foo:*.foo' --type-add 'bar:*.bar' -tfoo -tbar pattern
+  rg --type-add 'foo:*.foo' --type-add 'bar:*.bar' -tfoo -tbar pattern    # (3)!
   ```
+
+  1. Format is `name:glob` - creates type 'web', then `-tweb` uses it
+  2. Use brace expansion `{yml,yaml,toml,json}` for multiple extensions
+  3. Chain multiple `--type-add` to define several types in one command
 
   The format is `name:glob`, where `name` is your custom type name and `glob` is a file pattern. Multiple globs can be specified using brace expansion `{ext1,ext2}`.
 
@@ -59,24 +63,31 @@ Ripgrep knows about common file extensions for popular languages and formats. Yo
 - **`-g, --glob PATTERN`**: Include/exclude files matching glob pattern
   ```bash
   # Only search .rs files
-  rg -g '*.rs' pattern
+  rg -g '*.rs' pattern              # (1)!
 
   # Search .py files in src/ directory tree
-  rg -g 'src/**/*.py' pattern
+  rg -g 'src/**/*.py' pattern       # (2)!
 
   # Exclude minified JavaScript
-  rg -g '!*.min.js' pattern
+  rg -g '!*.min.js' pattern         # (3)!
 
   # Combine multiple globs
-  rg -g '*.{rs,toml}' pattern
+  rg -g '*.{rs,toml}' pattern       # (4)!
 
   # Match single character with ?
-  rg -g 'test?.rs' pattern
+  rg -g 'test?.rs' pattern          # (5)!
 
   # Match character classes with [...]
-  rg -g 'file[0-9].txt' pattern
+  rg -g 'file[0-9].txt' pattern     # (6)!
   rg -g 'data[a-z].csv' pattern
   ```
+
+  1. `*` matches any characters except `/` (directory separator)
+  2. `**` matches across directories - use for recursive patterns
+  3. `!` prefix negates the pattern - excludes matching files
+  4. `{rs,toml}` expands to multiple extensions in one pattern
+  5. `?` matches exactly one character - use for single-char variations
+  6. `[0-9]` matches any single digit - `[a-z]` matches any lowercase letter
 
   **Glob syntax:**
   - `*` - Match any characters (except `/`)
@@ -90,6 +101,25 @@ Ripgrep knows about common file extensions for popular languages and formats. Yo
 ## Unrestricted Search
 
 The `-u` flag progressively removes ripgrep's smart filtering. Each `-u` adds more:
+
+```mermaid
+flowchart LR
+    Default[Default Search] --> U1[-u flag]
+    U1 --> U2[-uu flag]
+    U2 --> U3[-uuu flag]
+
+    Default --> D1["✓ Respects .gitignore<br/>✓ Skips hidden files<br/>✓ Skips binary files"]
+    U1 --> D2["✗ Ignores .gitignore<br/>✓ Skips hidden files<br/>✓ Skips binary files"]
+    U2 --> D3["✗ Ignores .gitignore<br/>✗ Searches hidden files<br/>✗ Searches binary files"]
+    U3 --> D4["✗ All filtering disabled<br/>✗ Maximum coverage<br/>✗ Kitchen sink mode"]
+
+    style Default fill:#e8f5e9
+    style U1 fill:#fff3e0
+    style U2 fill:#ffe0b2
+    style U3 fill:#ffccbc
+```
+
+**Figure**: Progressive unrestricted search showing how each `-u` flag removes filtering layers.
 
 !!! warning "Default behavior"
     By default, ripgrep respects `.gitignore`, skips hidden files, and ignores binary files. Use `-u` flags to override these behaviors.
@@ -118,6 +148,27 @@ Use `-u` when you need to search `.gitignore`d files, `-uu` when you also need h
 ### Granular Ignore Control
 
 Instead of using `-u` flags, you can selectively disable specific ignore mechanisms:
+
+```mermaid
+graph TD
+    Default[Default: All Ignore Files Active] --> VCS[--no-ignore-vcs]
+    Default --> Global[--no-ignore-global]
+    Default --> Dot[--no-ignore-dot]
+    Default --> Parent[--no-ignore-parent]
+
+    VCS --> V1["Skip .gitignore, .hgignore<br/>Still respect .ignore"]
+    Global --> G1["Skip global gitignore<br/>~/.gitignore, etc."]
+    Dot --> D1["Skip .ignore files<br/>Still respect .gitignore"]
+    Parent --> P1["Skip parent directory<br/>ignore files"]
+
+    style Default fill:#e1f5ff
+    style VCS fill:#fff3e0
+    style Global fill:#fff3e0
+    style Dot fill:#fff3e0
+    style Parent fill:#fff3e0
+```
+
+**Figure**: Granular ignore control flags - each flag disables a specific ignore mechanism.
 
 - **`--no-ignore-vcs`**: Don't respect version control ignore files (`.gitignore`, etc.)
   ```bash
