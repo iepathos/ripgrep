@@ -23,7 +23,8 @@ ripgrep's `-z` flag supports the following compression formats:
 | **Zstandard** | `.zst`, `.zstd` | `zstd` | Modern algorithm balancing speed and compression ratio |
 | **Compress** | `.Z` | `uncompress` | Legacy Unix compress format |
 
-**Note**: The external decompression tools must be available in your system's PATH for the corresponding formats to work.
+!!! note "External Dependencies Required"
+    The external decompression tools must be available in your system's PATH for the corresponding formats to work. See the [External Dependencies](#external-dependencies) section for installation instructions.
 
 ## Basic Usage
 
@@ -72,16 +73,69 @@ ripgrep detects the compression format based on file extension:
 5. Searches the decompressed stream
 6. Reports matches with the original compressed filename
 
+```mermaid
+flowchart TD
+    Start[File Encountered] --> CheckExt{Check File<br/>Extension}
+    CheckExt -->|".gz, .tgz"| Gzip[Select gzip -d -c]
+    CheckExt -->|".xz, .txz"| XZ[Select xz -d -c]
+    CheckExt -->|".zst, .zstd"| Zstd[Select zstd -q -d -c]
+    CheckExt -->|".bz2, .tbz2"| Bzip[Select bzip2 -d -c]
+    CheckExt -->|Other formats| Other[Select appropriate tool]
+    CheckExt -->|No match| Skip[Skip decompression]
+
+    Gzip --> Spawn[Spawn Child Process]
+    XZ --> Spawn
+    Zstd --> Spawn
+    Bzip --> Spawn
+    Other --> Spawn
+
+    Spawn --> ToolCheck{Tool in<br/>PATH?}
+    ToolCheck -->|No| Fallback[Treat as Binary]
+    ToolCheck -->|Yes| Decompress[Read from stdout]
+
+    Decompress --> Search[Search Stream]
+    Search --> Match{Match<br/>Found?}
+    Match -->|Yes| Report[Report with Original Filename]
+    Match -->|No| Next[Continue]
+
+    Fallback --> Next
+    Skip --> Next
+
+    style Spawn fill:#e1f5ff
+    style Search fill:#e8f5e9
+    style Report fill:#fff3e0
+    style Fallback fill:#ffebee
+```
+
+**Figure**: Decompression workflow showing format detection, tool selection, and fallback behavior.
+
+!!! info "Implementation Details"
+    Format detection is implemented in `crates/cli/src/decompress.rs:490-531`. Each compression format is mapped to its file extensions and decompression command. For example:
+
+    ```rust
+    // Source: crates/cli/src/decompress.rs:491-498
+    const ARGS_GZIP: &[&str] = &["gzip", "-d", "-c"];
+    const ARGS_BZIP: &[&str] = &["bzip2", "-d", "-c"];
+    const ARGS_XZ: &[&str] = &["xz", "-d", "-c"];
+    const ARGS_LZ4: &[&str] = &["lz4", "-d", "-c"];
+    const ARGS_LZMA: &[&str] = &["xz", "--format=lzma", "-d", "-c"];
+    const ARGS_BROTLI: &[&str] = &["brotli", "-d", "-c"];
+    const ARGS_ZSTD: &[&str] = &["zstd", "-q", "-d", "-c"];
+    const ARGS_UNCOMPRESS: &[&str] = &["uncompress", "-c"];
+    ```
+
 ### Out-of-Process Decompression
 
 Decompression happens in separate child processes using external tools to:
+
 - Isolate decompression failures (corrupted files won't crash ripgrep)
 - Enable parallel decompression across multiple files
 - Leverage optimized native decompression tools
 - Handle missing decompression tools gracefully (falls back to treating as binary)
 - Avoid security issues on Windows by resolving commands via PATH
 
-**Note**: If a decompression tool is not available in PATH, ripgrep will fall back to reading the file without decompression and log a debug message.
+!!! tip "Debugging Missing Tools"
+    If a decompression tool is not available in PATH, ripgrep will fall back to reading the file without decompression and log a debug message. Enable debug logging with `RUST_LOG=debug rg -z 'pattern'` to see which tools are missing.
 
 ## Combining with Other Flags
 
@@ -89,13 +143,19 @@ Decompression happens in separate child processes using external tools to:
 
 Combine compression support with file type filtering:
 
+!!! tip "Reduce Decompression Overhead"
+    Use file type filtering (`-t`) to avoid decompressing files you don't need to search, significantly improving performance when working with mixed-content archives.
+
 ```bash
 # Search only Rust files in compressed archives
-rg -z -t rust 'pattern'
+rg -z -t rust 'pattern'                    # (1)!
 
 # Search Python files in gzipped logs
-rg -z -t py 'import' logs.tar.gz
+rg -z -t py 'import' logs.tar.gz           # (2)!
 ```
+
+1. Only decompresses files matching Rust file patterns (*.rs), skipping other files entirely
+2. Combines format detection with type filtering for targeted searches
 
 ### With Context Lines
 
@@ -116,6 +176,9 @@ rg -z --json 'pattern' archive.tar.xz
 ```
 
 ## Performance Considerations
+
+!!! warning "Decompression Overhead"
+    Each compressed file requires spawning a decompression process, which adds CPU overhead compared to plain text search. Parallel processing helps amortize decompression costs, but for frequently searched archives, consider extracting them once rather than decompressing repeatedly.
 
 ### Decompression Overhead
 
@@ -145,17 +208,80 @@ time rg 'pattern' extracted/
 
 ## External Dependencies
 
-The `-z/--search-zip` feature requires external decompression tools to be installed and available in your system's PATH:
+The `-z/--search-zip` feature requires external decompression tools to be installed and available in your system's PATH.
 
-| Format | Required Tool | Installation Examples |
-|--------|--------------|----------------------|
-| Gzip | `gzip` | Usually pre-installed on Unix systems |
-| Bzip2 | `bzip2` | `apt install bzip2` / `brew install bzip2` |
-| XZ/LZMA | `xz` | `apt install xz-utils` / `brew install xz` |
-| LZ4 | `lz4` | `apt install liblz4-tool` / `brew install lz4` |
-| Brotli | `brotli` | `apt install brotli` / `brew install brotli` |
-| Zstandard | `zstd` | `apt install zstd` / `brew install zstd` |
-| Compress | `uncompress` | Usually in `ncompress` package |
+!!! note "Pre-installed Tools"
+    `gzip` is usually pre-installed on Unix-like systems (Linux, macOS). Other tools must be installed separately.
+
+### Installing Decompression Tools
+
+=== "Debian/Ubuntu"
+    ```bash
+    # Install all common compression tools
+    sudo apt update
+    sudo apt install bzip2 xz-utils liblz4-tool brotli zstd ncompress
+
+    # Or install individually
+    sudo apt install bzip2        # .bz2 files
+    sudo apt install xz-utils     # .xz, .lzma files
+    sudo apt install liblz4-tool  # .lz4 files
+    sudo apt install brotli       # .br files
+    sudo apt install zstd         # .zst files
+    sudo apt install ncompress    # .Z files
+    ```
+
+=== "macOS (Homebrew)"
+    ```bash
+    # Install all common compression tools
+    brew install bzip2 xz lz4 brotli zstd ncompress
+
+    # Or install individually
+    brew install bzip2    # .bz2 files
+    brew install xz       # .xz, .lzma files
+    brew install lz4      # .lz4 files
+    brew install brotli   # .br files
+    brew install zstd     # .zst files
+    brew install ncompress # .Z files
+    ```
+
+=== "Fedora/RHEL"
+    ```bash
+    # Install all common compression tools
+    sudo dnf install bzip2 xz lz4 brotli zstd ncompress
+
+    # Or install individually
+    sudo dnf install bzip2    # .bz2 files
+    sudo dnf install xz       # .xz, .lzma files
+    sudo dnf install lz4      # .lz4 files
+    sudo dnf install brotli   # .br files
+    sudo dnf install zstd     # .zst files
+    sudo dnf install ncompress # .Z files
+    ```
+
+=== "Arch Linux"
+    ```bash
+    # Install all common compression tools
+    sudo pacman -S bzip2 xz lz4 brotli zstd ncompress
+
+    # Or install individually
+    sudo pacman -S bzip2      # .bz2 files
+    sudo pacman -S xz         # .xz, .lzma files
+    sudo pacman -S lz4        # .lz4 files
+    sudo pacman -S brotli     # .br files
+    sudo pacman -S zstd       # .zst files
+    sudo pacman -S ncompress  # .Z files
+    ```
+
+### Verifying Installation
+
+Check which decompression tools are available:
+
+```bash
+# Check all tools at once
+for tool in gzip bzip2 xz lz4 brotli zstd uncompress; do
+    which $tool >/dev/null 2>&1 && echo "✓ $tool" || echo "✗ $tool"
+done
+```
 
 If a required tool is missing, ripgrep will skip decompression for that file and treat it as binary data.
 
@@ -173,6 +299,9 @@ ripgrep offers two ways to handle special file formats:
 | **Use case** | Standard compressed files | Custom formats (PDF, Office, etc.) |
 
 ### When to Use Each
+
+!!! tip "Quick Decision Guide"
+    Use `-z` for standard compressed files (gzip, xz, zstd, etc.). Use `--pre` for custom formats (PDF, Office docs) or when you need preprocessing logic beyond simple decompression.
 
 **Use `-z/--search-zip` for:**
 - Standard compressed archives (`.gz`, `.xz`, `.zst`, etc.)
@@ -240,6 +369,9 @@ rg -z -t rust -C 5 'unsafe' archive.tar.gz
 
 **Issue**: File treated as binary instead of being decompressed
 
+!!! tip "Quick Diagnosis"
+    Enable debug logging to see exactly which tools ripgrep is looking for: `RUST_LOG=debug rg -z 'pattern'`
+
 **Solutions**:
 - Check if the tool is installed: `which gzip` / `which xz` / `which zstd`
 - Install the missing tool (see External Dependencies section)
@@ -267,14 +399,18 @@ rg -z -t rust -C 5 'unsafe' archive.tar.gz
 
 ## Best Practices
 
-- Enable `-z` only when searching compressed files
-- Use file type filtering to avoid unnecessary decompression
-- Consider extraction for archives searched repeatedly
+!!! tip "Performance Best Practices"
+    - Enable `-z` only when needed (adds overhead to every file)
+    - Use `-t` type filtering to skip irrelevant files
+    - For frequently searched archives, extract once rather than decompressing repeatedly
+    - Prefer faster compression formats (LZ4, Zstandard) for new archives
+
+Additional recommendations:
 - Combine with glob patterns to target specific compressed files
 - Monitor decompression overhead with `--stats` flag
+- Verify tools are installed before running searches on shared systems
 
 ## See Also
 
 - [Preprocessor](preprocessor.md) - Custom file preprocessing for other formats
 - [Performance](performance.md) - Performance tuning and optimization
-- [Common Options](common-options.md) - Other frequently used flags
