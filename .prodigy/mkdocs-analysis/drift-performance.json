@@ -1,0 +1,138 @@
+{
+  "item_type": "page",
+  "page_id": "performance",
+  "page_title": "performance",
+  "page_file": "docs/advanced-patterns/performance.md",
+  "drift_detected": true,
+  "severity": "low",
+  "quality_assessment": "Page provides good performance guidance but is missing some important features and best practices. Content is accurate but could be more comprehensive.",
+  "issues": [
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Performance Tips",
+      "description": "Missing documentation for parallelism control which significantly impacts performance",
+      "feature_reference": "performance.parallelism",
+      "fix_suggestion": "Add section explaining --threads/-j flag for controlling parallel execution and when to use single-threaded mode for deterministic output",
+      "source_reference": "features.json:performance.parallelism"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Performance Testing",
+      "description": "Missing documentation for I/O strategy options (mmap vs buffered reading)",
+      "feature_reference": "performance.io_strategy",
+      "fix_suggestion": "Add section explaining --mmap and --no-mmap flags and when memory mapping vs buffered reading is more appropriate",
+      "source_reference": "features.json:performance.io_strategy"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Performance Tips",
+      "description": "Missing --max-filesize flag for skipping large files",
+      "feature_reference": "performance.performance_tuning.max_filesize",
+      "fix_suggestion": "Add tip about using --max-filesize to skip large files that slow down searches",
+      "source_reference": "features.json:performance.performance_tuning"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Performance Tips",
+      "description": "Missing --max-columns flag for handling files with very long lines",
+      "feature_reference": "performance.performance_tuning.max_columns",
+      "fix_suggestion": "Add tip about using --max-columns to handle files with very long lines that can cause performance issues",
+      "source_reference": "features.json:performance.performance_tuning"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Performance Tips",
+      "description": "Missing --max-count flag for stopping after N matches",
+      "feature_reference": "performance.performance_tuning.max_count",
+      "fix_suggestion": "Add tip about using --max-count N to stop searching after finding N matches, useful for quick checks",
+      "source_reference": "features.json:performance.performance_tuning"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "Regex Limits",
+      "description": "Regex size limit section doesn't mention --regex-size-limit default value",
+      "fix_suggestion": "Include the actual default limit value in the documentation for reference"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Performance Tips",
+      "description": "Missing tip about using literal search (-F) for non-regex patterns",
+      "feature_reference": "meta_content.best_practices.performance",
+      "fix_suggestion": "Add tip: 'Use literal search (-F) when not needing regex - significantly faster for plain string searches'",
+      "source_reference": "features.json:meta_content.best_practices.performance"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Performance Tips",
+      "description": "Missing optimization information about SIMD and finite automata",
+      "feature_reference": "performance.optimization_techniques",
+      "fix_suggestion": "Add brief mention that ripgrep uses SIMD acceleration and finite automata for performance, explaining why default engine is faster",
+      "source_reference": "features.json:performance.optimization_techniques"
+    }
+  ],
+  "positive_aspects": [
+    "Clear explanation of multiline mode performance implications with memory usage details",
+    "Excellent coverage of PCRE2 performance trade-offs including backtracking complexity",
+    "Good explanation of regex limits with practical examples and error messages",
+    "Helpful decision framework for when to increase limits vs simplify patterns",
+    "Practical simplification strategies with concrete examples",
+    "Includes --stats flag documentation for performance measurement",
+    "Well-structured with clear sections and subsections"
+  ],
+  "improvement_suggestions": [
+    "Add section on 'Parallelism and Threading' covering thread control and work-stealing",
+    "Add section on 'I/O Strategies' explaining memory mapping vs buffered reading trade-offs",
+    "Expand 'Performance Tips' section with additional tuning flags (--max-filesize, --max-columns, --max-count)",
+    "Add practical examples showing before/after performance with different flags",
+    "Include benchmarking tips beyond just --stats (e.g., using time command, testing on representative datasets)",
+    "Add cross-reference to filtering documentation since file type filters improve performance",
+    "Consider adding a 'Quick Performance Wins' callout box at the top with the most impactful tips",
+    "Add note about sorting flags disabling parallelism (--sort impacts performance)",
+    "Include tip about --one-file-system to avoid crossing filesystem boundaries"
+  ],
+  "cross_references": [
+    "advanced-patterns/index.md (valid link - parent page)"
+  ],
+  "link_validation": {
+    "total_internal_links": 1,
+    "broken_links": 0,
+    "valid_links": [
+      {
+        "link_text": "Advanced Patterns",
+        "target": "./index.md",
+        "resolved_path": "docs/advanced-patterns/index.md",
+        "status": "valid"
+      }
+    ]
+  },
+  "metadata": {
+    "analyzed_at": "2025-11-13T20:53:28Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": [
+      "multiline mode performance",
+      "PCRE2 engine performance",
+      "backtracking complexity",
+      "regex limits",
+      "performance testing",
+      "performance tips"
+    ],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "features_used_for_analysis": [
+      "performance.parallelism",
+      "performance.io_strategy",
+      "performance.optimization_techniques",
+      "performance.performance_tuning",
+      "advanced_patterns.multiline_search",
+      "advanced_patterns.pcre2_engine",
+      "meta_content.best_practices.performance"
+    ]
+  }
+}
