@@ -11,16 +11,17 @@ The default mode automatically determines the binary handling strategy based on 
 - **Explicit files** (e.g., `rg pattern file.bin`): Uses `SearchAndSuppress` mode—the file is searched, but if binary data is detected, a warning is shown instead of the matches
 - **Implicit files** (e.g., `rg pattern` in a directory, or `rg pattern -g '*.bin'`): Quits searching immediately when binary data is detected, no output or warning
 
-This dual behavior balances precision (don't waste time on binary files) with recall (if the user explicitly named a file, they probably want to search it).
+This dual behavior balances precision (don't waste time on binary files) with recall (if the user explicitly named a file, they probably want to search it). See [Explicit vs Implicit Files](./explicit-implicit.md) for more details on this distinction.
 
 ## SearchAndSuppress Mode
 
 When you use the `--binary` flag, ripgrep will search binary files but suppress matches and emit warnings when NUL bytes are found:
 
 ```bash
-# Search binary files in directory, showing warnings
-rg --binary pattern
+rg --binary pattern  # (1)!
 ```
+
+1. Searches binary files but shows warnings instead of matches when NUL bytes are found
 
 In this mode, **NUL bytes are replaced with line terminators** during searching. This is a memory-saving heuristic: true binary data isn't line-oriented, so treating it as such without this replacement could result in impractically large "lines" (imagine a 100MB binary file with no line breaks).
 
@@ -29,12 +30,15 @@ In this mode, **NUL bytes are replaced with line terminators** during searching.
 The `--text` (or `-a`) flag completely disables binary detection, treating all files as plain text:
 
 ```bash
-# Force search binary files as text
-rg --text pattern
-rg -a pattern
+rg --text pattern  # (1)!
+rg -a pattern      # (2)!
 ```
 
-**⚠️ Warning:** This may print raw binary data to your terminal, including escape sequences that could corrupt your terminal display or cause unexpected behavior. Use with caution and consider piping to `cat -v` or similar if you need to inspect the output safely.
+1. Force search binary files as text
+2. Short form of `--text`
+
+!!! warning "Terminal Corruption Risk"
+    This may print raw binary data to your terminal, including escape sequences that could corrupt your terminal display or cause unexpected behavior. Use with caution and consider piping to `cat -v` or similar if you need to inspect the output safely.
 
 The `--text` flag overrides `--binary` if both are specified.
 
