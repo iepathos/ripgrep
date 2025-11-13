@@ -4,6 +4,57 @@
 
 These flags control what information is displayed with each match.
 
+```mermaid
+flowchart TD
+    Start[Search Match Found] --> Format{Output<br/>Format?}
+
+    Format -->|Default| Auto[Auto-detect Context]
+    Format -->|--pretty| Pretty[Color + Heading + Line Numbers]
+    Format -->|Custom| Custom[Apply Custom Flags]
+
+    Auto --> MultiFile{Multiple<br/>Files?}
+    MultiFile -->|Yes| ShowFile[Show Filename]
+    MultiFile -->|No| HideFile[Hide Filename]
+
+    ShowFile --> LineNum
+    HideFile --> LineNum
+
+    LineNum{Line Numbers?}
+    LineNum -->|-n| AddLine[Add Line Number]
+    LineNum -->|-N| NoLine[No Line Number]
+
+    AddLine --> Context
+    NoLine --> Context
+
+    Context{Context Lines?}
+    Context -->|None| Display[Display Match]
+    Context -->|-A NUM| After[Show NUM After]
+    Context -->|-B NUM| Before[Show NUM Before]
+    Context -->|-C NUM| Both[Show NUM Both]
+
+    After --> Display
+    Before --> Display
+    Both --> Display
+
+    Pretty --> Display
+    Custom --> Display
+
+    Display --> Color{Colorize?}
+    Color -->|--color always| Colored[Colored Output]
+    Color -->|--color never| Plain[Plain Output]
+    Color -->|--color auto| Terminal{To Terminal?}
+
+    Terminal -->|Yes| Colored
+    Terminal -->|No| Plain
+
+    style Start fill:#e8f5e9
+    style Display fill:#e1f5ff
+    style Colored fill:#fff3e0
+    style Plain fill:#f5f5f5
+```
+
+**Figure**: Output formatting decision flow showing how ripgrep combines different formatting options.
+
 ## Line Numbers and Filenames
 
 - **`-n, --line-number`**: Show line numbers (default when searching files)
@@ -29,14 +80,24 @@ These flags control what information is displayed with each match.
 
 - **`--column`**: Show column numbers of matches
   ```bash
-  rg --column pattern
+  rg --column pattern        # (1)!
   # Output: file.txt:42:7:matching line
   #                    ^ column number
   ```
 
+  1. Adds column position after line number, useful for editor integrations and precise navigation
+
 ## Context Lines
 
 Show lines before and/or after each match to understand the surrounding code:
+
+!!! tip "When to Use Context Lines"
+    Context lines are especially useful when:
+
+    - **Understanding function scope**: `-A 5` after finding a function definition to see its first few lines
+    - **Finding usage patterns**: `-B 3 -A 3` around API calls to see how they're typically used
+    - **Debugging**: `-C 10` around error messages to see what triggered them
+    - **Code review**: `-C 5` to get enough context for understanding changes
 
 - **`-A NUM, --after-context NUM`**: Show NUM lines after each match
   ```bash
@@ -53,10 +114,13 @@ Show lines before and/or after each match to understand the surrounding code:
 - **`-C NUM, --context NUM`**: Show NUM lines before AND after each match
   ```bash
   # Show 5 lines of context around each match
-  rg -C 5 'struct Config'
+  rg -C 5 'struct Config'   # (1)!
   ```
 
-When showing context, ripgrep prints `--` as a separator between match groups.
+  1. Shorthand for `-B 5 -A 5` - shows the same number of lines before and after
+
+!!! note "Context Separators"
+    When showing context, ripgrep prints `--` as a separator between different match groups to clearly distinguish them in the output.
 
 ## Match Output
 
@@ -78,7 +142,9 @@ When showing context, ripgrep prints `--` as a separator between match groups.
   # Use capture groups
   rg '(\w+)@(\w+)' -r '$2@$1'
   ```
-  This changes the display only. To modify files, use other tools like `sed`. See the [Replacements chapter](../replacements.md) for more details.
+
+  !!! warning "Output Preview Only"
+      The `--replace` flag only changes what ripgrep **displays**. It does **not** modify files on disk. To actually modify files, use tools like `sed` or your editor's find-and-replace. See the [Replacements chapter](../replacements.md) for more details.
 
 - **`-b, --byte-offset`**: Show absolute byte offset in file for each match
   ```bash
@@ -133,11 +199,14 @@ When showing context, ripgrep prints `--` as a separator between match groups.
   - `never`: Disable color (useful for scripts)
   ```bash
   # Force color for paging
-  rg --color always pattern | less -R
+  rg --color always pattern | less -R      # (1)!
 
   # Disable color for clean output
-  rg --color never pattern > results.txt
+  rg --color never pattern > results.txt   # (2)!
   ```
+
+  1. Use `-R` flag with `less` to interpret color codes correctly
+  2. Removes ANSI color codes from output file for clean text processing
 
 - **`--colors TYPE:STYLE:VALUE`**: Fine-grained color customization
   ```bash
@@ -208,6 +277,14 @@ When showing context, ripgrep prints `--` as a separator between match groups.
 - **`-p, --pretty`**: Alias for `--color always --heading --line-number`
   ```bash
   # Human-friendly output with grouping and colors
-  rg -p pattern
+  rg -p pattern              # (1)!
   ```
-  This is a convenient shorthand for readable output when piping to a pager.
+
+  1. Equivalent to `rg --color always --heading --line-number pattern`
+
+!!! tip "Quick Readable Output"
+    Use `-p` when you want nicely formatted output for human reading, especially when piping to `less`:
+    ```bash
+    rg -p pattern | less -R
+    ```
+    This combines color, file grouping, and line numbers in one convenient flag.
