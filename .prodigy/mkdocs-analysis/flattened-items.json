@@ -1,0 +1,361 @@
+[
+  {
+    "id": "introduction",
+    "title": "Introduction",
+    "file": "docs/introduction.md",
+    "topics": [
+      "Getting started",
+      "Overview"
+    ],
+    "type": "single-file",
+    "feature_mapping": [
+      "search_basics",
+      "filtering",
+      "advanced_patterns",
+      "output_control",
+      "file_handling",
+      "replacements",
+      "configuration",
+      "performance",
+      "utility_features"
+    ]
+  },
+  {
+    "id": "basics",
+    "title": "Basics",
+    "file": "docs/basics.md",
+    "section_id": "user-guide",
+    "section_title": "User Guide",
+    "type": "section-page",
+    "topics": [
+      "Pattern matching",
+      "Literal search",
+      "Case sensitivity"
+    ],
+    "feature_mapping": [
+      "search_basics.capabilities.pattern_matching",
+      "search_basics.capabilities.multiple_patterns"
+    ]
+  },
+  {
+    "id": "recursive-search",
+    "title": "Recursive Search",
+    "file": "docs/recursive-search.md",
+    "section_id": "user-guide",
+    "section_title": "User Guide",
+    "type": "section-page",
+    "topics": [
+      "Directory traversal",
+      "Symlinks",
+      "Depth limits"
+    ],
+    "feature_mapping": [
+      "search_basics.capabilities.recursive_search"
+    ]
+  },
+  {
+    "id": "automatic-filtering",
+    "title": "Automatic Filtering",
+    "file": "docs/automatic-filtering.md",
+    "section_id": "user-guide",
+    "section_title": "User Guide",
+    "type": "section-page",
+    "topics": [
+      "Gitignore",
+      "Ignore files",
+      "Hidden files"
+    ],
+    "feature_mapping": [
+      "filtering.automatic_filtering.capabilities.ignore_files",
+      "filtering.automatic_filtering.capabilities.automatic_exclusions",
+      "filtering.automatic_filtering.capabilities.override_flags"
+    ]
+  },
+  {
+    "id": "manual-filtering-globs",
+    "title": "Manual Filtering: Globs",
+    "file": "docs/manual-filtering-globs.md",
+    "section_id": "user-guide",
+    "section_title": "User Guide",
+    "type": "section-page",
+    "topics": [
+      "Glob patterns",
+      "Include/exclude patterns"
+    ],
+    "feature_mapping": [
+      "filtering.manual_filtering.capabilities.glob_patterns"
+    ]
+  },
+  {
+    "id": "manual-filtering-types",
+    "title": "Manual Filtering: File Types",
+    "file": "docs/manual-filtering-types.md",
+    "section_id": "user-guide",
+    "section_title": "User Guide",
+    "type": "section-page",
+    "topics": [
+      "File type filters",
+      "Custom types"
+    ],
+    "feature_mapping": [
+      "filtering.manual_filtering.capabilities.file_types"
+    ]
+  },
+  {
+    "id": "replacements",
+    "title": "Replacements",
+    "file": "docs/replacements.md",
+    "section_id": "user-guide",
+    "section_title": "User Guide",
+    "type": "section-page",
+    "topics": [
+      "Search and replace",
+      "Capture groups"
+    ],
+    "feature_mapping": [
+      "replacements.capabilities.basic_replacement",
+      "replacements.capabilities.advanced_replacement"
+    ]
+  },
+  {
+    "id": "configuration-file",
+    "title": "Configuration File",
+    "file": "docs/configuration-file.md",
+    "section_id": "user-guide",
+    "section_title": "User Guide",
+    "type": "section-page",
+    "topics": [
+      "Config files",
+      "Persistent settings"
+    ],
+    "feature_mapping": [
+      "configuration.capabilities.config_files",
+      "configuration.capabilities.config_locations"
+    ]
+  },
+  {
+    "id": "file-encoding",
+    "title": "File Encoding",
+    "file": "docs/file-encoding.md",
+    "section_id": "user-guide",
+    "section_title": "User Guide",
+    "type": "section-page",
+    "topics": [
+      "Text encodings",
+      "UTF-8",
+      "UTF-16"
+    ],
+    "feature_mapping": [
+      "file_handling.capabilities.encoding_support"
+    ]
+  },
+  {
+    "id": "binary-data",
+    "title": "Binary Data",
+    "file": "docs/binary-data.md",
+    "section_id": "user-guide",
+    "section_title": "User Guide",
+    "type": "section-page",
+    "topics": [
+      "Binary files",
+      "Binary detection"
+    ],
+    "feature_mapping": [
+      "file_handling.capabilities.binary_handling"
+    ]
+  },
+  {
+    "id": "compressed-files",
+    "title": "Compressed Files",
+    "file": "docs/compressed-files.md",
+    "section_id": "user-guide",
+    "section_title": "User Guide",
+    "type": "section-page",
+    "topics": [
+      "Compression formats",
+      "Archive search"
+    ],
+    "feature_mapping": [
+      "file_handling.capabilities.compressed_files"
+    ]
+  },
+  {
+    "id": "preprocessor",
+    "title": "Preprocessor",
+    "file": "docs/preprocessor.md",
+    "section_id": "user-guide",
+    "section_title": "User Guide",
+    "type": "section-page",
+    "topics": [
+      "Custom filters",
+      "File preprocessing"
+    ],
+    "feature_mapping": [
+      "file_handling.capabilities.preprocessing"
+    ]
+  },
+  {
+    "id": "common-options",
+    "title": "Common Options",
+    "file": "docs/common-options.md",
+    "section_id": "user-guide",
+    "section_title": "User Guide",
+    "type": "section-page",
+    "topics": [
+      "Command-line options",
+      "Flags"
+    ],
+    "feature_mapping": [
+      "configuration.capabilities.environment_variables"
+    ]
+  },
+  {
+    "id": "context-lines",
+    "title": "Context Lines",
+    "file": "docs/context-lines.md",
+    "section_id": "user-guide",
+    "section_title": "User Guide",
+    "type": "section-page",
+    "topics": [
+      "Before/after context",
+      "Surrounding lines"
+    ],
+    "feature_mapping": [
+      "output_control.capabilities.context_lines"
+    ]
+  },
+  {
+    "id": "output-formats",
+    "title": "Output Formats",
+    "file": "docs/output-formats.md",
+    "section_id": "user-guide",
+    "section_title": "User Guide",
+    "type": "section-page",
+    "topics": [
+      "JSON output",
+      "Vimgrep",
+      "Standard output"
+    ],
+    "feature_mapping": [
+      "output_control.capabilities.standard_output",
+      "output_control.capabilities.json_output",
+      "output_control.capabilities.alternative_formats",
+      "output_control.capabilities.color_control"
+    ]
+  },
+  {
+    "id": "sorting-results",
+    "title": "Sorting Results",
+    "file": "docs/sorting-results.md",
+    "section_id": "user-guide",
+    "section_title": "User Guide",
+    "type": "section-page",
+    "topics": [
+      "Result sorting",
+      "Sort order"
+    ],
+    "feature_mapping": [
+      "output_control.capabilities.sorting"
+    ]
+  },
+  {
+    "id": "utility-modes",
+    "title": "Utility Modes",
+    "file": "docs/utility-modes.md",
+    "section_id": "user-guide",
+    "section_title": "User Guide",
+    "type": "section-page",
+    "topics": [
+      "Count mode",
+      "Files mode",
+      "Statistics"
+    ],
+    "feature_mapping": [
+      "utility_features.capabilities.list_modes",
+      "utility_features.capabilities.counting",
+      "utility_features.capabilities.passthru_mode"
+    ]
+  },
+  {
+    "id": "advanced-patterns",
+    "title": "Advanced Patterns",
+    "file": "docs/advanced-patterns.md",
+    "section_id": "advanced-topics",
+    "section_title": "Advanced Topics",
+    "type": "section-page",
+    "topics": [
+      "Multiline search",
+      "PCRE2",
+      "Unicode patterns"
+    ],
+    "feature_mapping": [
+      "advanced_patterns.capabilities.multiline_search",
+      "advanced_patterns.capabilities.pcre2_engine",
+      "advanced_patterns.capabilities.unicode_support"
+    ]
+  },
+  {
+    "id": "performance",
+    "title": "Performance",
+    "file": "docs/performance.md",
+    "section_id": "advanced-topics",
+    "section_title": "Advanced Topics",
+    "type": "section-page",
+    "topics": [
+      "Parallelism",
+      "Optimization",
+      "Thread control"
+    ],
+    "feature_mapping": [
+      "performance.capabilities.parallelism",
+      "performance.capabilities.io_strategy",
+      "performance.capabilities.optimization_techniques",
+      "performance.capabilities.performance_tuning"
+    ]
+  },
+  {
+    "id": "statistics",
+    "title": "Statistics and Metrics",
+    "file": "docs/statistics.md",
+    "section_id": "advanced-topics",
+    "section_title": "Advanced Topics",
+    "type": "section-page",
+    "topics": [
+      "Search statistics",
+      "Metrics"
+    ],
+    "feature_mapping": [
+      "utility_features.capabilities.statistics"
+    ]
+  },
+  {
+    "id": "hyperlinks",
+    "title": "Hyperlinks",
+    "file": "docs/hyperlinks.md",
+    "section_id": "advanced-topics",
+    "section_title": "Advanced Topics",
+    "type": "section-page",
+    "topics": [
+      "Terminal hyperlinks",
+      "Editor integration"
+    ],
+    "feature_mapping": [
+      "utility_features.capabilities.hyperlinks"
+    ]
+  },
+  {
+    "id": "troubleshooting",
+    "title": "Troubleshooting",
+    "file": "docs/troubleshooting.md",
+    "section_id": "advanced-topics",
+    "section_title": "Advanced Topics",
+    "type": "section-page",
+    "topics": [
+      "Common issues",
+      "Solutions"
+    ],
+    "feature_mapping": [
+      "meta_content.troubleshooting"
+    ]
+  }
+]

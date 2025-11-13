@@ -1,0 +1,151 @@
+{
+  "pages": [
+    {
+      "id": "introduction",
+      "title": "Introduction",
+      "file": "docs/introduction.md",
+      "topics": ["Getting started", "Overview"],
+      "type": "single-file"
+    },
+    {
+      "id": "user-guide",
+      "title": "User Guide",
+      "type": "section",
+      "pages": [
+        {
+          "id": "basics",
+          "title": "Basics",
+          "file": "docs/basics.md",
+          "topics": ["Pattern matching", "Literal search", "Case sensitivity"]
+        },
+        {
+          "id": "recursive-search",
+          "title": "Recursive Search",
+          "file": "docs/recursive-search.md",
+          "topics": ["Directory traversal", "Symlinks", "Depth limits"]
+        },
+        {
+          "id": "automatic-filtering",
+          "title": "Automatic Filtering",
+          "file": "docs/automatic-filtering.md",
+          "topics": ["Gitignore", "Ignore files", "Hidden files"]
+        },
+        {
+          "id": "manual-filtering-globs",
+          "title": "Manual Filtering: Globs",
+          "file": "docs/manual-filtering-globs.md",
+          "topics": ["Glob patterns", "Include/exclude patterns"]
+        },
+        {
+          "id": "manual-filtering-types",
+          "title": "Manual Filtering: File Types",
+          "file": "docs/manual-filtering-types.md",
+          "topics": ["File type filters", "Custom types"]
+        },
+        {
+          "id": "replacements",
+          "title": "Replacements",
+          "file": "docs/replacements.md",
+          "topics": ["Search and replace", "Capture groups"]
+        },
+        {
+          "id": "configuration-file",
+          "title": "Configuration File",
+          "file": "docs/configuration-file.md",
+          "topics": ["Config files", "Persistent settings"]
+        },
+        {
+          "id": "file-encoding",
+          "title": "File Encoding",
+          "file": "docs/file-encoding.md",
+          "topics": ["Text encodings", "UTF-8", "UTF-16"]
+        },
+        {
+          "id": "binary-data",
+          "title": "Binary Data",
+          "file": "docs/binary-data.md",
+          "topics": ["Binary files", "Binary detection"]
+        },
+        {
+          "id": "compressed-files",
+          "title": "Compressed Files",
+          "file": "docs/compressed-files.md",
+          "topics": ["Compression formats", "Archive search"]
+        },
+        {
+          "id": "preprocessor",
+          "title": "Preprocessor",
+          "file": "docs/preprocessor.md",
+          "topics": ["Custom filters", "File preprocessing"]
+        },
+        {
+          "id": "common-options",
+          "title": "Common Options",
+          "file": "docs/common-options.md",
+          "topics": ["Command-line options", "Flags"]
+        },
+        {
+          "id": "context-lines",
+          "title": "Context Lines",
+          "file": "docs/context-lines.md",
+          "topics": ["Before/after context", "Surrounding lines"]
+        },
+        {
+          "id": "output-formats",
+          "title": "Output Formats",
+          "file": "docs/output-formats.md",
+          "topics": ["JSON output", "Vimgrep", "Standard output"]
+        },
+        {
+          "id": "sorting-results",
+          "title": "Sorting Results",
+          "file": "docs/sorting-results.md",
+          "topics": ["Result sorting", "Sort order"]
+        },
+        {
+          "id": "utility-modes",
+          "title": "Utility Modes",
+          "file": "docs/utility-modes.md",
+          "topics": ["Count mode", "Files mode", "Statistics"]
+        }
+      ]
+    },
+    {
+      "id": "advanced-topics",
+      "title": "Advanced Topics",
+      "type": "section",
+      "pages": [
+        {
+          "id": "advanced-patterns",
+          "title": "Advanced Patterns",
+          "file": "docs/advanced-patterns.md",
+          "topics": ["Multiline search", "PCRE2", "Unicode patterns"]
+        },
+        {
+          "id": "performance",
+          "title": "Performance",
+          "file": "docs/performance.md",
+          "topics": ["Parallelism", "Optimization", "Thread control"]
+        },
+        {
+          "id": "statistics",
+          "title": "Statistics and Metrics",
+          "file": "docs/statistics.md",
+          "topics": ["Search statistics", "Metrics"]
+        },
+        {
+          "id": "hyperlinks",
+          "title": "Hyperlinks",
+          "file": "docs/hyperlinks.md",
+          "topics": ["Terminal hyperlinks", "Editor integration"]
+        },
+        {
+          "id": "troubleshooting",
+          "title": "Troubleshooting",
+          "file": "docs/troubleshooting.md",
+          "topics": ["Common issues", "Solutions"]
+        }
+      ]
+    }
+  ]
+}
