@@ -12,10 +12,23 @@ ripgrep **does not** automatically look for configuration files in predetermined
 
 Set the `RIPGREP_CONFIG_PATH` environment variable to the path of your configuration file:
 
-```bash
-# In your shell configuration (.bashrc, .zshrc, etc.)
-export RIPGREP_CONFIG_PATH="$HOME/.ripgreprc"
-```
+=== "Linux/macOS"
+    ```bash
+    # In your shell configuration (.bashrc, .zshrc, etc.)
+    export RIPGREP_CONFIG_PATH="$HOME/.ripgreprc"
+    ```
+
+=== "Windows (PowerShell)"
+    ```powershell
+    # In your PowerShell profile
+    $env:RIPGREP_CONFIG_PATH = "$HOME\.ripgreprc"
+    ```
+
+=== "Windows (Command Prompt)"
+    ```cmd
+    # Set permanently via System Properties → Environment Variables
+    setx RIPGREP_CONFIG_PATH "%USERPROFILE%\.ripgreprc"
+    ```
 
 !!! note "Important Notes"
     - If `RIPGREP_CONFIG_PATH` is not set, ripgrep will not load any configuration file
@@ -42,30 +55,38 @@ Here's a comprehensive example showing common configuration patterns:
 
 ```conf title=".ripgreprc"
 # Don't let ripgrep vomit really long lines to my terminal, and show a preview.
---max-columns=150
---max-columns-preview
+--max-columns=150            # (1)!
+--max-columns-preview        # (2)!
 
 # Add my 'web' type.
---type-add
+--type-add                   # (3)!
 web:*.{html,css,js}*
 
 # Search hidden files / directories (e.g. dotfiles) by default
---hidden
+--hidden                     # (4)!
 
 # Using glob patterns to include/exclude files or folders
---glob=!.git/*
+--glob=!.git/*               # (5)!
 
 # or
 --glob
 !.git/*
 
 # Set the colors.
---colors=line:none
+--colors=line:none           # (6)!
 --colors=line:style:bold
 
 # Because who cares about case!?
---smart-case
+--smart-case                 # (7)!
 ```
+
+1. Limits output line length to 150 characters for terminal readability
+2. Shows a preview of content beyond the column limit
+3. Defines a custom file type 'web' for HTML, CSS, and JavaScript files
+4. Includes hidden files (dotfiles) in searches by default
+5. Excludes .git directories from search results
+6. Customizes color output for better visibility
+7. Case-insensitive search unless pattern contains uppercase letters
 
 ## Formatting Flags with Values
 
@@ -100,6 +121,32 @@ Configuration file arguments are **prepended** to your command-line arguments. T
 - Config file settings are processed first
 - Command-line flags are processed second
 - **Later flags override earlier flags**
+
+```mermaid
+flowchart LR
+    Env[RIPGREP_CONFIG_PATH] --> Load{File<br/>exists?}
+    Load -->|No| Error[Error: Config not found]
+    Load -->|Yes| Parse[Parse Config File]
+
+    Parse --> ConfigArgs[Config Arguments]
+    CLI[Command-Line Args] --> Merge[Merge Arguments]
+    ConfigArgs --> Merge
+
+    Merge --> Process[Process All Args<br/>Left to Right]
+    Process --> Override{Duplicate<br/>flags?}
+    Override -->|Yes| Later[Later flag wins]
+    Override -->|No| Keep[Keep all flags]
+
+    Later --> Final[Final Config]
+    Keep --> Final
+
+    style Env fill:#e1f5ff
+    style Parse fill:#fff3e0
+    style Process fill:#f3e5f5
+    style Final fill:#e8f5e9
+```
+
+**Figure**: Configuration resolution showing how config file arguments are prepended to command-line arguments, with later flags overriding earlier ones.
 
 ### Example: Overriding Config Settings
 
@@ -196,6 +243,14 @@ ripgrep handles configuration file errors as follows:
 - **Consider impact**: Remember that your config affects **all** ripgrep invocations
 - **Know your overrides**: Understand which command-line flags override config settings
 
+!!! tip "Testing Your Configuration"
+    After creating or modifying your config file:
+
+    1. Use `rg --debug pattern` to see what arguments were loaded
+    2. Test with a simple search to verify expected behavior
+    3. Use `rg pattern --no-config` to compare behavior without config
+    4. Add flags incrementally - don't copy large configs without understanding each option
+
 ### Example Project-Specific Setup
 
 You might use different configurations for different projects:
@@ -209,6 +264,9 @@ export RIPGREP_CONFIG_PATH="$HOME/.ripgreprc-project-b"
 ```
 
 ## Common Configuration Patterns
+
+!!! example "Common Patterns"
+    These patterns show popular configuration combinations for different use cases.
 
 ### Pattern 1: Readable Output
 
