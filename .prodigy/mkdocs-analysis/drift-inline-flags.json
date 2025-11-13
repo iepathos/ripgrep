@@ -1,0 +1,90 @@
+{
+  "item_type": "auto-discovered",
+  "page_id": "inline-flags",
+  "page_title": "inline flags",
+  "page_file": "docs/advanced-patterns/inline-flags.md",
+  "drift_detected": true,
+  "severity": "medium",
+  "quality_assessment": "Page is technically accurate but incomplete. Missing several important inline flags and lacks visual enhancements expected for MkDocs Material.",
+  "issues": [
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Common Inline Flags",
+      "description": "Documentation is missing several important inline flags supported by Rust regex",
+      "current_content": "Only documents (?s), (?i), (?m), (?x), (?-s), (?-i)",
+      "should_include": "(?R) for CRLF mode, (?U) for swapping greedy/lazy quantifiers, (?u) for Unicode control",
+      "fix_suggestion": "Add table rows for (?R), (?U), and (?u) flags with their effects",
+      "source_reference": "https://docs.rs/regex/latest/regex/#grouping-and-flags"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "Inline Flag Syntax",
+      "description": "Missing explanation of flag combination syntax",
+      "fix_suggestion": "Add example showing how to set and clear flags simultaneously, e.g., (?x-y) sets flag x while clearing y",
+      "source_reference": "Rust regex documentation"
+    },
+    {
+      "type": "missing_visual_features",
+      "severity": "low",
+      "section": "Entire Page",
+      "description": "Page lacks MkDocs Material visual enhancements found in other advanced-patterns pages",
+      "fix_suggestion": "Add admonitions (tip/warning/note blocks), tabbed content for comparisons, and code annotations to match the visual richness of index.md, multiline.md, and pcre2.md",
+      "source_reference": "docs/advanced-patterns/index.md (lines 50-51, 82-83, 115-141), docs/advanced-patterns/multiline.md (inline flag examples at line 66-74)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Cross-References",
+      "description": "Missing cross-references to related topics",
+      "fix_suggestion": "Add links to multiline.md (which discusses (?s) flag), pcre2.md (engine compatibility), and potentially a 'Related Chapters' section like in index.md",
+      "source_reference": "docs/advanced-patterns/index.md (lines 195-199)"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "Verbose Mode Example",
+      "description": "Verbose mode example is overly simplified and doesn't show real benefit",
+      "fix_suggestion": "Provide a more realistic example showing how (?x) helps document complex patterns with meaningful comments, similar to the detailed examples in other pages",
+      "source_reference": "Pattern best practices from features.json meta_content"
+    }
+  ],
+  "positive_aspects": [
+    "Clear table format for flag reference",
+    "Good explanation of scoped vs global flag application",
+    "Practical examples showing both syntaxes",
+    "Flag precedence explanation is valuable",
+    "Examples are syntactically correct and work as documented"
+  ],
+  "improvement_suggestions": [
+    "Add admonitions to highlight important concepts (e.g., '!!! tip' for when to use each flag)",
+    "Create tabbed content comparing inline flags vs command-line flags",
+    "Add code annotations (numbered comments) to explain complex examples",
+    "Include performance notes about (?x) verbose mode overhead",
+    "Add a decision tree or flowchart for choosing inline flags",
+    "Cross-reference the multiline.md page which already discusses (?s) flag",
+    "Add examples showing practical use cases for (?R), (?U), and (?u) flags",
+    "Include a warning about engine compatibility (some flags may behave differently with -P PCRE2)",
+    "Add 'Related Chapters' section linking to multiline, pcre2, and unicode pages"
+  ],
+  "cross_references": [
+    "multiline",
+    "pcre2",
+    "unicode"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-13T20:53:28Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": [
+      "inline regex flags",
+      "dotall mode",
+      "case-insensitive matching",
+      "multiline mode flags",
+      "verbose mode"
+    ],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "internal_links_checked": 1,
+    "broken_links_found": 0
+  }
+}
