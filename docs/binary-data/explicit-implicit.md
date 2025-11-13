@@ -43,9 +43,10 @@ rg --binary "pattern" -g '*.bin'
 
 ## Edge Cases and Gotchas
 
-### Performance Optimizations
+!!! info "Performance vs Accuracy Tradeoffs"
+    Ripgrep makes several performance optimizations that can affect binary detection. These tradeoffs favor speed while maintaining useful behavior.
 
-Ripgrep makes several performance optimizations that can affect binary detection:
+### Performance Optimizations
 
 #### 1. `--files-with-matches` / `-l`
 
@@ -78,24 +79,26 @@ rg -c "pattern"
 
 ### Matches Before NUL Bytes
 
-If a match occurs in the same buffer as a NUL byte but **before** the NUL byte, that match may not be printed. This is because ripgrep processes the buffer sequentially and classifies it as binary before outputting the match.
+!!! warning "Edge Case: Matches Before NUL Bytes"
+    If a match occurs in the same buffer as a NUL byte but **before** the NUL byte, that match may not be printed. This is because ripgrep processes the buffer sequentially and classifies it as binary before outputting the match.
 
-**Example scenario:**
-```
-Buffer contents: "match_text ... \x00 ..."
-                     ^           ^
-                  match here   NUL here
-```
+    **Example scenario:**
+    ```
+    Buffer contents: "match_text ... \x00 ..."
+                         ^           ^
+                      match here   NUL here
+    ```
 
-The match might not be shown because the buffer is classified as binary before the match is output.
+    The match might not be shown because the buffer is classified as binary before the match is output.
 
 ## For Library Users
 
 If you're using the `grep-searcher` crate in your own Rust code, binary detection works differently:
 
-### Default Behavior
+!!! note "Library vs CLI Defaults"
+    Binary detection is **disabled by default** in the library, unlike the CLI where binary files are skipped by default. You must explicitly enable it using the `BinaryDetection` API.
 
-Binary detection is **disabled by default** in the library (unlike the CLI):
+### Default Behavior
 
 ```rust
 use grep_searcher::SearcherBuilder;
@@ -108,29 +111,47 @@ let searcher = SearcherBuilder::new().build();
 
 Use the `BinaryDetection` API to configure detection:
 
-```rust
-use grep_searcher::{BinaryDetection, SearcherBuilder};
+=== "Quit on NUL"
 
-// Quit on NUL byte (stop searching)
-let searcher = SearcherBuilder::new()
-    .binary_detection(BinaryDetection::quit(b'\x00'))
-    .build();
+    Stop searching when a NUL byte is found (similar to implicit file behavior):
 
-// Convert NUL bytes to line terminators
-let searcher = SearcherBuilder::new()
-    .binary_detection(BinaryDetection::convert(b'\x00'))
-    .build();
+    ```rust
+    use grep_searcher::{BinaryDetection, SearcherBuilder};
 
-// No binary detection (default)
-let searcher = SearcherBuilder::new()
-    .binary_detection(BinaryDetection::none())
-    .build();
-```
+    let searcher = SearcherBuilder::new()
+        .binary_detection(BinaryDetection::quit(b'\x00'))
+        .build();
+    ```
+
+=== "Convert NUL"
+
+    Replace NUL bytes with line terminators to continue searching:
+
+    ```rust
+    use grep_searcher::{BinaryDetection, SearcherBuilder};
+
+    let searcher = SearcherBuilder::new()
+        .binary_detection(BinaryDetection::convert(b'\x00'))
+        .build();
+    ```
+
+    !!! warning "Buffered Search Only"
+        The `convert` strategy only works with buffered search, not memory-mapped search.
+
+=== "None (Default)"
+
+    Disable binary detection entirely:
+
+    ```rust
+    use grep_searcher::{BinaryDetection, SearcherBuilder};
+
+    let searcher = SearcherBuilder::new()
+        .binary_detection(BinaryDetection::none())
+        .build();
+    ```
 
 ### API Methods
 
 - **`BinaryDetection::none()`**: No binary detection (default for library)
 - **`BinaryDetection::quit(byte)`**: Stop searching when `byte` is found
 - **`BinaryDetection::convert(byte)`**: Replace `byte` with line terminator
-
-**Note:** The `convert` strategy only works with buffered search, not memory-mapped search.
