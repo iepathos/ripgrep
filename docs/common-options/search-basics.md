@@ -87,7 +87,7 @@ Ripgrep uses Rust's regex engine by default, which is very fast. For advanced re
   # Backreferences: find repeated words
   rg -P '(\w+)\s+\1'
   ```
-  See the [Regular Expressions](../regex.md) chapter for detailed regex syntax and PCRE2 features.
+  See the [Regular Expressions](../basics/regex-basics.md) chapter for detailed regex syntax and PCRE2 features.
 
 - **`--engine ENGINE`**: Explicitly choose regex engine
   ```bash
