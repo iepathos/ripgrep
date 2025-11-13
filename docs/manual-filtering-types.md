@@ -4,6 +4,9 @@ File type filtering allows you to search specific file types by language or form
 
 ## Quick Start
 
+!!! tip "Quick Reference"
+    File types provide a more convenient way to filter than glob patterns for common cases. Use `-t` to include types, `-T` to exclude them, and `--type-add` to define custom types.
+
 Here are the most common file type filtering commands:
 
 ```bash
@@ -34,7 +37,8 @@ Use `-t` or `--type` to search only files matching a specific file type:
 # Search only Rust files (*.rs)
 rg pattern -t rust
 
-# Search only Python files (*.py, *.pyi, *.pyw)
+# Search only Python files (*.py, *.pyi)
+# Source: crates/ignore/src/default_types.rs:217
 rg TODO -t python
 
 # Search only JSON files
@@ -152,7 +156,14 @@ rg pattern -t javascript
 rg pattern -t js
 ```
 
-To see which types have aliases, check the output of `--type-list`. Types with aliases appear as `alias, fullname:` in the list.
+To see which types have aliases, check the output of `--type-list`. Types with aliases appear on the same line separated by commas (e.g., 'markdown, md:' or 'py, python:'), with all names referring to the same glob patterns.
+
+```bash
+# Example output from --type-list showing aliases:
+# py, python: *.py, *.pyi
+# js, javascript: *.js, *.jsx, *.mjs, *.cjs, *.vue
+# md, markdown: *.md, *.markdown
+```
 
 You can also search for a specific type's definition:
 
@@ -169,18 +180,23 @@ Use `--type-add` to define your own file types with custom glob patterns:
 
 ```bash
 # Define a custom type with a single extension
-rg --type-add 'foo:*.foo' -t foo pattern
+rg --type-add 'foo:*.foo' -t foo pattern  # (1)!
 
 # Define a type with multiple extensions
-rg --type-add 'web:*.{html,css,js}' -t web TODO
+rg --type-add 'web:*.{html,css,js}' -t web TODO  # (2)!
 
 # Define a type for specific filenames
-rg --type-add 'config:Makefile,*.conf' -t config pattern
+rg --type-add 'config:Makefile,*.conf' -t config pattern  # (3)!
 ```
+
+1. Creates a new type named 'foo' matching *.foo files
+2. Use brace expansion `{html,css,js}` for multiple extensions
+3. Mix specific filenames (Makefile) with patterns (*.conf)
 
 The syntax is: `--type-add 'name:glob_pattern'`
 
-**Important:** Type names must consist only of Unicode letters or numbers. Punctuation characters are not allowed.
+!!! warning "Type Name Restrictions"
+    Type names must consist only of Unicode letters or numbers. Punctuation characters like hyphens (-) or underscores (_) are not allowed. Use `mytype` instead of `my-type` or `my_type`.
 
 ```bash
 # Valid type names
@@ -194,18 +210,25 @@ rg --type-add 'my_type:*.txt' pattern      # underscore not allowed
 
 ### Composing Types with include:
 
+!!! tip "Building Reusable Type Categories"
+    The `include:` directive lets you build on existing type definitions, making it easy to create project-specific categories like "all source files" or "all config files."
+
 You can create types that include other types using the special `include:` directive:
 
 ```bash
 # Create a type that combines C++ and Python
-rg --type-add 'src:include:cpp,py' -t src FIXME
+rg --type-add 'src:include:cpp,py' -t src FIXME  # (1)!
 
 # Compose multiple built-in types
-rg --type-add 'code:include:rust,python,go,java' -t code pattern
+rg --type-add 'code:include:rust,python,go,java' -t code pattern  # (2)!
 
 # Include types and add extra globs
-rg --type-add 'config:include:json,yaml' --type-add 'config:*.conf' -t config
+rg --type-add 'config:include:json,yaml' --type-add 'config:*.conf' -t config  # (3)!
 ```
+
+1. Use `include:` to reference existing types (cpp and py)
+2. Build project-specific categories by combining language types
+3. Mix `include:` with additional glob patterns for the same type
 
 The `include:` directive lets you build on existing type definitions. This is particularly useful for creating project-specific type categories like "all source files" or "all config files."
 
@@ -227,6 +250,9 @@ rg -t config "database"
 All the globs accumulate for that type.
 
 ## Clearing Type Definitions (--type-clear)
+
+!!! note "Clearing vs Adding"
+    Without `--type-clear`, `--type-add` adds to existing globs. With `--type-clear`, you completely replace the type's definition.
 
 Use `--type-clear` to remove the built-in glob definitions for a file type before adding your own:
 
@@ -281,7 +307,8 @@ Ripgrep includes 200+ built-in file types. Here are some commonly used ones:
 
 **Programming Languages:**
 - `rust`: *.rs
-- `python`: *.py, *.pyi
+- `python` (alias `py`): *.py, *.pyi
+  <!-- Source: crates/ignore/src/default_types.rs:217 -->
 - `go`: *.go
 - `java`: *.java, *.jsp, *.jspx
 - `javascript` (alias `js`): *.js, *.jsx, *.mjs, *.cjs, *.vue
@@ -289,7 +316,8 @@ Ripgrep includes 200+ built-in file types. Here are some commonly used ones:
 - `c`: *.c, *.h
 - `cpp` (C++): *.cpp, *.cc, *.cxx, *.h, *.hpp
 - `ruby`: *.rb, *.rbw, *.rake, *.gemspec, Rakefile, Gemfile, config.ru, .irbrc
-- `php`: *.php, *.phtml, *.php3, *.php4, *.php5
+- `php`: *.php, *.php3, *.php4, *.php5, *.php7, *.php8, *.pht, *.phtml
+  <!-- Source: crates/ignore/src/default_types.rs:203-207 -->
 
 **Web Development:**
 - `html`: *.html, *.htm
@@ -297,7 +325,7 @@ Ripgrep includes 200+ built-in file types. Here are some commonly used ones:
 - `json`: *.json
 - `xml`: *.xml
 
-**Note:** There is a separate `sass` type that includes *.sass and *.scss files.
+**Note:** Both the `css` and `sass` types include *.scss files. The `css` type (source: crates/ignore/src/default_types.rs:61) includes *.css and *.scss, while the `sass` type (source: crates/ignore/src/default_types.rs:242) includes *.sass and *.scss. When searching with `-t css` or `-t sass`, *.scss files will be included in both cases.
 
 **Documentation:**
 - `markdown` (alias `md`): *.md, *.markdown
@@ -323,6 +351,9 @@ rg --type-list
 The complete definitions are in `crates/ignore/src/default_types.rs` in the ripgrep source code.
 
 ## Practical Examples
+
+!!! example "Common Workflows"
+    These examples show typical use cases for type filtering in real-world projects.
 
 ### Search Source Code Files
 
@@ -381,17 +412,49 @@ rg --type-add 'infra:*.{tf,tfvars,yaml,yml}' -t infra "region"
 
 While file types are convenient, sometimes you need glob patterns for more precise control. Here's when to use each:
 
-**Use `-t/--type` when:**
-- Searching common file types (languages, formats)
-- You want concise, readable commands
-- Working with well-known file extensions
-- Building on existing type definitions
+=== "Use -t/--type When"
+    **Searching common file types**
+    ```bash
+    # Search all Python files
+    rg pattern -t python
+    ```
 
-**Use `-g/--glob` when:**
-- You need specific path patterns (e.g., `src/**/*.rs`)
-- Filtering by directory names
-- Complex inclusion/exclusion rules
-- Custom file naming conventions
+    **Concise, readable commands**
+    ```bash
+    # Much shorter than glob equivalent
+    rg TODO -t rust -t go -t python
+    ```
+
+    **Building on existing definitions**
+    ```bash
+    # Leverage built-in type knowledge
+    rg --type-add 'code:include:rust,python,go' -t code
+    ```
+
+=== "Use -g/--glob When"
+    **Specific path patterns**
+    ```bash
+    # Only search in src/ directory
+    rg pattern -g 'src/**/*.rs'
+    ```
+
+    **Filtering by directory names**
+    ```bash
+    # Exclude test directories
+    rg pattern -g '!tests/**'
+    ```
+
+    **Complex inclusion/exclusion**
+    ```bash
+    # Include src/ but exclude generated/
+    rg pattern -g 'src/**' -g '!src/generated/**'
+    ```
+
+    **Custom naming conventions**
+    ```bash
+    # Match files ending in .test.js
+    rg pattern -g '*.test.js'
+    ```
 
 You can combine both approaches:
 
@@ -405,7 +468,8 @@ rg pattern -t python -g '!tests/**'
 
 ## Type Filtering Precedence
 
-**Important:** Type filtering has lower precedence than glob patterns and ignore files.
+!!! warning "Precedence Hierarchy"
+    Type filtering has lower precedence than glob patterns and ignore files. Files in `.gitignore` won't be searched even with `-t`, and `-g` glob patterns override type matching.
 
 ```bash
 # If src/file.rs is in .gitignore, -t won't include it
@@ -430,6 +494,9 @@ rg pattern path/to/file.rs
 
 ## Configuration File Persistence
 
+!!! tip "Making Custom Types Permanent"
+    Type definitions aren't persisted between commands. For commonly used custom types, add them to `~/.ripgreprc` so they're available in every search.
+
 Type settings are not persisted between invocations. Each time you run `rg`, you need to specify `--type-add` again.
 
 For permanent custom types, add them to a ripgrep configuration file:
@@ -451,6 +518,36 @@ See the Configuration chapter for more details on configuration files.
 ## How Type Matching Works
 
 Under the hood, file types are implemented as named collections of glob patterns. When you use `-t rust`, ripgrep internally applies the glob pattern `*.rs` to match files.
+
+```mermaid
+flowchart TD
+    Start[File Encountered] --> IgnoreCheck{In .gitignore<br/>or ignore file?}
+    IgnoreCheck -->|Yes| Skip[Skip File]
+    IgnoreCheck -->|No| TypeCheck{-t or -T<br/>specified?}
+
+    TypeCheck -->|No Type Flags| GlobCheck{-g glob<br/>specified?}
+    TypeCheck -->|Has -t| MatchType{File matches<br/>-t types?}
+    TypeCheck -->|Has -T| ExcludeType{File matches<br/>-T types?}
+
+    MatchType -->|Yes| GlobCheck
+    MatchType -->|No| Skip
+
+    ExcludeType -->|Yes| Skip
+    ExcludeType -->|No| GlobCheck
+
+    GlobCheck -->|No Glob| Search[Search File]
+    GlobCheck -->|Has -g| MatchGlob{File matches<br/>glob pattern?}
+
+    MatchGlob -->|Yes| Search
+    MatchGlob -->|No| Skip
+
+    style Search fill:#e8f5e9
+    style Skip fill:#ffebee
+    style IgnoreCheck fill:#fff3e0
+    style TypeCheck fill:#e1f5ff
+```
+
+**Figure**: Type matching flow showing precedence of ignore files, type flags, and glob patterns.
 
 The type system is built on the `Types` struct in `crates/ignore/src/types.rs`, which:
 1. Maintains a mapping of type names to glob patterns
