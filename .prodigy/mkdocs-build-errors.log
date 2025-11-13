@@ -1,0 +1,20 @@
+INFO    -  Cleaning site directory
+INFO    -  Building documentation to directory: /Users/glen/.prodigy/worktrees/ripgrep/session-0fc5fcdb-0a3b-4fa9-83b3-6a3a114fe9be/site
+INFO    -  Doc file 'file-encoding.md' contains an unrecognized relative link './advanced-patterns/', it was left as is. Did you mean 'advanced-patterns/index.md'?
+INFO    -  Doc file 'file-encoding.md' contains an unrecognized relative link './binary-data/', it was left as is. Did you mean 'binary-data/index.md'?
+INFO    -  Doc file 'file-encoding.md' contains an unrecognized relative link './advanced-patterns/', it was left as is. Did you mean 'advanced-patterns/index.md'?
+WARNING -  Doc file 'utility-modes.md' contains a link 'common-options.md', but the target is not found among documentation files.
+WARNING -  Doc file 'utility-modes.md' contains a link 'troubleshooting.md', but the target is not found among documentation files.
+WARNING -  Doc file 'advanced-patterns/unicode.md' contains a link '../../crates/core/flags/defs.rs', but the target '../crates/core/flags/defs.rs' is not found among documentation files.
+WARNING -  Doc file 'advanced-patterns/unicode.md' contains a link '../../crates/core/flags/defs.rs', but the target '../crates/core/flags/defs.rs' is not found among documentation files.
+WARNING -  Doc file 'basics/pattern-matching.md' contains a link 'replacements.md', but the target 'basics/replacements.md' is not found among documentation files.
+WARNING -  Doc file 'basics/pattern-matching.md' contains a link 'manual-filtering-globs.md', but the target 'basics/manual-filtering-globs.md' is not found among documentation files.
+WARNING -  Doc file 'binary-data/flags.md' contains a link '../encoding.md', but the target 'encoding.md' is not found among documentation files.
+WARNING -  Doc file 'binary-data/flags.md' contains a link '../filtering.md', but the target 'filtering.md' is not found among documentation files.
+WARNING -  Doc file 'common-options/output-modes.md' contains a link '../../performance.md', but the target '../performance.md' is not found among documentation files. Did you mean '../performance.md'?
+WARNING -  Doc file 'troubleshooting/bug-reports.md' contains a link '../../FAQ.md', but the target '../FAQ.md' is not found among documentation files.
+WARNING -  Doc file 'troubleshooting/bug-reports.md' contains a link '../../GUIDE.md', but the target '../GUIDE.md' is not found among documentation files.
+WARNING -  Doc file 'troubleshooting/errors.md' contains a link '../../FAQ.md#fancy', but the target '../FAQ.md' is not found among documentation files.
+INFO    -  Doc file 'hyperlinks.md' contains a link '#url-scheme-registration', but there is no such anchor on this page.
+
+Aborted with 12 warnings in strict mode!

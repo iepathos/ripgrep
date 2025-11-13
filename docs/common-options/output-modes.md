@@ -391,5 +391,5 @@ These flags help troubleshoot search behavior and analyze performance:
 
 - [File Filtering](file-filtering.md) - Control which files are searched with type filters and glob patterns
 - [Output Formatting](output-formatting.md) - Customize how matches are displayed
-- [Performance](../../performance.md) - In-depth guide to optimizing search performance
+- [Performance](../performance.md) - In-depth guide to optimizing search performance
 - [Search Basics](search-basics.md) - Learn about regex patterns and search modes

@@ -240,5 +240,5 @@ The binary handling logic is implemented across several key components:
 ## See Also
 
 - [Binary Data Overview](./index.md) - Main binary data handling documentation
-- [Encoding](../encoding.md) - Character encoding handling (if available)
-- [Filtering Files](../filtering.md) - File type and glob filtering (if available)
+- [File Encoding](../file-encoding.md) - Character encoding handling
+- [Automatic Filtering](../automatic-filtering.md) - File filtering and type detection

@@ -309,5 +309,5 @@ rg "pattern" sample-file.txt
 - [Regex Basics](regex-basics.md) - Learn regex syntax for complex patterns
 - [Literal Search](literal-search.md) - Deep dive into `-F` flag and literal matching
 - [Case Sensitivity](case-sensitivity.md) - More on `-i` and `-S` flags
-- [Replacements](replacements.md) - Use patterns with find-and-replace
-- [Manual Filtering with Globs](manual-filtering-globs.md) - Combine patterns with file filtering
+- [Replacements](../replacements.md) - Use patterns with find-and-replace
+- [Manual Filtering with Globs](../manual-filtering-globs.md) - Combine patterns with file filtering

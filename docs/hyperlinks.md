@@ -405,7 +405,7 @@ Process hyperlinks with other tools:
 rg --hyperlink-format file pattern | sed 's/.*file:\/\/\([^[:space:]]*\).*/\1/'
 ```
 
-## URL Scheme Registration {#url-scheme-registration}
+## URL Scheme Registration
 
 To use custom editor hyperlink formats, you need to register URL scheme handlers with your operating system:
 

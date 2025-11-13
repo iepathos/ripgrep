@@ -204,7 +204,7 @@ Remember that `.gitignore` files in parent directories also affect the search. U
     $ rg -P "(?<=@)\w+"  # Use PCRE2 for lookbehind
     ```
 
-See the [FAQ](../../FAQ.md#fancy) for more information about regex engines.
+See the FAQ in the project root (`FAQ.md`) for more information about regex engines.
 
 ### Pattern Too Complex
 

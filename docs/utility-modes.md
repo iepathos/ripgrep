@@ -488,6 +488,6 @@ rg --files -g '*_test.go' > test-files.txt
 
 ## See Also
 
-- [Common Options](common-options.md) - Frequently used flags
+- [Common Options](common-options/index.md) - Frequently used flags
 - [Manual Filtering: File Types](manual-filtering-types.md) - File type filtering details
-- [Troubleshooting](troubleshooting.md) - General troubleshooting guide
+- [Troubleshooting](troubleshooting/index.md) - General troubleshooting guide

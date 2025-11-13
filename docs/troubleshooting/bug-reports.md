@@ -83,8 +83,8 @@ flowchart TD
 
 ## Additional Resources
 
-- **FAQ**: Common questions and answers - [FAQ.md](../../FAQ.md)
-- **User Guide**: Comprehensive documentation - [GUIDE.md](../../GUIDE.md)
+- **FAQ**: Common questions and answers - see `FAQ.md` in the project root
+- **User Guide**: Comprehensive documentation - see `GUIDE.md` in the project root
 - **GitHub Issues**: Search for known issues and solutions
 - **Configuration**: See the [configuration file chapter](../configuration-file.md) for persistent settings
 - **File Encoding**: See the [file encoding chapter](../file-encoding.md) for encoding details

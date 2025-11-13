@@ -81,7 +81,7 @@ graph LR
     rg --multiline-dotall '.+'
     ```
 
-    See [crates/core/flags/defs.rs:4249-4250](../../crates/core/flags/defs.rs) for implementation details.
+    See `crates/core/flags/defs.rs:4249-4250` for implementation details.
 
 **Note on Emoji Matching**: Emoji matching with `\p{Emoji}` may vary across different regex engines and Unicode versions. Some complex emoji (like multi-codepoint sequences, skin tone modifiers, or zero-width joiners) may require additional pattern logic. Always test emoji patterns with your specific use case and data.
 
@@ -145,7 +145,7 @@ For ASCII-only searches with better performance, use `--no-unicode`:
     - Performance-critical searches on large codebases
     - Pattern uses `\w`, `\d`, `\s`, or `\b` extensively
 
-    See [crates/core/flags/defs.rs:4930-4934](../../crates/core/flags/defs.rs) for implementation context.
+    See `crates/core/flags/defs.rs:4930-4934` for implementation context.
 
 **Note**: `--no-unicode` affects the entire search, not individual patterns.
 

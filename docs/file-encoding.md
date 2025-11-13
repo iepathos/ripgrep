@@ -386,7 +386,7 @@ This is useful when:
 * Mixing ASCII and Unicode patterns
 * Searching raw bytes with `--encoding=none`
 
-For more details on regex flags, see the [Advanced Patterns](./advanced-patterns/) chapter.
+For more details on regex flags, see the [Advanced Patterns](advanced-patterns/index.md) chapter.
 
 ## Performance Considerations
 
@@ -444,7 +444,7 @@ For more details on regex flags, see the [Advanced Patterns](./advanced-patterns
 * Forces ripgrep to search binary files as if they were text
 * Encoding detection and transcoding still apply
 * Useful in combination: `rg -a -E utf-16 pattern binary-file`
-* See [Binary Data](./binary-data/) chapter for details
+* See [Binary Data](binary-data/index.md) chapter for details
 
 **`--no-encoding` flag:**
 * Resets encoding to `auto` mode
@@ -454,7 +454,7 @@ For more details on regex flags, see the [Advanced Patterns](./advanced-patterns
 **Unicode regex flags:**
 * `(?-u)` disables Unicode mode for a pattern section
 * Works on the transcoded UTF-8 version of files
-* See [Advanced Patterns](./advanced-patterns/) chapter
+* See [Advanced Patterns](advanced-patterns/index.md) chapter
 
 ## Summary
 
