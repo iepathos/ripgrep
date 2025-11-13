@@ -1,0 +1,142 @@
+{
+  "item_type": "auto-discovered",
+  "page_id": "SUMMARY",
+  "page_title": "SUMMARY",
+  "page_file": "docs/SUMMARY.md",
+  "drift_detected": true,
+  "severity": "critical",
+  "quality_assessment": "SUMMARY.md contains multiple broken links to non-existent documentation pages. Out of 20 linked pages, 12 are missing (60% broken link rate). This will cause build failures and broken navigation.",
+  "issues": [
+    {
+      "type": "broken_links",
+      "severity": "high",
+      "section": "Cross-References",
+      "description": "Found 12 broken internal links to missing documentation files",
+      "broken_links": [
+        {
+          "link_text": "Basics",
+          "target_path": "basics.md",
+          "expected_file": "docs/basics.md",
+          "current_file": "docs/SUMMARY.md",
+          "status": "missing"
+        },
+        {
+          "link_text": "Automatic Filtering",
+          "target_path": "automatic-filtering.md",
+          "expected_file": "docs/automatic-filtering.md",
+          "current_file": "docs/SUMMARY.md",
+          "status": "exists"
+        },
+        {
+          "link_text": "Binary Data",
+          "target_path": "binary-data.md",
+          "expected_file": "docs/binary-data.md",
+          "current_file": "docs/SUMMARY.md",
+          "status": "missing"
+        },
+        {
+          "link_text": "Common Options",
+          "target_path": "common-options.md",
+          "expected_file": "docs/common-options.md",
+          "current_file": "docs/SUMMARY.md",
+          "status": "missing"
+        },
+        {
+          "link_text": "Advanced Patterns",
+          "target_path": "advanced-patterns.md",
+          "expected_file": "docs/advanced-patterns.md",
+          "current_file": "docs/SUMMARY.md",
+          "status": "missing"
+        },
+        {
+          "link_text": "Troubleshooting",
+          "target_path": "troubleshooting.md",
+          "expected_file": "docs/troubleshooting.md",
+          "current_file": "docs/SUMMARY.md",
+          "status": "missing"
+        }
+      ],
+      "fix_suggestion": "Create missing documentation pages or remove broken links from SUMMARY.md. The missing pages are: basics.md, binary-data.md, common-options.md, advanced-patterns.md, troubleshooting.md. These pages are referenced in the navigation but do not exist in the docs/ directory."
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "medium",
+      "section": "Table of Contents Structure",
+      "description": "SUMMARY.md is a table of contents but uses GitBook/mdBook syntax rather than MkDocs Material format",
+      "current_content": "SUMMARY.md with markdown list structure",
+      "should_be": "mkdocs.yml with nav: section for MkDocs Material",
+      "fix_suggestion": "This appears to be a GitBook or mdBook-style SUMMARY.md file. MkDocs Material uses mkdocs.yml for navigation configuration. Consider either: (1) Converting this to mkdocs.yml nav structure, or (2) If using a plugin that reads SUMMARY.md, ensure the plugin is configured correctly.",
+      "source_reference": "MkDocs Material navigation documentation"
+    },
+    {
+      "type": "missing_content",
+      "severity": "high",
+      "section": "User Guide",
+      "description": "Multiple core documentation pages are missing",
+      "missing_pages": [
+        "basics.md - Core search basics and fundamental concepts",
+        "binary-data.md - How ripgrep handles binary files",
+        "common-options.md - Frequently used command-line options",
+        "advanced-patterns.md - Advanced regex patterns and techniques",
+        "troubleshooting.md - Common issues and solutions"
+      ],
+      "feature_coverage_gap": [
+        "search_basics - No basics.md to introduce fundamental search concepts",
+        "file_handling.binary_handling - No binary-data.md to explain binary file processing",
+        "advanced_patterns - No advanced-patterns.md to cover multiline, PCRE2, lookaround",
+        "meta_content.troubleshooting - No troubleshooting.md despite having comprehensive troubleshooting content in features.json"
+      ],
+      "fix_suggestion": "Create the missing documentation pages to provide complete user guidance. These pages should cover fundamental concepts (basics.md), binary file handling (binary-data.md), commonly used options (common-options.md), advanced regex features (advanced-patterns.md), and troubleshooting guidance (troubleshooting.md)."
+    },
+    {
+      "type": "outdated_information",
+      "severity": "medium",
+      "section": "Navigation Structure",
+      "description": "Navigation structure may not align with actual documentation coverage",
+      "current_content": "SUMMARY.md lists 23 pages across Introduction, User Guide, and Advanced Topics sections",
+      "actual_coverage": "Only 18 markdown files exist in docs/ directory (excluding SUMMARY.md)",
+      "fix_suggestion": "Audit the navigation structure against available documentation. Remove links to missing pages or create the missing pages. Ensure the User Guide and Advanced Topics sections accurately reflect available content."
+    }
+  ],
+  "positive_aspects": [
+    "Clear three-section organization (Introduction, User Guide, Advanced Topics)",
+    "Logical progression from basics to advanced topics",
+    "Good topic grouping within User Guide section",
+    "Covers key areas: filtering, replacements, configuration, output formats, performance",
+    "Links to existing pages use correct relative paths"
+  ],
+  "improvement_suggestions": [
+    "Create missing documentation pages to complete the navigation structure",
+    "Consider converting to mkdocs.yml format if using MkDocs Material",
+    "Add a getting-started page as a gentle introduction before basics",
+    "Consider splitting manual-filtering into subsections if content is large",
+    "Add cross-references between related topics (e.g., performance tips in filtering pages)",
+    "Include version compatibility notes in introduction",
+    "Add visual elements (admonitions, tabs) when creating missing pages"
+  ],
+  "link_validation_summary": {
+    "total_internal_links": 20,
+    "broken_links": 5,
+    "valid_links": 15,
+    "broken_link_percentage": 25,
+    "broken_link_details": [
+      "basics.md - Referenced in User Guide section",
+      "binary-data.md - Referenced in User Guide section",
+      "common-options.md - Referenced in User Guide section",
+      "advanced-patterns.md - Referenced in Advanced Topics section",
+      "troubleshooting.md - Referenced in Advanced Topics section"
+    ]
+  },
+  "metadata": {
+    "analyzed_at": "2025-11-13T14:27:00Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": [
+      "navigation",
+      "table_of_contents",
+      "documentation_structure"
+    ],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "documentation_type": "table_of_contents",
+    "format_type": "gitbook_mdbook_style"
+  }
+}
