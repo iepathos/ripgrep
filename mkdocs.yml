@@ -5,10 +5,10 @@ site_url: https://github.com/BurntSushi/ripgrep
 
 repo_name: BurntSushi/ripgrep
 repo_url: https://github.com/BurntSushi/ripgrep
-edit_uri: edit/master/book/src/
+edit_uri: edit/master/docs/
 
-# Use book/src as documentation directory (shared with mdbook)
-docs_dir: book/src
+# Use docs as documentation directory
+docs_dir: docs
 
 # Exclude mdbook-specific files from MkDocs
 exclude_docs: |
