@@ -10,34 +10,55 @@ Sorting is useful when:
 - You're generating reports or documentation
 - You need to process results in a specific order
 
-**Note**: Sorting disables parallelism, which impacts performance on large searches.
+!!! note "Performance Impact"
+    Sorting disables parallelism, which impacts performance on large searches.
 
 ## Sort Options
 
 ripgrep provides several sorting criteria:
 
-```bash
-# Sort by file path (ascending)
-rg --sort path pattern
+=== "Path"
 
-# Sort by last modified time (newest first)
-rg --sort modified pattern
+    ```bash
+    # Sort by file path (ascending)
+    rg --sort path pattern
+    ```
 
-# Sort by last accessed time (newest first)
-rg --sort accessed pattern
+=== "Modified Time"
 
-# Sort by creation time (newest first)
-rg --sort created pattern
+    ```bash
+    # Sort by last modified time (newest first)
+    rg --sort modified pattern
+    ```
 
-# Explicitly disable sorting (useful to override config files)
-rg --sort none pattern
-```
+=== "Accessed Time"
 
-**Note**: The `--sort=none` option explicitly disables sorting, which is useful for overriding configuration files or previous command-line flags that may have enabled sorting.
+    ```bash
+    # Sort by last accessed time (newest first)
+    rg --sort accessed pattern
+    ```
+
+=== "Created Time"
+
+    ```bash
+    # Sort by creation time (newest first)
+    rg --sort created pattern
+    ```
+
+=== "None"
+
+    ```bash
+    # Explicitly disable sorting (useful to override config files)
+    rg --sort none pattern
+    ```
+
+!!! tip
+    The `--sort=none` option explicitly disables sorting, which is useful for overriding configuration files or previous command-line flags that may have enabled sorting.
 
 ### Deprecated Options
 
-The `--sort-files` flag is deprecated. Use `--sort=path` instead for equivalent functionality. This change was made to consolidate all sorting options under the unified `--sort` flag.
+!!! warning "Deprecated Flag"
+    The `--sort-files` flag is deprecated. Use `--sort=path` instead for equivalent functionality. This change was made to consolidate all sorting options under the unified `--sort` flag.
 
 ## Reverse Sorting
 
@@ -51,7 +72,8 @@ rg --sortr path pattern
 rg --sortr modified pattern
 ```
 
-**Note**: Reverse path sorting (`--sortr path`) collects and sorts all paths in memory, unlike forward path sorting which can stream results. This means `--sortr path` has higher memory usage than `--sort path`.
+!!! note "Memory Usage"
+    Reverse path sorting (`--sortr path`) collects and sorts all paths in memory, unlike forward path sorting which can stream results. This means `--sortr path` has higher memory usage than `--sort path`.
 
 ## Sorting by Path
 
@@ -74,7 +96,8 @@ This is useful for:
 - Alphabetical organization
 - Predictable file ordering
 
-**Performance Note**: When using `--sort path` in ascending order (without reverse), ripgrep uses an optimized streaming path that processes paths in their natural traversal order without buffering all results in memory. This makes ascending path sorting more memory-efficient than other sort modes.
+!!! tip "Performance Optimization"
+    When using `--sort path` in ascending order (without reverse), ripgrep uses an optimized streaming path that processes paths in their natural traversal order without buffering all results in memory. This makes ascending path sorting more memory-efficient than other sort modes.
 
 ## Sorting by Modified Time
 
@@ -222,7 +245,8 @@ Time-based sorting behavior may vary:
 - **macOS**: Reliable modified and created times
 - **Windows**: All timestamps available but may have different precision
 
-**Error Handling**: When a requested sort criterion is unavailable on the filesystem (for example, creation time on ext4 filesystems), ripgrep will detect this, print an error message, and exit without performing the search. This ensures that you're aware when the requested sorting cannot be reliably performed.
+!!! warning "Error Handling"
+    When a requested sort criterion is unavailable on the filesystem (for example, creation time on ext4 filesystems), ripgrep will detect this, print an error message, and exit without performing the search. This ensures that you're aware when the requested sorting cannot be reliably performed.
 
 When sorting by timestamps, files with metadata errors (such as permission denied or missing filesystem metadata) are handled gracefully:
 - With ascending sort (`--sort`): Files with errors appear last in the output
@@ -234,4 +258,4 @@ This ensures predictable behavior even when some files cannot be fully accessed.
 
 - [Performance](performance.md) - Performance tuning and optimization
 - [Output Formats](output-formats.md) - Other output customization
-- [Common Options](common-options.md) - Frequently used flags
+- [Common Options](common-options/index.md) - Frequently used flags
