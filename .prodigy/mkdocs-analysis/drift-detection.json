@@ -1,0 +1,70 @@
+{
+  "item_type": "page",
+  "page_id": "detection",
+  "page_title": "detection",
+  "page_file": "docs/binary-data/detection.md",
+  "drift_detected": true,
+  "severity": "medium",
+  "quality_assessment": "Content is technically accurate but lacks visual features and could benefit from better organization",
+  "issues": [
+    {
+      "type": "missing_visual_features",
+      "severity": "medium",
+      "section": "Entire page",
+      "description": "Page lacks MkDocs Material visual features like admonitions, tabs, or code annotations",
+      "fix_suggestion": "Add admonition blocks for 'Important' note about default behavior. Consider using warning/note admonitions to highlight key concepts like the difference between buffered and mmap detection.",
+      "example": "!!! warning \"Binary Detection Default\"\n    Binary detection is **disabled by default** in the `grep-searcher` library but **enabled by default** in ripgrep's CLI for implicit file searches."
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "Memory-Mapped Search",
+      "description": "The exact buffer size used for initial binary detection in mmap mode is stated as '~64KB' but could be more precise",
+      "current_content": "Only the **first ~64KB** of the file is scanned for NUL bytes initially",
+      "should_be": "Only the **first 64 KB (65,536 bytes)** of the file is scanned for NUL bytes initially",
+      "fix_suggestion": "Be more precise about the buffer size used for binary detection",
+      "source_reference": "crates/line_buffer/src/lib.rs:5 (DEFAULT_BUFFER_CAPACITY = 64 * (1 << 10)), crates/searcher/src/searcher/glue.rs:119"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Library vs CLI behavior",
+      "description": "Missing explanation of why binary detection defaults differ between library and CLI",
+      "fix_suggestion": "Add brief explanation that the library is designed to be flexible for different use cases, while the CLI enables binary detection by default for typical grep-like workflows where binary files should be skipped",
+      "source_reference": "crates/searcher/src/searcher/mod.rs:40-41"
+    }
+  ],
+  "positive_aspects": [
+    "Accurate technical explanation of binary detection heuristic (NUL bytes)",
+    "Clear distinction between buffered and memory-mapped search modes",
+    "Good concrete examples showing --mmap and --no-mmap usage",
+    "Explains the rationale (performance vs thoroughness tradeoff)",
+    "Valid cross-reference to parent binary-data/index.md page"
+  ],
+  "improvement_suggestions": [
+    "Add MkDocs Material admonition blocks for important notes and warnings",
+    "Consider adding a comparison table for buffered vs mmap binary detection",
+    "Add code annotations to examples explaining what each flag does",
+    "Consider adding a diagram showing the detection flow for both modes",
+    "Link to related pages about --binary flag and binary file modes"
+  ],
+  "cross_references": [
+    "binary-data/index",
+    "binary-data/modes",
+    "binary-data/flags"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-13T20:53:28Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": [
+      "binary detection",
+      "NUL byte heuristic",
+      "buffered search",
+      "memory-mapped search",
+      "detection differences"
+    ],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "internal_links_checked": 1,
+    "broken_links_found": 0
+  }
+}
