@@ -31,10 +31,14 @@ rg --threads 1 pattern
 rg pattern
 ```
 
-The default behavior uses the number of logical CPUs available. Single-threaded mode can be useful for:
-- Debugging performance issues
-- Ensuring deterministic output order
-- Systems with limited resources
+The default behavior uses the number of logical CPUs available.
+
+!!! tip "When to Use Single-Threaded Mode"
+    Single-threaded mode (`--threads 1`) is useful for:
+
+    - Debugging performance issues
+    - Ensuring deterministic output order
+    - Systems with limited resources
 
 ### Work Stealing Architecture
 
@@ -81,7 +85,20 @@ Avoid memory mapping when:
 - Working with network file systems
 - Memory is constrained
 
-**Platform-specific note**: Memory mapping is disabled by default on macOS due to performance overhead, but can be enabled with `--mmap` if beneficial for your use case.
+!!! warning "macOS Memory Mapping"
+    Memory mapping is disabled by default on macOS due to performance overhead in the kernel's mmap implementation. You can enable it with `--mmap` if benchmarking shows it's beneficial for your specific use case.
+
+### Stdin Handling
+
+When reading from stdin (piped input), ripgrep automatically uses optimized buffered reading instead of memory mapping, since stdin cannot be memory-mapped. The buffer strategy is tuned for streaming input to provide good performance when processing piped data:
+
+```bash
+# Ripgrep automatically optimizes stdin handling
+cat large_file.txt | rg pattern
+
+# Or using process substitution
+rg pattern < large_file.txt
+```
 
 ## Low-Level Optimizations
 
@@ -95,7 +112,8 @@ Modern CPUs support SIMD (Single Instruction, Multiple Data) instructions that c
 - Multi-pattern searching
 - BOM detection
 
-No configuration needed—ripgrep detects and uses available CPU features automatically.
+!!! note "Automatic SIMD Detection"
+    No configuration needed—ripgrep detects and uses available CPU features automatically. This includes SSE2, SSSE3, AVX2, and other instruction sets depending on your CPU.
 
 ### Literal Extraction
 
@@ -123,6 +141,20 @@ rg pattern
 ```
 
 The heuristic-based detection is very fast and avoids wasting time on non-text content.
+
+### Automatic Internal Optimizations
+
+Ripgrep includes several internal optimizations that work automatically without configuration:
+
+**RegexSet for Glob Matching** (Source: crates/globset/src/lib.rs)
+
+When filtering files by globs or file types, ripgrep uses `RegexSet` to compile multiple patterns into a single optimized finite automaton. This allows testing a path against hundreds of patterns in a single pass, making file filtering nearly free compared to the actual search cost.
+
+**UTF-8 DFA Decoding** (Source: crates/searcher/src/searcher/)
+
+The regex engine includes optimized UTF-8 validation integrated directly into the DFA execution. This means ripgrep can validate text encoding while searching, eliminating a separate validation pass and improving cache locality.
+
+These optimizations are built into ripgrep's core and provide performance benefits automatically—no flags or configuration needed.
 
 ## Regex Engine Tuning
 
@@ -154,7 +186,7 @@ The default is 100 MB. Useful in memory-constrained environments or when dealing
 
 Choose between regex engines:
 
-```bash
+```bash title="Selecting Regex Engine"
 # Use default Rust regex (finite automata)
 rg pattern
 
@@ -165,11 +197,12 @@ rg -P 'pattern'
 rg --engine auto pattern
 ```
 
-**Performance characteristics:**
+!!! example "Performance Characteristics"
+    **Default (Rust regex)**: Finite automata provide guaranteed linear time complexity. Best for most use cases.
 
-- **Default (Rust regex)**: Finite automata provide guaranteed linear time complexity. Best for most use cases.
-- **PCRE2**: Backtracking engine supports advanced features (look-around, backreferences) but can be slower and has worst-case exponential behavior on certain patterns.
-- **Auto**: Attempts to choose the best engine based on pattern analysis.
+    **PCRE2**: Backtracking engine supports advanced features (look-around, backreferences) but can be slower and has worst-case exponential behavior on certain patterns.
+
+    **Auto**: Attempts to choose the best engine based on pattern analysis.
 
 ## Buffer and Memory Tuning
 
@@ -199,6 +232,71 @@ Ripgrep has internal heap limit controls to prevent excessive memory usage. Whil
 - Running in memory-constrained environments
 
 The default heap allocation strategy is eager allocation, which provides good performance for most use cases. In constrained environments, reducing memory limits through flags like `--dfa-size-limit` and `--regex-size-limit` helps control heap usage.
+
+## Additional Performance Tuning Flags
+
+### Limiting Output and Resources
+
+Several flags help control resource usage and improve performance in specific scenarios:
+
+#### Max Count (`-m`/`--max-count`)
+
+```bash
+# Source: crates/core/flags/defs.rs:3872-3909
+# Stop after finding N matching lines per file
+rg --max-count 10 pattern
+
+# Quick sampling - get first match from each file
+rg -m 1 pattern
+```
+
+Stops searching a file after finding N matching lines. Useful for:
+- Quick sampling of large codebases
+- Finding representative examples without processing all matches
+- Improving performance when you only need a few results
+
+!!! tip
+    Combine with `--files-with-matches` to quickly identify which files contain matches without processing all occurrences.
+
+#### Max Columns (`-M`/`--max-columns`)
+
+```bash
+# Source: crates/core/flags/defs.rs:3759-3789
+# Omit lines longer than 500 bytes
+rg --max-columns 500 pattern
+
+# Skip very long lines (common in minified files)
+rg -M 1000 pattern
+```
+
+Omits lines longer than the specified byte limit. Instead of printing long lines, only the number of matches in that line is shown. Useful for:
+- Preventing excessive memory usage on files with very long lines
+- Avoiding output flooding from minified JavaScript/CSS files
+- Improving performance when searching logs with extremely long entries
+
+!!! warning
+    This limits line length in **bytes**, not characters. Multibyte UTF-8 characters count as multiple bytes.
+
+#### One File System (`--one-file-system`)
+
+```bash
+# Source: crates/core/flags/defs.rs:5090-5114
+# Don't cross filesystem boundaries
+rg --one-file-system pattern
+
+# Avoid searching network mounts
+rg --one-file-system pattern /home/user
+```
+
+Prevents ripgrep from crossing filesystem boundaries during directory traversal. Useful for:
+- Avoiding slow network filesystems (NFS, SMB)
+- Skipping mounted external drives
+- Preventing searches from traversing into Docker volumes or other mounts
+
+Similar to `find`'s `-xdev` or `-mount` flag.
+
+!!! note
+    This applies per path argument. Searching multiple paths on different filesystems will still search all of them, but won't cross boundaries within each path's tree.
 
 ## Sorting Results
 
@@ -232,12 +330,12 @@ Only use sorting when deterministic order is required (e.g., for diffing outputs
 
 Use `--stats` to see detailed performance metrics:
 
-```bash
+```bash title="Performance Statistics"
 rg --stats pattern
 ```
 
 **Example output:**
-```
+```text
 3 matches
 3 matched lines
 1 file contained matches
@@ -248,16 +346,19 @@ rg --stats pattern
 0.005 seconds
 ```
 
-**Key metrics:**
-- **Bytes searched**: Total data scanned
-- **Time spent searching**: Actual regex matching time
-- **Total time**: Includes file traversal, filtering, output formatting
+!!! tip "Understanding Performance Metrics"
+    **Key metrics:**
 
-Use statistics to:
-- Identify performance bottlenecks
-- Compare different search strategies
-- Verify optimization effectiveness
-- Debug unexpected slowness
+    - **Bytes searched**: Total data scanned
+    - **Time spent searching**: Actual regex matching time
+    - **Total time**: Includes file traversal, filtering, output formatting
+
+    Use statistics to:
+
+    - Identify performance bottlenecks
+    - Compare different search strategies
+    - Verify optimization effectiveness
+    - Debug unexpected slowness
 
 ## Benchmarking
 
@@ -301,7 +402,7 @@ Performance depends on:
 
 For consistent results:
 
-```bash
+```bash title="Benchmark Best Practices"
 # Run multiple iterations
 hyperfine 'rg pattern' --warmup 3 --runs 10
 
@@ -312,11 +413,15 @@ taskset -c 0-3 rg pattern
 rg --stats pattern
 ```
 
+!!! tip
+    Use [hyperfine](https://github.com/sharkdp/hyperfine) for reliable benchmarking with statistical analysis. It automatically handles warmup runs and provides min/mean/max timing with standard deviation.
+
 ## Performance Tips
 
 ### For Large Codebases
 
 ```bash
+# Source: crates/core/flags/defs.rs
 # Use file type filtering
 rg -t rust pattern
 
@@ -325,6 +430,15 @@ rg --max-depth 3 pattern
 
 # Skip large files
 rg --max-filesize 1M pattern
+
+# Skip directories on other file systems (avoid network mounts)
+rg --one-file-system pattern
+
+# Stop after N matches for quick sampling
+rg --max-count 100 pattern
+
+# Omit very long lines to prevent memory issues
+rg --max-columns 500 pattern
 ```
 
 ### For Network File Systems
