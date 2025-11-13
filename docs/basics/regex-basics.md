@@ -40,6 +40,9 @@ rg "[a-zA-Z]+"       # Matches alphabetic words
 rg "[^0-9]"          # Matches any non-digit character
 ```
 
+!!! tip "Prefer Predefined Classes"
+    Use predefined classes like `\d` instead of `[0-9]` and `\w` instead of `[a-zA-Z0-9_]` for better readability and Unicode support. For example, `\d` matches Unicode digits in all scripts, not just ASCII 0-9.
+
 ## Predefined Character Classes
 
 ```bash
@@ -92,6 +95,22 @@ rg "\P{L}+"          # Matches non-letter characters
 | `\p{Ll}` | Lowercase letter | Matches "abc", "ñ" |
 | `\p{Lu}` | Uppercase letter | Matches "ABC", "Ñ" |
 
+**Unicode scripts** allow matching specific writing systems:
+
+```bash
+# \p{Greek} matches Greek script characters
+rg "\p{Greek}+"       # Matches "Ελληνικά", "Ω"
+
+# \p{Han} matches Chinese/Japanese/Korean Han characters
+rg "\p{Han}+"         # Matches "日本語", "中文"
+
+# \p{Arabic} matches Arabic script
+rg "\p{Arabic}+"      # Matches "العربية"
+
+# \p{Cyrillic} matches Cyrillic script
+rg "\p{Cyrillic}+"    # Matches "Русский"
+```
+
 ## Quantifiers
 
 ```bash
@@ -125,6 +144,9 @@ rg "(?:http|https)://\S+"     # Matches URLs
 
 ## Common Pattern Examples
 
+!!! example "Real-World Patterns"
+    These patterns are useful for searching codebases and logs:
+
 ```bash
 # Email addresses
 rg "\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"
@@ -157,6 +179,7 @@ rg -P pattern           # Shorthand
 
 # Auto-select engine based on pattern
 rg --engine auto pattern
+rg --auto-hybrid-regex pattern  # Synonym for --engine auto
 ```
 
 **When to use different engines:**
@@ -165,39 +188,76 @@ rg --engine auto pattern
 - **PCRE2**: Supports advanced features not in default engine. Use when you need backreferences, lookahead/lookbehind, or other Perl-compatible features.
 - **Auto**: Lets ripgrep choose the best engine for your pattern.
 
+```mermaid
+flowchart TD
+    Start[Need Regex Pattern] --> Check{Pattern<br/>Requirements?}
+
+    Check -->|Basic matching<br/>Character classes<br/>Quantifiers| Default[Use Default Engine<br/>Fast & Efficient]
+    Check -->|Backreferences<br/>Lookahead/behind<br/>Advanced features| PCRE[Use PCRE2 Engine<br/>-P flag]
+    Check -->|Not sure| Auto[Use Auto Mode<br/>--auto-hybrid-regex]
+
+    Default --> Search[Execute Search]
+    PCRE --> Search
+    Auto --> Detect{Auto-detect<br/>Pattern Type}
+    Detect -->|Simple| UseDefault[Select Default]
+    Detect -->|Complex| UsePCRE[Select PCRE2]
+    UseDefault --> Search
+    UsePCRE --> Search
+
+    style Default fill:#e8f5e9
+    style PCRE fill:#fff3e0
+    style Auto fill:#e1f5ff
+    style Search fill:#f3e5f5
+```
+
+**Figure**: Decision flow for selecting the appropriate regex engine based on pattern requirements.
+
+!!! tip "Auto Engine Selection"
+    Use `--auto-hybrid-regex` when you're not sure which engine to use. Ripgrep will automatically select the best engine based on your pattern's complexity.
+
 ## PCRE2 Engine
 
 Use the `-P` or `--pcre2` flag to enable the Perl-compatible regex engine, which supports advanced features not available in the default engine.
 
 **Features available only with PCRE2:**
 
-```bash
-# Backreferences - refer to previously captured groups
-rg -P "(\w+)\s+\1"       # Finds repeated words like "the the"
+=== "Backreferences"
+    ```bash
+    # Refer to previously captured groups with \1, \2, etc.
+    rg -P "(\w+)\s+\1"       # Finds repeated words like "the the"
 
-# Positive lookahead (?=...)
-rg -P "error(?=:)"       # Matches "error" only if followed by ":"
+    # Named backreferences
+    rg -P "(?P<word>\w+)\s+\k<word>"  # Same with named groups
+    ```
 
-# Negative lookahead (?!...)
-rg -P "test(?!ing)"      # Matches "test" but not "testing"
+=== "Lookahead/Lookbehind"
+    ```bash
+    # Positive lookahead (?=...)
+    rg -P "error(?=:)"       # Matches "error" only if followed by ":"
 
-# Positive lookbehind (?<=...)
-rg -P "(?<=@)\w+"        # Matches username after "@" in email
+    # Negative lookahead (?!...)
+    rg -P "test(?!ing)"      # Matches "test" but not "testing"
 
-# Negative lookbehind (?<!...)
-rg -P "(?<!un)happy"     # Matches "happy" but not "unhappy"
+    # Positive lookbehind (?<=...)
+    rg -P "(?<=@)\w+"        # Matches username after "@" in email
 
-# Possessive quantifiers
-rg -P "\d++\."           # More efficient matching with possessive +
+    # Negative lookbehind (?<!...)
+    rg -P "(?<!un)happy"     # Matches "happy" but not "unhappy"
+    ```
 
-# Atomic groups (?>...)
-rg -P "(?>error|warning):"   # Prevents backtracking
-```
+=== "Advanced Features"
+    ```bash
+    # Possessive quantifiers (prevent backtracking)
+    rg -P "\d++\."           # More efficient matching with possessive +
 
-**Performance tradeoffs:**
-- PCRE2 is more powerful but typically slower than the default engine
-- Use PCRE2 only when you need its specific features
-- The default engine is optimized for speed and handles most use cases
+    # Atomic groups (?>...) - also prevent backtracking
+    rg -P "(?>error|warning):"   # No backtracking in group
+    ```
+
+!!! warning "Performance Tradeoffs"
+    - PCRE2 is more powerful but typically slower than the default engine
+    - Use PCRE2 only when you need its specific features
+    - The default engine is optimized for speed and handles most use cases
 
 ## Default Engine Limitations
 
@@ -219,6 +279,8 @@ rg -P "(\w+)\s+\1"
 rg -P "error(?=:)"
 ```
 
-**Troubleshooting tip:** If your regex pattern isn't working as expected and uses backreferences or lookahead/lookbehind, try adding the `-P` flag to enable PCRE2.
+!!! tip "Troubleshooting Regex Patterns"
+    If your regex pattern isn't working as expected and uses backreferences or lookahead/lookbehind, try adding the `-P` flag to enable PCRE2.
 
-**Note:** For multiline pattern matching, ripgrep provides the `-U` flag. You can also use `--multiline-dotall` to make `.` match newlines in multiline mode. See the [Advanced Patterns](../advanced-patterns.md) chapter for details.
+!!! note "Multiline Patterns"
+    For multiline pattern matching, ripgrep provides the `-U` flag. You can also use `--multiline-dotall` to make `.` match newlines in multiline mode. See the [Advanced Patterns](../advanced-patterns/index.md) chapter for details.

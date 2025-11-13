@@ -1,0 +1,105 @@
+{
+  "item_type": "page",
+  "page_id": "regex-basics",
+  "page_title": "regex basics",
+  "page_file": "docs/basics/regex-basics.md",
+  "drift_detected": true,
+  "severity": "medium",
+  "quality_assessment": "Good comprehensive coverage of regex basics with minor issues. Main concern is broken link to advanced-patterns page. Content is accurate and well-structured with excellent Unicode support documentation.",
+  "issues": [
+    {
+      "type": "broken_links",
+      "severity": "medium",
+      "section": "Cross-References",
+      "description": "Found 1 broken internal link",
+      "broken_links": [
+        {
+          "link_text": "Advanced Patterns",
+          "original_target": "../advanced-patterns.md",
+          "expected_path": "docs/advanced-patterns.md",
+          "current_file": "docs/basics/regex-basics.md",
+          "line_number": 224,
+          "suggested_fix": "../advanced-patterns/index.md",
+          "reason": "File was reorganized into a section with index page"
+        }
+      ],
+      "fix_suggestion": "Update link from '../advanced-patterns.md' to '../advanced-patterns/index.md'"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Regex Engine Selection",
+      "description": "Missing documentation for --auto-hybrid-regex flag",
+      "feature_reference": "advanced_patterns.pcre2_engine.features",
+      "fix_suggestion": "Add example showing --auto-hybrid-regex flag usage for automatic engine selection",
+      "current_content": "Mentions --engine auto but not --auto-hybrid-regex synonym",
+      "should_include": "Example: rg --auto-hybrid-regex 'pattern' for automatic engine selection based on pattern complexity"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "Unicode Character Classes",
+      "description": "Unicode scripts not documented",
+      "feature_reference": "advanced_patterns.unicode_support.features",
+      "fix_suggestion": "Add examples of Unicode script matching like \\p{Greek}, \\p{Han}, \\p{Arabic} to the Unicode section",
+      "current_content": "Shows Unicode categories (\\p{L}, \\p{N}) but not Unicode scripts"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "Unicode Character Classes",
+      "description": "Grapheme cluster awareness not explained",
+      "feature_reference": "advanced_patterns.unicode_support.features",
+      "fix_suggestion": "Consider brief mention or link to advanced patterns for grapheme cluster handling",
+      "current_content": "Unicode character classes documented but not grapheme clusters"
+    }
+  ],
+  "positive_aspects": [
+    "Comprehensive coverage of basic regex metacharacters",
+    "Excellent Unicode character class documentation with clear table",
+    "Clear PCRE2 vs default engine comparison with practical examples",
+    "Good troubleshooting tips for engine selection",
+    "Practical common pattern examples (email, IP, hex colors, URLs)",
+    "Well-organized progression from simple to complex",
+    "Named capture groups explained with forward reference to replacements chapter",
+    "Performance tradeoffs clearly explained"
+  ],
+  "improvement_suggestions": [
+    "Fix broken link to advanced-patterns page (high priority)",
+    "Add --auto-hybrid-regex flag example",
+    "Include 1-2 examples of Unicode script matching (\\p{Greek}, \\p{Han})",
+    "Consider adding a 'Common Gotchas' section for regex beginners",
+    "Add cross-reference to multiline pattern documentation in advanced-patterns section",
+    "Consider adding interactive examples or exercises (if MkDocs supports it)"
+  ],
+  "cross_references": [
+    "basics/index.md",
+    "replacements.md",
+    "advanced-patterns/index.md",
+    "advanced-patterns/multiline.md",
+    "advanced-patterns/pcre2.md",
+    "advanced-patterns/unicode.md"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-13T20:53:28Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": [
+      "basic metacharacters",
+      "character classes",
+      "unicode support",
+      "quantifiers",
+      "groups and alternation",
+      "regex engines",
+      "PCRE2 features",
+      "engine limitations"
+    ],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "internal_links_checked": 3,
+    "broken_links_found": 1,
+    "features_referenced": [
+      "advanced_patterns.pcre2_engine",
+      "advanced_patterns.unicode_support",
+      "advanced_patterns.multiline_search"
+    ]
+  }
+}
