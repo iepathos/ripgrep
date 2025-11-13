@@ -21,7 +21,35 @@ rg -B 2 pattern
 rg -C 2 pattern
 ```
 
-**Note:** Context values can be very large (up to the maximum value supported by your system) for edge cases where you need extensive surrounding context. However, typical usage is 2-10 lines.
+```mermaid
+graph TD
+    L1["Line 8"] --> L2["Line 9"]
+    L2 --> L3["Line 10: MATCH"]
+    L3 --> L4["Line 11"]
+    L4 --> L5["Line 12"]
+
+    B1["rg -B 2"] -.->|Shows| L1
+    B2["rg -B 2"] -.->|Shows| L2
+
+    A1["rg -A 2"] -.->|Shows| L4
+    A2["rg -A 2"] -.->|Shows| L5
+
+    C1["rg -C 2"] -.->|Shows| L1
+    C2["rg -C 2"] -.->|Shows| L2
+    C3["rg -C 2"] -.->|Shows| L4
+    C4["rg -C 2"] -.->|Shows| L5
+
+    style L3 fill:#fff3e0,stroke:#ff9800,stroke-width:3px
+    style L1 fill:#e3f2fd
+    style L2 fill:#e3f2fd
+    style L4 fill:#f3e5f5
+    style L5 fill:#f3e5f5
+```
+
+**Figure**: Context flag visualization showing which lines are displayed relative to the matching line.
+
+!!! note
+    Context values can be very large (up to the maximum value supported by your system) for edge cases where you need extensive surrounding context. However, typical usage is 2-10 lines.
 
 ## After Context
 
@@ -108,32 +136,34 @@ To remove all separation between match groups (including line breaks):
 rg -C 2 --no-context-separator pattern
 ```
 
-**Visual Difference:** The distinction between empty separator and `--no-context-separator`:
+!!! tip "Visual Difference"
+    The distinction between empty separator and `--no-context-separator`:
 
-With `--context-separator ''` (empty string):
-```
-file.txt:10:first match
-file.txt-11-context line
-file.txt-12-context line
+    === "Empty separator: `--context-separator ''`"
+        ```
+        file.txt:10:first match
+        file.txt-11-context line
+        file.txt-12-context line
 
-file.txt:20:second match
-file.txt-21-context line
-```
-*Note the blank line between match groups*
+        file.txt:20:second match
+        file.txt-21-context line
+        ```
+        *Note the blank line between match groups*
 
-With `--no-context-separator`:
-```
-file.txt:10:first match
-file.txt-11-context line
-file.txt-12-context line
-file.txt:20:second match
-file.txt-21-context line
-```
-*No blank line - output flows continuously*
+    === "No separator: `--no-context-separator`"
+        ```
+        file.txt:10:first match
+        file.txt-11-context line
+        file.txt-12-context line
+        file.txt:20:second match
+        file.txt-21-context line
+        ```
+        *No blank line - output flows continuously*
 
-Summary:
-- `--context-separator ''` removes the `--` separator but keeps a blank line between groups
-- `--no-context-separator` removes all separation, making match groups flow continuously
+    **Summary:**
+
+    - `--context-separator ''` removes the `--` separator but keeps a blank line between groups
+    - `--no-context-separator` removes all separation, making match groups flow continuously
 
 ## Line Number Display
 
@@ -156,14 +186,18 @@ The separator between line numbers and content can be customized:
 
 ```bash
 # Change context line field separator (default is '-')
-rg -C 2 --field-context-separator '|' pattern
+rg -C 2 --field-context-separator '|' pattern  # (1)!
 
 # Change match line field separator (default is ':')
-rg -C 2 --field-match-separator '::' pattern
+rg -C 2 --field-match-separator '::' pattern  # (2)!
 
 # Combine both for custom formatting
-rg -C 2 --field-context-separator ' | ' --field-match-separator ' > ' pattern
+rg -C 2 --field-context-separator ' | ' --field-match-separator ' > ' pattern  # (3)!
 ```
+
+1. Changes the separator after line numbers for context lines (non-matching lines)
+2. Changes the separator after line numbers for matching lines
+3. Combines both customizations for consistent formatting across all output
 
 This produces output like:
 ```
@@ -171,20 +205,21 @@ file.txt 42 > matching line
 file.txt 43 | context line after
 ```
 
-**Escape Sequences:** Field separators support escape sequences for special characters:
+!!! example "Escape Sequences"
+    Field separators support escape sequences for special characters:
 
-```bash
-# Use tab separator for easier parsing
-rg --field-match-separator '\t' pattern
+    ```bash
+    # Use tab separator for easier parsing
+    rg --field-match-separator '\t' pattern
 
-# Use null byte separator (useful for machine parsing)
-rg --field-match-separator '\x00' pattern
+    # Use null byte separator (useful for machine parsing)
+    rg --field-match-separator '\x00' pattern
 
-# Use hex escapes for non-printable characters
-rg --field-context-separator '\xFF' pattern
-```
+    # Use hex escapes for non-printable characters
+    rg --field-context-separator '\xFF' pattern
+    ```
 
-Common escape sequences: `\t` (tab), `\n` (newline), `\r` (carriage return), `\x00` (null byte), `\xFF` (hex byte).
+    Common escape sequences: `\t` (tab), `\n` (newline), `\r` (carriage return), `\x00` (null byte), `\xFF` (hex byte).
 
 ## Combining with Other Options
 
@@ -222,11 +257,13 @@ rg --passthru -C 2 pattern  # Context mode: only 2 lines of context
 rg -C 2 --passthru pattern  # Passthru mode: all lines shown
 ```
 
-**Flag Precedence:** When both `--passthru` and context flags (`-A/-B/-C`) are specified, the last flag wins:
-- If `--passthru` comes last, it enables passthru mode (showing all lines)
-- If `-A/-B/-C` comes last, it enables context mode (showing only specified context)
+!!! warning "Flag Precedence"
+    When both `--passthru` and context flags (`-A/-B/-C`) are specified, the last flag wins:
 
-Use `--passthru` when you want to see the entire file with matches highlighted. Use `-A/-B/-C` when you only need specific context around matches.
+    - If `--passthru` comes last, it enables passthru mode (showing all lines)
+    - If `-A/-B/-C` comes last, it enables context mode (showing only specified context)
+
+    Use `--passthru` when you want to see the entire file with matches highlighted. Use `-A/-B/-C` when you only need specific context around matches.
 
 ## Examples
 
@@ -321,6 +358,46 @@ rg -C 3 --heading pattern
 
 When matches are close together and their context windows overlap, ripgrep merges them into a single contiguous block without duplicating lines or adding separators between them.
 
+```mermaid
+graph TD
+    subgraph "Before Merge: Separate Context Windows"
+        M1["Line 10: MATCH 1"]
+        C1["Lines 11-12<br/>Context after"]
+        SEP1["--<br/>Separator"]
+        C2["Lines 13-14<br/>Context before"]
+        M2["Line 15: MATCH 2"]
+        C3["Lines 16-17<br/>Context after"]
+    end
+
+    subgraph "After Merge: Overlapping Regions Combined"
+        M1A["Line 10: MATCH 1"]
+        C1A["Lines 11-12<br/>Context"]
+        OVER["Lines 13-14<br/>Shared Context<br/>(No separator)"]
+        M2A["Line 15: MATCH 2"]
+        C3A["Lines 16-17<br/>Context"]
+    end
+
+    M1 --> C1
+    C1 --> SEP1
+    SEP1 --> C2
+    C2 --> M2
+    M2 --> C3
+
+    M1A --> C1A
+    C1A --> OVER
+    OVER --> M2A
+    M2A --> C3A
+
+    style M1 fill:#fff3e0,stroke:#ff9800
+    style M2 fill:#fff3e0,stroke:#ff9800
+    style M1A fill:#fff3e0,stroke:#ff9800
+    style M2A fill:#fff3e0,stroke:#ff9800
+    style OVER fill:#e8f5e9
+    style SEP1 fill:#ffebee
+```
+
+**Figure**: Context merging behavior when matches are close together (using `-C 2`).
+
 For example, with `-C 2` (2 lines of context):
 ```
 10: first match
@@ -348,12 +425,15 @@ Since the context windows overlap (lines 13-14 appear in both contexts), ripgrep
 
 No separator appears because the matches share context.
 
+!!! tip "Understanding Context Merging"
+    Ripgrep intelligently merges overlapping context windows to avoid duplicate lines. This happens when matches are closer together than twice the context size. For example, with `-C 3` (3 lines of context), matches within 6 lines of each other will have their contexts merged.
+
 ### No Separator Appearing
 
 Separators only appear when there are multiple distinct match groups. Single matches or overlapping contexts won't show separators.
 
 ## See Also
 
-- [Basics](basics.md) - Basic search usage
+- [Basics](basics/index.md) - Basic search usage
 - [Output Formats](output-formats.md) - Other output customization options
-- [Common Options](common-options.md) - Frequently used flags
+- [Common Options](common-options/index.md) - Frequently used flags
