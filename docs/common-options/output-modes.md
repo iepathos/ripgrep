@@ -4,6 +4,46 @@
 
 Instead of showing matching lines, these flags produce alternative output formats.
 
+## Choosing an Output Mode
+
+```mermaid
+flowchart TD
+    Start{What's your<br/>use case?} --> Tool{Tool/Script<br/>Integration?}
+    Start --> Count{Just need<br/>counts?}
+    Start --> Files{Just need<br/>file lists?}
+    Start --> Debug{Performance<br/>analysis?}
+
+    Tool -->|Yes| Format{Format<br/>needed?}
+    Format -->|Machine-readable| JSON[--json<br/>JSON Lines]
+    Format -->|Editor integration| Vim[--vimgrep<br/>Quickfix format]
+
+    Count -->|Per line| CountFlag[-c, --count]
+    Count -->|Total matches| CountMatches[--count-matches]
+
+    Files -->|Has matches| List[-l, --files-with-matches]
+    Files -->|No matches| Without[--files-without-match]
+    Files -->|All searchable| FilesFlag[--files]
+
+    Debug -->|Quick check| Quiet[-q, --quiet]
+    Debug -->|Performance| Stats[--stats]
+    Debug -->|Troubleshoot| DebugFlag[--debug]
+
+    Tool -->|No| Start
+
+    style JSON fill:#e1f5ff
+    style Vim fill:#e1f5ff
+    style CountFlag fill:#fff3e0
+    style CountMatches fill:#fff3e0
+    style List fill:#f3e5f5
+    style Without fill:#f3e5f5
+    style FilesFlag fill:#f3e5f5
+    style Quiet fill:#e8f5e9
+    style Stats fill:#e8f5e9
+    style DebugFlag fill:#e8f5e9
+```
+
+**Figure**: Decision guide for selecting the appropriate output mode based on your use case.
+
 ## Structured Output
 
 - **`--json`**: Output results in JSON Lines format (one JSON object per line)
@@ -11,14 +51,126 @@ Instead of showing matching lines, these flags produce alternative output format
   # Get machine-readable output for tooling
   rg --json 'pattern'
   ```
-  Each line is a JSON object with a `type` field indicating the message type:
-  - `begin`: Start of search in a file
-  - `match`: A match with fields like `path`, `line_number`, `lines` (matched text), `submatches` (match positions)
-  - `context`: Context lines around matches (when using `-A/-B/-C`)
-  - `end`: End of search in a file
-  - `summary`: Final statistics (if `--stats` is used)
+  Each line is a JSON object with a `type` field indicating the message type. Here are examples of each message type:
 
-  Useful for integrating ripgrep into scripts, editors, and other tools that need structured data.
+  === "Match"
+      ```json
+      {
+        "type": "match",                    // (1)!
+        "data": {
+          "path": {
+            "text": "src/main.rs"          // (2)!
+          },
+          "lines": {
+            "text": "fn main() {\n"        // (3)!
+          },
+          "line_number": 1,                 // (4)!
+          "absolute_offset": 0,             // (5)!
+          "submatches": [                   // (6)!
+            {
+              "match": {
+                "text": "main"
+              },
+              "start": 3,
+              "end": 7
+            }
+          ]
+        }
+      }
+      ```
+
+      1. Message type - determines structure of `data` field
+      2. File path where match was found
+      3. Full content of the matching line (includes newline)
+      4. Line number (1-indexed) where match occurred
+      5. Byte offset from start of file to this line
+      6. Array of all pattern matches on this line with positions
+
+  === "Begin"
+      ```json
+      {
+        "type": "begin",
+        "data": {
+          "path": {
+            "text": "src/main.rs"
+          }
+        }
+      }
+      ```
+
+  === "End"
+      ```json
+      {
+        "type": "end",
+        "data": {
+          "path": {
+            "text": "src/main.rs"
+          },
+          "binary_offset": null,
+          "stats": {
+            "elapsed": {
+              "secs": 0,
+              "nanos": 1234567,
+              "human": "0.001235s"
+            },
+            "searches": 1,
+            "searches_with_match": 1,
+            "bytes_searched": 1024,
+            "bytes_printed": 256,
+            "matched_lines": 5,
+            "matches": 5
+          }
+        }
+      }
+      ```
+
+  === "Context"
+      ```json
+      {
+        "type": "context",
+        "data": {
+          "path": {
+            "text": "src/main.rs"
+          },
+          "lines": {
+            "text": "    // Context line before match\n"
+          },
+          "line_number": 2,
+          "absolute_offset": 15,
+          "submatches": []
+        }
+      }
+      ```
+
+  === "Summary"
+      ```json
+      {
+        "type": "summary",
+        "data": {
+          "elapsed_total": {
+            "secs": 0,
+            "nanos": 5678900,
+            "human": "0.005679s"
+          },
+          "stats": {
+            "elapsed": {
+              "secs": 0,
+              "nanos": 5000000,
+              "human": "0.005000s"
+            },
+            "searches": 42,
+            "searches_with_match": 15,
+            "bytes_searched": 1048576,
+            "bytes_printed": 4096,
+            "matched_lines": 127,
+            "matches": 135
+          }
+        }
+      }
+      ```
+
+  !!! tip "Using JSON Output"
+      JSON Lines format is ideal for streaming parsers. Each line is a complete, valid JSON object that can be processed independently. Perfect for integration with tools like `jq`, custom scripts, or editor plugins.
 
 - **`--vimgrep`**: Output in vim-compatible quickfix format
   ```bash
@@ -27,7 +179,22 @@ Instead of showing matching lines, these flags produce alternative output format
   ```
   Format: `path:line:column:matching text`. Useful for IDE integration and editor plugins that support quickfix format.
 
+  !!! warning "Performance Impact"
+      The vimgrep format shows all matches on separate lines, even if multiple matches are on the same line. This can result in quadratic output when many matches occur on the same line.
+
 ## Counting
+
+!!! example "Count vs Count-Matches"
+    **Key difference**: `-c` counts *lines* with matches, `--count-matches` counts *total matches*.
+
+    For a file with this content:
+    ```rust
+    // TODO: fix TODO: also fix TODO: and this
+    // TODO: one more
+    ```
+
+    - `rg -c 'TODO'` returns `2` (two lines)
+    - `rg --count-matches 'TODO'` returns `4` (four matches total)
 
 - **`-c, --count`**: Show count of matching lines per file
   ```bash
@@ -41,7 +208,6 @@ Instead of showing matching lines, these flags produce alternative output format
   # Count total occurrences, not just lines
   rg --count-matches 'TODO'
   ```
-  Difference: if a line has 3 matches, `-c` counts it as 1, `--count-matches` counts it as 3.
 
 ## Listing Files
 
@@ -68,6 +234,9 @@ Instead of showing matching lines, these flags produce alternative output format
 
 ## Quiet Mode
 
+!!! tip "Script Integration"
+    Quiet mode is perfect for CI/CD checks and pre-commit hooks where you only care whether a pattern exists, not where it appears. Combined with exit codes, it enables clean conditional logic.
+
 - **`-q, --quiet`**: Suppress all output, exit with code 0 if match found
   ```bash
   # Use in scripts for conditional logic
@@ -90,6 +259,15 @@ Instead of showing matching lines, these flags produce alternative output format
 
 ### Parallelism
 
+!!! tip "Thread Tuning"
+    Ripgrep auto-detects the optimal thread count based on your CPU. You rarely need to override this, but `-j 1` is useful for:
+
+    - Deterministic output order (results appear in file order)
+    - Debugging search behavior
+    - Reducing CPU load on shared systems
+
+    Higher thread counts don't always improve performance - I/O bandwidth often becomes the bottleneck before CPU.
+
 - **`-j, --threads NUM`**: Number of threads to use (default: auto-detect)
   ```bash
   # Use 4 threads
@@ -107,7 +285,9 @@ Instead of showing matching lines, these flags produce alternative output format
   # Try mmap for potentially faster searches
   rg --mmap pattern
   ```
-  Memory mapping can be faster on some systems but uses more memory.
+
+  !!! note "System-Dependent Performance"
+      Memory mapping can be faster on some systems but uses more memory. Performance depends on your OS, file system, and available RAM. Benchmark with your specific use case.
 
 ### Sorting
 
@@ -127,7 +307,8 @@ Results can be sorted by various criteria, though this requires buffering all re
   ```
   Available criteria: `path` (lexicographic), `modified` (modification time), `accessed` (access time), `created` (creation time).
 
-  Note: Sorting disables parallelism and buffers all results, which can be slow on large searches.
+  !!! tip "Performance Impact"
+      Sorting disables parallelism and buffers all results in memory before displaying them. This can significantly impact performance on large searches. Consider using external sorting tools if speed is critical.
 
 ### Line Length Limits
 
@@ -174,7 +355,9 @@ Long lines can slow down searches. These flags help manage that:
   ```bash
   rg --pcre2-version
   ```
-  Useful for verifying PCRE2 support before using the `-P` flag.
+
+  !!! info "About JIT Compilation"
+      JIT (Just-In-Time compilation) can significantly improve PCRE2 pattern matching performance by compiling regex patterns to native machine code. This flag shows if JIT support is available in your ripgrep build. Use this to verify PCRE2 support before using the `-P` flag for advanced regex features.
 
 ### Debugging and Performance Analysis
 
@@ -203,3 +386,10 @@ These flags help troubleshoot search behavior and analyze performance:
   - Number of searches with matches
 
   Useful for performance analysis and understanding search scope.
+
+## See Also
+
+- [File Filtering](file-filtering.md) - Control which files are searched with type filters and glob patterns
+- [Output Formatting](output-formatting.md) - Customize how matches are displayed
+- [Performance](../../performance.md) - In-depth guide to optimizing search performance
+- [Search Basics](search-basics.md) - Learn about regex patterns and search modes
