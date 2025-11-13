@@ -44,7 +44,7 @@ setup:
   # This runs BEFORE map phase so agents process optimally-sized pages
   # Reads structure-report.json and orchestrates splitting of high-priority pages
   - claude: "/prodigy-split-oversized-mkdocs-pages --project $PROJECT_NAME --pages $CHAPTERS_FILE --docs-dir $DOCS_DIR --structure-report $ANALYSIS_DIR/structure-report.json"
-    commit_required: true
+    commit_required: false
 
   # Step 5: Auto-discover ALL documentation pages (including newly created subpages)
   # This ensures we process all pages, not just the curated list in chapters.json
