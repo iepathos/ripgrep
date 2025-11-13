@@ -1,0 +1,98 @@
+{
+  "item_type": "auto-discovered",
+  "page_id": "context-lines",
+  "page_title": "context lines",
+  "page_file": "docs/context-lines.md",
+  "drift_detected": true,
+  "severity": "medium",
+  "quality_assessment": "Good documentation with broken internal links and minor visual enhancement opportunities",
+  "issues": [
+    {
+      "type": "broken_links",
+      "severity": "medium",
+      "section": "See Also",
+      "description": "Found 2 broken internal links to reorganized documentation",
+      "broken_links": [
+        {
+          "link_text": "Basics",
+          "target": "basics.md",
+          "expected_path": "docs/basics.md",
+          "actual_status": "File does not exist - basics was reorganized into basics/ directory"
+        },
+        {
+          "link_text": "Common Options",
+          "target": "common-options.md",
+          "expected_path": "docs/common-options.md",
+          "actual_status": "File does not exist - common-options was reorganized into common-options/ directory"
+        }
+      ],
+      "fix_suggestion": "Update links to point to section index pages: basics.md -> basics/index.md and common-options.md -> common-options/index.md",
+      "current_content": "- [Basics](basics.md) - Basic search usage\n- [Output Formats](output-formats.md) - Other output customization options\n- [Common Options](common-options.md) - Frequently used flags",
+      "should_be": "- [Basics](basics/index.md) - Basic search usage\n- [Output Formats](output-formats.md) - Other output customization options\n- [Common Options](common-options/index.md) - Frequently used flags"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "Visual Features",
+      "description": "Page lacks MkDocs Material visual features for enhanced readability",
+      "fix_suggestion": "Add admonitions for the Note and Best Practices sections, consider tabs for before/after comparisons of context separator behavior, and add code annotations for complex examples",
+      "examples": [
+        "Convert 'Note:' sections to use !!! note admonitions",
+        "Use === tabs to show empty separator vs --no-context-separator comparison side-by-side",
+        "Add (1) style annotations to explain field separator escape sequences"
+      ]
+    }
+  ],
+  "positive_aspects": [
+    "Comprehensive coverage of context line features (-A, -B, -C)",
+    "Clear explanation of context separators and customization",
+    "Good distinction between --context-separator '' and --no-context-separator",
+    "Excellent coverage of field separators (--field-context-separator, --field-match-separator)",
+    "Accurate documentation of passthru flag precedence behavior",
+    "Good coverage of escape sequences in separators",
+    "Includes --heading flag best practice for cleaner multi-file context output",
+    "Strong examples section with practical use cases",
+    "Accurate technical details match implementation in crates/core/flags/defs.rs"
+  ],
+  "improvement_suggestions": [
+    "Add visual admonitions (MkDocs Material !!! note/tip/warning) to highlight important distinctions",
+    "Use tabs to show side-by-side comparisons of separator behaviors",
+    "Consider adding code annotations for complex examples with escape sequences",
+    "Could add a troubleshooting entry about field separator parsing with special characters",
+    "Link to basics/index.md and common-options/index.md instead of non-existent files"
+  ],
+  "cross_references": [
+    "basics/index.md",
+    "output-formats.md",
+    "common-options/index.md"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-13T20:53:28Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": [
+      "context lines",
+      "after context",
+      "before context",
+      "symmetric context",
+      "context separators",
+      "field separators",
+      "passthru mode",
+      "heading mode"
+    ],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "features_referenced": [
+      "output_control.context_lines",
+      "output_control.standard_output",
+      "utility_features.passthru_mode"
+    ],
+    "implementation_files_verified": [
+      "crates/core/flags/defs.rs:AfterContext",
+      "crates/core/flags/defs.rs:BeforeContext",
+      "crates/core/flags/defs.rs:Context",
+      "crates/core/flags/defs.rs:ContextSeparator",
+      "crates/core/flags/defs.rs:FieldContextSeparator",
+      "crates/core/flags/defs.rs:FieldMatchSeparator",
+      "crates/core/flags/defs.rs:Heading"
+    ]
+  }
+}
