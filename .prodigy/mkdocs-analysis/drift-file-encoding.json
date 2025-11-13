@@ -1,0 +1,93 @@
+{
+  "item_type": "page",
+  "page_id": "file-encoding",
+  "page_title": "file encoding",
+  "page_file": "docs/file-encoding.md",
+  "drift_detected": true,
+  "severity": "medium",
+  "quality_assessment": "Good technical content but has broken internal links that need fixing. Documentation accurately reflects implementation.",
+  "issues": [
+    {
+      "type": "broken_links",
+      "severity": "medium",
+      "section": "Cross-References",
+      "description": "Found 2 broken internal link(s) to non-existent files",
+      "broken_links": [
+        {
+          "link_text": "Advanced Patterns",
+          "target_path": "./advanced-patterns.md",
+          "line_number": 273,
+          "expected_file": "docs/advanced-patterns.md",
+          "reason": "File does not exist",
+          "suggested_fix": "./advanced-patterns/index.md or ./advanced-patterns/"
+        },
+        {
+          "link_text": "Binary Data",
+          "target_path": "./binary-data.md",
+          "line_number": 327,
+          "expected_file": "docs/binary-data.md",
+          "reason": "File does not exist",
+          "suggested_fix": "./binary-data/index.md or ./binary-data/"
+        },
+        {
+          "link_text": "Advanced Patterns",
+          "target_path": "./advanced-patterns.md",
+          "line_number": 337,
+          "expected_file": "docs/advanced-patterns.md",
+          "reason": "File does not exist (duplicate reference)",
+          "suggested_fix": "./advanced-patterns/index.md or ./advanced-patterns/"
+        }
+      ],
+      "fix_suggestion": "Update links to point to section index pages: use './advanced-patterns/' or './advanced-patterns/index.md' instead of './advanced-patterns.md', and './binary-data/' or './binary-data/index.md' instead of './binary-data.md'.",
+      "current_content": "[Advanced Patterns](./advanced-patterns.md) and [Binary Data](./binary-data.md)",
+      "should_be": "[Advanced Patterns](./advanced-patterns/) and [Binary Data](./binary-data/)"
+    }
+  ],
+  "positive_aspects": [
+    "Comprehensive and well-structured explanation of encoding modes",
+    "Accurate description of BOM sniffing (UTF-8, UTF-16LE, UTF-16BE as verified in crates/searcher/src/searcher/mod.rs)",
+    "Correct reference to WHATWG Encoding Standard and encoding_rs crate",
+    "Excellent practical examples covering common use cases",
+    "Clear explanation of encoding detection and transcoding behavior",
+    "Good troubleshooting section with actionable solutions",
+    "Accurate description of -E/--encoding flag behavior",
+    "Proper explanation of ASCII compatibility assumption",
+    "Well-organized with clear visual hierarchy using tables",
+    "Includes performance considerations",
+    "Proper use of MkDocs Material features (tables, code blocks)"
+  ],
+  "improvement_suggestions": [
+    "Fix broken internal links to advanced-patterns and binary-data sections",
+    "Consider adding admonitions (warnings/notes) for critical concepts like BOM override behavior",
+    "Could add a visual diagram showing the encoding detection flowchart",
+    "Consider adding tabs for different encoding examples (UTF-16, GBK, etc.) to improve organization",
+    "Could add code annotations for complex examples to explain what each part does"
+  ],
+  "cross_references": [
+    "advanced-patterns",
+    "binary-data",
+    "troubleshooting"
+  ],
+  "validation_results": {
+    "encoding_flag_verified": true,
+    "bom_detection_verified": true,
+    "encoding_rs_dependency_verified": true,
+    "whatwg_standard_reference_verified": true,
+    "transcoding_behavior_verified": true,
+    "supported_encodings_verified": true
+  },
+  "metadata": {
+    "analyzed_at": "2025-11-13T20:53:28Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": ["file encoding", "BOM sniffing", "transcoding", "UTF-8", "UTF-16", "character encoding"],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "total_internal_links_found": 3,
+    "broken_links_count": 2,
+    "verified_source_files": [
+      "crates/core/flags/defs.rs:1584-1625",
+      "crates/searcher/src/searcher/mod.rs:175-553",
+      "crates/searcher/Cargo.toml:18-19",
+      "crates/core/flags/complete/encodings.sh"
+    ]
+  }
+}
