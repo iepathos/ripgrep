@@ -10,6 +10,29 @@ By default, ripgrep outputs search results in a grep-compatible format. However,
 
 Different output formats serve different purposes:
 
+```mermaid
+flowchart TD
+    Start{What's your<br/>use case?}
+
+    Start -->|Interactive<br/>terminal use| Human[Standard Format]
+    Start -->|Script/automation| Machine[JSON Format]
+    Start -->|Editor integration| Editor[Vimgrep Format]
+
+    Human --> Features1[✓ Syntax highlighting<br/>✓ Color coding<br/>✓ Heading mode]
+    Machine --> Features2[✓ Structured data<br/>✓ Easy parsing with jq<br/>✓ Complete metadata]
+    Editor --> Features3[✓ Vim quickfix compatible<br/>✓ file:line:col format<br/>✓ Editor agnostic]
+
+    Features1 --> Cmd1["rg pattern"]
+    Features2 --> Cmd2["rg --json pattern"]
+    Features3 --> Cmd3["rg --vimgrep pattern"]
+
+    style Human fill:#e8f5e9
+    style Machine fill:#e1f5ff
+    style Editor fill:#fff3e0
+```
+
+**Figure**: Decision guide for choosing the appropriate output format based on your use case.
+
 === "Standard (Human-Readable)"
     ```bash
     rg pattern
@@ -106,6 +129,29 @@ Each line of JSON output is a separate object with a `type` field indicating the
 
 Each message type has a corresponding `data` field containing type-specific information. For `match` messages, the data includes file path, line number, matching text, and submatch positions.
 
+```mermaid
+sequenceDiagram
+    participant rg as ripgrep
+    participant output as JSON Output
+
+    Note over rg,output: File 1: src/main.rs
+    rg->>output: {"type":"begin","data":{"path":"src/main.rs"}}
+    rg->>output: {"type":"match","data":{line:42,...}}
+    rg->>output: {"type":"context","data":{line:43,...}}
+    rg->>output: {"type":"match","data":{line:45,...}}
+    rg->>output: {"type":"end","data":{"path":"src/main.rs"}}
+
+    Note over rg,output: File 2: src/lib.rs
+    rg->>output: {"type":"begin","data":{"path":"src/lib.rs"}}
+    rg->>output: {"type":"match","data":{line:12,...}}
+    rg->>output: {"type":"end","data":{"path":"src/lib.rs"}}
+
+    Note over rg,output: Search Complete
+    rg->>output: {"type":"summary","data":{stats:{...}}}
+```
+
+**Figure**: JSON message sequence showing how ripgrep structures output per file, with begin/end markers and a final summary.
+
 !!! note "Statistics in JSON Format"
     You can combine `--json` with `--stats` to get structured statistics output. The summary message will include detailed statistics like elapsed time, files searched, lines searched, and matches found. This is particularly useful for programmatic analysis of search performance.
 
@@ -143,6 +189,9 @@ Color attributes:
 - Style: `none`, `bold`, `intense`, `underline`
 
 Colors can be specified using standard color names (black, blue, green, red, cyan, magenta, yellow, white) or 256-color palette codes.
+
+!!! tip "Color Combinations for Readability"
+    Combine foreground colors with bold or intense styles for better visibility on different terminal backgrounds. For example, `--colors 'match:fg:green' --colors 'match:style:bold'` works well on both light and dark terminals.
 
 ## Field Separators
 
@@ -204,6 +253,9 @@ rg --line-buffered pattern
 rg --block-buffered pattern
 ```
 
+!!! note "When to Use Line Buffering"
+    Line buffering is crucial when piping ripgrep to commands that process results incrementally (like `head`, `tail`, or `grep`). Without it, results may be buffered and not appear until the search completes or the buffer fills, creating the appearance of a hang.
+
 ## Additional Output Options
 
 ### Hyperlink Support
@@ -212,14 +264,14 @@ ripgrep supports OSC 8 terminal hyperlinks for clickable file paths in compatibl
 
 ```bash
 # Enable hyperlinks with default format (file://)
-rg --hyperlink-format default pattern
+rg --hyperlink-format default pattern          # (1)!
 
 # VS Code (opens files in VS Code)
 # Source: crates/printer/src/hyperlink/aliases.rs:54-57
-rg --hyperlink-format vscode pattern
+rg --hyperlink-format vscode pattern           # (2)!
 
 # VS Code Insiders
-rg --hyperlink-format vscode-insiders pattern
+rg --hyperlink-format vscode-insiders pattern  # (3)!
 
 # VSCodium
 rg --hyperlink-format vscodium pattern
@@ -234,8 +286,13 @@ rg --hyperlink-format textmate pattern
 rg --hyperlink-format cursor pattern
 
 # Custom hyperlink format
-rg --hyperlink-format 'vscode://file{path}:{line}:{column}' pattern
+rg --hyperlink-format 'vscode://file{path}:{line}:{column}' pattern  # (4)!
 ```
+
+1. Uses standard `file://` URLs compatible with most terminals
+2. Opens files directly in VS Code at the matched line and column
+3. Variant for VS Code Insiders preview builds
+4. Template supports `{path}`, `{line}`, and `{column}` placeholders
 
 This feature allows compatible terminals (like iTerm2, WezTerm, or recent versions of GNOME Terminal) to make file paths clickable, opening them directly in your editor or file manager.
 
