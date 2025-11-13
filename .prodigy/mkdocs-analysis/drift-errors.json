@@ -1,0 +1,131 @@
+{
+  "item_type": "page",
+  "page_id": "errors",
+  "page_title": "errors",
+  "page_file": "docs/troubleshooting/errors.md",
+  "drift_detected": true,
+  "severity": "medium",
+  "quality_assessment": "Good technical content with accurate error descriptions and solutions, but needs visual enhancements and has a broken cross-reference link",
+  "issues": [
+    {
+      "type": "broken_links",
+      "severity": "medium",
+      "section": "Cross-References",
+      "description": "Found 1 broken internal link",
+      "broken_links": [
+        {
+          "link_text": "FAQ",
+          "original_target": "../FAQ.md#fancy",
+          "expected_path": "docs/FAQ.md",
+          "current_file": "docs/troubleshooting/errors.md",
+          "line_number": 170,
+          "suggested_fix": "../../FAQ.md#fancy",
+          "reason": "FAQ.md is in the root directory, not in docs/. Link should go up two levels instead of one."
+        }
+      ],
+      "fix_suggestion": "Update the FAQ link from '../FAQ.md#fancy' to '../../FAQ.md#fancy' to correctly reference the root-level FAQ.md file.",
+      "source_reference": "FAQ.md exists at root, not in docs/"
+    },
+    {
+      "type": "missing_visual_features",
+      "severity": "low",
+      "section": "Overall Page Structure",
+      "description": "Page uses basic markdown without MkDocs Material visual enhancements that would improve readability",
+      "fix_suggestion": "Consider adding MkDocs Material admonitions for errors, warnings, and tips. For example:\n- Use '!!! error' admonitions for error descriptions\n- Use '!!! tip' admonitions for solutions\n- Use code annotations for complex examples\n- Use tabs for showing multiple solution approaches",
+      "examples": [
+        "Convert error sections to use '!!! error \"Error Name\"' admonitions",
+        "Use '!!! tip \"Solution\"' for solution blocks",
+        "Add '!!! warning' for common pitfalls",
+        "Use tabbed code blocks for showing multiple approaches"
+      ]
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "Statistics Output",
+      "description": "The 'matched lines' metric explanation is somewhat unclear",
+      "current_content": "matched lines: Number of lines containing matches (this metric tracks lines with matches throughout the search, and is particularly relevant when using `-c/--count` mode)",
+      "should_be": "matched lines: Total number of lines containing at least one match (may be less than total matches if a line contains multiple matches)",
+      "fix_suggestion": "Simplify the 'matched lines' explanation to be clearer about the difference between matches and matched lines",
+      "source_reference": "Analysis of common user confusion about match counting"
+    }
+  ],
+  "positive_aspects": [
+    "Comprehensive coverage of common error messages and solutions",
+    "Accurate technical information verified against source code (flags, exit codes, etc.)",
+    "Good practical examples for each error scenario",
+    "Well-organized structure with clear sections",
+    "Includes advanced topics like PCRE2 availability and exit codes",
+    "Statistics section provides helpful debugging guidance",
+    "Ignore file behavior is well explained with debug examples"
+  ],
+  "improvement_suggestions": [
+    {
+      "category": "Visual Enhancement",
+      "suggestion": "Add MkDocs Material admonitions to make errors, warnings, and solutions more visually distinct",
+      "priority": "medium",
+      "impact": "Would significantly improve readability and help users quickly identify errors and solutions"
+    },
+    {
+      "category": "Cross-References",
+      "suggestion": "Fix the broken FAQ link to use correct relative path (../../FAQ.md#fancy)",
+      "priority": "high",
+      "impact": "Critical for navigation - users currently get 404 when following this link"
+    },
+    {
+      "category": "Content Enhancement",
+      "suggestion": "Add examples of common error messages that users might see in their terminal output",
+      "priority": "low",
+      "impact": "Would help users match their actual error to the documented solution"
+    },
+    {
+      "category": "Visual Enhancement",
+      "suggestion": "Use tabbed code blocks to show alternative solutions side-by-side",
+      "priority": "low",
+      "impact": "Would make it easier to compare different approaches"
+    },
+    {
+      "category": "Content Organization",
+      "suggestion": "Consider adding a quick reference table at the top linking to each error type",
+      "priority": "low",
+      "impact": "Would improve navigation for users quickly looking for a specific error"
+    }
+  ],
+  "cross_references": [
+    "troubleshooting/index",
+    "file-encoding",
+    "FAQ (root level)",
+    "performance (for DFA/regex size limits)",
+    "advanced-patterns (for PCRE2 and multiline patterns)"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-13T20:53:28Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": [
+      "error messages",
+      "troubleshooting",
+      "regex errors",
+      "ignore files",
+      "PCRE2",
+      "exit codes",
+      "statistics output",
+      "performance limits"
+    ],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "flags_verified": [
+      "--regex-size-limit",
+      "--dfa-size-limit",
+      "--no-messages",
+      "--pcre2-version",
+      "-u/-uu/-uuu",
+      "--debug",
+      "--stats",
+      "-q/--quiet"
+    ],
+    "source_files_checked": [
+      "crates/core/flags/defs.rs",
+      "crates/core/main.rs",
+      "FAQ.md"
+    ]
+  }
+}
