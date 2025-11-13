@@ -17,12 +17,11 @@ Set the `RIPGREP_CONFIG_PATH` environment variable to the path of your configura
 export RIPGREP_CONFIG_PATH="$HOME/.ripgreprc"
 ```
 
-**Important notes:**
-
-- If `RIPGREP_CONFIG_PATH` is not set, ripgrep will not load any configuration file
-- Setting `RIPGREP_CONFIG_PATH` to an empty value disables configuration file loading
-- The file path can be absolute or relative to your current directory
-- Windows users should use appropriate path syntax (e.g., `C:\Users\username\.ripgreprc`)
+!!! note "Important Notes"
+    - If `RIPGREP_CONFIG_PATH` is not set, ripgrep will not load any configuration file
+    - Setting `RIPGREP_CONFIG_PATH` to an empty value disables configuration file loading
+    - The file path can be absolute or relative to your current directory
+    - Windows users should use appropriate path syntax (e.g., `C:\Users\username\.ripgreprc`)
 
 ## Configuration File Format
 
@@ -31,18 +30,17 @@ The configuration file format is simple with only two rules:
 1. **Every line is a shell argument**, after trimming whitespace
 2. **Lines starting with `#`** (optionally preceded by whitespace) are comments
 
-**Key points:**
-
-- Each line is treated as a single command-line argument verbatim
-- No escaping is supported
-- Empty lines are allowed and ignored
-- Comments help document your configuration choices
+!!! tip "Key Points"
+    - Each line is treated as a single command-line argument verbatim
+    - No escaping is supported
+    - Empty lines are allowed and ignored
+    - Comments help document your configuration choices
 
 ### Example Configuration File
 
 Here's a comprehensive example showing common configuration patterns:
 
-```
+```conf title=".ripgreprc"
 # Don't let ripgrep vomit really long lines to my terminal, and show a preview.
 --max-columns=150
 --max-columns-preview
@@ -75,14 +73,14 @@ There are two valid ways to format flags that take values:
 
 ### Option 1: Using `=` on One Line
 
-```
+```conf
 --max-columns=150
 --type-add=web:*.{html,css,js}*
 ```
 
 ### Option 2: Flag and Value on Separate Lines
 
-```
+```conf
 --max-columns
 150
 
@@ -92,9 +90,8 @@ web:*.{html,css,js}*
 
 Both formats are exactly equivalent and are a matter of personal style preference.
 
-**Why you can't use spaces on one line:**
-
-If you write `--max-columns 150` on one line in the config file, ripgrep's argument parser sees `"--max-columns 150"` as a single argument (because each line is one argument). The parser doesn't know this is supposed to be a flag with a value. Using `=` or separate lines solves this problem.
+!!! warning "Why You Can't Use Spaces on One Line"
+    If you write `--max-columns 150` on one line in the config file, ripgrep's argument parser sees `"--max-columns 150"` as a single argument (because each line is one argument). The parser doesn't know this is supposed to be a flag with a value. Using `=` or separate lines solves this problem.
 
 ## Flag Precedence and Overriding
 
@@ -108,7 +105,7 @@ Configuration file arguments are **prepended** to your command-line arguments. T
 
 If your config file contains:
 
-```
+```conf
 --max-columns=150
 ```
 
@@ -215,7 +212,7 @@ export RIPGREP_CONFIG_PATH="$HOME/.ripgreprc-project-b"
 
 ### Pattern 1: Readable Output
 
-```
+```conf
 # Limit column width for terminal readability
 --max-columns=150
 --max-columns-preview
@@ -226,7 +223,7 @@ export RIPGREP_CONFIG_PATH="$HOME/.ripgreprc-project-b"
 
 ### Pattern 2: Include Hidden Files
 
-```
+```conf
 # Search hidden files and directories
 --hidden
 
@@ -236,7 +233,7 @@ export RIPGREP_CONFIG_PATH="$HOME/.ripgreprc-project-b"
 
 ### Pattern 3: Custom File Types
 
-```
+```conf
 # Add custom file type for web development
 --type-add
 web:*.{html,css,js,jsx,ts,tsx}*
@@ -248,7 +245,7 @@ config:*.{json,yaml,yml,toml,ini}*
 
 ### Pattern 4: Color Customization
 
-```
+```conf
 # Custom color scheme
 --colors=match:fg:red
 --colors=match:style:bold
@@ -258,7 +255,7 @@ config:*.{json,yaml,yml,toml,ini}*
 
 ### Pattern 5: Smart Searching
 
-```
+```conf
 # Case-insensitive unless pattern has uppercase
 --smart-case
 
@@ -271,7 +268,6 @@ config:*.{json,yaml,yml,toml,ini}*
 
 ## See Also
 
-- [File Type Filtering](./file-types.md) - for `--type-add` patterns
-- [Colors and Styling](./colors.md) - for `--colors` configuration
-- [Globbing](./globbing.md) - for `--glob` patterns
+- [File Type Filtering](./manual-filtering-types.md) - for `--type-add` patterns
+- [Globbing Patterns](./manual-filtering-globs.md) - for `--glob` patterns
 - [GUIDE.md Configuration Section](https://github.com/BurntSushi/ripgrep/blob/master/GUIDE.md#configuration-file) - original comprehensive guide
