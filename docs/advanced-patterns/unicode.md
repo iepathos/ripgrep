@@ -120,10 +120,17 @@ rg -i 'Σ'  # Matches Σ and σ (Greek)
 
 For ASCII-only searches with better performance, use `--no-unicode`:
 
-```bash
-# ASCII-only mode (faster for ASCII text)
-rg --no-unicode '\w+'
-```
+=== "Unicode Mode (Default)"
+    ```bash
+    # Matches all Unicode word characters
+    rg '\w+'  # Includes café, Σ, 世界, etc.
+    ```
+
+=== "ASCII-Only Mode"
+    ```bash
+    # ASCII-only mode (faster for ASCII text)
+    rg --no-unicode '\w+'  # Only [a-zA-Z0-9_]
+    ```
 
 !!! warning "Performance Considerations"
     While Unicode mode provides rich character class support, it can impact performance in certain scenarios:
@@ -146,13 +153,18 @@ rg --no-unicode '\w+'
 
 ### Validating International Names
 
+!!! example "Pattern for International Names"
+    This pattern validates names that may contain accents, diacritics, or non-Latin scripts:
+
 ```bash
 # Match names with Unicode letters (supports accents, non-Latin scripts)
-rg '^\p{Alphabetic}+( \p{Alphabetic}+)*$'
+rg '^\p{Alphabetic}+( \p{Alphabetic}+)*$'  # (1)!
 
 # Find names containing specific scripts
 rg '\p{Han}+\s+\p{Latin}+'  # Chinese + Latin names
 ```
+
+1. Matches one or more alphabetic characters, followed by optional space-separated words (e.g., "José García", "李明", "Müller")
 
 ### Processing Multilingual Text
 
@@ -169,13 +181,19 @@ rg '\p{Arabic}+' --only-matching  # Extract Arabic text
 
 ### Data Validation
 
+!!! tip "Cleaning Unicode Text"
+    These patterns help identify and clean problematic Unicode characters in data files:
+
 ```bash
 # Validate Unicode whitespace handling
-rg '\p{White_Space}+' --replace ' '  # Normalize all whitespace
+rg '\p{White_Space}+' --replace ' '  # (1)!
 
 # Find problematic characters
-rg '[^\p{Print}\p{White_Space}]'  # Non-printable characters
+rg '[^\p{Print}\p{White_Space}]'  # (2)!
 ```
+
+1. Normalize all types of Unicode whitespace (tabs, non-breaking spaces, etc.) to regular spaces
+2. Find non-printable control characters that may cause display or parsing issues
 
 ### Working with Emoji
 
