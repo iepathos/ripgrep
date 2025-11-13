@@ -6,6 +6,39 @@ When you run `rg` recursively, ripgrep automatically filters out many files and 
 
 By default, ripgrep respects various ignore files, skips hidden files and directories, and avoids searching binary files. This behavior makes searches faster and reduces noise in results. Understanding these filters helps you search effectively and know when to disable them.
 
+```mermaid
+flowchart TD
+    Start[File Encountered] --> Explicit{Specified<br/>Explicitly?}
+    Explicit -->|Yes| Search[Search File]
+    Explicit -->|No| Hidden{Hidden<br/>File?}
+
+    Hidden -->|Yes| HiddenFlag{--hidden<br/>enabled?}
+    HiddenFlag -->|No| Skip1[Skip File]
+    HiddenFlag -->|Yes| Ignore
+
+    Hidden -->|No| Ignore{Matches<br/>Ignore Pattern?}
+
+    Ignore -->|Yes| IgnoreFlag{--no-ignore<br/>or -u?}
+    IgnoreFlag -->|No| Skip2[Skip File]
+    IgnoreFlag -->|Yes| Binary
+
+    Ignore -->|No| Binary{Binary<br/>Content?}
+
+    Binary -->|Yes| BinaryFlag{--binary<br/>enabled?}
+    BinaryFlag -->|No| Skip3[Skip File]
+    BinaryFlag -->|Yes| Search
+
+    Binary -->|No| Search
+
+    style Search fill:#e8f5e9
+    style Skip1 fill:#ffebee
+    style Skip2 fill:#ffebee
+    style Skip3 fill:#ffebee
+    style Start fill:#e1f5ff
+```
+
+**Figure**: Ripgrep's automatic filtering decision flow. Files specified explicitly bypass most filters.
+
 ## Ignore Files
 
 Ripgrep automatically respects several types of ignore files during recursive search:
@@ -347,6 +380,25 @@ Ripgrep provides several ways to disable automatic filtering.
 ### Progressive Unrestricted Flags
 
 The `-u/--unrestricted` flag can be used up to three times for progressive filtering removal:
+
+```mermaid
+graph LR
+    Default[Default<br/>rg 'pattern'] --> U1[-u<br/>--no-ignore]
+    U1 --> U2[-uu<br/>+ --hidden]
+    U2 --> U3[-uuu<br/>+ --binary]
+
+    Default -.->|Filters| F1[Ignore Files<br/>Hidden Files<br/>Binary Files]
+    U1 -.->|Filters| F2[Hidden Files<br/>Binary Files]
+    U2 -.->|Filters| F3[Binary Files]
+    U3 -.->|Filters| F4[None]
+
+    style Default fill:#ffebee
+    style U1 fill:#fff3e0
+    style U2 fill:#e1f5ff
+    style U3 fill:#e8f5e9
+```
+
+**Figure**: Progressive filter removal with `-u` flags. Each level disables more filters.
 
 **`-u` (once)**: Disable ignore files (`.gitignore`, `.ignore`, etc.)
 ```bash
