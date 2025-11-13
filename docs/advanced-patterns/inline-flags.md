@@ -30,6 +30,28 @@ There are three ways to use inline flags:
 2. **For specific part**: `(?flags:pattern)` - Apply flags only within the group
 3. **Set and clear flags**: `(?flags-otherflags)` - Enable some flags while disabling others
 
+```mermaid
+graph TD
+    Pattern[/"Pattern: foo(?i:bar)baz"/] --> P1["foo"]
+    Pattern --> P2["(?i:bar)"]
+    Pattern --> P3["baz"]
+
+    P1 --> Match1["Case-sensitive<br/>matches: foo"]
+    P2 --> Match2["Case-insensitive<br/>matches: bar, BAR, Bar"]
+    P3 --> Match3["Case-sensitive<br/>matches: baz"]
+
+    Global[/"Pattern: (?i)foobar"/] --> G1["(?i)"]
+    G1 --> G2["foobar"]
+    G2 --> GMatch["Case-insensitive<br/>matches: foobar, FOOBAR, FooBar"]
+
+    style P1 fill:#e8f5e9
+    style P2 fill:#fff3e0
+    style P3 fill:#e8f5e9
+    style G2 fill:#fff3e0
+```
+
+**Figure**: Inline flag scope - scoped `(?i:...)` affects only enclosed pattern, global `(?i)` affects everything after.
+
 === "Global Scope"
 
     ```bash
@@ -66,6 +88,9 @@ There are three ways to use inline flags:
 !!! note "Flag Scope"
     When using `(?flags)`, all text after the flag is affected. To limit the scope, use the `(?flags:pattern)` syntax which only applies flags within the parentheses.
 
+!!! warning "Common Pitfall: Flag Placement"
+    Inline flags must appear before the text they affect. `foo(?i)bar` applies case-insensitivity only to `bar`, not `foo`. To affect the entire pattern, place flags at the start: `(?i)foobar`.
+
 ## Flag Precedence
 
 Inline flags override command-line flags, giving you precise control:
@@ -98,17 +123,21 @@ rg '(?x)
 
 ```bash
 # Match structured log entries with timestamps
-rg '(?x)
-    \[                    # Opening bracket
-    \d{4}-\d{2}-\d{2}    # Date: YYYY-MM-DD
-    \s+                   # Whitespace
-    \d{2}:\d{2}:\d{2}    # Time: HH:MM:SS
-    \]                    # Closing bracket
-    \s+                   # Separator whitespace
-    (?:ERROR|WARN)        # Log level (ERROR or WARN only)
-    .*                    # Rest of message
+rg '(?x)                      # (1)!
+    \[                        # (2)!
+    \d{4}-\d{2}-\d{2}        # Date: YYYY-MM-DD
+    \s+                       # Whitespace
+    \d{2}:\d{2}:\d{2}        # Time: HH:MM:SS
+    \]                        # Closing bracket
+    \s+                       # Separator whitespace
+    (?:ERROR|WARN)            # (3)!
+    .*                        # Rest of message
 '
 ```
+
+1. Verbose mode allows whitespace and comments in pattern
+2. Literal brackets must be escaped even in verbose mode
+3. Non-capturing group `(?:...)` for alternation without creating a capture group
 
 !!! tip "Verbose Mode Best Practices"
     Use `(?x)` for any pattern longer than 20-30 characters. The documentation value outweighs the slight overhead, especially when you or teammates need to modify the pattern later.
