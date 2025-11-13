@@ -1,0 +1,535 @@
+{
+  "analysis_date": "2025-11-13T00:00:00Z",
+  "project": "ripgrep",
+  "pages_analyzed": 23,
+  "thresholds": {
+    "size_threshold": 500,
+    "section_threshold": 100
+  },
+  "summary": {
+    "oversized_pages": 5,
+    "large_pages": 4,
+    "well_sized_pages": 14,
+    "multi_subsection_pages": 0
+  },
+  "recommendations": [
+    {
+      "chapter_id": "basics",
+      "chapter_title": "Basics",
+      "current_file": "docs/basics.md",
+      "priority": "high",
+      "issue": "oversized",
+      "metrics": {
+        "total_lines": 729,
+        "content_lines": 650,
+        "h2_sections": 22,
+        "substantial_sections": 12,
+        "code_block_ratio": 0.35
+      },
+      "recommended_action": "split_into_subsections",
+      "proposed_structure": {
+        "type": "multi-subsection",
+        "index_file": "docs/basics/index.md",
+        "subsections": [
+          {
+            "id": "pattern-matching",
+            "title": "Pattern Matching",
+            "file": "docs/basics/pattern-matching.md",
+            "estimated_lines": 80,
+            "source_sections": ["Quick Start", "Pattern Matching", "Multiple Patterns", "Patterns from a File"],
+            "reason": "Core functionality deserves dedicated page"
+          },
+          {
+            "id": "literal-search",
+            "title": "Literal String Search",
+            "file": "docs/basics/literal-search.md",
+            "estimated_lines": 40,
+            "source_sections": ["Literal String Search", "Fixed String Mode"],
+            "reason": "Commonly used feature, self-contained topic"
+          },
+          {
+            "id": "regex-basics",
+            "title": "Regular Expressions",
+            "file": "docs/basics/regex-basics.md",
+            "estimated_lines": 220,
+            "source_sections": ["Regular Expressions", "Basic Metacharacters", "Character Classes", "Unicode", "Quantifiers", "Groups"],
+            "reason": "Large section with many subsections"
+          },
+          {
+            "id": "case-sensitivity",
+            "title": "Case Sensitivity",
+            "file": "docs/basics/case-sensitivity.md",
+            "estimated_lines": 60,
+            "source_sections": ["Case Sensitivity", "Smart Case"],
+            "reason": "Important search option"
+          },
+          {
+            "id": "boundaries",
+            "title": "Word and Line Boundaries",
+            "file": "docs/basics/boundaries.md",
+            "estimated_lines": 50,
+            "source_sections": ["Word and Line Boundary Matching"],
+            "reason": "Specific feature set"
+          },
+          {
+            "id": "output",
+            "title": "Output Format",
+            "file": "docs/basics/output.md",
+            "estimated_lines": 140,
+            "source_sections": ["Output Format", "Line Numbers", "Column Numbers", "Heading Mode", "Color Output", "Context Lines"],
+            "reason": "Large section with multiple subsections"
+          },
+          {
+            "id": "count-list",
+            "title": "Count and List Modes",
+            "file": "docs/basics/count-list.md",
+            "estimated_lines": 50,
+            "source_sections": ["Count and List Modes"],
+            "reason": "Utility modes"
+          },
+          {
+            "id": "practice",
+            "title": "Practice Examples",
+            "file": "docs/basics/practice.md",
+            "estimated_lines": 60,
+            "source_sections": ["Practice Examples", "Common Mistakes"],
+            "reason": "Learning materials"
+          }
+        ]
+      }
+    },
+    {
+      "chapter_id": "binary-data",
+      "chapter_title": "Binary Data",
+      "current_file": "docs/binary-data.md",
+      "priority": "high",
+      "issue": "oversized",
+      "metrics": {
+        "total_lines": 475,
+        "content_lines": 410,
+        "h2_sections": 15,
+        "substantial_sections": 8,
+        "code_block_ratio": 0.28
+      },
+      "recommended_action": "split_into_subsections",
+      "proposed_structure": {
+        "type": "multi-subsection",
+        "index_file": "docs/binary-data/index.md",
+        "subsections": [
+          {
+            "id": "detection",
+            "title": "Binary Detection",
+            "file": "docs/binary-data/detection.md",
+            "estimated_lines": 80,
+            "source_sections": ["What is Binary Detection?", "How Binary Detection Works"],
+            "reason": "Core concept explanation"
+          },
+          {
+            "id": "modes",
+            "title": "Binary Modes",
+            "file": "docs/binary-data/modes.md",
+            "estimated_lines": 120,
+            "source_sections": ["Binary Modes", "Auto Mode", "SearchAndSuppress Mode", "AsText Mode"],
+            "reason": "Major feature with multiple options"
+          },
+          {
+            "id": "explicit-implicit",
+            "title": "Explicit vs Implicit Files",
+            "file": "docs/binary-data/explicit-implicit.md",
+            "estimated_lines": 90,
+            "source_sections": ["Implicit vs. Explicit Files"],
+            "reason": "Important behavioral distinction"
+          },
+          {
+            "id": "flags",
+            "title": "Binary Flags Reference",
+            "file": "docs/binary-data/flags.md",
+            "estimated_lines": 110,
+            "source_sections": ["Flags Reference"],
+            "reason": "Reference material"
+          },
+          {
+            "id": "examples",
+            "title": "Examples and Troubleshooting",
+            "file": "docs/binary-data/examples.md",
+            "estimated_lines": 75,
+            "source_sections": ["Examples", "Troubleshooting", "Decision Flowchart"],
+            "reason": "Practical guidance"
+          }
+        ]
+      }
+    },
+    {
+      "chapter_id": "common-options",
+      "chapter_title": "Common Options",
+      "current_file": "docs/common-options.md",
+      "priority": "high",
+      "issue": "oversized",
+      "metrics": {
+        "total_lines": 697,
+        "content_lines": 590,
+        "h2_sections": 25,
+        "substantial_sections": 15,
+        "code_block_ratio": 0.42
+      },
+      "recommended_action": "split_into_subsections",
+      "proposed_structure": {
+        "type": "multi-subsection",
+        "index_file": "docs/common-options/index.md",
+        "subsections": [
+          {
+            "id": "search-basics",
+            "title": "Search Basics",
+            "file": "docs/common-options/search-basics.md",
+            "estimated_lines": 180,
+            "source_sections": ["Search Basics", "Case Sensitivity", "Pattern Types", "Multiline", "Regex Engine", "Invert Match", "Multiple Patterns"],
+            "reason": "Fundamental search options"
+          },
+          {
+            "id": "output-formatting",
+            "title": "Output Formatting",
+            "file": "docs/common-options/output-formatting.md",
+            "estimated_lines": 180,
+            "source_sections": ["Output Formatting", "Line Numbers", "Context Lines", "Match Output", "Color and Formatting"],
+            "reason": "Output customization options"
+          },
+          {
+            "id": "file-filtering",
+            "title": "File Filtering",
+            "file": "docs/common-options/file-filtering.md",
+            "estimated_lines": 220,
+            "source_sections": ["File Filtering", "File Type Filtering", "Glob Patterns", "Unrestricted Search", "Hidden Files", "Directory Depth", "Binary Files"],
+            "reason": "File selection and filtering"
+          },
+          {
+            "id": "output-modes",
+            "title": "Output Modes",
+            "file": "docs/common-options/output-modes.md",
+            "estimated_lines": 80,
+            "source_sections": ["Output Modes", "Structured Output", "Counting", "Listing Files", "Quiet Mode"],
+            "reason": "Alternative output formats"
+          },
+          {
+            "id": "reference",
+            "title": "Quick Reference",
+            "file": "docs/common-options/reference.md",
+            "estimated_lines": 40,
+            "source_sections": ["Quick Reference", "Combining Flags", "Comparison with grep"],
+            "reason": "Cheat sheets and references"
+          }
+        ]
+      }
+    },
+    {
+      "chapter_id": "advanced-patterns",
+      "chapter_title": "Advanced Patterns",
+      "current_file": "docs/advanced-patterns.md",
+      "priority": "high",
+      "issue": "oversized",
+      "metrics": {
+        "total_lines": 891,
+        "content_lines": 750,
+        "h2_sections": 18,
+        "substantial_sections": 12,
+        "code_block_ratio": 0.38
+      },
+      "recommended_action": "split_into_subsections",
+      "proposed_structure": {
+        "type": "multi-subsection",
+        "index_file": "docs/advanced-patterns/index.md",
+        "subsections": [
+          {
+            "id": "multiline",
+            "title": "Multiline Search",
+            "file": "docs/advanced-patterns/multiline.md",
+            "estimated_lines": 100,
+            "source_sections": ["Multiline Search", "Multiline Dotall Mode"],
+            "reason": "Complex feature with multiple modes"
+          },
+          {
+            "id": "pcre2",
+            "title": "PCRE2 Engine",
+            "file": "docs/advanced-patterns/pcre2.md",
+            "estimated_lines": 80,
+            "source_sections": ["PCRE2 Engine", "Enabling PCRE2", "Default vs PCRE2 Features"],
+            "reason": "Alternative regex engine"
+          },
+          {
+            "id": "lookaround",
+            "title": "Lookaround Assertions",
+            "file": "docs/advanced-patterns/lookaround.md",
+            "estimated_lines": 110,
+            "source_sections": ["Lookaround Assertions", "Types of Lookaround", "Examples", "Use Cases"],
+            "reason": "Advanced regex feature"
+          },
+          {
+            "id": "backreferences",
+            "title": "Backreferences",
+            "file": "docs/advanced-patterns/backreferences.md",
+            "estimated_lines": 70,
+            "source_sections": ["Backreferences", "Numbered Backreferences", "Named Backreferences"],
+            "reason": "Advanced regex feature"
+          },
+          {
+            "id": "unicode",
+            "title": "Unicode Patterns",
+            "file": "docs/advanced-patterns/unicode.md",
+            "estimated_lines": 90,
+            "source_sections": ["Unicode Patterns", "Unicode Character Classes", "Unicode-Aware Metacharacters"],
+            "reason": "Internationalization support"
+          },
+          {
+            "id": "inline-flags",
+            "title": "Inline Regex Flags",
+            "file": "docs/advanced-patterns/inline-flags.md",
+            "estimated_lines": 60,
+            "source_sections": ["Inline Regex Flags"],
+            "reason": "Pattern modifiers"
+          },
+          {
+            "id": "performance",
+            "title": "Performance Considerations",
+            "file": "docs/advanced-patterns/performance.md",
+            "estimated_lines": 100,
+            "source_sections": ["Performance Considerations", "Multiline Mode Performance", "PCRE2 Engine Performance"],
+            "reason": "Optimization guidance"
+          },
+          {
+            "id": "examples",
+            "title": "Practical Examples",
+            "file": "docs/advanced-patterns/examples.md",
+            "estimated_lines": 140,
+            "source_sections": ["Practical Examples", "Limitations and Gotchas", "Regex Limits"],
+            "reason": "Real-world use cases and troubleshooting"
+          }
+        ]
+      }
+    },
+    {
+      "chapter_id": "troubleshooting",
+      "chapter_title": "Troubleshooting",
+      "current_file": "docs/troubleshooting.md",
+      "priority": "high",
+      "issue": "oversized",
+      "metrics": {
+        "total_lines": 598,
+        "content_lines": 510,
+        "h2_sections": 18,
+        "substantial_sections": 10,
+        "code_block_ratio": 0.40
+      },
+      "recommended_action": "split_into_subsections",
+      "proposed_structure": {
+        "type": "multi-subsection",
+        "index_file": "docs/troubleshooting/index.md",
+        "subsections": [
+          {
+            "id": "debug-flags",
+            "title": "Debug Flags",
+            "file": "docs/troubleshooting/debug-flags.md",
+            "estimated_lines": 80,
+            "source_sections": ["Quick Troubleshooting Checklist", "Debug Flags"],
+            "reason": "Diagnostic tools"
+          },
+          {
+            "id": "no-results",
+            "title": "No Results Found",
+            "file": "docs/troubleshooting/no-results.md",
+            "estimated_lines": 180,
+            "source_sections": ["No Results Found", "Check What Files", "Files Filtered", "Hidden Files", "Binary Files", "Case Sensitivity"],
+            "reason": "Common issue with multiple causes"
+          },
+          {
+            "id": "performance",
+            "title": "Performance Issues",
+            "file": "docs/troubleshooting/performance.md",
+            "estimated_lines": 90,
+            "source_sections": ["Performance Issues", "Use --stats", "Reduce Search Scope"],
+            "reason": "Speed optimization"
+          },
+          {
+            "id": "errors",
+            "title": "Common Error Messages",
+            "file": "docs/troubleshooting/errors.md",
+            "estimated_lines": 150,
+            "source_sections": ["Common Error Messages"],
+            "reason": "Error reference"
+          },
+          {
+            "id": "binary-encoding",
+            "title": "Binary and Encoding Problems",
+            "file": "docs/troubleshooting/binary-encoding.md",
+            "estimated_lines": 70,
+            "source_sections": ["Binary and Encoding Problems"],
+            "reason": "Specialized issue type"
+          },
+          {
+            "id": "bug-reports",
+            "title": "When to File a Bug",
+            "file": "docs/troubleshooting/bug-reports.md",
+            "estimated_lines": 30,
+            "source_sections": ["When to File a Bug", "Additional Resources"],
+            "reason": "Community support process"
+          }
+        ]
+      }
+    },
+    {
+      "chapter_id": "manual-filtering-globs",
+      "chapter_title": "Manual Filtering: Globs",
+      "current_file": "docs/manual-filtering-globs.md",
+      "priority": "medium",
+      "issue": "large",
+      "metrics": {
+        "total_lines": 313,
+        "content_lines": 270,
+        "h2_sections": 16,
+        "substantial_sections": 4,
+        "code_block_ratio": 0.32
+      },
+      "recommended_action": "consider_subsections",
+      "proposed_structure": null
+    },
+    {
+      "chapter_id": "file-encoding",
+      "chapter_title": "File Encoding",
+      "current_file": "docs/file-encoding.md",
+      "priority": "medium",
+      "issue": "large",
+      "metrics": {
+        "total_lines": 350,
+        "content_lines": 295,
+        "h2_sections": 14,
+        "substantial_sections": 6,
+        "code_block_ratio": 0.30
+      },
+      "recommended_action": "consider_subsections",
+      "proposed_structure": null
+    },
+    {
+      "chapter_id": "preprocessor",
+      "chapter_title": "Preprocessor",
+      "current_file": "docs/preprocessor.md",
+      "priority": "medium",
+      "issue": "large",
+      "metrics": {
+        "total_lines": 487,
+        "content_lines": 405,
+        "h2_sections": 15,
+        "substantial_sections": 8,
+        "code_block_ratio": 0.38
+      },
+      "recommended_action": "consider_subsections",
+      "proposed_structure": null
+    },
+    {
+      "chapter_id": "utility-modes",
+      "chapter_title": "Utility Modes",
+      "current_file": "docs/utility-modes.md",
+      "priority": "medium",
+      "issue": "large",
+      "metrics": {
+        "total_lines": 442,
+        "content_lines": 370,
+        "h2_sections": 12,
+        "substantial_sections": 7,
+        "code_block_ratio": 0.35
+      },
+      "recommended_action": "consider_subsections",
+      "proposed_structure": null
+    }
+  ],
+  "well_organized_pages": [
+    {
+      "chapter_id": "introduction",
+      "metrics": {
+        "total_lines": 144,
+        "h2_sections": 4
+      }
+    },
+    {
+      "chapter_id": "recursive-search",
+      "metrics": {
+        "total_lines": 232,
+        "h2_sections": 9
+      }
+    },
+    {
+      "chapter_id": "automatic-filtering",
+      "metrics": {
+        "total_lines": 418,
+        "h2_sections": 15
+      }
+    },
+    {
+      "chapter_id": "manual-filtering-types",
+      "metrics": {
+        "total_lines": 520,
+        "h2_sections": 12
+      }
+    },
+    {
+      "chapter_id": "replacements",
+      "metrics": {
+        "total_lines": 356,
+        "h2_sections": 13
+      }
+    },
+    {
+      "chapter_id": "configuration-file",
+      "metrics": {
+        "total_lines": 278,
+        "h2_sections": 11
+      }
+    },
+    {
+      "chapter_id": "compressed-files",
+      "metrics": {
+        "total_lines": 281,
+        "h2_sections": 11
+      }
+    },
+    {
+      "chapter_id": "context-lines",
+      "metrics": {
+        "total_lines": 360,
+        "h2_sections": 10
+      }
+    },
+    {
+      "chapter_id": "output-formats",
+      "metrics": {
+        "total_lines": 259,
+        "h2_sections": 11
+      }
+    },
+    {
+      "chapter_id": "sorting-results",
+      "metrics": {
+        "total_lines": 238,
+        "h2_sections": 11
+      }
+    },
+    {
+      "chapter_id": "performance",
+      "metrics": {
+        "total_lines": 411,
+        "h2_sections": 15
+      }
+    },
+    {
+      "chapter_id": "hyperlinks",
+      "metrics": {
+        "total_lines": 327,
+        "h2_sections": 12
+      }
+    },
+    {
+      "chapter_id": "statistics",
+      "metrics": {
+        "total_lines": 299,
+        "h2_sections": 10
+      }
+    }
+  ]
+}

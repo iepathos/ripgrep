@@ -15,8 +15,59 @@
         {
           "id": "basics",
           "title": "Basics",
-          "file": "docs/basics.md",
-          "topics": ["Pattern matching", "Literal search", "Case sensitivity"]
+          "type": "multi-subpage",
+          "index_file": "docs/basics/index.md",
+          "topics": ["Pattern matching", "Literal search", "Case sensitivity"],
+          "subpages": [
+            {
+              "id": "pattern-matching",
+              "title": "Pattern Matching",
+              "file": "docs/basics/pattern-matching.md",
+              "topics": ["Basic search", "Multiple patterns", "Patterns from file"]
+            },
+            {
+              "id": "literal-search",
+              "title": "Literal String Search",
+              "file": "docs/basics/literal-search.md",
+              "topics": ["Fixed string mode", "Literal search use cases"]
+            },
+            {
+              "id": "regex-basics",
+              "title": "Regular Expressions",
+              "file": "docs/basics/regex-basics.md",
+              "topics": ["Metacharacters", "Character classes", "Unicode", "Quantifiers", "Groups", "Regex engines", "PCRE2"]
+            },
+            {
+              "id": "case-sensitivity",
+              "title": "Case Sensitivity",
+              "file": "docs/basics/case-sensitivity.md",
+              "topics": ["Case-insensitive search", "Smart case"]
+            },
+            {
+              "id": "boundaries",
+              "title": "Word and Line Boundaries",
+              "file": "docs/basics/boundaries.md",
+              "topics": ["Whole word matching", "Whole line matching", "Boundary regex"]
+            },
+            {
+              "id": "output",
+              "title": "Output Format",
+              "file": "docs/basics/output.md",
+              "topics": ["Line numbers", "Column numbers", "Heading mode", "Color output", "Context lines"]
+            },
+            {
+              "id": "count-list",
+              "title": "Count and List Modes",
+              "file": "docs/basics/count-list.md",
+              "topics": ["Counting matches", "Listing files", "Inverted matching"]
+            },
+            {
+              "id": "practice",
+              "title": "Practice Examples",
+              "file": "docs/basics/practice.md",
+              "topics": ["Practice exercises", "Common mistakes"]
+            }
+          ]
         },
         {
           "id": "recursive-search",
@@ -63,8 +114,41 @@
         {
           "id": "binary-data",
           "title": "Binary Data",
-          "file": "docs/binary-data.md",
-          "topics": ["Binary files", "Binary detection"]
+          "type": "multi-subpage",
+          "index_file": "docs/binary-data/index.md",
+          "topics": ["Binary files", "Binary detection"],
+          "subpages": [
+            {
+              "id": "detection",
+              "title": "Binary Detection",
+              "file": "docs/binary-data/detection.md",
+              "topics": ["NUL byte heuristics", "Buffered vs memory-mapped search"]
+            },
+            {
+              "id": "modes",
+              "title": "Binary Modes",
+              "file": "docs/binary-data/modes.md",
+              "topics": ["Auto mode", "SearchAndSuppress", "AsText mode"]
+            },
+            {
+              "id": "explicit-implicit",
+              "title": "Explicit vs Implicit Files",
+              "file": "docs/binary-data/explicit-implicit.md",
+              "topics": ["Explicit files", "Implicit files", "Library usage"]
+            },
+            {
+              "id": "flags",
+              "title": "Binary Flags Reference",
+              "file": "docs/binary-data/flags.md",
+              "topics": ["--binary flag", "--text flag", "Decision flowchart"]
+            },
+            {
+              "id": "examples",
+              "title": "Examples and Troubleshooting",
+              "file": "docs/binary-data/examples.md",
+              "topics": ["Practical examples", "Common issues"]
+            }
+          ]
         },
         {
           "id": "compressed-files",
@@ -81,8 +165,41 @@
         {
           "id": "common-options",
           "title": "Common Options",
-          "file": "docs/common-options.md",
-          "topics": ["Command-line options", "Flags"]
+          "type": "multi-subpage",
+          "index_file": "docs/common-options/index.md",
+          "topics": ["Command-line options", "Flags"],
+          "subpages": [
+            {
+              "id": "search-basics",
+              "title": "Search Basics",
+              "file": "docs/common-options/search-basics.md",
+              "topics": ["Case sensitivity", "Pattern types", "Multiline", "Regex engine", "Invert match"]
+            },
+            {
+              "id": "output-formatting",
+              "title": "Output Formatting",
+              "file": "docs/common-options/output-formatting.md",
+              "topics": ["Line numbers", "Context lines", "Match output", "Color formatting"]
+            },
+            {
+              "id": "file-filtering",
+              "title": "File Filtering",
+              "file": "docs/common-options/file-filtering.md",
+              "topics": ["File type filtering", "Glob patterns", "Unrestricted search", "Hidden files", "Directory depth"]
+            },
+            {
+              "id": "output-modes",
+              "title": "Output Modes",
+              "file": "docs/common-options/output-modes.md",
+              "topics": ["Structured output", "Counting", "Listing files", "Quiet mode"]
+            },
+            {
+              "id": "reference",
+              "title": "Quick Reference",
+              "file": "docs/common-options/reference.md",
+              "topics": ["Quick reference", "Combining flags", "Comparison with grep"]
+            }
+          ]
         },
         {
           "id": "context-lines",
@@ -118,8 +235,59 @@
         {
           "id": "advanced-patterns",
           "title": "Advanced Patterns",
-          "file": "docs/advanced-patterns.md",
-          "topics": ["Multiline search", "PCRE2", "Unicode patterns"]
+          "type": "multi-subpage",
+          "index_file": "docs/advanced-patterns/index.md",
+          "topics": ["Multiline search", "PCRE2", "Unicode patterns"],
+          "subpages": [
+            {
+              "id": "multiline",
+              "title": "Multiline Search",
+              "file": "docs/advanced-patterns/multiline.md",
+              "topics": ["Multiline mode", "Dotall mode"]
+            },
+            {
+              "id": "pcre2",
+              "title": "PCRE2 Engine",
+              "file": "docs/advanced-patterns/pcre2.md",
+              "topics": ["PCRE2 features", "Default vs PCRE2"]
+            },
+            {
+              "id": "lookaround",
+              "title": "Lookaround Assertions",
+              "file": "docs/advanced-patterns/lookaround.md",
+              "topics": ["Lookahead", "Lookbehind", "Use cases"]
+            },
+            {
+              "id": "backreferences",
+              "title": "Backreferences",
+              "file": "docs/advanced-patterns/backreferences.md",
+              "topics": ["Numbered backreferences", "Named backreferences"]
+            },
+            {
+              "id": "unicode",
+              "title": "Unicode Patterns",
+              "file": "docs/advanced-patterns/unicode.md",
+              "topics": ["Unicode character classes", "Unicode-aware metacharacters"]
+            },
+            {
+              "id": "inline-flags",
+              "title": "Inline Regex Flags",
+              "file": "docs/advanced-patterns/inline-flags.md",
+              "topics": ["Pattern modifiers"]
+            },
+            {
+              "id": "performance",
+              "title": "Performance Considerations",
+              "file": "docs/advanced-patterns/performance.md",
+              "topics": ["Multiline performance", "PCRE2 performance", "Regex limits"]
+            },
+            {
+              "id": "examples",
+              "title": "Practical Examples",
+              "file": "docs/advanced-patterns/examples.md",
+              "topics": ["Real-world examples", "Limitations", "Gotchas"]
+            }
+          ]
         },
         {
           "id": "performance",
@@ -142,8 +310,47 @@
         {
           "id": "troubleshooting",
           "title": "Troubleshooting",
-          "file": "docs/troubleshooting.md",
-          "topics": ["Common issues", "Solutions"]
+          "type": "multi-subpage",
+          "index_file": "docs/troubleshooting/index.md",
+          "topics": ["Common issues", "Solutions"],
+          "subpages": [
+            {
+              "id": "debug-flags",
+              "title": "Debug Flags",
+              "file": "docs/troubleshooting/debug-flags.md",
+              "topics": ["Debug output", "Trace mode", "Statistics"]
+            },
+            {
+              "id": "no-results",
+              "title": "No Results Found",
+              "file": "docs/troubleshooting/no-results.md",
+              "topics": ["File filtering", "Hidden files", "Binary files", "Case sensitivity"]
+            },
+            {
+              "id": "performance",
+              "title": "Performance Issues",
+              "file": "docs/troubleshooting/performance.md",
+              "topics": ["Performance diagnostics", "Search scope optimization"]
+            },
+            {
+              "id": "errors",
+              "title": "Common Error Messages",
+              "file": "docs/troubleshooting/errors.md",
+              "topics": ["Error reference", "Exit codes"]
+            },
+            {
+              "id": "binary-encoding",
+              "title": "Binary and Encoding Problems",
+              "file": "docs/troubleshooting/binary-encoding.md",
+              "topics": ["Binary detection", "Encoding issues"]
+            },
+            {
+              "id": "bug-reports",
+              "title": "When to File a Bug",
+              "file": "docs/troubleshooting/bug-reports.md",
+              "topics": ["Bug reports", "Additional resources"]
+            }
+          ]
         }
       ]
     }
