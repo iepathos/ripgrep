@@ -25,6 +25,25 @@ The `--pre` flag takes a command that receives:
 
 The preprocessor outputs the transformed content to stdout, which ripgrep then searches.
 
+### How It Works
+
+```mermaid
+flowchart LR
+    File[Binary File<br/>PDF, .gz, .docx] --> Check{--pre-glob<br/>match?}
+    Check -->|No Match| Direct[Direct Search<br/>UTF-8 content]
+    Check -->|Match| Pre[Preprocessor<br/>Transform to text]
+    Pre --> Stdout[Text Output<br/>to stdout]
+    Stdout --> Search[ripgrep<br/>Pattern Match]
+    Direct --> Search
+    Search --> Results[Search Results]
+
+    style Pre fill:#e1f5ff
+    style Search fill:#e8f5e9
+    style Check fill:#fff3e0
+```
+
+**Figure**: Preprocessor execution flow showing conditional transformation based on `--pre-glob` patterns.
+
 ## Basic Usage: Searching PDFs
 
 One common use case is searching PDF files. While PDFs are primarily visual documents, they often contain searchable text streams.
@@ -121,6 +140,38 @@ Syntax Error: Couldn't find trailer dictionary
 ### Handling Multiple File Types
 
 Make the preprocessor conditional on file type using two approaches:
+
+```mermaid
+flowchart TD
+    Start[File Input] --> Approach{Detection<br/>Strategy}
+
+    Approach -->|Extension-Based| Ext[Check File Extension]
+    Ext --> ExtMatch{*.pdf?}
+    ExtMatch -->|Yes| NonEmpty{File<br/>Non-empty?}
+    ExtMatch -->|No| Cat1[cat - -]
+    NonEmpty -->|Yes| PDF1[pdftotext - -]
+    NonEmpty -->|No| Cat1
+
+    Approach -->|Content Sniffing| Sniff[Run 'file' Command]
+    Sniff --> FileType{Content<br/>Type?}
+    FileType -->|PDF| PDF2[pdftotext - -]
+    FileType -->|Zstandard| Zstd[pzstd -cdq]
+    FileType -->|gzip| Gzip[gzip -cdq]
+    FileType -->|Other| Cat2[cat - -]
+
+    PDF1 --> Out[Output to stdout]
+    Cat1 --> Out
+    PDF2 --> Out
+    Zstd --> Out
+    Gzip --> Out
+    Cat2 --> Out
+
+    style Ext fill:#e8f5e9
+    style Sniff fill:#fff3e0
+    style Out fill:#e1f5ff
+```
+
+**Figure**: Two file type detection strategies showing trade-offs between speed (extension-based) and accuracy (content sniffing).
 
 === "Extension-Based Detection"
 
@@ -412,6 +463,14 @@ time rg 'pattern'  # without preprocessor for comparison
 
 ## Testing and Debugging
 
+!!! tip "Development Workflow"
+    Always test preprocessors independently before integrating with ripgrep. This isolates issues and makes debugging faster:
+
+    1. Test the preprocessor command directly on sample files
+    2. Verify output is correct plain text
+    3. Check exit codes (0 for success)
+    4. Then integrate with ripgrep using `--pre`
+
 ### Testing Preprocessors Independently
 
 Test your preprocessor before using it with ripgrep:
@@ -472,31 +531,31 @@ A production-ready preprocessor handling multiple formats:
 # multi-preprocessor - Handle PDFs, Office docs, and compressed files
 # Compression formats based on built-in support in crates/cli/src/decompress.rs:490-532
 
-set -e
+set -e  # (1)!
 
 FILE="$1"
 
 # Check file is non-empty
-[ -s "$FILE" ] || exec cat
+[ -s "$FILE" ] || exec cat  # (2)!
 
 # Try extension-based matching first
 case "$FILE" in
   *.pdf)
-    exec pdftotext - -
+    exec pdftotext - -  # (3)!
     ;;
   *.docx)
-    exec pandoc -t plain "$FILE"
+    exec pandoc -t plain "$FILE"  # (4)!
     ;;
   *.doc)
     exec catdoc "$FILE"
     ;;
   *.xlsx|*.xls)
-    exec ssconvert -T Gnumeric_stf:stf_csv "$FILE" fd://1
+    exec ssconvert -T Gnumeric_stf:stf_csv "$FILE" fd://1  # (5)!
     ;;
 esac
 
 # Fall back to content sniffing
-case $(file -b "$FILE") in
+case $(file -b "$FILE") in  # (6)!
   *PDF*)
     exec pdftotext - -
     ;;
@@ -510,10 +569,18 @@ case $(file -b "$FILE") in
     exec bzip2 -cdq
     ;;
   *)
-    exec cat
+    exec cat  # (7)!
     ;;
 esac
 ```
+
+1. Exit immediately on any error to prevent partial transformations
+2. Return empty output for empty files instead of failing
+3. Uses stdin (`-`) for input and stdout (`-`) for output
+4. Converts DOCX to plain text format for searching
+5. Converts spreadsheets to CSV format on file descriptor 1 (stdout)
+6. Falls back to magic number detection for files without proper extensions
+7. Pass through unchanged if no transformation needed
 
 Usage:
 
