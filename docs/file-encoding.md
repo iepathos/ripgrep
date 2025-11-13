@@ -87,6 +87,44 @@ When using `--encoding=none`:
 
 This mode is useful when searching for byte sequences or when you want complete control.
 
+```mermaid
+flowchart TD
+    Start[Open File] --> CheckMode{Encoding Mode?}
+
+    CheckMode -->|auto| BOMCheck[Read First 3 Bytes]
+    CheckMode -->|explicit e.g. utf-16| ExplicitBOM[Check for BOM]
+    CheckMode -->|none| RawSearch[Search Raw Bytes]
+
+    BOMCheck --> HasBOM{BOM Found?}
+    HasBOM -->|Yes UTF-8/16| Transcode1[Transcode to UTF-8]
+    HasBOM -->|No| AssumeASCII[Assume ASCII-compatible]
+
+    ExplicitBOM --> ExplicitHasBOM{BOM Found?}
+    ExplicitHasBOM -->|Yes| BOMOverride[Use BOM encoding]
+    ExplicitHasBOM -->|No| UseExplicit[Use specified encoding]
+
+    BOMOverride --> Transcode2[Transcode to UTF-8]
+    UseExplicit --> Transcode3[Transcode to UTF-8]
+
+    Transcode1 --> Search[Search UTF-8 Content]
+    Transcode2 --> Search
+    Transcode3 --> Search
+    AssumeASCII --> Search
+    RawSearch --> SearchBytes[Search Raw Bytes]
+
+    Search --> Match[Return Matches]
+    SearchBytes --> Match
+
+    style BOMCheck fill:#e1f5ff
+    style Transcode1 fill:#fff3e0
+    style Transcode2 fill:#fff3e0
+    style Transcode3 fill:#fff3e0
+    style Search fill:#e8f5e9
+    style RawSearch fill:#ffebee
+```
+
+**Figure**: Encoding detection and transcoding flow showing how ripgrep processes files in different modes.
+
 ## BOM Sniffing
 
 A **Byte Order Mark (BOM)** is a special sequence of bytes at the start of a file that indicates its encoding.
@@ -106,6 +144,40 @@ Other encodings in the WHATWG standard that have BOMs are not automatically dete
 4. Your UTF-8 pattern is then searched against the transcoded content
 
 **BOM sniffing is enabled by default** in auto mode and can be disabled with `--encoding=none`.
+
+```mermaid
+flowchart TD
+    Start[Read First 3 Bytes] --> CheckUTF8{Bytes =<br/>EF BB BF?}
+
+    CheckUTF8 -->|Yes| UTF8[Detected: UTF-8]
+    CheckUTF8 -->|No| CheckUTF16LE{Bytes start<br/>FF FE?}
+
+    CheckUTF16LE -->|Yes| UTF16LE[Detected: UTF-16LE]
+    CheckUTF16LE -->|No| CheckUTF16BE{Bytes start<br/>FE FF?}
+
+    CheckUTF16BE -->|Yes| UTF16BE[Detected: UTF-16BE]
+    CheckUTF16BE -->|No| NoBOM[No BOM Detected]
+
+    UTF8 --> Transcode8[Transcode from UTF-8]
+    UTF16LE --> Transcode16LE[Transcode from UTF-16LE]
+    UTF16BE --> Transcode16BE[Transcode from UTF-16BE]
+
+    Transcode8 --> SearchUTF8[Search as UTF-8]
+    Transcode16LE --> SearchUTF8
+    Transcode16BE --> SearchUTF8
+
+    NoBOM --> AssumeASCII[Assume ASCII-compatible<br/>or use explicit encoding]
+
+    style CheckUTF8 fill:#e1f5ff
+    style CheckUTF16LE fill:#e1f5ff
+    style CheckUTF16BE fill:#e1f5ff
+    style UTF8 fill:#e8f5e9
+    style UTF16LE fill:#e8f5e9
+    style UTF16BE fill:#e8f5e9
+    style NoBOM fill:#fff3e0
+```
+
+**Figure**: BOM detection process showing the three supported byte-order marks and transcoding paths.
 
 !!! warning "BOM Override Behavior"
     Even if you specify an explicit encoding like `--encoding=latin1`, a file with a BOM will override your setting. For example:
@@ -166,6 +238,37 @@ In these encodings, bytes 0x00-0x7F represent the same ASCII characters, so ASCI
 * Some multi-byte encodings without BOM
 
 These encodings require explicit `--encoding` specification or a BOM for reliable searching.
+
+```mermaid
+graph TD
+    File[File to Search] --> HasBOM{Has BOM?}
+
+    HasBOM -->|Yes| AutoDetect[Auto-detected<br/>UTF-8/UTF-16]
+    HasBOM -->|No| ExplicitEnc{Explicit<br/>--encoding?}
+
+    ExplicitEnc -->|Yes| UseExplicit[Use specified<br/>encoding]
+    ExplicitEnc -->|No| AssumeASCII[Assume<br/>ASCII-compatible]
+
+    AutoDetect --> Transcode1[Transcode to UTF-8]
+    UseExplicit --> IsUTF8{Is UTF-8?}
+    IsUTF8 -->|No| Transcode2[Transcode to UTF-8]
+    IsUTF8 -->|Yes| DirectSearch
+
+    AssumeASCII --> Compatible{Actually<br/>ASCII-compatible?}
+    Compatible -->|Yes UTF-8/Latin1| DirectSearch[Direct byte search<br/>Fast]
+    Compatible -->|No UTF-16/UTF-32| Mismatch[Pattern won't match<br/>Bytes don't align]
+
+    Transcode1 --> Search[Search UTF-8 content<br/>Slower but reliable]
+    Transcode2 --> Search
+
+    style AutoDetect fill:#e8f5e9
+    style DirectSearch fill:#c8e6c9
+    style Search fill:#fff3e0
+    style Mismatch fill:#ffebee
+    style AssumeASCII fill:#e1f5ff
+```
+
+**Figure**: ASCII compatibility assumption and its impact on search behavior. Files without BOM or explicit encoding are assumed ASCII-compatible for performance.
 
 !!! warning "Why it matters"
     If you search UTF-16 text without BOM detection or explicit encoding, your ASCII pattern will be looking for single bytes, but UTF-16 represents each character with two bytes. The pattern won't match.
