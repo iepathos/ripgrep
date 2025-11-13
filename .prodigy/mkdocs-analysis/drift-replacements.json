@@ -1,0 +1,86 @@
+{
+  "item_type": "page",
+  "page_id": "replacements",
+  "page_title": "replacements",
+  "page_file": "docs/replacements.md",
+  "drift_detected": true,
+  "severity": "medium",
+  "quality_assessment": "Comprehensive and accurate documentation with excellent examples, but has broken cross-references",
+  "issues": [
+    {
+      "type": "broken_links",
+      "severity": "medium",
+      "section": "Cross-References",
+      "description": "Found 3 broken internal link(s) in the 'See Also' section at the end of the document",
+      "broken_links": [
+        {
+          "link_text": "Basics",
+          "target_path": "./basics.md",
+          "expected_file": "docs/basics.md",
+          "current_file": "docs/replacements.md",
+          "suggested_fix": "The file 'basics.md' does not exist. Based on SUMMARY.md, this should likely link to an existing page that covers basic pattern matching. No exact match found, but this may be a planned page not yet created."
+        },
+        {
+          "link_text": "Advanced Patterns",
+          "target_path": "./advanced-patterns.md",
+          "expected_file": "docs/advanced-patterns.md",
+          "current_file": "docs/replacements.md",
+          "suggested_fix": "The file 'advanced-patterns.md' does not exist. SUMMARY.md references 'Advanced Patterns' but the file is missing. This appears to be a valid reference to a planned page."
+        },
+        {
+          "link_text": "Output Options",
+          "target_path": "./output.md",
+          "expected_file": "docs/output.md",
+          "current_file": "docs/replacements.md",
+          "suggested_fix": "The file 'output.md' does not exist. However, 'output-formats.md' DOES exist. Change link from './output.md' to './output-formats.md'"
+        }
+      ],
+      "fix_suggestion": "Update the 'See Also' section:\n1. For 'Output Options': Change link from './output.md' to './output-formats.md' (file exists with similar name)\n2. For 'Basics' and 'Advanced Patterns': Either create these missing pages or remove the links until they're available"
+    }
+  ],
+  "positive_aspects": [
+    "Comprehensive coverage of replacement functionality with -r/--replace flag",
+    "Excellent progression from simple to complex examples",
+    "Clear explanation of capture group syntax (numbered and named)",
+    "Detailed coverage of shell quoting issues and common mistakes",
+    "Strong troubleshooting section addressing edge cases",
+    "Accurate implementation details matching crates/matcher/src/interpolate.rs",
+    "Well-organized with practical real-world use cases",
+    "Good use of tables for syntax reference",
+    "Clear warnings about replacements not modifying files (output-only)",
+    "Comprehensive edge case documentation (invalid groups, empty replacements, multiline mode)"
+  ],
+  "improvement_suggestions": [
+    "Consider adding a visual diagram showing how capture groups are numbered in nested patterns",
+    "Add admonition boxes using MkDocs Material extensions to highlight important warnings (e.g., shell quoting, file safety)",
+    "Consider adding code annotations to complex examples",
+    "Add a 'Quick Reference' admonition at the top for commonly used patterns",
+    "Consider using tabbed content blocks for comparing numbered vs named groups side-by-side",
+    "Link troubleshooting items to specific sections for easy navigation"
+  ],
+  "cross_references": [
+    "output-formats",
+    "introduction",
+    "recursive-search"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-13T20:53:28Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": [
+      "replacements",
+      "capture_groups",
+      "numbered_groups",
+      "named_groups",
+      "shell_quoting",
+      "regex_patterns",
+      "output_transformation"
+    ],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "total_internal_links_found": 3,
+    "broken_links_count": 3,
+    "implementation_references_verified": [
+      "crates/matcher/src/interpolate.rs - capture group interpolation logic",
+      "crates/printer/src/standard.rs - replacement field in Config struct"
+    ]
+  }
+}
