@@ -104,6 +104,34 @@ ripgrep respects multiple types of ignore files, in order of precedence:
 4. Global gitignore (from Git configuration)
 5. Parent directory ignore files
 
+```mermaid
+graph TD
+    Start[File to Check] --> L1{.ignore<br/>exists?}
+    L1 -->|Yes, matches| Ignore1[Ignored by .ignore]
+    L1 -->|No match| L2{.rgignore<br/>exists?}
+
+    L2 -->|Yes, matches| Ignore2[Ignored by .rgignore]
+    L2 -->|No match| L3{.gitignore<br/>matches?}
+
+    L3 -->|Yes| Ignore3[Ignored by .gitignore]
+    L3 -->|No| L4{Global<br/>gitignore?}
+
+    L4 -->|Yes| Ignore4[Ignored by global]
+    L4 -->|No| L5{Parent<br/>ignore?}
+
+    L5 -->|Yes| Ignore5[Ignored by parent]
+    L5 -->|No| Include[File Included]
+
+    style Ignore1 fill:#ffebee
+    style Ignore2 fill:#ffebee
+    style Ignore3 fill:#ffebee
+    style Ignore4 fill:#ffebee
+    style Ignore5 fill:#ffebee
+    style Include fill:#e8f5e9
+```
+
+**Figure**: Ignore file precedence - earlier matches take priority and skip later checks.
+
 ### Diagnosing Ignore Problems
 
 !!! tip "Use --debug for diagnostics"
@@ -118,15 +146,29 @@ ripgrep respects multiple types of ignore files, in order of precedence:
 
 Different flags control different ignore behaviors:
 
-```
-$ rg -u "pattern"             # Ignore .gitignore but respect .ignore
-$ rg -uu "pattern"            # Ignore all ignore files but skip hidden/binary
-$ rg -uuu "pattern"           # Ignore everything (unrestricted search)
-$ rg --no-ignore-vcs          # Only ignore version control ignore files
-$ rg --no-ignore-global       # Ignore global gitignore
-$ rg --no-ignore-parent       # Ignore parent directory ignore files
-$ rg --no-ignore-messages     # Suppress ignore-related error messages
-```
+=== "Unrestricted Levels (-u flags)"
+    ```bash
+    $ rg -u "pattern"             # (1)!
+    $ rg -uu "pattern"            # (2)!
+    $ rg -uuu "pattern"           # (3)!
+    ```
+
+    1. Ignore `.gitignore` but still respect `.ignore` files
+    2. Ignore all ignore files but still skip hidden files and binaries
+    3. Completely unrestricted search - search everything
+
+=== "Selective Bypass"
+    ```bash
+    $ rg --no-ignore-vcs "pattern"      # (1)!
+    $ rg --no-ignore-global "pattern"   # (2)!
+    $ rg --no-ignore-parent "pattern"   # (3)!
+    $ rg --no-ignore-messages "pattern" # (4)!
+    ```
+
+    1. Only ignore version control ignore files (`.gitignore`)
+    2. Ignore global gitignore from Git configuration
+    3. Ignore parent directory ignore files
+    4. Suppress ignore-related error messages
 
 ### Parent Directory Ignore Files
 
@@ -242,6 +284,27 @@ src/lib.rs
     - **Exit 0**: At least one match was found
     - **Exit 1**: No matches found (not an error)
     - **Exit 2**: An error occurred
+
+```mermaid
+flowchart TD
+    Start[Run ripgrep command] --> Exec{Execution<br/>result?}
+
+    Exec -->|Error occurred| Exit2[Exit Code 2<br/>Error]
+    Exec -->|Success| Matches{Matches<br/>found?}
+
+    Matches -->|Yes| Exit0[Exit Code 0<br/>Success]
+    Matches -->|No| Exit1[Exit Code 1<br/>No matches]
+
+    Exit0 --> Script0[if rg ...; then<br/>Pattern found]
+    Exit1 --> Script1[else<br/>No matches]
+    Exit2 --> Script1
+
+    style Exit0 fill:#e8f5e9
+    style Exit1 fill:#fff3e0
+    style Exit2 fill:#ffebee
+```
+
+**Figure**: Exit code logic - use in scripts with `if` statements to handle different outcomes.
 
 !!! example "Example usage in scripts"
     ```bash
