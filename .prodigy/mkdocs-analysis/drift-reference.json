@@ -1,0 +1,131 @@
+{
+  "item_type": "auto-discovered",
+  "page_id": "reference",
+  "page_title": "reference",
+  "page_file": "docs/common-options/reference.md",
+  "drift_detected": true,
+  "severity": "medium",
+  "quality_assessment": "Good quick reference but missing several important flags and could benefit from visual enhancements",
+  "issues": [
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Quick Reference",
+      "description": "Smart case flag (-S/--smart-case) not documented in quick reference",
+      "feature_reference": "search_basics.capabilities.pattern_matching.features[3]",
+      "fix_suggestion": "Add -S flag row: 'Smart case (insensitive unless uppercase) | rg -S Error'",
+      "source_reference": "features.json:search_basics.capabilities.pattern_matching"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Quick Reference",
+      "description": "Multiple pattern flags (-e, -f) not documented",
+      "feature_reference": "search_basics.capabilities.multiple_patterns",
+      "fix_suggestion": "Add rows for -e (multiple patterns) and -f (pattern file)",
+      "source_reference": "features.json:search_basics.capabilities.multiple_patterns"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Quick Reference",
+      "description": "Only-matching flag (-o) not documented",
+      "feature_reference": "output_control.capabilities.standard_output.features[4]",
+      "fix_suggestion": "Add -o row: 'Show only matched part | rg -o pattern'",
+      "source_reference": "features.json:output_control.capabilities.standard_output"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Quick Reference",
+      "description": "Statistics flag (--stats) not documented",
+      "feature_reference": "utility_features.capabilities.statistics",
+      "fix_suggestion": "Add --stats row: 'Show search statistics | rg --stats pattern'",
+      "source_reference": "features.json:utility_features.capabilities.statistics"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Quick Reference",
+      "description": "Files listing mode (--files) not documented",
+      "feature_reference": "utility_features.capabilities.list_modes.features[0]",
+      "fix_suggestion": "Add --files row: 'List files that would be searched | rg --files'",
+      "source_reference": "features.json:utility_features.capabilities.list_modes"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "medium",
+      "section": "Quick Reference",
+      "description": "The -u flag doesn't explain three levels of unrestricted search",
+      "current_content": "| `-u` | Search ignored files | `rg -u pattern` |",
+      "should_be": "| `-u/-uu/-uuu` | Search ignored files (levels: ignore rules, hidden files, binary files) | `rg -uuu pattern` |",
+      "fix_suggestion": "Clarify that -u has three levels: -u (ignore .gitignore), -uu (+ hidden files), -uuu (+ binary files)",
+      "source_reference": "features.json:filtering.automatic_filtering.capabilities.override_flags"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "Quick Reference",
+      "description": "Context flags don't explain what the number means",
+      "current_content": "| `-A/-B/-C` | Show context lines | `rg -C 3 pattern` |",
+      "should_be": "| `-A/-B/-C` | Show N lines after/before/around matches | `rg -C 3 pattern` |",
+      "fix_suggestion": "Add clarification that the number specifies how many context lines to show",
+      "source_reference": "features.json:output_control.capabilities.context_lines"
+    },
+    {
+      "type": "missing_visual_features",
+      "severity": "low",
+      "section": "Overall",
+      "description": "Page lacks MkDocs Material visual enhancements",
+      "fix_suggestion": "Add admonitions for tips (e.g., '!!! tip \"Pro Tip\"'), code annotations, or tabs for alternative approaches",
+      "source_reference": "N/A - MkDocs Material extension features"
+    },
+    {
+      "type": "broken_links",
+      "severity": "medium",
+      "section": "Cross-References",
+      "description": "Found 1 internal link - validated successfully",
+      "validated_links": [
+        {
+          "link_text": "Common Options",
+          "target": "./index.md",
+          "resolved_path": "docs/common-options/index.md",
+          "status": "valid"
+        }
+      ],
+      "fix_suggestion": "All cross-references are valid. No action needed."
+    }
+  ],
+  "positive_aspects": [
+    "Clear, scannable table format for quick reference",
+    "Excellent grep comparison table for users migrating from grep",
+    "Practical flag combination examples showing real-world usage",
+    "Concise descriptions that are easy to understand",
+    "Good coverage of most common daily-use flags"
+  ],
+  "improvement_suggestions": [
+    "Add a 'Tips' admonition highlighting the most powerful flag combinations",
+    "Include a note about -uuu being slower due to searching everything",
+    "Add cross-reference to advanced patterns page for regex users",
+    "Consider adding a 'Performance' section noting which flags are fast vs slow",
+    "Add --files flag for discovering what ripgrep would search"
+  ],
+  "cross_references": [
+    "index",
+    "file-filtering",
+    "output-modes"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-13T21:48:18Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": ["quick reference", "common flags", "grep comparison"],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "total_flags_documented": 11,
+    "total_flags_in_features": 50,
+    "link_validation": {
+      "total_internal_links": 1,
+      "broken_links": 0,
+      "valid_links": 1
+    }
+  }
+}
