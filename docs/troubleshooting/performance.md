@@ -26,6 +26,52 @@ $ rg "pattern" --stats
 
 If you see an unexpectedly large number of files or bytes, you need to filter more aggressively.
 
+```mermaid
+flowchart TD
+    Start[Performance Issue] --> Stats[Run with --stats]
+    Stats --> Check{What's high?}
+
+    Check -->|Files/Bytes| Scope[Reduce Search Scope]
+    Check -->|Time/Pattern| Engine{Using PCRE2?}
+    Check -->|Normal| Other[Check I/O Strategy]
+
+    Scope --> TypeFilter[Add -t filter]
+    Scope --> GlobFilter[Add -g pattern]
+    Scope --> DepthLimit[Set --max-depth]
+
+    Engine -->|Yes| SimplifyRegex[Simplify Pattern]
+    Engine -->|Yes| TryDefault[Test without -P]
+    Engine -->|No| ComplexPattern{Complex<br/>regex?}
+
+    ComplexPattern -->|Yes| Literal[Try -F literal]
+    ComplexPattern -->|No| Threads[Adjust --threads]
+
+    Other --> MemMap{Single file?}
+    MemMap -->|Yes| UseMmap[Use --mmap]
+    MemMap -->|No| UseBuffer[Use --no-mmap]
+
+    TypeFilter --> Retest[Run --stats again]
+    GlobFilter --> Retest
+    SimplifyRegex --> Retest
+    TryDefault --> Retest
+    Literal --> Retest
+    Threads --> Retest
+    UseMmap --> Retest
+    UseBuffer --> Retest
+    DepthLimit --> Retest
+
+    Retest --> Better{Improved?}
+    Better -->|Yes| Done[Problem Solved]
+    Better -->|No| Advanced[See Performance Guide]
+
+    style Start fill:#ffebee
+    style Stats fill:#e3f2fd
+    style Done fill:#e8f5e9
+    style Advanced fill:#fff3e0
+```
+
+**Figure**: Performance troubleshooting diagnostic flowchart.
+
 ## Reduce Search Scope
 
 **Filter by file type:**
@@ -92,15 +138,18 @@ Ripgrep automatically selects the best I/O strategy:
     - Better for many small files
     - More predictable memory usage
 
+!!! tip "Let Ripgrep Choose Automatically"
+    Ripgrep's automatic I/O selection is optimized for most use cases. Only override with `--mmap` or `--no-mmap` if you've identified a specific performance issue through profiling with `--stats`.
+
 **Manual control if needed:**
 
 ```bash
-$ rg "pattern" --mmap  # Force memory mapping
-$ rg "pattern" --no-mmap  # Force buffered reading
+$ rg "pattern" --mmap      # (1)!
+$ rg "pattern" --no-mmap   # (2)!
 ```
 
-!!! tip
-    Let ripgrep choose automatically unless you have specific performance issues.
+1. Force memory mapping - use for large single-file searches
+2. Force buffered reading - use when memory mapping causes issues
 
 ## Performance Tuning Flags
 
@@ -108,54 +157,47 @@ $ rg "pattern" --no-mmap  # Force buffered reading
 
 **Skip large files:**
 ```bash
-# Skip files larger than 10MB
-$ rg --max-filesize 10M 'pattern'
+$ rg --max-filesize 10M 'pattern'  # (1)!
 ```
 
-Ignores files larger than 10MB. Useful for avoiding slow searches through large binary files or logs.
+1. Ignores files larger than 10MB - useful for avoiding slow searches through large binary files or logs
 
 **Handle long lines:**
 ```bash
-# Set maximum line length to process
-$ rg --max-columns 500 'pattern'
+$ rg --max-columns 500 'pattern'  # (1)!
 ```
 
-Ignores lines longer than 500 characters. Prevents slow regex matching on extremely long lines like minified code.
+1. Ignores lines longer than 500 characters - prevents slow regex matching on extremely long lines like minified code
 
 **Stop after N matches:**
 ```bash
-# Stop searching after finding 100 matches
-$ rg --max-count 100 'pattern'
+$ rg --max-count 100 'pattern'  # (1)!
 ```
 
-Stops after finding 100 matches. Useful for quick verification or when you only need a few examples.
+1. Stops after finding 100 matches - useful for quick verification or when you only need a few examples
 
 **Limit recursion depth:**
 ```bash
-# Limit directory recursion to 3 levels
-$ rg --max-depth 3 'pattern'
+$ rg --max-depth 3 'pattern'  # (1)!
 ```
 
-Limits how deep ripgrep will recurse into directories.
+1. Limits how deep ripgrep will recurse into directories
 
 **Avoid crossing filesystem boundaries:**
 ```bash
-# Stay on one filesystem
-$ rg --one-file-system 'pattern'
+$ rg --one-file-system 'pattern'  # (1)!
 ```
 
-Prevents searching across mount points. Avoids accidentally searching network drives or external disks.
+1. Prevents searching across mount points - avoids accidentally searching network drives or external disks
 
 **Configure regex engine limits:**
 ```bash
-# Increase DFA memory limit (default: 10M)
-$ rg --dfa-size-limit 50M 'pattern'
-
-# Increase regex compilation size (default: 10M)
-$ rg --regex-size-limit 50M 'pattern'
+$ rg --dfa-size-limit 50M 'pattern'    # (1)!
+$ rg --regex-size-limit 50M 'pattern'  # (2)!
 ```
 
-These limits prevent excessive memory use. Increase them if you encounter "DFA size limit exceeded" or "regex too large" errors.
+1. Increase DFA memory limit (default: 10M) - controls memory usage for deterministic finite automaton
+2. Increase regex compilation size (default: 10M) - raise if you encounter "regex too large" errors
 
 ## Testing and Profiling
 
