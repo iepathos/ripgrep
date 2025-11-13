@@ -1,0 +1,91 @@
+site_name: ripgrep User Guide
+site_description: A comprehensive guide to using ripgrep, a line-oriented search tool
+site_author: Andrew Gallant
+site_url: https://github.com/BurntSushi/ripgrep
+
+repo_name: BurntSushi/ripgrep
+repo_url: https://github.com/BurntSushi/ripgrep
+edit_uri: edit/master/book/src/
+
+# Use book/src as documentation directory (shared with mdbook)
+docs_dir: book/src
+
+# Exclude mdbook-specific files from MkDocs
+exclude_docs: |
+  SUMMARY.md
+
+theme:
+  name: material
+  palette:
+    # Dark mode by default (matching mdbook config)
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.highlight
+    - search.share
+    - search.suggest
+    - content.code.copy
+    - content.code.annotate
+
+plugins:
+  - search:
+      lang: en
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - toc:
+      permalink: true
+
+# Navigation structure (matching SUMMARY.md)
+nav:
+  - Home: introduction.md
+  - User Guide:
+      - Basics: basics.md
+      - Recursive Search: recursive-search.md
+      - Automatic Filtering: automatic-filtering.md
+      - Manual Filtering (Globs): manual-filtering-globs.md
+      - Manual Filtering (File Types): manual-filtering-types.md
+      - Replacements: replacements.md
+      - Configuration File: configuration-file.md
+      - File Encoding: file-encoding.md
+      - Binary Data: binary-data.md
+      - Compressed Files: compressed-files.md
+      - Preprocessor: preprocessor.md
+      - Common Options: common-options.md
+      - Context Lines: context-lines.md
+      - Output Formats: output-formats.md
+      - Sorting Results: sorting-results.md
+      - Utility Modes: utility-modes.md
+  - Advanced Topics:
+      - Advanced Patterns: advanced-patterns.md
+      - Performance: performance.md
+      - Statistics and Metrics: statistics.md
+      - Hyperlinks: hyperlinks.md
+      - Troubleshooting: troubleshooting.md
