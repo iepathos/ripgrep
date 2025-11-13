@@ -51,6 +51,60 @@ These features prevent some optimizations:
 
 **Use sparingly** for best performance.
 
+## Parallelism and Threading
+
+Ripgrep uses parallel search by default for maximum performance:
+
+**Thread Control**:
+- Uses all CPU cores by default with work-stealing scheduler
+- Control threads with `-j/--threads N` flag
+- Single-threaded mode: `--threads 1`
+
+!!! example "Thread Control Examples"
+    ```bash
+    # Use 4 threads
+    rg --threads 4 'pattern'
+
+    # Single-threaded for deterministic output
+    rg --threads 1 'pattern'
+    ```
+
+**When to use single-threaded mode**:
+- Need deterministic output order
+- Running in constrained environments
+- Debugging search behavior
+- Benchmarking without parallelism variance
+
+!!! note
+    Some flags like `--sort` automatically disable parallelism to maintain order.
+
+## I/O Strategies
+
+Ripgrep automatically selects the best I/O strategy based on your search:
+
+**Memory Mapping vs Buffered Reading**:
+
+- **Memory mapping** (`mmap`): Used for single file searches
+    - Maps file directly into memory
+    - Faster for large files
+    - Lower memory overhead
+- **Buffered reading**: Used for directory searches
+    - Reads files incrementally
+    - Better for many small files
+    - More predictable memory usage
+
+**Manual Control**:
+```bash
+# Force memory mapping
+rg --mmap 'pattern'
+
+# Force buffered reading
+rg --no-mmap 'pattern'
+```
+
+!!! tip
+    Let ripgrep choose automatically unless you have specific performance issues.
+
 ## Performance Testing
 
 Use `--stats` flag to see performance metrics:
@@ -67,11 +121,53 @@ This shows:
 
 ## Performance Tips
 
-1. **Prefer default engine** when possible
-2. **Avoid multiline** unless necessary
-3. **Test with `--stats`** on representative data
-4. **Use specific file types** to limit search space (`-t`)
-5. **Profile complex patterns** before using in production scripts
+### Quick Performance Wins
+
+!!! tip "Most Impactful Optimizations"
+    1. **Use literal search** with `-F` when not needing regex - significantly faster
+    2. **Use file type filters** (`-t`) to limit search space
+    3. **Skip large files** with `--max-filesize`
+    4. **Prefer default engine** over PCRE2
+
+### Search Optimization
+
+1. **Prefer default engine** when possible - uses SIMD acceleration and finite automata
+2. **Use literal search** (`-F`) for plain strings - much faster than regex
+3. **Avoid multiline** unless necessary
+4. **Limit search scope** with file type filters (`-t`) - see [File Filtering](../common-options/file-filtering.md) for details
+
+### Performance Tuning Flags
+
+**Skip large files**:
+```bash
+# Skip files larger than 10MB
+rg --max-filesize 10M 'pattern'
+```
+
+**Handle long lines**:
+```bash
+# Set maximum line length to process
+rg --max-columns 500 'pattern'
+```
+
+**Stop after N matches**:
+```bash
+# Stop searching after finding 100 matches
+rg --max-count 100 'pattern'
+```
+
+**Avoid crossing filesystem boundaries**:
+```bash
+# Stay on one filesystem
+rg --one-file-system 'pattern'
+```
+
+### Testing and Profiling
+
+- **Test with `--stats`** on representative data
+- **Profile complex patterns** before using in production scripts
+- Use `time` command for comparing different approaches
+- Test on your actual datasets, not toy examples
 
 ## Regex Limits
 
@@ -79,10 +175,9 @@ Ripgrep has configurable limits to prevent excessive memory use and compilation 
 
 ### Regex Size Limit
 
-Controls the maximum size of compiled regex:
+Controls the maximum size of compiled regex (default: 10M):
 
 ```bash
-# Default limit is usually sufficient
 # Increase for extremely complex patterns
 rg --regex-size-limit 100M 'very_complex_pattern'
 ```
