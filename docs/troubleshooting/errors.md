@@ -4,97 +4,93 @@
 
 ## "pattern starts with a dash/hyphen"
 
-**Error:** When you try to search for text starting with `-`, ripgrep interprets it as a flag.
+!!! error "Error: unexpected argument found"
+    When you try to search for text starting with `-`, ripgrep interprets it as a flag.
 
-**Example:**
+    ```bash
+    $ rg -foo
+    error: unexpected argument '-o' found
+    ```
 
-```
-$ rg -foo
-error: unexpected argument '-o' found
-```
+!!! tip "Solutions"
+    Use `--` to separate flags from the pattern:
 
-**Solutions:**
+    ```bash
+    $ rg -- -foo
+    ```
 
-Use `--` to separate flags from the pattern:
+    Or use `-e` to explicitly specify the pattern:
 
-```
-$ rg -- -foo
-```
-
-Or use `-e` to explicitly specify the pattern:
-
-```
-$ rg -e -foo
-```
+    ```bash
+    $ rg -e -foo
+    ```
 
 ## "Compiled regex exceeds size limit"
 
-**Error:**
+!!! error "Error: Compiled regex exceeds size limit"
+    ```bash
+    $ rg '\pL{1000}'
+    Compiled regex exceeds size limit of 10485760 bytes.
+    ```
 
-```
-$ rg '\pL{1000}'
-Compiled regex exceeds size limit of 10485760 bytes.
-```
+    **Cause:** The regex pattern is too large when compiled. This often happens with large character classes (like `\pL` for all Unicode letters) or many alternations.
 
-**Cause:** The regex pattern is too large when compiled. This often happens with large character classes (like `\pL` for all Unicode letters) or many alternations.
+!!! tip "Solutions"
+    Increase the limit with `--regex-size-limit`:
 
-**Solutions:**
+    ```bash
+    $ rg '\pL{1000}' --regex-size-limit 1G
+    ```
 
-Increase the limit with `--regex-size-limit`:
+    Or simplify your pattern:
 
-```
-$ rg '\pL{1000}' --regex-size-limit 1G
-```
-
-Or simplify your pattern:
-
-```
-$ rg '[a-zA-Z]{1000}'  # Use a smaller character class
-```
+    ```bash
+    $ rg '[a-zA-Z]{1000}'  # Use a smaller character class
+    ```
 
 ## "DFA cache size limit exceeded"
 
-**Cause:** The DFA (Deterministic Finite Automaton) cache used by the regex engine has exceeded its memory limit (default: 1 MB). This can happen with complex patterns or large inputs.
+!!! error "Error: DFA cache size limit exceeded"
+    **Cause:** The DFA (Deterministic Finite Automaton) cache used by the regex engine has exceeded its memory limit (default: 1 MB). This can happen with complex patterns or large inputs.
 
-**Solutions:**
+!!! tip "Solutions"
+    Increase the DFA cache size limit with `--dfa-size-limit`:
 
-Increase the DFA cache size limit with `--dfa-size-limit`:
+    ```bash
+    $ rg "complex-pattern" --dfa-size-limit 10M
+    ```
 
-```
-$ rg "complex-pattern" --dfa-size-limit 10M
-```
-
-Or simplify your regex pattern to reduce DFA cache usage.
+    Or simplify your regex pattern to reduce DFA cache usage.
 
 ## "Permission denied" or "Access denied"
 
-**Cause:** ripgrep doesn't have permission to read certain files or directories.
+!!! error "Error: Permission denied"
+    ripgrep doesn't have permission to read certain files or directories.
 
-**Solutions:**
+!!! tip "Solutions"
+    - Use `--no-messages` to suppress permission errors:
 
-- Use `--no-messages` to suppress permission errors:
+    ```bash
+    $ rg "pattern" --no-messages
+    ```
 
-```
-$ rg "pattern" --no-messages
-```
-
-- Run with appropriate permissions if you need to search protected files
-- Use `-u` or `-uu` flags carefully, as they don't bypass filesystem permissions
+    - Run with appropriate permissions if you need to search protected files
+    - Use `-u` or `-uu` flags carefully, as they don't bypass filesystem permissions
 
 ## "encoding error"
 
-**Cause:** The file contains bytes that aren't valid in the expected text encoding (usually UTF-8).
+!!! error "Error: encoding error"
+    The file contains bytes that aren't valid in the expected text encoding (usually UTF-8).
 
-**Solutions:**
+!!! tip "Solutions"
+    - Use `-E/--encoding` to specify the correct encoding:
 
-- Use `-E/--encoding` to specify the correct encoding:
+    ```bash
+    $ rg "pattern" -E latin1
+    ```
 
-```
-$ rg "pattern" -E latin1
-```
-
-- Use `-a/--text` to search the file anyway, treating it as text
-- See the [file encoding chapter](../file-encoding.md) for details
+    - Use `-a/--text` to search the file anyway, treating it as text
+    - See the [file encoding chapter](../file-encoding.md) for details
 
 ## Ignore File Issues
 
@@ -110,12 +106,13 @@ ripgrep respects multiple types of ignore files, in order of precedence:
 
 ### Diagnosing Ignore Problems
 
-Use `--debug` to see which ignore files are being loaded and used:
+!!! tip "Use --debug for diagnostics"
+    Use `--debug` to see which ignore files are being loaded and used:
 
-```
-$ rg --debug "pattern"
-DEBUG|ignore::walk: ignoring ./node_modules: Ignore(IgnoreMatch(GitIgnore, .gitignore, node_modules/*, <...>))
-```
+    ```bash
+    $ rg --debug "pattern"
+    DEBUG|ignore::walk: ignoring ./node_modules: Ignore(IgnoreMatch(GitIgnore, .gitignore, node_modules/*, <...>))
+    ```
 
 ### Bypassing Ignore Files
 
@@ -139,44 +136,43 @@ Remember that `.gitignore` files in parent directories also affect the search. U
 
 ### Common Regex Mistakes
 
-**Unescaped special characters:**
+!!! warning "Unescaped special characters"
+    ```bash
+    $ rg "foo.bar"     # Matches "foo" + any char + "bar"
+    $ rg "foo\.bar"    # Matches literal "foo.bar"
+    $ rg -F "foo.bar"  # Literal search (no escaping needed)
+    ```
 
-```
-$ rg "foo.bar"     # Matches "foo" + any char + "bar"
-$ rg "foo\.bar"    # Matches literal "foo.bar"
-$ rg -F "foo.bar"  # Literal search (no escaping needed)
-```
+!!! warning "Backreferences in default mode"
+    ```bash
+    $ rg "(\w+) \1"      # ERROR: backreferences not supported
+    $ rg -P "(\w+) \1"   # OK: PCRE2 supports backreferences
+    ```
 
-**Backreferences in default mode:**
+!!! warning "Lookaround in default mode"
+    ```bash
+    $ rg "foo(?=bar)"    # ERROR: lookahead not supported
+    $ rg -P "foo(?=bar)" # OK: PCRE2 supports lookahead
+    ```
 
-```
-$ rg "(\w+) \1"      # ERROR: backreferences not supported
-$ rg -P "(\w+) \1"   # OK: PCRE2 supports backreferences
-```
+!!! note "Advanced regex features require PCRE2"
+    For advanced regex features (backreferences, lookaround, etc.), you need PCRE2:
 
-**Lookaround in default mode:**
+    ```bash
+    $ rg -P "(?<=@)\w+"  # Use PCRE2 for lookbehind
+    ```
 
-```
-$ rg "foo(?=bar)"    # ERROR: lookahead not supported
-$ rg -P "foo(?=bar)" # OK: PCRE2 supports lookahead
-```
-
-For advanced regex features (backreferences, lookaround, etc.), you need PCRE2:
-
-```
-$ rg -P "(?<=@)\w+"  # Use PCRE2 for lookbehind
-```
-
-See the [FAQ](../FAQ.md#fancy) for more information about regex engines.
+See the [FAQ](../../FAQ.md#fancy) for more information about regex engines.
 
 ### Pattern Too Complex
 
-If your pattern is complex and causing errors:
+!!! tip "Strategies for complex patterns"
+    If your pattern is complex and causing errors:
 
-1. **Simplify the pattern** - Break it into multiple simpler searches
-2. **Use literal search** - Try `-F` if you're searching for literal text
-3. **Increase limits** - Use `--regex-size-limit` if the pattern is large
-4. **Avoid PCRE2** - Try without `-P` to use the faster default engine
+    1. **Simplify the pattern** - Break it into multiple simpler searches
+    2. **Use literal search** - Try `-F` if you're searching for literal text
+    3. **Increase limits** - Use `--regex-size-limit` if the pattern is large
+    4. **Avoid PCRE2** - Try without `-P` to use the faster default engine
 
 ## Statistics Output
 
@@ -203,54 +199,57 @@ src/lib.rs
 
 **Understanding the output:**
 - **matches**: Total number of matches found
-- **matched lines**: Number of lines containing matches (this metric tracks lines with matches throughout the search, and is particularly relevant when using `-c/--count` mode)
+- **matched lines**: Total number of lines containing at least one match (may be less than total matches if a line contains multiple matches)
 - **files contained matches**: How many files had at least one match
 - **files searched**: Total files ripgrep examined
 - **bytes searched**: Total bytes of content searched
 - **seconds spent searching**: Time spent in the actual search algorithm
 - **seconds**: Total wall clock time
 
-Use `--stats` to:
-- Verify your search is running on the expected files
-- Diagnose performance issues (too many files searched)
-- Debug why you're getting zero results (check files searched count)
+!!! tip "Using --stats for diagnostics"
+    Use `--stats` to:
+
+    - Verify your search is running on the expected files
+    - Diagnose performance issues (too many files searched)
+    - Debug why you're getting zero results (check files searched count)
 
 ## PCRE2 Availability
 
-If you're trying to use PCRE2 features with the `-P` flag and getting errors:
+!!! note "Checking PCRE2 support"
+    If you're trying to use PCRE2 features with the `-P` flag and getting errors:
 
-**Check if PCRE2 is available:**
+    **Check if PCRE2 is available:**
 
-```
-$ rg --pcre2-version
-```
+    ```bash
+    $ rg --pcre2-version
+    ```
 
-If PCRE2 is not available, you'll see an error. If it is available, you'll see version information and whether JIT (Just-In-Time compilation) is enabled:
+    If PCRE2 is not available, you'll see an error. If it is available, you'll see version information and whether JIT (Just-In-Time compilation) is enabled:
 
-```
-PCRE2 10.42 is available (JIT is available)
-```
+    ```bash
+    PCRE2 10.42 is available (JIT is available)
+    ```
 
-**If PCRE2 is not available:**
-- Your ripgrep binary wasn't compiled with PCRE2 support
-- Install a version with PCRE2 support, or build from source with the `pcre2` feature
+!!! warning "If PCRE2 is not available"
+    - Your ripgrep binary wasn't compiled with PCRE2 support
+    - Install a version with PCRE2 support, or build from source with the `pcre2` feature
 
 ## Exit Codes
 
-ripgrep uses exit codes to indicate search results, which is useful in scripts:
+!!! note "Understanding exit codes"
+    ripgrep uses exit codes to indicate search results, which is useful in scripts:
 
-- **Exit 0**: At least one match was found
-- **Exit 1**: No matches found (not an error)
-- **Exit 2**: An error occurred
+    - **Exit 0**: At least one match was found
+    - **Exit 1**: No matches found (not an error)
+    - **Exit 2**: An error occurred
 
-**Example usage in scripts:**
+!!! example "Example usage in scripts"
+    ```bash
+    if rg -q "pattern" file.txt; then
+        echo "Pattern found"
+    else
+        echo "Pattern not found or error occurred"
+    fi
+    ```
 
-```bash
-if rg -q "pattern" file.txt; then
-    echo "Pattern found"
-else
-    echo "Pattern not found or error occurred"
-fi
-```
-
-The `-q/--quiet` flag suppresses output and is useful with exit codes for conditional logic.
+    The `-q/--quiet` flag suppresses output and is useful with exit codes for conditional logic.
