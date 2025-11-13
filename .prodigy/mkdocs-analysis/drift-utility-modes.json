@@ -1,0 +1,82 @@
+{
+  "item_type": "page",
+  "page_id": "utility-modes",
+  "page_title": "utility modes",
+  "page_file": "docs/utility-modes.md",
+  "drift_detected": true,
+  "severity": "medium",
+  "quality_assessment": "Good documentation with accurate content and comprehensive examples. Two broken cross-reference links need updating due to file reorganization. Content matches implementation well.",
+  "issues": [
+    {
+      "type": "broken_links",
+      "severity": "medium",
+      "section": "See Also",
+      "description": "Found 2 broken internal links due to documentation restructuring",
+      "broken_links": [
+        {
+          "link_text": "Common Options",
+          "original_target": "common-options.md",
+          "expected_path": "docs/common-options.md",
+          "current_file": "docs/utility-modes.md",
+          "suggested_fix": "common-options/index.md",
+          "reason": "File moved to common-options/ subdirectory"
+        },
+        {
+          "link_text": "Troubleshooting",
+          "original_target": "troubleshooting.md",
+          "expected_path": "docs/troubleshooting.md",
+          "current_file": "docs/utility-modes.md",
+          "suggested_fix": "troubleshooting/index.md",
+          "reason": "File moved to troubleshooting/ subdirectory"
+        }
+      ],
+      "fix_suggestion": "Update links to point to index.md files in their respective subdirectories: common-options/index.md and troubleshooting/index.md"
+    }
+  ],
+  "positive_aspects": [
+    "Comprehensive coverage of all utility modes (--files, --type-list, --generate, --version, --pcre2-version)",
+    "Accurate examples matching actual flag implementations in crates/core/flags/defs.rs",
+    "Good use of MkDocs Material features (code blocks with syntax highlighting)",
+    "Practical examples showing real-world use cases and shell integration",
+    "Clear explanations of each mode's purpose and output format",
+    "Includes troubleshooting section for common issues",
+    "Properly documents that --files overrides --type-list (confirmed in source at crates/core/flags/defs.rs:2151)",
+    "Accurately describes GenerateMode options (man, complete-bash, complete-zsh, complete-fish, complete-powershell) matching crates/core/flags/defs.rs:2424-2437",
+    "Version flag documentation correctly distinguishes between -V and --version behavior"
+  ],
+  "improvement_suggestions": [
+    "Consider adding admonitions for important notes (e.g., !!! note for the --files overrides --type-list behavior)",
+    "Could add tabs for different shell examples in the Installation Workflow section",
+    "Visual diagram showing the relationship between utility modes could enhance understanding",
+    "Consider adding source code references in comments for examples that directly relate to implementation"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-13T20:53:00Z",
+    "feature_inventory": "N/A - utility modes are command-line flags",
+    "topics_covered": [
+      "files mode",
+      "type-list mode",
+      "generate mode",
+      "version information",
+      "pcre2 version check",
+      "shell completions",
+      "man page generation",
+      "development workflow integration"
+    ],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "source_files_reviewed": [
+      "crates/core/flags/defs.rs:2131-2170 (Files flag)",
+      "crates/core/flags/defs.rs:7167-7206 (TypeList flag)",
+      "crates/core/flags/defs.rs:2397-2447 (Generate flag)",
+      "crates/core/flags/defs.rs:7293-7327 (Version flag)",
+      "crates/core/flags/defs.rs:5409-5449 (PCRE2Version flag)",
+      "crates/core/main.rs:89-92 (Mode handling)",
+      "crates/core/main.rs:235-250 (files function)",
+      "crates/core/main.rs:329-344 (types function)",
+      "crates/core/main.rs:355-366 (generate function)"
+    ],
+    "internal_links_checked": 3,
+    "broken_links_found": 2,
+    "accurate_examples_count": "15+"
+  }
+}
