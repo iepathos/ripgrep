@@ -19,27 +19,48 @@ This chapter covers advanced regex pattern features in ripgrep, including multil
 
 Use this guide to select appropriate flags for your search:
 
+```mermaid
+graph TD
+    A[Start: Choose ripgrep features] --> B{Match across<br/>line boundaries?}
+    B -->|Yes| C[Use -U --multiline]
+    B -->|No| D[Default line-by-line]
+
+    C --> E{Does . need to<br/>match newlines?}
+    E -->|Yes| F[Add --multiline-dotall<br/>or use (?s)]
+    E -->|No| G[Just -U is sufficient]
+
+    A --> H{Need lookaround or<br/>backreferences?}
+    H -->|Yes| I[Use -P --pcre2]
+    H -->|No| J[Default engine faster]
+
+    I --> K{Matching across lines?}
+    K -->|Yes| L[Use -PU together]
+
+    A --> M{Need Unicode<br/>character classes?}
+    M -->|Yes| N[Default behavior<br/>Unicode enabled]
+    M -->|No| O[Use --no-unicode<br/>ASCII-only faster]
+
+    A --> P{Complex pattern with<br/>multiple features?}
+    P -->|Yes| Q[Use --engine=auto<br/>for automatic selection]
 ```
-Do you need to match across line boundaries?
-├─ Yes → Use -U (--multiline)
-│   └─ Does . need to match newlines?
-│       ├─ Yes → Add --multiline-dotall or use (?s)
-│       └─ No → Just -U is sufficient
-└─ No → Default line-by-line search
 
-Do you need lookaround or backreferences?
-├─ Yes → Use -P (--pcre2)
-│   └─ Matching across lines?
-│       └─ Yes → Use -PU together
-└─ No → Default engine is faster
+!!! note "About --engine=auto"
+    The `--engine=auto` flag analyzes your pattern and automatically selects the best regex engine. It chooses the default engine for simple patterns (faster) or switches to PCRE2 when it detects features like lookaround or backreferences. This is useful when you're not sure which engine to use.
 
-Do you need Unicode character classes?
-├─ Yes → Default behavior (Unicode enabled)
-└─ No → Use --no-unicode for ASCII-only (faster)
+### Engine Comparison: Default vs PCRE2
 
-Complex pattern with multiple features?
-└─ Consider --engine=auto for automatic selection
-```
+| Feature | Default Engine | PCRE2 Engine (`-P`) |
+|---------|---------------|---------------------|
+| **Performance** | Faster - optimized for speed | Slower - more feature-rich |
+| **Lookaround** | Not supported | ✓ `(?=...)` `(?!...)` `(?<=...)` `(?<!...)` |
+| **Backreferences** | Not supported | ✓ `\1` `\2` etc. |
+| **Named captures** | ✓ Supported | ✓ Supported |
+| **Unicode classes** | ✓ `\p{Letter}` etc. | ✓ `\p{Letter}` etc. |
+| **Multiline mode** | ✓ With `-U` | ✓ With `-U` (use `-PU`) |
+| **When to use** | Most searches - default choice | When you need lookaround or backreferences |
+
+!!! tip "Choosing the Right Engine"
+    Start with the default engine. Only use `-P` (PCRE2) when you specifically need lookaround assertions or backreferences. The default engine is significantly faster for most search patterns.
 
 ## Summary
 
@@ -62,6 +83,6 @@ For most searches, simple patterns with the default engine are sufficient. Use a
 
 ## Related Chapters
 
-- [Basic Usage](../basics.md) - Fundamental regex patterns
+- [Basic Usage](../basics/index.md) - Fundamental regex patterns
 - [Replacements](../replacements.md) - Using captures in replacements
 - [File Encoding](../file-encoding.md) - Handling different encodings
