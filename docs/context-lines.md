@@ -21,7 +21,8 @@ rg -B 2 pattern
 rg -C 2 pattern
 ```
 
-**Note:** Context values can be very large (up to the maximum value supported by your system) for edge cases where you need extensive surrounding context. However, typical usage is 2-10 lines.
+!!! note
+    Context values can be very large (up to the maximum value supported by your system) for edge cases where you need extensive surrounding context. However, typical usage is 2-10 lines.
 
 ## After Context
 
@@ -108,32 +109,34 @@ To remove all separation between match groups (including line breaks):
 rg -C 2 --no-context-separator pattern
 ```
 
-**Visual Difference:** The distinction between empty separator and `--no-context-separator`:
+!!! tip "Visual Difference"
+    The distinction between empty separator and `--no-context-separator`:
 
-With `--context-separator ''` (empty string):
-```
-file.txt:10:first match
-file.txt-11-context line
-file.txt-12-context line
+    === "Empty separator: `--context-separator ''`"
+        ```
+        file.txt:10:first match
+        file.txt-11-context line
+        file.txt-12-context line
 
-file.txt:20:second match
-file.txt-21-context line
-```
-*Note the blank line between match groups*
+        file.txt:20:second match
+        file.txt-21-context line
+        ```
+        *Note the blank line between match groups*
 
-With `--no-context-separator`:
-```
-file.txt:10:first match
-file.txt-11-context line
-file.txt-12-context line
-file.txt:20:second match
-file.txt-21-context line
-```
-*No blank line - output flows continuously*
+    === "No separator: `--no-context-separator`"
+        ```
+        file.txt:10:first match
+        file.txt-11-context line
+        file.txt-12-context line
+        file.txt:20:second match
+        file.txt-21-context line
+        ```
+        *No blank line - output flows continuously*
 
-Summary:
-- `--context-separator ''` removes the `--` separator but keeps a blank line between groups
-- `--no-context-separator` removes all separation, making match groups flow continuously
+    **Summary:**
+
+    - `--context-separator ''` removes the `--` separator but keeps a blank line between groups
+    - `--no-context-separator` removes all separation, making match groups flow continuously
 
 ## Line Number Display
 
@@ -171,20 +174,21 @@ file.txt 42 > matching line
 file.txt 43 | context line after
 ```
 
-**Escape Sequences:** Field separators support escape sequences for special characters:
+!!! example "Escape Sequences"
+    Field separators support escape sequences for special characters:
 
-```bash
-# Use tab separator for easier parsing
-rg --field-match-separator '\t' pattern
+    ```bash
+    # Use tab separator for easier parsing
+    rg --field-match-separator '\t' pattern
 
-# Use null byte separator (useful for machine parsing)
-rg --field-match-separator '\x00' pattern
+    # Use null byte separator (useful for machine parsing)
+    rg --field-match-separator '\x00' pattern
 
-# Use hex escapes for non-printable characters
-rg --field-context-separator '\xFF' pattern
-```
+    # Use hex escapes for non-printable characters
+    rg --field-context-separator '\xFF' pattern
+    ```
 
-Common escape sequences: `\t` (tab), `\n` (newline), `\r` (carriage return), `\x00` (null byte), `\xFF` (hex byte).
+    Common escape sequences: `\t` (tab), `\n` (newline), `\r` (carriage return), `\x00` (null byte), `\xFF` (hex byte).
 
 ## Combining with Other Options
 
@@ -222,11 +226,13 @@ rg --passthru -C 2 pattern  # Context mode: only 2 lines of context
 rg -C 2 --passthru pattern  # Passthru mode: all lines shown
 ```
 
-**Flag Precedence:** When both `--passthru` and context flags (`-A/-B/-C`) are specified, the last flag wins:
-- If `--passthru` comes last, it enables passthru mode (showing all lines)
-- If `-A/-B/-C` comes last, it enables context mode (showing only specified context)
+!!! warning "Flag Precedence"
+    When both `--passthru` and context flags (`-A/-B/-C`) are specified, the last flag wins:
 
-Use `--passthru` when you want to see the entire file with matches highlighted. Use `-A/-B/-C` when you only need specific context around matches.
+    - If `--passthru` comes last, it enables passthru mode (showing all lines)
+    - If `-A/-B/-C` comes last, it enables context mode (showing only specified context)
+
+    Use `--passthru` when you want to see the entire file with matches highlighted. Use `-A/-B/-C` when you only need specific context around matches.
 
 ## Examples
 
@@ -354,6 +360,6 @@ Separators only appear when there are multiple distinct match groups. Single mat
 
 ## See Also
 
-- [Basics](basics.md) - Basic search usage
+- [Basics](basics/index.md) - Basic search usage
 - [Output Formats](output-formats.md) - Other output customization options
-- [Common Options](common-options.md) - Frequently used flags
+- [Common Options](common-options/index.md) - Frequently used flags
