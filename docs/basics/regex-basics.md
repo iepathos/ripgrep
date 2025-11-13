@@ -92,6 +92,22 @@ rg "\P{L}+"          # Matches non-letter characters
 | `\p{Ll}` | Lowercase letter | Matches "abc", "ñ" |
 | `\p{Lu}` | Uppercase letter | Matches "ABC", "Ñ" |
 
+**Unicode scripts** allow matching specific writing systems:
+
+```bash
+# \p{Greek} matches Greek script characters
+rg "\p{Greek}+"       # Matches "Ελληνικά", "Ω"
+
+# \p{Han} matches Chinese/Japanese/Korean Han characters
+rg "\p{Han}+"         # Matches "日本語", "中文"
+
+# \p{Arabic} matches Arabic script
+rg "\p{Arabic}+"      # Matches "العربية"
+
+# \p{Cyrillic} matches Cyrillic script
+rg "\p{Cyrillic}+"    # Matches "Русский"
+```
+
 ## Quantifiers
 
 ```bash
@@ -157,6 +173,7 @@ rg -P pattern           # Shorthand
 
 # Auto-select engine based on pattern
 rg --engine auto pattern
+rg --auto-hybrid-regex pattern  # Synonym for --engine auto
 ```
 
 **When to use different engines:**
@@ -164,6 +181,9 @@ rg --engine auto pattern
 - **Default (regex-automata)**: Fast, efficient for most patterns. Use for general searches.
 - **PCRE2**: Supports advanced features not in default engine. Use when you need backreferences, lookahead/lookbehind, or other Perl-compatible features.
 - **Auto**: Lets ripgrep choose the best engine for your pattern.
+
+!!! tip "Auto Engine Selection"
+    Use `--auto-hybrid-regex` when you're not sure which engine to use. Ripgrep will automatically select the best engine based on your pattern's complexity.
 
 ## PCRE2 Engine
 
@@ -194,10 +214,10 @@ rg -P "\d++\."           # More efficient matching with possessive +
 rg -P "(?>error|warning):"   # Prevents backtracking
 ```
 
-**Performance tradeoffs:**
-- PCRE2 is more powerful but typically slower than the default engine
-- Use PCRE2 only when you need its specific features
-- The default engine is optimized for speed and handles most use cases
+!!! warning "Performance Tradeoffs"
+    - PCRE2 is more powerful but typically slower than the default engine
+    - Use PCRE2 only when you need its specific features
+    - The default engine is optimized for speed and handles most use cases
 
 ## Default Engine Limitations
 
@@ -219,6 +239,8 @@ rg -P "(\w+)\s+\1"
 rg -P "error(?=:)"
 ```
 
-**Troubleshooting tip:** If your regex pattern isn't working as expected and uses backreferences or lookahead/lookbehind, try adding the `-P` flag to enable PCRE2.
+!!! tip "Troubleshooting Regex Patterns"
+    If your regex pattern isn't working as expected and uses backreferences or lookahead/lookbehind, try adding the `-P` flag to enable PCRE2.
 
-**Note:** For multiline pattern matching, ripgrep provides the `-U` flag. You can also use `--multiline-dotall` to make `.` match newlines in multiline mode. See the [Advanced Patterns](../advanced-patterns.md) chapter for details.
+!!! note "Multiline Patterns"
+    For multiline pattern matching, ripgrep provides the `-U` flag. You can also use `--multiline-dotall` to make `.` match newlines in multiline mode. See the [Advanced Patterns](../advanced-patterns/index.md) chapter for details.
