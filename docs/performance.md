@@ -22,25 +22,72 @@ Use the `-j`/`--threads` flag to control the number of threads:
 
 ```bash
 # Use 4 threads
-rg -j 4 pattern
+rg -j 4 pattern                # (1)!
 
 # Single-threaded mode
-rg --threads 1 pattern
+rg --threads 1 pattern         # (2)!
 
 # Use number of logical CPUs (default)
-rg pattern
+rg pattern                     # (3)!
 ```
 
-The default behavior uses the number of logical CPUs available. Single-threaded mode can be useful for:
-- Debugging performance issues
-- Ensuring deterministic output order
-- Systems with limited resources
+1. Explicitly set thread count for performance tuning
+2. Forces sequential processing—useful for debugging or deterministic output
+3. Default behavior: automatically uses all available logical CPUs
+
+The default behavior uses the number of logical CPUs available.
+
+!!! tip "When to Use Single-Threaded Mode"
+    Single-threaded mode (`--threads 1`) is useful for:
+
+    - Debugging performance issues
+    - Ensuring deterministic output order
+    - Systems with limited resources
 
 ### Work Stealing Architecture
 
 Ripgrep uses a work-stealing scheduler for parallel iteration. When one thread finishes its work early, it can "steal" work from other threads, ensuring all cores stay busy and maximizing throughput.
 
 This lock-free parallel iteration (using atomic operations for work distribution) means ripgrep scales well across many cores without contention overhead.
+
+```mermaid
+graph TD
+    Start[Directory Traversal] --> WorkQueue[Work Queue<br/>Files to Search]
+    WorkQueue --> T1[Thread 1]
+    WorkQueue --> T2[Thread 2]
+    WorkQueue --> T3[Thread 3]
+    WorkQueue --> TN[Thread N]
+
+    T1 -->|Work Done| Steal1{More Work?}
+    T2 -->|Work Done| Steal2{More Work?}
+    T3 -->|Work Done| Steal3{More Work?}
+
+    Steal1 -->|Queue Empty| StealFrom2[Steal from Thread 2]
+    Steal2 -->|Queue Empty| StealFrom3[Steal from Thread 3]
+    Steal3 -->|Queue Empty| StealFrom1[Steal from Thread 1]
+
+    StealFrom2 --> T1
+    StealFrom3 --> T2
+    StealFrom1 --> T3
+
+    Steal1 -->|Found Work| T1
+    Steal2 -->|Found Work| T2
+    Steal3 -->|Found Work| T3
+
+    T1 --> Results[Aggregate Results]
+    T2 --> Results
+    T3 --> Results
+    TN --> Results
+
+    style WorkQueue fill:#e1f5ff
+    style T1 fill:#fff3e0
+    style T2 fill:#fff3e0
+    style T3 fill:#fff3e0
+    style TN fill:#fff3e0
+    style Results fill:#e8f5e9
+```
+
+**Figure**: Work-stealing parallel search showing how threads dynamically balance load using lock-free atomic operations.
 
 ### When Parallelism is Disabled
 
@@ -59,29 +106,81 @@ By default, ripgrep automatically chooses whether to use memory mapping based on
 - Large files benefit from memory mapping
 - Small files are faster with incremental buffered reads
 
+```mermaid
+flowchart TD
+    Start[File to Search] --> Type{File Type}
+    Type -->|Stdin| BufferStdin[Buffered Read<br/>Streaming Input]
+    Type -->|Regular File| Size{File Size}
+
+    Size -->|Large File| Resources{RAM Available?}
+    Size -->|Small File| BufferSmall[Buffered Read<br/>Better for Small Files]
+
+    Resources -->|Yes + Sufficient| FS{File System}
+    Resources -->|No/Limited| BufferMem[Buffered Read<br/>Memory Constrained]
+
+    FS -->|Local Disk| Cache{In Page Cache?}
+    FS -->|Network/NFS| BufferNet[Buffered Read<br/>Network Overhead]
+
+    Cache -->|Yes| MmapCache[Memory Mapping<br/>Zero-Copy Access]
+    Cache -->|No| MmapDisk[Memory Mapping<br/>OS Handles I/O]
+
+    MmapCache --> Search[Search File]
+    MmapDisk --> Search
+    BufferSmall --> Search
+    BufferMem --> Search
+    BufferNet --> Search
+    BufferStdin --> Search
+
+    style BufferStdin fill:#e1f5ff
+    style BufferSmall fill:#e1f5ff
+    style BufferMem fill:#e1f5ff
+    style BufferNet fill:#e1f5ff
+    style MmapCache fill:#c8e6c9
+    style MmapDisk fill:#fff9c4
+    style Search fill:#f3e5f5
+```
+
+**Figure**: I/O strategy selection showing how ripgrep automatically chooses between memory mapping and buffered reads based on file characteristics.
+
 ### Manual Control
 
 Force memory mapping on or off:
 
 ```bash
 # Force memory mapping
-rg --mmap pattern
+rg --mmap pattern              # (1)!
 
 # Disable memory mapping
-rg --no-mmap pattern
+rg --no-mmap pattern           # (2)!
 ```
 
+1. Override automatic selection and force memory-mapped I/O
+2. Force buffered reading even for large files
+
 Memory mapping is beneficial when:
-- Searching very large files
+- Searching very large files (>10 MB)
 - The file is likely to be in the OS page cache
 - You have sufficient RAM
 
 Avoid memory mapping when:
-- Searching many small files
-- Working with network file systems
+- Searching many small files (<1 MB)
+- Working with network file systems (NFS, SMB)
 - Memory is constrained
 
-**Platform-specific note**: Memory mapping is disabled by default on macOS due to performance overhead, but can be enabled with `--mmap` if beneficial for your use case.
+!!! warning "macOS Memory Mapping"
+    Memory mapping is disabled by default on macOS due to performance overhead in the kernel's mmap implementation. You can enable it with `--mmap` if benchmarking shows it's beneficial for your specific use case.
+
+### Stdin Handling
+
+When reading from stdin (piped input), ripgrep automatically uses optimized buffered reading instead of memory mapping, since stdin cannot be memory-mapped. The buffer strategy is tuned for streaming input to provide good performance when processing piped data:
+
+```bash
+# Ripgrep automatically optimizes stdin handling
+cat large_file.txt | rg pattern
+
+# Or using process substitution
+rg pattern < large_file.txt
+```
 
 ## Low-Level Optimizations
 
@@ -95,7 +194,8 @@ Modern CPUs support SIMD (Single Instruction, Multiple Data) instructions that c
 - Multi-pattern searching
 - BOM detection
 
-No configuration needed—ripgrep detects and uses available CPU features automatically.
+!!! note "Automatic SIMD Detection"
+    No configuration needed—ripgrep detects and uses available CPU features automatically. This includes SSE2, SSSE3, AVX2, and other instruction sets depending on your CPU.
 
 ### Literal Extraction
 
@@ -124,6 +224,20 @@ rg pattern
 
 The heuristic-based detection is very fast and avoids wasting time on non-text content.
 
+### Automatic Internal Optimizations
+
+Ripgrep includes several internal optimizations that work automatically without configuration:
+
+**RegexSet for Glob Matching** (Source: crates/globset/src/lib.rs)
+
+When filtering files by globs or file types, ripgrep uses `RegexSet` to compile multiple patterns into a single optimized finite automaton. This allows testing a path against hundreds of patterns in a single pass, making file filtering nearly free compared to the actual search cost.
+
+**UTF-8 DFA Decoding** (Source: crates/searcher/src/searcher/)
+
+The regex engine includes optimized UTF-8 validation integrated directly into the DFA execution. This means ripgrep can validate text encoding while searching, eliminating a separate validation pass and improving cache locality.
+
+These optimizations are built into ripgrep's core and provide performance benefits automatically—no flags or configuration needed.
+
 ## Regex Engine Tuning
 
 Ripgrep provides options to control the regex engine's memory usage and behavior.
@@ -134,10 +248,15 @@ The default regex engine uses deterministic finite automata (DFA). Control DFA m
 
 ```bash
 # Set DFA cache size limit (in bytes)
-rg --dfa-size-limit 100M pattern
+rg --dfa-size-limit 100M pattern   # (1)!
 ```
 
+1. Increase DFA cache from default 1 MB to 100 MB for complex patterns
+
 The default is 1 MB (1000000 bytes). Increase this if you see warnings about DFA cache thrashing on very large or complex patterns.
+
+!!! tip "When to Increase DFA Size"
+    If you see "DFA cache capacity exceeded" warnings or notice slowdowns with complex patterns, try increasing to 10M or 100M. The trade-off is higher memory usage for faster matching.
 
 ### Regex Size Limits
 
@@ -154,7 +273,7 @@ The default is 100 MB. Useful in memory-constrained environments or when dealing
 
 Choose between regex engines:
 
-```bash
+```bash title="Selecting Regex Engine"
 # Use default Rust regex (finite automata)
 rg pattern
 
@@ -165,11 +284,34 @@ rg -P 'pattern'
 rg --engine auto pattern
 ```
 
-**Performance characteristics:**
+!!! example "Performance Characteristics"
+    **Default (Rust regex)**: Finite automata provide guaranteed linear time complexity. Best for most use cases.
 
-- **Default (Rust regex)**: Finite automata provide guaranteed linear time complexity. Best for most use cases.
-- **PCRE2**: Backtracking engine supports advanced features (look-around, backreferences) but can be slower and has worst-case exponential behavior on certain patterns.
-- **Auto**: Attempts to choose the best engine based on pattern analysis.
+    **PCRE2**: Backtracking engine supports advanced features (look-around, backreferences) but can be slower and has worst-case exponential behavior on certain patterns.
+
+    **Auto**: Attempts to choose the best engine based on pattern analysis.
+
+```mermaid
+graph LR
+    Pattern[Regex Pattern] --> Analysis{Pattern Analysis}
+
+    Analysis -->|Simple Literal| Literal[SIMD Literal<br/>Matching]
+    Analysis -->|Standard Regex| DFA[Rust Regex<br/>Finite Automata]
+    Analysis -->|Look-around/Backrefs| PCRE[PCRE2<br/>Backtracking]
+
+    Literal --> Perf1[⚡ Fastest<br/>O&#40;n&#41; guaranteed]
+    DFA --> Perf2[⚡⚡ Fast<br/>O&#40;n&#41; guaranteed]
+    PCRE --> Perf3[⚠️ Variable<br/>Can be slow]
+
+    style Literal fill:#c8e6c9
+    style DFA fill:#e1f5ff
+    style PCRE fill:#fff9c4
+    style Perf1 fill:#a5d6a7
+    style Perf2 fill:#90caf9
+    style Perf3 fill:#fff59d
+```
+
+**Figure**: Regex engine selection showing performance characteristics and when each engine is used.
 
 ## Buffer and Memory Tuning
 
@@ -200,6 +342,74 @@ Ripgrep has internal heap limit controls to prevent excessive memory usage. Whil
 
 The default heap allocation strategy is eager allocation, which provides good performance for most use cases. In constrained environments, reducing memory limits through flags like `--dfa-size-limit` and `--regex-size-limit` helps control heap usage.
 
+## Additional Performance Tuning Flags
+
+### Limiting Output and Resources
+
+Several flags help control resource usage and improve performance in specific scenarios:
+
+#### Max Count (`-m`/`--max-count`)
+
+```bash
+# Source: crates/core/flags/defs.rs:3872-3909
+# Stop after finding N matching lines per file
+rg --max-count 10 pattern
+
+# Quick sampling - get first match from each file
+rg -m 1 pattern
+```
+
+Stops searching a file after finding N matching lines. Useful for:
+- Quick sampling of large codebases
+- Finding representative examples without processing all matches
+- Improving performance when you only need a few results
+
+!!! tip "Performance Boost"
+    Using `--max-count 1` can speed up searches by 10-100x when you only need to know if a pattern exists, not count all occurrences. Combine with `--files-with-matches` to quickly identify which files contain matches without processing all occurrences.
+
+#### Max Columns (`-M`/`--max-columns`)
+
+```bash
+# Source: crates/core/flags/defs.rs:3759-3789
+# Omit lines longer than 500 bytes
+rg --max-columns 500 pattern
+
+# Skip very long lines (common in minified files)
+rg -M 1000 pattern
+```
+
+Omits lines longer than the specified byte limit. Instead of printing long lines, only the number of matches in that line is shown. Useful for:
+- Preventing excessive memory usage on files with very long lines
+- Avoiding output flooding from minified JavaScript/CSS files
+- Improving performance when searching logs with extremely long entries
+
+!!! warning "Byte Limit, Not Character Limit"
+    This limits line length in **bytes**, not characters. Multibyte UTF-8 characters count as multiple bytes. A line with 100 emoji characters could be 400+ bytes.
+
+!!! tip "Minified File Handling"
+    When searching web projects, use `--max-columns 500` to avoid processing minified JavaScript/CSS files that often have 10,000+ character lines. This prevents memory spikes and output floods.
+
+#### One File System (`--one-file-system`)
+
+```bash
+# Source: crates/core/flags/defs.rs:5090-5114
+# Don't cross filesystem boundaries
+rg --one-file-system pattern
+
+# Avoid searching network mounts
+rg --one-file-system pattern /home/user
+```
+
+Prevents ripgrep from crossing filesystem boundaries during directory traversal. Useful for:
+- Avoiding slow network filesystems (NFS, SMB)
+- Skipping mounted external drives
+- Preventing searches from traversing into Docker volumes or other mounts
+
+Similar to `find`'s `-xdev` or `-mount` flag.
+
+!!! note
+    This applies per path argument. Searching multiple paths on different filesystems will still search all of them, but won't cross boundaries within each path's tree.
+
 ## Sorting Results
 
 Ripgrep can sort results, but with a performance cost.
@@ -226,18 +436,21 @@ rg --sortr path pattern
 - Requires buffering all output before displaying
 - Slower for large result sets
 
-Only use sorting when deterministic order is required (e.g., for diffing outputs, generating reports).
+!!! warning "Sorting Performance Cost"
+    Sorting disables parallel search entirely, which can make searches 4-10x slower on multi-core systems. Only use sorting when deterministic order is required (e.g., for diffing outputs, generating reports).
+
+    For most interactive searches, the performance cost outweighs the benefit of sorted output.
 
 ## Performance Statistics
 
 Use `--stats` to see detailed performance metrics:
 
-```bash
+```bash title="Performance Statistics"
 rg --stats pattern
 ```
 
 **Example output:**
-```
+```text
 3 matches
 3 matched lines
 1 file contained matches
@@ -248,16 +461,19 @@ rg --stats pattern
 0.005 seconds
 ```
 
-**Key metrics:**
-- **Bytes searched**: Total data scanned
-- **Time spent searching**: Actual regex matching time
-- **Total time**: Includes file traversal, filtering, output formatting
+!!! tip "Understanding Performance Metrics"
+    **Key metrics:**
 
-Use statistics to:
-- Identify performance bottlenecks
-- Compare different search strategies
-- Verify optimization effectiveness
-- Debug unexpected slowness
+    - **Bytes searched**: Total data scanned
+    - **Time spent searching**: Actual regex matching time
+    - **Total time**: Includes file traversal, filtering, output formatting
+
+    Use statistics to:
+
+    - Identify performance bottlenecks
+    - Compare different search strategies
+    - Verify optimization effectiveness
+    - Debug unexpected slowness
 
 ## Benchmarking
 
@@ -301,7 +517,7 @@ Performance depends on:
 
 For consistent results:
 
-```bash
+```bash title="Benchmark Best Practices"
 # Run multiple iterations
 hyperfine 'rg pattern' --warmup 3 --runs 10
 
@@ -312,11 +528,15 @@ taskset -c 0-3 rg pattern
 rg --stats pattern
 ```
 
+!!! tip
+    Use [hyperfine](https://github.com/sharkdp/hyperfine) for reliable benchmarking with statistical analysis. It automatically handles warmup runs and provides min/mean/max timing with standard deviation.
+
 ## Performance Tips
 
 ### For Large Codebases
 
 ```bash
+# Source: crates/core/flags/defs.rs
 # Use file type filtering
 rg -t rust pattern
 
@@ -325,6 +545,15 @@ rg --max-depth 3 pattern
 
 # Skip large files
 rg --max-filesize 1M pattern
+
+# Skip directories on other file systems (avoid network mounts)
+rg --one-file-system pattern
+
+# Stop after N matches for quick sampling
+rg --max-count 100 pattern
+
+# Omit very long lines to prevent memory issues
+rg --max-columns 500 pattern
 ```
 
 ### For Network File Systems
@@ -368,11 +597,12 @@ rg -t py pattern  # Faster than searching all files
 
 ### Avoid These Patterns
 
-1. **Overly complex regex**: Use literal search when possible
-2. **Unnecessary PCRE2**: Default engine is faster for most patterns
-3. **Sorting when not needed**: Disables parallelism
-4. **Too many threads**: Overhead can exceed benefit (usually > 16)
-5. **Memory mapping small files**: Buffered I/O is faster
+!!! warning "Common Performance Mistakes"
+    1. **Overly complex regex**: Use literal search (`-F`) when possible—it's 10-50x faster
+    2. **Unnecessary PCRE2**: Default engine is faster for most patterns unless you need look-around/backreferences
+    3. **Sorting when not needed**: Disables parallelism (4-10x slower on multi-core systems)
+    4. **Too many threads**: Overhead can exceed benefit (usually > 16 threads)
+    5. **Memory mapping small files**: Buffered I/O is faster for files under a few MB
 
 ### Troubleshooting Slow Searches
 
