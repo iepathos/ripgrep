@@ -40,6 +40,9 @@ rg "[a-zA-Z]+"       # Matches alphabetic words
 rg "[^0-9]"          # Matches any non-digit character
 ```
 
+!!! tip "Prefer Predefined Classes"
+    Use predefined classes like `\d` instead of `[0-9]` and `\w` instead of `[a-zA-Z0-9_]` for better readability and Unicode support. For example, `\d` matches Unicode digits in all scripts, not just ASCII 0-9.
+
 ## Predefined Character Classes
 
 ```bash
@@ -141,6 +144,9 @@ rg "(?:http|https)://\S+"     # Matches URLs
 
 ## Common Pattern Examples
 
+!!! example "Real-World Patterns"
+    These patterns are useful for searching codebases and logs:
+
 ```bash
 # Email addresses
 rg "\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"
@@ -182,6 +188,30 @@ rg --auto-hybrid-regex pattern  # Synonym for --engine auto
 - **PCRE2**: Supports advanced features not in default engine. Use when you need backreferences, lookahead/lookbehind, or other Perl-compatible features.
 - **Auto**: Lets ripgrep choose the best engine for your pattern.
 
+```mermaid
+flowchart TD
+    Start[Need Regex Pattern] --> Check{Pattern<br/>Requirements?}
+
+    Check -->|Basic matching<br/>Character classes<br/>Quantifiers| Default[Use Default Engine<br/>Fast & Efficient]
+    Check -->|Backreferences<br/>Lookahead/behind<br/>Advanced features| PCRE[Use PCRE2 Engine<br/>-P flag]
+    Check -->|Not sure| Auto[Use Auto Mode<br/>--auto-hybrid-regex]
+
+    Default --> Search[Execute Search]
+    PCRE --> Search
+    Auto --> Detect{Auto-detect<br/>Pattern Type}
+    Detect -->|Simple| UseDefault[Select Default]
+    Detect -->|Complex| UsePCRE[Select PCRE2]
+    UseDefault --> Search
+    UsePCRE --> Search
+
+    style Default fill:#e8f5e9
+    style PCRE fill:#fff3e0
+    style Auto fill:#e1f5ff
+    style Search fill:#f3e5f5
+```
+
+**Figure**: Decision flow for selecting the appropriate regex engine based on pattern requirements.
+
 !!! tip "Auto Engine Selection"
     Use `--auto-hybrid-regex` when you're not sure which engine to use. Ripgrep will automatically select the best engine based on your pattern's complexity.
 
@@ -191,28 +221,38 @@ Use the `-P` or `--pcre2` flag to enable the Perl-compatible regex engine, which
 
 **Features available only with PCRE2:**
 
-```bash
-# Backreferences - refer to previously captured groups
-rg -P "(\w+)\s+\1"       # Finds repeated words like "the the"
+=== "Backreferences"
+    ```bash
+    # Refer to previously captured groups with \1, \2, etc.
+    rg -P "(\w+)\s+\1"       # Finds repeated words like "the the"
 
-# Positive lookahead (?=...)
-rg -P "error(?=:)"       # Matches "error" only if followed by ":"
+    # Named backreferences
+    rg -P "(?P<word>\w+)\s+\k<word>"  # Same with named groups
+    ```
 
-# Negative lookahead (?!...)
-rg -P "test(?!ing)"      # Matches "test" but not "testing"
+=== "Lookahead/Lookbehind"
+    ```bash
+    # Positive lookahead (?=...)
+    rg -P "error(?=:)"       # Matches "error" only if followed by ":"
 
-# Positive lookbehind (?<=...)
-rg -P "(?<=@)\w+"        # Matches username after "@" in email
+    # Negative lookahead (?!...)
+    rg -P "test(?!ing)"      # Matches "test" but not "testing"
 
-# Negative lookbehind (?<!...)
-rg -P "(?<!un)happy"     # Matches "happy" but not "unhappy"
+    # Positive lookbehind (?<=...)
+    rg -P "(?<=@)\w+"        # Matches username after "@" in email
 
-# Possessive quantifiers
-rg -P "\d++\."           # More efficient matching with possessive +
+    # Negative lookbehind (?<!...)
+    rg -P "(?<!un)happy"     # Matches "happy" but not "unhappy"
+    ```
 
-# Atomic groups (?>...)
-rg -P "(?>error|warning):"   # Prevents backtracking
-```
+=== "Advanced Features"
+    ```bash
+    # Possessive quantifiers (prevent backtracking)
+    rg -P "\d++\."           # More efficient matching with possessive +
+
+    # Atomic groups (?>...) - also prevent backtracking
+    rg -P "(?>error|warning):"   # No backtracking in group
+    ```
 
 !!! warning "Performance Tradeoffs"
     - PCRE2 is more powerful but typically slower than the default engine
