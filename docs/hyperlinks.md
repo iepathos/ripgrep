@@ -23,6 +23,8 @@ rg --hyperlink-format default pattern
 
 Instead of writing full hyperlink format strings, ripgrep provides convenient built-in aliases for common editors and schemes:
 
+<!-- Source: crates/printer/src/hyperlink/aliases.rs:6-68 -->
+
 | Alias | Expands to |
 |-------|-----------|
 | `default` | Platform-aware file:// scheme (see below) |
@@ -75,9 +77,9 @@ Available variables for hyperlink templates:
 - `{line}`: Line number of the match
 - `{column}`: Column number of the match
 - `{host}`: Machine hostname (automatically populated by ripgrep from your system hostname)
-- `{wslprefix}`: WSL distro prefix like `wsl$/Ubuntu` (Windows only, set when running in WSL)
+- `{wslprefix}`: WSL distro prefix like `wsl$/Ubuntu` (Windows only, automatically set from the `WSL_DISTRO_NAME` environment variable when running in WSL)
 
-The `{host}` variable is useful for network file shares or remote development environments. The `{wslprefix}` variable enables proper file:// URLs when working in Windows Subsystem for Linux.
+The `{host}` variable is useful for network file shares or remote development environments. The `{wslprefix}` variable enables proper file:// URLs when working in Windows Subsystem for Linux by automatically detecting the WSL distro name.
 
 ## Terminal Support
 
@@ -290,6 +292,26 @@ rg --hyperlink-format 'myscheme://{{literal}}/{path}' pattern
 
 Use `{{` for a literal `{` and `}}` for a literal `}`.
 
+### Format Validation Requirements
+
+Hyperlink formats must meet these validation constraints:
+
+- Must contain at least a `{path}` variable
+- If `{column}` is used, `{line}` must also be present
+- Format must start with a valid URL scheme (alphanumeric characters, `+`, `-`, or `.`)
+
+!!! warning "Invalid Format Examples"
+    ```bash
+    # Invalid: Missing {path}
+    rg --hyperlink-format 'file://{line}' pattern
+
+    # Invalid: {column} without {line}
+    rg --hyperlink-format 'file://{path}:{column}' pattern
+
+    # Invalid: No URL scheme
+    rg --hyperlink-format '{path}:{line}' pattern
+    ```
+
 ### Conditional Hyperlinks
 
 Only use hyperlinks when output is to terminal:
@@ -323,4 +345,4 @@ rg --hyperlink-format file pattern | sed 's/.*file:\/\/\([^[:space:]]*\).*/\1/'
 
 - [Output Formats](output-formats.md) - Other output customization options
 - [Configuration File](configuration-file.md) - Setting up persistent configuration
-- [Common Options](common-options.md) - Other frequently used flags
+- [Common Options](common-options/output-formatting.md) - Output formatting options
