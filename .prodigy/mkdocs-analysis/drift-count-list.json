@@ -1,0 +1,70 @@
+{
+  "item_type": "page",
+  "page_id": "count-list",
+  "page_title": "count list",
+  "page_file": "docs/basics/count-list.md",
+  "drift_detected": true,
+  "severity": "medium",
+  "quality_assessment": "Page covers basic counting and listing functionality but is missing the --include-zero flag documentation and could benefit from visual enhancements",
+  "issues": [
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Counting Matches",
+      "description": "Missing documentation for --include-zero flag to include zero-count files in output",
+      "feature_reference": "utility_features.counting.include-zero",
+      "fix_suggestion": "Add explanation and example of --include-zero flag after --count-matches example. Example: 'rg -c --include-zero pattern' to show files even when they have 0 matches",
+      "source_reference": "crates/core/flags/defs.rs:3328-3374"
+    },
+    {
+      "type": "missing_visual_features",
+      "severity": "low",
+      "section": "Overall Page Structure",
+      "description": "Auto-discovered page lacks MkDocs Material visual enhancements like admonitions for tips/warnings",
+      "feature_reference": "mkdocs_material.admonitions",
+      "fix_suggestion": "Add admonitions to highlight important usage notes. For example, use '!!! tip' for the practical use cases, or '!!! note' to explain the difference between -c and --count-matches"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "Counting Matches",
+      "description": "Could better explain the difference between -c (lines) and --count-matches (individual matches)",
+      "fix_suggestion": "Add a concrete example showing a line with multiple matches to demonstrate the difference. For instance: 'In the line \"error error error\", -c returns 1 but --count-matches returns 3'"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Listing Files",
+      "description": "Missing --files mode which lists files that would be searched (without pattern matching)",
+      "feature_reference": "utility_features.list_modes.--files",
+      "fix_suggestion": "Add a section for 'List All Files' showing 'rg --files' to list all files that would be searched, useful for debugging filtering",
+      "source_reference": "features.json:384"
+    }
+  ],
+  "positive_aspects": [
+    "Clear, concise examples with practical use cases",
+    "Good progression from basic to practical examples",
+    "Covers inverted matching which is often overlooked",
+    "Examples use realistic scenarios (Rust files, test files, config files)",
+    "Output examples help set expectations"
+  ],
+  "improvement_suggestions": [
+    "Add a comparison table showing the difference between -c, --count-matches, and --include-zero",
+    "Include a 'Common Pitfalls' admonition about zero-count behavior",
+    "Add cross-reference to output control page for more formatting options",
+    "Consider adding an example from common_patterns showing 'Count occurrences by file' with sorting",
+    "Add visual separators or tabs to organize different modes (counting vs listing vs inverting)"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-13T20:53:28Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": [
+      "counting",
+      "listing files",
+      "inverted matching"
+    ],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "internal_links_validated": 1,
+    "broken_links": []
+  }
+}
