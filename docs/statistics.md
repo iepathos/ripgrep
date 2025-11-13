@@ -36,9 +36,25 @@ The statistics output includes several categories of information. Statistics are
 0.001000 seconds total
 ```
 
-Note that time values are formatted with 6 decimal places of precision.
+!!! note
+    Time values are formatted with 6 decimal places of precision.
 
 ## Key Metrics
+
+The statistics data structure tracks the following metrics:
+
+```rust
+// Source: crates/printer/src/stats.rs:13-21
+pub struct Stats {
+    elapsed: Duration,
+    searches: u64,
+    searches_with_match: u64,
+    bytes_searched: u64,
+    bytes_printed: u64,
+    matched_lines: u64,
+    matches: u64,
+}
+```
 
 ### Match Statistics
 
@@ -57,7 +73,8 @@ Note that time values are formatted with 6 decimal places of precision.
 - **Seconds spent searching**: Actual search time across all threads
 - **Seconds total**: Wall-clock time for the entire operation
 
-The `--stats` flag itself has minimal performance overhead since ripgrep tracks these metrics internally regardless. Enabling `--stats` only adds the cost of formatting and printing the final summary.
+!!! tip "Performance Overhead"
+    The `--stats` flag itself has minimal performance overhead since ripgrep tracks these metrics internally regardless. Enabling `--stats` only adds the cost of formatting and printing the final summary.
 
 ## Understanding the Metrics
 
@@ -84,7 +101,8 @@ With parallel search:
 - **Searching time**: Sum of time across all threads (can exceed wall time)
 - **Total time**: Actual elapsed time
 
-The "seconds spent searching" metric accumulates CPU time across all threads. With parallel search, this will typically exceed wall-clock time. A ratio close to your thread count indicates good parallelization. For example, if you have 4 threads and the ratio is ~4x, your search is efficiently using all threads.
+!!! info "Understanding Thread Time"
+    The "seconds spent searching" metric accumulates CPU time across all threads. With parallel search, this will typically exceed wall-clock time. A ratio close to your thread count indicates good parallelization. For example, if you have 4 threads and the ratio is ~4x, your search is efficiently using all threads.
 
 Example:
 ```
@@ -145,7 +163,8 @@ rg --stats -tjs 'import'
 rg --stats -q pattern
 ```
 
-Note: When combining `--stats` with `--quiet`, ripgrep will search all files completely to collect accurate statistics, even though `--quiet` alone would normally exit after the first match. This means `--stats` disables `--quiet`'s early-exit optimization. If you're just checking for pattern existence in a large codebase, using both flags together will be much slower than `--quiet` alone, as it must search all files to completion.
+!!! warning "Performance Impact with --quiet"
+    When combining `--stats` with `--quiet`, ripgrep will search all files completely to collect accurate statistics, even though `--quiet` alone would normally exit after the first match. This means `--stats` disables `--quiet`'s early-exit optimization. If you're just checking for pattern existence in a large codebase, using both flags together will be much slower than `--quiet` alone, as it must search all files to completion.
 
 ### Statistics in JSON
 
@@ -158,7 +177,8 @@ rg --json --stats pattern
 
 This produces a summary message with `"type": "summary"` containing a `stats` object and `elapsed_total` field:
 
-```json
+```json title="JSON Statistics Format"
+// Source: crates/printer/src/stats.rs:13-21, tests/json.rs:128-136
 {
   "type": "summary",
   "data": {
@@ -294,5 +314,3 @@ echo "Found $MATCHES matches across $FILES files"
 ## See Also
 
 - [Performance](performance.md) - Performance tuning and optimization
-- [Troubleshooting](troubleshooting.md) - Debugging search issues
-- [Common Options](common-options.md) - Other useful flags
