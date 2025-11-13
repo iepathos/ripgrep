@@ -30,7 +30,8 @@ You can mix both in a single command:
 rg pattern file.txt dir/
 ```
 
-File paths specified on the command line are always searched, even if they would normally be filtered by `.gitignore` or other ignore files. This allows you to explicitly search specific files regardless of ignore rules.
+!!! note "Explicit File Paths Override Ignore Rules"
+    File paths specified on the command line are always searched, even if they would normally be filtered by `.gitignore` or other ignore files. This allows you to explicitly search specific files regardless of ignore rules.
 
 ## Controlling Recursion Depth
 
@@ -47,11 +48,10 @@ rg --max-depth 0 pattern dir/
 rg -d 3 FIXME ./
 ```
 
-**Important depth semantics:**
-
-- `--max-depth 0`: Only searches the explicitly given paths themselves (no recursion). If you specify a directory with depth 0, it's effectively a no-op because the directory won't be descended into.
-- `--max-depth 1`: Searches only the direct children of the given directory
-- `--max-depth 2`: Searches children and grandchildren, etc.
+!!! info "Depth Semantics"
+    - `--max-depth 0`: Only searches the explicitly given paths themselves (no recursion). If you specify a directory with depth 0, it's effectively a no-op because the directory won't be descended into.
+    - `--max-depth 1`: Searches only the direct children of the given directory
+    - `--max-depth 2`: Searches children and grandchildren, etc.
 
 Example showing depth behavior:
 
@@ -91,7 +91,8 @@ rg -L pattern /var/
 rg -L --max-depth 3 TODO ./
 ```
 
-**Warning:** Be careful when using `-L` as it can cause infinite loops if symlinks create cycles in the directory structure. ripgrep will continue following symlinks until it hits the depth limit or exhausts the directory tree.
+!!! warning "Symlink Loop Risk"
+    Be careful when using `-L` as it can cause infinite loops if symlinks create cycles in the directory structure. ripgrep will continue following symlinks until it hits the depth limit or exhausts the directory tree.
 
 ## File System Boundaries
 
@@ -105,7 +106,8 @@ rg --one-file-system pattern /
 rg --one-file-system TODO /home/
 ```
 
-This flag is particularly useful when searching from the root directory, preventing ripgrep from descending into mounted file systems like network shares, `/proc`, `/sys`, or external drives.
+!!! tip "Use Case: Searching from Root"
+    This flag is particularly useful when searching from the root directory, preventing ripgrep from descending into mounted file systems like network shares, `/proc`, `/sys`, or external drives.
 
 ## Interaction with Automatic Filtering
 
@@ -228,4 +230,4 @@ If recursive search is slower than expected:
 
 - [Automatic Filtering](./automatic-filtering.md) - How ignore files affect recursive traversal
 - [Manual Filtering: Globs](./manual-filtering-globs.md) - Using glob patterns to filter paths
-- [Basics](./basics.md) - Introduction to ripgrep usage
+- [Introduction](./introduction.md) - Introduction to ripgrep usage
