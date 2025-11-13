@@ -1,0 +1,73 @@
+{
+  "item_type": "page",
+  "page_id": "examples",
+  "page_title": "examples",
+  "page_file": "docs/advanced-patterns/examples.md",
+  "drift_detected": false,
+  "severity": "low",
+  "quality_assessment": "Page is technically accurate with excellent examples. Could be enhanced with MkDocs Material visual features for better presentation.",
+  "issues": [
+    {
+      "type": "missing_visual_features",
+      "severity": "low",
+      "section": "Overall",
+      "description": "Page could leverage MkDocs Material features for enhanced presentation",
+      "fix_suggestion": "Consider adding: (1) Admonitions for warnings/tips in the Limitations section, (2) Code annotations to explain complex regex patterns, (3) Tabbed examples showing variations of similar patterns",
+      "source_reference": "N/A - enhancement opportunity"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "Multi-line Log Parsing, Function Usage Analysis, and other examples",
+      "description": "Examples lack expected output samples to help users verify correctness",
+      "fix_suggestion": "Add example output snippets after code blocks to show what matches would look like. This helps users understand if their pattern is working correctly.",
+      "source_reference": "features.json:advanced_patterns.multiline_search, features.json:advanced_patterns.pcre2_engine"
+    }
+  ],
+  "positive_aspects": [
+    "Comprehensive practical examples covering major advanced features",
+    "Excellent 'Limitations and Gotchas' section addressing common pitfalls",
+    "Clear progression from basic to complex examples",
+    "Good coverage of multiline mode, PCRE2 features, lookaround, backreferences, and Unicode",
+    "Examples are technically accurate and align with features.json",
+    "Valid cross-references to index.md and performance.md",
+    "Includes important warnings about engine-specific behavior",
+    "Named capture group examples demonstrate best practices for readability"
+  ],
+  "improvement_suggestions": [
+    "Add MkDocs Material admonitions (!!! warning, !!! tip) for the Limitations section",
+    "Include expected output samples for key examples",
+    "Add code annotations (1) to explain complex regex components inline",
+    "Consider tabbed code blocks to show pattern variations side-by-side",
+    "Add a 'When to Use' context for each example category",
+    "Include performance hints for expensive operations (multiline, PCRE2)",
+    "Cross-reference specific advanced-patterns pages (multiline.md, pcre2.md, etc.) for deeper dives",
+    "Add a quick reference table at the top mapping use cases to example sections"
+  ],
+  "cross_references": [
+    "index",
+    "performance",
+    "multiline",
+    "pcre2",
+    "lookaround",
+    "backreferences",
+    "unicode"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-13T20:53:28Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": [
+      "multiline patterns",
+      "PCRE2 advanced features",
+      "lookaround assertions",
+      "backreferences",
+      "unicode searches",
+      "replacements",
+      "common pitfalls",
+      "regex engine differences"
+    ],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "internal_links_validated": true,
+    "broken_links_found": 0
+  }
+}
