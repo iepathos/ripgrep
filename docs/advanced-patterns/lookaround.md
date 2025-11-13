@@ -11,6 +11,71 @@ Lookaround assertions match patterns based on surrounding context without includ
 
 Lookaround assertions are **zero-width**, meaning they match a position without consuming characters. This makes them ideal for context-based filtering and extraction.
 
+```mermaid
+graph LR
+    subgraph "Normal Match: 'foobar'"
+        A1[f] --> A2[o]
+        A2 --> A3[o]
+        A3 --> A4[b]
+        A4 --> A5[a]
+        A5 --> A6[r]
+        style A1 fill:#ffebee
+        style A2 fill:#ffebee
+        style A3 fill:#ffebee
+        style A4 fill:#c8e6c9
+        style A5 fill:#c8e6c9
+        style A6 fill:#c8e6c9
+    end
+
+    subgraph "Lookahead Match: 'foo(?=bar)'"
+        B1[f] --> B2[o]
+        B2 --> B3[o]
+        B3 -.checks.-> B4[b]
+        B4 -.-> B5[a]
+        B5 -.-> B6[r]
+        style B1 fill:#ffebee
+        style B2 fill:#ffebee
+        style B3 fill:#ffebee
+        style B4 fill:#e3f2fd
+        style B5 fill:#e3f2fd
+        style B6 fill:#e3f2fd
+    end
+```
+
+**Figure**: Normal match vs lookahead. Red = matched and consumed; Green = matched and consumed; Blue = checked but not consumed (zero-width).
+
+### Four Types at a Glance
+
+```mermaid
+graph TD
+    subgraph Direction
+        LA[Lookahead<br/>Check AFTER]
+        LB[Lookbehind<br/>Check BEFORE]
+    end
+
+    subgraph Condition
+        POS[Positive<br/>Must Match]
+        NEG[Negative<br/>Must NOT Match]
+    end
+
+    LA --- POS
+    LA --- NEG
+    LB --- POS
+    LB --- NEG
+
+    POS --> P1["(?=...) Positive Lookahead<br/>Pattern must exist ahead"]
+    NEG --> N1["(?!...) Negative Lookahead<br/>Pattern must NOT exist ahead"]
+    POS --> P2["(?<=...) Positive Lookbehind<br/>Pattern must exist behind"]
+    NEG --> N2["(?<!...) Negative Lookbehind<br/>Pattern must NOT exist behind"]
+
+    style LA fill:#e1f5ff
+    style LB fill:#fff3e0
+    style POS fill:#e8f5e9
+    style NEG fill:#ffebee
+```
+
+**Figure**: The four lookaround types combine direction (ahead/behind) with condition (positive/negative).
+
 === "Lookahead"
     **Positive Lookahead** `(?=...)`: Assert pattern ahead matches
 
@@ -71,6 +136,9 @@ rg -P '(?<!un)\w+able' # (3)!
 3. **Negative lookbehind**: `(?<!un)` ensures "un" does NOT precede the word, so matches "capable" but not "uncapable"
 
 ## Combining with --only-matching
+
+!!! tip "Power Technique: Lookaround + Only Matching"
+    Combining lookaround with `-o`/`--only-matching` enables surgical extraction of data. The lookaround provides context checking while `-o` ensures only the target content is returned—no surrounding text.
 
 Lookaround is powerful when combined with `-o`/`--only-matching` for precise extraction:
 
