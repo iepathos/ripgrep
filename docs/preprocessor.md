@@ -2,6 +2,19 @@
 
 The preprocessor feature allows ripgrep to search virtually any file type by transforming content before searching. This chapter covers how to use preprocessors to search PDFs, compressed files, and other non-text formats.
 
+!!! tip "Quick Reference"
+    **Key Flags:**
+
+    - `--pre COMMAND` - Run command to transform files before searching
+    - `--pre-glob GLOB` - Only preprocess files matching pattern (strongly recommended)
+    - `-z/--search-zip` - Built-in compression support (gzip, bzip2, xz, lz4, lzma, brotli, zstd)
+
+    **Common Use Cases:**
+
+    - PDFs: `rg --pre pdftotext --pre-glob '*.pdf' 'pattern'`
+    - Office docs: `rg --pre ./preprocessor --pre-glob '*.{doc,docx}' 'pattern'`
+    - Encrypted files: `rg --pre ./decrypt --pre-glob '*.gpg' 'pattern'`
+
 ## Overview
 
 A preprocessor is a command that transforms file content before ripgrep searches it. This enables searching binary formats, encrypted files, compressed archives, and any content that can be converted to text.
@@ -45,8 +58,7 @@ Great! The text is searchable after conversion. Now let's automate this with a p
 
 Create a shell script that wraps `pdftotext`:
 
-```bash
-$ cat preprocess
+```bash title="preprocess"
 #!/bin/sh
 
 exec pdftotext - -
@@ -108,68 +120,73 @@ Syntax Error: Couldn't find trailer dictionary
 
 ### Handling Multiple File Types
 
-Make the preprocessor conditional on file type:
+Make the preprocessor conditional on file type using two approaches:
 
-```bash
-$ cat preprocessor
-#!/bin/sh
+=== "Extension-Based Detection"
 
-case "$1" in
-*.pdf)
-  # The -s flag ensures that the file is non-empty.
-  if [ -s "$1" ]; then
-    exec pdftotext - -
-  else
-    exec cat
-  fi
-  ;;
-*)
-  exec cat
-  ;;
-esac
-```
+    ```bash title="preprocessor"
+    #!/bin/sh
 
-This handles PDFs specially and passes other files through unchanged.
+    case "$1" in
+    *.pdf)
+      # The -s flag ensures that the file is non-empty.
+      if [ -s "$1" ]; then
+        exec pdftotext - -
+      else
+        exec cat
+      fi
+      ;;
+    *)
+      exec cat
+      ;;
+    esac
+    ```
 
-### Content Sniffing with `file`
+    **Pros:** Fast, simple, works for well-named files
 
-For more robust file type detection, use the `file` utility to inspect content:
+    **Cons:** Fails if files lack proper extensions
 
-```bash
-$ cat processor
-#!/bin/sh
+=== "Content Sniffing"
 
-case "$1" in
-*.pdf)
-  # Handle PDFs by extension first
-  if [ -s "$1" ]; then
-    exec pdftotext - -
-  else
-    exec cat
-  fi
-  ;;
-*)
-  # Sniff content type for files without clear extensions
-  case $(file "$1") in
-  *Zstandard*)
-    exec pzstd -cdq
-    ;;
-  *gzip*)
-    exec gzip -cdq
-    ;;
-  *)
-    exec cat
-    ;;
-  esac
-  ;;
-esac
-```
+    ```bash title="processor"
+    #!/bin/sh
 
-This approach works even when files lack proper extensions.
+    case "$1" in
+    *.pdf)
+      # Handle PDFs by extension first
+      if [ -s "$1" ]; then
+        exec pdftotext - -
+      else
+        exec cat
+      fi
+      ;;
+    *)
+      # Sniff content type for files without clear extensions
+      case $(file "$1") in
+      *Zstandard*)
+        exec pzstd -cdq
+        ;;
+      *gzip*)
+        exec gzip -cdq
+        ;;
+      *)
+        exec cat
+        ;;
+      esac
+      ;;
+    esac
+    ```
+
+    **Pros:** Works even when files lack proper extensions
+
+    **Cons:** Slower due to `file` command invocation
 
 ## Optimizing with `--pre-glob`
 
-Running a preprocessor on every file adds overhead. The `--pre-glob` flag limits preprocessing to files matching a glob pattern.
+!!! warning "Performance Impact"
+    Running a preprocessor on every file spawns a new process per file, which can significantly slow down searches. Always use `--pre-glob` to limit preprocessing to specific file types.
+
+The `--pre-glob` flag limits preprocessing to files matching a glob pattern.
 
 ### Performance Impact
 
@@ -212,7 +229,8 @@ rg --pre ./preprocessor --pre-glob '*.{pdf,doc,docx}' 'search term'
 rg --pre ./preprocessor --pre-glob '*.pdf' --pre-glob '*.doc' 'search term'
 ```
 
-**Best Practice**: Always use `--pre-glob` when you know which file types need preprocessing. This keeps searches fast.
+!!! tip "Best Practice"
+    Always use `--pre-glob` when you know which file types need preprocessing. This keeps searches fast by avoiding unnecessary process spawning.
 
 ## Preprocessor Use Cases
 
@@ -228,7 +246,21 @@ Beyond PDFs, preprocessors enable searching many file types:
 
 ### Compressed Files
 
-Note: ripgrep has built-in support for compressed files via `-z/--search-zip` (supports gzip (.gz, .tgz), bzip2 (.bz2, .tbz2), xz (.xz, .txz), lz4 (.lz4), lzma (.lzma), brotli (.br), zstd (.zst, .zstd), and uncompress (.Z)). Use `--pre` for compression formats not covered by `-z`.
+!!! note "Built-in Compression Support"
+    Ripgrep has built-in support for compressed files via `-z/--search-zip`:
+
+    - gzip (.gz, .tgz)
+    - bzip2 (.bz2, .tbz2)
+    - xz (.xz, .txz)
+    - lz4 (.lz4)
+    - lzma (.lzma)
+    - brotli (.br)
+    - zstd (.zst, .zstd)
+    - uncompress (.Z)
+
+    <!-- Source: crates/cli/src/decompress.rs:490-532 -->
+
+    Use `--pre` only for compression formats not covered by `-z`.
 
 ```bash
 #!/bin/sh
@@ -327,42 +359,56 @@ time rg 'pattern'  # without preprocessor for comparison
 
 ## Security Considerations
 
-**Warning**: Preprocessors execute arbitrary commands with access to file content. Be cautious when:
+!!! warning "Security Alert"
+    Preprocessors execute arbitrary commands with access to file content. Be cautious when:
 
-- Using untrusted preprocessor scripts
-- Searching files from untrusted sources
-- Handling file paths in preprocessors
+    - Using untrusted preprocessor scripts
+    - Searching files from untrusted sources
+    - Handling file paths in preprocessors
 
-### CVE-2021-3013
+!!! danger "CVE-2021-3013"
+    A security vulnerability (CVE-2021-3013) was fixed related to preprocessor command handling. Always use the latest ripgrep version.
 
-A security vulnerability (CVE-2021-3013) was fixed related to preprocessor command handling. Always use the latest ripgrep version.
+    <!-- Source: CHANGELOG.md:374-432 -->
 
 ### Safe Scripting Practices
 
-1. **Validate inputs**:
-   ```bash
-   # Check file exists and is readable
-   [ -f "$1" ] && [ -r "$1" ] || exit 1
-   ```
+=== "Input Validation"
 
-2. **Avoid command injection**:
-   ```bash
-   # BAD: Vulnerable to command injection
-   eval "pdftotext $1 -"
+    ```bash
+    # Check file exists and is readable
+    [ -f "$1" ] && [ -r "$1" ] || exit 1
+    ```
 
-   # GOOD: Properly quoted
-   exec pdftotext "$1" -
-   ```
+    Verify file properties before processing to prevent errors and potential security issues.
 
-3. **Use absolute paths** for tools when possible:
-   ```bash
-   exec /usr/bin/pdftotext "$1" -
-   ```
+=== "Command Injection Prevention"
 
-4. **Handle errors gracefully**:
-   ```bash
-   pdftotext "$1" - 2>/dev/null || cat
-   ```
+    ```bash
+    # BAD: Vulnerable to command injection
+    eval "pdftotext $1 -"
+
+    # GOOD: Properly quoted
+    exec pdftotext "$1" -
+    ```
+
+    Always quote variables and avoid `eval` with user-controlled input.
+
+=== "Absolute Paths"
+
+    ```bash
+    exec /usr/bin/pdftotext "$1" -
+    ```
+
+    Use absolute paths for tools when possible to prevent PATH-based attacks.
+
+=== "Error Handling"
+
+    ```bash
+    pdftotext "$1" - 2>/dev/null || cat
+    ```
+
+    Handle failures gracefully to prevent preprocessor errors from blocking searches.
 
 ## Testing and Debugging
 
@@ -381,27 +427,30 @@ echo $?  # Should be 0 for success
 
 ### Common Issues
 
-**Preprocessor not found:**
-```
-error: preprocessor command could not be found: 'preprocess'
-```
-Solution: Use absolute/relative path or add to `PATH`
+!!! failure "Preprocessor not found"
+    ```
+    error: preprocessor command could not be found: 'preprocess'
+    ```
 
-**Preprocessor fails:**
-```
-file.pdf: preprocessor command failed: '"./preprocess" "file.pdf"'
-```
-Solution: Check preprocessor handles file type correctly
+    **Solution:** Use absolute/relative path or add to `PATH`
 
-**No output:**
-```
-$ rg --pre ./preprocess 'pattern' file.pdf
-$
-```
-Solution: Verify preprocessor outputs to stdout:
-```bash
-./preprocess file.pdf | rg 'pattern'
-```
+!!! failure "Preprocessor fails"
+    ```
+    file.pdf: preprocessor command failed: '"./preprocess" "file.pdf"'
+    ```
+
+    **Solution:** Check preprocessor handles file type correctly
+
+!!! failure "No output"
+    ```
+    $ rg --pre ./preprocess 'pattern' file.pdf
+    $
+    ```
+
+    **Solution:** Verify preprocessor outputs to stdout:
+    ```bash
+    ./preprocess file.pdf | rg 'pattern'
+    ```
 
 ### Debugging Flags
 
@@ -418,9 +467,10 @@ RUST_LOG=debug rg --pre ./preprocessor 'pattern' 2>&1 | grep -i preproc
 
 A production-ready preprocessor handling multiple formats:
 
-```bash
+```bash title="multi-preprocessor"
 #!/bin/sh
 # multi-preprocessor - Handle PDFs, Office docs, and compressed files
+# Compression formats based on built-in support in crates/cli/src/decompress.rs:490-532
 
 set -e
 
@@ -476,7 +526,7 @@ rg --pre ./multi-preprocessor --pre-glob '*.{pdf,doc,docx,xlsx}' 'search term'
 
 The preprocessor feature makes ripgrep a universal search tool:
 
-- **`--pre COMMAND`**: Run command to transform files before searching
+- **`--pre COMMAND`**: Run command to transform files before searching (implementation in crates/core/flags/defs.rs:5453-5625)
 - **`--pre-glob GLOB`**: Only preprocess files matching glob pattern
 - **Use cases**: PDFs, compressed files, Office documents, encrypted content
 - **Performance**: Use `--pre-glob` to minimize overhead
