@@ -13,6 +13,38 @@ Sorting is useful when:
 !!! note "Performance Impact"
     Sorting disables parallelism, which impacts performance on large searches.
 
+```mermaid
+flowchart TD
+    Start{Need to<br/>sort results?} --> NeedConsistent{Need consistent<br/>output?}
+
+    NeedConsistent -->|Yes| UsePath[Use --sort path]
+    NeedConsistent -->|No| NeedRecent{Focus on<br/>recent changes?}
+
+    NeedRecent -->|Yes| UseModified[Use --sort modified]
+    NeedRecent -->|No| NeedNew{Find newest<br/>files?}
+
+    NeedNew -->|Yes| UseCreated[Use --sort created]
+    NeedNew -->|No| NoSort[Use default<br/>no sorting]
+
+    UsePath --> Reverse{Need reverse<br/>order?}
+    UseModified --> Reverse
+    UseCreated --> Reverse
+
+    Reverse -->|Yes| AddR[Add --sortr flag]
+    Reverse -->|No| Done[Execute search]
+    AddR --> Done
+
+    NoSort --> Fast[Fastest performance<br/>Parallel execution]
+
+    style UsePath fill:#e1f5ff
+    style UseModified fill:#fff3e0
+    style UseCreated fill:#f3e5f5
+    style NoSort fill:#e8f5e9
+    style Fast fill:#c8e6c9
+```
+
+**Figure**: Decision flowchart for selecting the appropriate sort option based on your use case.
+
 ## Sort Options
 
 ripgrep provides several sorting criteria:
@@ -155,6 +187,36 @@ Sorting affects performance in several ways:
 2. **Memory Usage**: All results must be held in memory before sorting (except for `--sort path` in ascending order)
 3. **Startup Delay**: No results appear until the entire search completes
 
+```mermaid
+graph TD
+    Search[Search Operation] --> SortCheck{Sorting<br/>enabled?}
+
+    SortCheck -->|No| Parallel[Parallel Execution]
+    SortCheck -->|Yes| SortType{Sort type?}
+
+    SortType -->|--sort path<br/>ascending| Stream[Streaming Mode]
+    SortType -->|Other| Collect[Collect All Results]
+
+    Parallel --> Stream1[Stream results<br/>as found]
+    Stream --> Stream2[Stream in<br/>path order]
+    Collect --> Buffer[Buffer in<br/>memory]
+
+    Stream1 --> Fast[Fastest<br/>Low memory]
+    Stream2 --> Medium[Medium speed<br/>Low memory]
+    Buffer --> Sort[Sort results]
+    Sort --> Output[Output all<br/>at once]
+    Output --> Slow[Slower<br/>High memory]
+
+    style Parallel fill:#c8e6c9
+    style Stream fill:#e1f5ff
+    style Collect fill:#fff3e0
+    style Fast fill:#a5d6a7
+    style Medium fill:#90caf9
+    style Slow fill:#ffcc80
+```
+
+**Figure**: Performance comparison showing how different sort modes affect parallelism and memory usage.
+
 Performance comparison:
 ```bash
 # Fastest - parallel, no sorting
@@ -191,6 +253,9 @@ rg --sort modified --json 'TODO'
 
 ## Examples
 
+!!! example "Practical Use Cases"
+    The following examples demonstrate common scenarios where sorting improves search results. Each example shows the command and explains when to use it.
+
 ### Example 1: Recent Changes Audit
 
 ```bash
@@ -220,6 +285,9 @@ rg --sortr created 'deprecated_function'
 ```
 
 ## Best Practices
+
+!!! tip "Choosing the Right Sort Mode"
+    Match your sort criterion to your goal: use `--sort path` for reproducible scripts, `--sort modified` for recent development work, and default (no sorting) for maximum performance in interactive searches.
 
 - Use `--sort none` (default) for best performance
 - Use `--sort path` for consistent output in scripts or CI
