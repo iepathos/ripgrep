@@ -34,7 +34,8 @@ Use `-t` or `--type` to search only files matching a specific file type:
 # Search only Rust files (*.rs)
 rg pattern -t rust
 
-# Search only Python files (*.py, *.pyi, *.pyw)
+# Search only Python files (*.py, *.pyi)
+# Source: crates/ignore/src/default_types.rs:217
 rg TODO -t python
 
 # Search only JSON files
@@ -152,7 +153,14 @@ rg pattern -t javascript
 rg pattern -t js
 ```
 
-To see which types have aliases, check the output of `--type-list`. Types with aliases appear as `alias, fullname:` in the list.
+To see which types have aliases, check the output of `--type-list`. Types with aliases appear on the same line separated by commas (e.g., 'markdown, md:' or 'py, python:'), with all names referring to the same glob patterns.
+
+```bash
+# Example output from --type-list showing aliases:
+# py, python: *.py, *.pyi
+# js, javascript: *.js, *.jsx, *.mjs, *.cjs, *.vue
+# md, markdown: *.md, *.markdown
+```
 
 You can also search for a specific type's definition:
 
@@ -281,7 +289,8 @@ Ripgrep includes 200+ built-in file types. Here are some commonly used ones:
 
 **Programming Languages:**
 - `rust`: *.rs
-- `python`: *.py, *.pyi
+- `python` (alias `py`): *.py, *.pyi
+  <!-- Source: crates/ignore/src/default_types.rs:217 -->
 - `go`: *.go
 - `java`: *.java, *.jsp, *.jspx
 - `javascript` (alias `js`): *.js, *.jsx, *.mjs, *.cjs, *.vue
@@ -289,7 +298,8 @@ Ripgrep includes 200+ built-in file types. Here are some commonly used ones:
 - `c`: *.c, *.h
 - `cpp` (C++): *.cpp, *.cc, *.cxx, *.h, *.hpp
 - `ruby`: *.rb, *.rbw, *.rake, *.gemspec, Rakefile, Gemfile, config.ru, .irbrc
-- `php`: *.php, *.phtml, *.php3, *.php4, *.php5
+- `php`: *.php, *.php3, *.php4, *.php5, *.php7, *.php8, *.pht, *.phtml
+  <!-- Source: crates/ignore/src/default_types.rs:203-207 -->
 
 **Web Development:**
 - `html`: *.html, *.htm
@@ -297,7 +307,7 @@ Ripgrep includes 200+ built-in file types. Here are some commonly used ones:
 - `json`: *.json
 - `xml`: *.xml
 
-**Note:** There is a separate `sass` type that includes *.sass and *.scss files.
+**Note:** Both the `css` and `sass` types include *.scss files. The `css` type (source: crates/ignore/src/default_types.rs:61) includes *.css and *.scss, while the `sass` type (source: crates/ignore/src/default_types.rs:242) includes *.sass and *.scss. When searching with `-t css` or `-t sass`, *.scss files will be included in both cases.
 
 **Documentation:**
 - `markdown` (alias `md`): *.md, *.markdown
