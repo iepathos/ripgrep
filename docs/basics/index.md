@@ -24,6 +24,9 @@ rg -l pattern
 
 # Search with line numbers and context
 rg -n -C 2 pattern
+
+# Combine flags: case-insensitive word search with context
+rg -i -w -C 2 function
 ```
 
 ## Subsections
@@ -49,6 +52,8 @@ This page is organized into the following subpages:
 | `--word-regexp` | `-w` | Match whole words only |
 | `--line-regexp` | `-x` | Match whole lines only |
 | `--line-number` | `-n` | Show line numbers |
+| `--no-line-number` | `-N` | Suppress line numbers |
+| `--only-matching` | `-o` | Show only matching part of lines |
 | `--count` | `-c` | Count matches per file |
 | `--count-matches` | | Count individual matches |
 | `--files-with-matches` | `-l` | List files with matches |
@@ -68,6 +73,6 @@ Now that you understand the basics, you can explore more advanced topics:
 - **[Recursive Search](../recursive-search.md)** - Control how ripgrep traverses directories
 - **[Automatic Filtering](../automatic-filtering.md)** - Understand gitignore and automatic file filtering
 - **[Manual Filtering](../manual-filtering-globs.md)** - Use globs and file types to filter searches
-- **[Advanced Patterns](../advanced-patterns.md)** - Multiline search, PCRE2, and complex regex
+- **[Advanced Patterns](../advanced-patterns/index.md)** - Multiline search, PCRE2, and complex regex
 - **[Replacements](../replacements.md)** - Find and replace with capture groups
 - **[Output Formats](../output-formats.md)** - JSON output, custom formats, and more
