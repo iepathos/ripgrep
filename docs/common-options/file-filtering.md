@@ -4,6 +4,14 @@
 
 These flags control which files are searched.
 
+!!! tip "Quick reference: Common filtering patterns"
+    - Search specific file types: `rg -trust pattern` or `rg -tpy pattern`
+    - Search with globs: `rg -g '*.rs' pattern`
+    - Search ignored files: `rg -u pattern`
+    - Search everything (including hidden/binary): `rg -uuu pattern`
+    - Exclude file types: `rg -Tlog pattern`
+    - Limit search depth: `rg -d 2 pattern`
+
 ## File Type Filtering
 
 - **`-t, --type TYPE`**: Only search files of this type
@@ -26,7 +34,25 @@ These flags control which files are searched.
   rg --type-list
   ```
 
-Ripgrep knows about common file extensions for popular languages and formats. You can also define custom types in your [configuration file](../configuration-file.md).
+- **`--type-add TYPESPEC`**: Define custom file types
+  ```bash
+  # Source: crates/core/flags/defs.rs:6936-6969
+  # Define a custom type 'web' for web files
+  rg --type-add 'web:*.{html,css,js}' -tweb pattern
+
+  # Define 'config' type for configuration files
+  rg --type-add 'config:*.{yml,yaml,toml,json}' -tconfig 'port'
+
+  # Combine with multiple type definitions
+  rg --type-add 'foo:*.foo' --type-add 'bar:*.bar' -tfoo -tbar pattern
+  ```
+
+  The format is `name:glob`, where `name` is your custom type name and `glob` is a file pattern. Multiple globs can be specified using brace expansion `{ext1,ext2}`.
+
+!!! note "Type persistence"
+    Custom types defined with `--type-add` must be passed to every invocation. For persistent type definitions, use your [configuration file](../configuration-file.md).
+
+Ripgrep knows about common file extensions for popular languages and formats. You can also define custom types in your configuration file.
 
 ## Glob Patterns
 
@@ -43,14 +69,30 @@ Ripgrep knows about common file extensions for popular languages and formats. Yo
 
   # Combine multiple globs
   rg -g '*.{rs,toml}' pattern
+
+  # Match single character with ?
+  rg -g 'test?.rs' pattern
+
+  # Match character classes with [...]
+  rg -g 'file[0-9].txt' pattern
+  rg -g 'data[a-z].csv' pattern
   ```
-  Use `!` prefix to exclude. Globs use `*` for any chars and `**` for directory recursion.
+
+  **Glob syntax:**
+  - `*` - Match any characters (except `/`)
+  - `**` - Match any characters including `/` (directory recursion)
+  - `?` - Match exactly one character
+  - `[...]` - Match any character in the brackets (e.g., `[0-9]`, `[a-z]`, `[abc]`)
+  - `!` prefix - Exclude files matching the pattern
 
 - **`--iglob PATTERN`**: Like `--glob` but case-insensitive
 
 ## Unrestricted Search
 
 The `-u` flag progressively removes ripgrep's smart filtering. Each `-u` adds more:
+
+!!! warning "Default behavior"
+    By default, ripgrep respects `.gitignore`, skips hidden files, and ignores binary files. Use `-u` flags to override these behaviors.
 
 - **`-u`**: Don't respect `.gitignore` and other ignore files
   ```bash
@@ -73,6 +115,37 @@ The `-u` flag progressively removes ripgrep's smart filtering. Each `-u` adds mo
 
 Use `-u` when you need to search `.gitignore`d files, `-uu` when you also need hidden/binary files, and `-uuu` for maximum coverage.
 
+### Granular Ignore Control
+
+Instead of using `-u` flags, you can selectively disable specific ignore mechanisms:
+
+- **`--no-ignore-vcs`**: Don't respect version control ignore files (`.gitignore`, etc.)
+  ```bash
+  # Search files ignored by git, but still respect .ignore files
+  rg --no-ignore-vcs pattern
+  ```
+
+- **`--no-ignore-global`**: Don't respect global ignore files
+  ```bash
+  # Ignore global gitignore settings
+  rg --no-ignore-global pattern
+  ```
+
+- **`--no-ignore-dot`**: Don't respect `.ignore` files
+  ```bash
+  # Skip .ignore files but still respect .gitignore
+  rg --no-ignore-dot pattern
+  ```
+
+- **`--no-ignore-parent`**: Don't respect ignore files in parent directories (see [Advanced Filtering](#advanced-filtering))
+  ```bash
+  # Only use ignore files in current directory
+  rg --no-ignore-parent pattern
+  ```
+
+!!! tip "Combining granular flags"
+    These flags can be combined for precise control over which ignore files are respected. Using `-u` is equivalent to enabling all of these flags at once.
+
 ## Hidden Files and Symlinks
 
 - **`--hidden`**: Search hidden files and directories (those starting with `.`)
@@ -86,7 +159,9 @@ Use `-u` when you need to search `.gitignore`d files, `-uu` when you also need h
   ```bash
   rg -L pattern
   ```
-  By default, symlinks are not followed (to avoid cycles and duplication).
+
+!!! warning "Symlink behavior"
+    By default, symlinks are not followed to avoid cycles and duplication. Use `--follow` carefully in directories with complex symlink structures.
 
 ## Directory Depth
 
@@ -113,7 +188,8 @@ Use `-u` when you need to search `.gitignore`d files, `-uu` when you also need h
 
 ## Binary Files
 
-By default, ripgrep auto-detects binary files (by finding NUL bytes) and skips them to avoid polluting output.
+!!! info "Binary detection"
+    By default, ripgrep auto-detects binary files (by finding NUL bytes) and skips them to avoid polluting output.
 
 - **`--binary`**: Force searching binary files (shows matches even if NUL bytes detected)
   ```bash
@@ -136,10 +212,11 @@ By default, ripgrep auto-detects binary files (by finding NUL bytes) and skips t
 
 ## Advanced Filtering
 
-- **`--same-file-system`**: Don't cross filesystem boundaries when searching
+- **`--one-file-system`**: Don't cross filesystem boundaries when searching
   ```bash
+  # Source: crates/core/flags/defs.rs:5077-5090
   # Stay on same filesystem (avoid mounted drives, network shares)
-  rg --same-file-system pattern
+  rg --one-file-system pattern
   ```
   Useful to avoid searching network mounts or external drives.
 
