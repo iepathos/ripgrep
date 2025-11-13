@@ -1,0 +1,81 @@
+{
+  "item_type": "page",
+  "page_id": "configuration-file",
+  "page_title": "configuration file",
+  "page_file": "docs/configuration-file.md",
+  "drift_detected": true,
+  "severity": "medium",
+  "quality_assessment": "Page content is accurate and comprehensive but has broken cross-reference links that need updating",
+  "issues": [
+    {
+      "type": "broken_links",
+      "severity": "medium",
+      "section": "Cross-References",
+      "description": "Found 3 broken internal links in 'See Also' section",
+      "broken_links": [
+        {
+          "link_text": "File Type Filtering",
+          "original_target": "./file-types.md",
+          "expected_file": "docs/file-types.md",
+          "actual_file": "docs/manual-filtering-types.md",
+          "fix_suggestion": "Update link to point to ./manual-filtering-types.md"
+        },
+        {
+          "link_text": "Colors and Styling",
+          "original_target": "./colors.md",
+          "expected_file": "docs/colors.md",
+          "actual_file": null,
+          "fix_suggestion": "File does not exist in docs/ directory. Need to create colors.md page or remove this cross-reference"
+        },
+        {
+          "link_text": "Globbing",
+          "original_target": "./globbing.md",
+          "expected_file": "docs/globbing.md",
+          "actual_file": "docs/manual-filtering-globs.md",
+          "fix_suggestion": "Update link to point to ./manual-filtering-globs.md"
+        }
+      ],
+      "fix_suggestion": "Update all cross-reference links in 'See Also' section to point to correct file names: manual-filtering-types.md, manual-filtering-globs.md. Either create colors.md page or remove the colors reference."
+    }
+  ],
+  "positive_aspects": [
+    "Accurate documentation of RIPGREP_CONFIG_PATH environment variable (verified in crates/core/flags/config.rs:17-25)",
+    "Correct explanation of configuration file format (one argument per line, # for comments) matches parse_reader implementation (crates/core/flags/config.rs:78-102)",
+    "Accurate description of --no-config flag behavior (verified in crates/core/flags/defs.rs:4274-4306)",
+    "Clear explanation of flag precedence (config prepended to CLI args)",
+    "Good examples showing both = and separate-line formats",
+    "Comprehensive troubleshooting section",
+    "Well-structured use cases and best practices",
+    "Accurate platform-specific UTF-8 handling notes (verified in tests at config.rs:130-169)",
+    "Correct error handling documentation matches implementation"
+  ],
+  "improvement_suggestions": [
+    "Add admonition boxes using MkDocs Material syntax for important notes (e.g., '!!! warning' or '!!! note')",
+    "Consider adding a visual diagram showing config file precedence flow",
+    "Add code annotations to example configuration file to enhance readability",
+    "Consider using tabs feature to show examples for different shells (bash, zsh, fish)",
+    "Add table of contents for easier navigation in long page"
+  ],
+  "cross_references": [
+    "manual-filtering-types",
+    "manual-filtering-globs",
+    "FAQ.md (external)",
+    "GUIDE.md (external)"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-13T20:53:00Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": [
+      "configuration files",
+      "RIPGREP_CONFIG_PATH",
+      "config file format",
+      "flag precedence",
+      "debugging config"
+    ],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "source_verification": [
+      "crates/core/flags/config.rs (config file parsing)",
+      "crates/core/flags/defs.rs (--no-config flag definition)"
+    ]
+  }
+}
