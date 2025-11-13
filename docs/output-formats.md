@@ -6,12 +6,60 @@ ripgrep provides multiple output formats and customization options to tailor sea
 
 By default, ripgrep outputs search results in a grep-compatible format. However, it offers extensive formatting options including JSON output, custom colors, field separators, and specialized formats like vimgrep. This chapter covers all output formatting capabilities.
 
+### Choosing an Output Format
+
+Different output formats serve different purposes:
+
+=== "Standard (Human-Readable)"
+    ```bash
+    rg pattern
+    ```
+
+    **Best for:** Interactive terminal use, quick searches
+
+    **Features:** Syntax highlighting, color coding, heading mode
+
+    **Output:**
+    ```
+    src/main.rs
+    42:    let pattern = regex::Regex::new(pattern)?;
+    ```
+
+=== "JSON (Machine-Readable)"
+    ```bash
+    rg --json pattern
+    ```
+
+    **Best for:** Scripts, automation, parsing with tools like `jq`
+
+    **Features:** Structured data, easy parsing, complete metadata
+
+    **Output:**
+    ```json
+    {"type":"match","data":{"path":{"text":"src/main.rs"},"lines":{"text":"    let pattern = regex::Regex::new(pattern)?;\n"},"line_number":42,"absolute_offset":1234,"submatches":[{"match":{"text":"pattern"},"start":8,"end":15}]}}
+    ```
+
+=== "Vimgrep (Editor Integration)"
+    ```bash
+    rg --vimgrep pattern
+    ```
+
+    **Best for:** Editor integration, quickfix lists
+
+    **Features:** Compatible with vim, standard format
+
+    **Output:**
+    ```
+    src/main.rs:42:8:    let pattern = regex::Regex::new(pattern)?;
+    ```
+
 ## Standard Output Format
 
 The default output format shows matching lines with optional file paths, line numbers, and column numbers:
 
 ```bash
 # Basic output
+# Source: crates/printer/src/standard.rs
 rg pattern
 
 # With line numbers (default in many cases)
@@ -38,6 +86,7 @@ JSON output is useful for programmatic consumption and integration with other to
 
 ```bash
 # Output results as JSON Lines (one JSON object per line)
+# Source: crates/printer/src/json.rs
 rg --json pattern
 
 # Pretty-printed JSON (using -p or --pretty)
@@ -57,6 +106,9 @@ Each line of JSON output is a separate object with a `type` field indicating the
 
 Each message type has a corresponding `data` field containing type-specific information. For `match` messages, the data includes file path, line number, matching text, and submatch positions.
 
+!!! note "Statistics in JSON Format"
+    You can combine `--json` with `--stats` to get structured statistics output. The summary message will include detailed statistics like elapsed time, files searched, lines searched, and matches found. This is particularly useful for programmatic analysis of search performance.
+
 ## Color Customization
 
 ripgrep supports extensive color customization:
@@ -69,8 +121,12 @@ rg --color auto pattern    # Auto-detect (default)
 rg --color ansi pattern    # Use ANSI colors only
 
 # Custom color specifications
+# Source: crates/printer/src/color.rs
 rg --colors 'match:fg:red' --colors 'match:bg:yellow' pattern
 ```
+
+!!! warning "Color Output in Scripts"
+    Never use colored output in scripts or when piping to other commands. Color codes are ANSI escape sequences that will corrupt your data. Always use `--color never` or rely on auto-detection, which disables colors when output is not a terminal.
 
 ### Color Specifications
 
@@ -155,14 +211,36 @@ rg --block-buffered pattern
 ripgrep supports OSC 8 terminal hyperlinks for clickable file paths in compatible terminals:
 
 ```bash
-# Enable hyperlinks with default format
+# Enable hyperlinks with default format (file://)
 rg --hyperlink-format default pattern
 
+# VS Code (opens files in VS Code)
+# Source: crates/printer/src/hyperlink/aliases.rs:54-57
+rg --hyperlink-format vscode pattern
+
+# VS Code Insiders
+rg --hyperlink-format vscode-insiders pattern
+
+# VSCodium
+rg --hyperlink-format vscodium pattern
+
+# MacVim
+rg --hyperlink-format macvim pattern
+
+# TextMate
+rg --hyperlink-format textmate pattern
+
+# Cursor editor
+rg --hyperlink-format cursor pattern
+
 # Custom hyperlink format
-rg --hyperlink-format file://{path} pattern
+rg --hyperlink-format 'vscode://file{path}:{line}:{column}' pattern
 ```
 
 This feature allows compatible terminals (like iTerm2, WezTerm, or recent versions of GNOME Terminal) to make file paths clickable, opening them directly in your editor or file manager.
+
+!!! tip "Editor Integration"
+    Use the built-in format aliases for your editor to enable one-click file opening. For example, `--hyperlink-format vscode` creates hyperlinks that open files directly in VS Code at the correct line and column.
 
 ### Only Matching Text
 
@@ -237,12 +315,24 @@ vim -q /tmp/results.txt
 
 ## Best Practices
 
-- Use `--json` for scripts and automation
-- Use `--vimgrep` for editor integration
-- Use `--color never` when piping to other commands
-- Use `--null` when handling filenames with special characters
-- Use `--heading` for human-readable output with many matches
-- Use `--no-heading` when processing output line-by-line
+!!! tip "Automation and Scripting"
+    Always use `--json` for scripts and automation. It provides structured, predictable output that's easy to parse programmatically and won't break if colors or formatting change.
+
+!!! tip "Editor Integration"
+    Use `--vimgrep` for seamless editor integration. This format is compatible with quickfix lists in vim and similar features in other editors.
+
+!!! warning "Piping and Redirection"
+    Always use `--color never` when piping ripgrep output to other commands or redirecting to files. Color codes can interfere with text processing and create invalid output in scripts.
+
+!!! tip "Special Characters in Filenames"
+    Use `--null` when handling filenames with special characters, spaces, or newlines. This ensures safe parsing by separating results with null bytes instead of newlines.
+
+!!! tip "Human-Readable Output"
+    - Use `--heading` for human-readable output when you have many matches across multiple files
+    - Use `--no-heading` when processing output line-by-line or when you need each result to be self-contained
+
+!!! tip "Performance in Pipelines"
+    Use `--line-buffered` when piping ripgrep output to another command that processes results incrementally (like `head` or `tail`). This ensures results appear immediately rather than being buffered.
 
 ## Performance Considerations
 
@@ -254,5 +344,5 @@ vim -q /tmp/results.txt
 ## See Also
 
 - [Replacements](replacements.md) - Modify output with replacements
-- [Common Options](common-options.md) - Other frequently used flags
+- [Common Options](common-options/index.md) - Other frequently used flags
 - [Context Lines](context-lines.md) - Add context to matches
