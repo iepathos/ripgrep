@@ -1,0 +1,128 @@
+{
+  "item_type": "page",
+  "page_id": "output",
+  "page_title": "output",
+  "page_file": "docs/basics/output.md",
+  "drift_detected": true,
+  "severity": "medium",
+  "quality_assessment": "Page covers core output formatting well but is missing several important output features and lacks visual enhancements for better readability",
+  "issues": [
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Standard Output",
+      "description": "Missing documentation for byte offset (-b/--byte-offset) feature",
+      "feature_reference": "output_control.standard_output.byte_offset",
+      "fix_suggestion": "Add section documenting byte offset flag: 'Print the 0-based byte offset within the input file before each matching line'",
+      "source_reference": "crates/core/flags/defs.rs:576-609, crates/printer/src/standard.rs:49"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Standard Output",
+      "description": "Missing documentation for only matching part (-o/--only-matching) feature",
+      "feature_reference": "output_control.standard_output.only_matching",
+      "fix_suggestion": "Add section documenting only-matching flag: 'Print only the matched parts of a line, each on a separate line'",
+      "source_reference": "crates/core/flags/defs.rs:4180-4219, crates/printer/src/standard.rs:42"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Standard Output",
+      "description": "Missing documentation for count mode (-c/--count and --count-matches) features",
+      "feature_reference": "output_control.standard_output.count",
+      "fix_suggestion": "Add section documenting count flags: '-c shows match counts per file, --count-matches shows total match count across files'",
+      "source_reference": "crates/core/flags/defs.rs:1171-1242"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Alternative Formats",
+      "description": "Missing documentation for vimgrep format (--vimgrep) and files-only modes",
+      "feature_reference": "output_control.alternative_formats",
+      "fix_suggestion": "Add section documenting --vimgrep (Vim quickfix format), -l/--files-with-matches (file names only), --files-without-match",
+      "source_reference": "crates/core/flags/defs.rs:5360-5396 (vimgrep), crates/core/flags/defs.rs:2258-2286 (files-with-matches)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Advanced Output",
+      "description": "Missing documentation for JSON output format (--json)",
+      "feature_reference": "output_control.json_output",
+      "fix_suggestion": "Add section documenting JSON output for machine-readable results: '--json flag produces JSON Lines format with structured match data'",
+      "source_reference": "crates/core/flags/defs.rs:2987-3041"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Output Control",
+      "description": "Missing documentation for file path display control (--with-filename, --no-filename, -I)",
+      "feature_reference": "output_control.standard_output.path_display",
+      "fix_suggestion": "Add section explaining when file paths are shown and how to control this behavior",
+      "source_reference": "crates/core/flags/defs.rs:5516-5579"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Output Sorting",
+      "description": "Missing documentation for sorting results (--sort, --sortr)",
+      "feature_reference": "output_control.sorting",
+      "fix_suggestion": "Add section documenting result sorting: '--sort path|modified|accessed|created and --sortr for reverse. Note: disables parallelism'",
+      "source_reference": "crates/core/flags/defs.rs:4668-4754"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "Color Output",
+      "description": "Color documentation doesn't mention all color modes available",
+      "current_content": "--color flag (never|auto|always|ansi)",
+      "should_be": "--color flag supports: never, auto, always, ansi. Default is 'auto' which detects TTY",
+      "fix_suggestion": "Expand color section to explain what each mode does and when to use them (e.g., 'always' for piping to 'less -R')",
+      "source_reference": "crates/core/flags/defs.rs:691-791"
+    },
+    {
+      "type": "missing_visual_features",
+      "severity": "low",
+      "section": "Overall Page",
+      "description": "Page lacks visual enhancements that would improve readability",
+      "fix_suggestion": "Add MkDocs Material features: admonitions for tips (e.g., '!!! tip \"Common Usage\"'), tabs for different output format comparisons, code annotations for complex examples",
+      "source_reference": "N/A - MkDocs Material documentation features"
+    }
+  ],
+  "positive_aspects": [
+    "Clear examples showing actual output format with line numbers and context separators",
+    "Good explanation of heading vs non-heading mode with visual examples",
+    "Well-structured progression from basic to more advanced features",
+    "Practical examples that users can try immediately",
+    "Good use of code blocks for both commands and expected output",
+    "Correctly documents the separator behavior (: for matches, - for context)"
+  ],
+  "improvement_suggestions": [
+    "Add admonition boxes for common tips (e.g., '!!! tip' for when to use line numbers)",
+    "Use tabs to show different output format comparisons side-by-side",
+    "Add a comparison table showing when each output mode is most useful",
+    "Include cross-references to the filtering and search basics pages",
+    "Add section on combining output flags (e.g., -n --column -A 2)",
+    "Include troubleshooting tip about --color always for piping to less -R",
+    "Add visual examples showing colored output (using code annotations or screenshots)",
+    "Create a quick reference table of all output-related flags"
+  ],
+  "cross_references": [
+    "index",
+    "search-basics",
+    "filtering"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-13T20:53:28Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": [
+      "output formatting",
+      "line numbers",
+      "column numbers",
+      "heading mode",
+      "color control",
+      "context lines"
+    ],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features"
+  }
+}
