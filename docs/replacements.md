@@ -1,12 +1,31 @@
 # Replacements
 
-Ripgrep can replace matched text in its output using the `-r/--replace` flag. This is useful for reformatting search results, extracting parts of matches, or transforming text patterns. **Important**: replacements only affect ripgrep's output and never modify your files.
+Ripgrep can replace matched text in its output using the `-r/--replace` flag. This is useful for reformatting search results, extracting parts of matches, or transforming text patterns.
+
+!!! warning "File Safety"
+    Replacements only affect ripgrep's output and **never modify your files**. Your source files remain completely unchanged.
+
+!!! tip "Quick Reference"
+    ```bash
+    # Basic replacement
+    rg PATTERN -r REPLACEMENT
+
+    # Numbered capture groups
+    rg '(\w+) (\w+)' -r '$2 $1'
+
+    # Named capture groups
+    rg '(?P<name>\w+)' -r 'Hello $name'
+
+    # Always use single quotes!
+    rg '(\w+)' -r '$1'  # ✓ Correct
+    rg '(\w+)' -r "$1"  # ✗ Wrong
+    ```
 
 ## The Replace Flag
 
 The basic syntax is:
 
-```bash
+```bash title="Basic replacement syntax"
 rg PATTERN -r REPLACEMENT
 ```
 
@@ -59,15 +78,16 @@ Named groups make complex patterns more maintainable and self-documenting.
 
 ### Capture Group Syntax Rules
 
-Understanding how ripgrep parses capture group references is important:
+!!! info "Understanding Capture Group References"
+    Understanding how ripgrep parses capture group references is important:
 
-- **Valid characters**: Group names consist of letters, numbers, and underscores only (`[_0-9A-Za-z]`)
-- **Longest match**: Ripgrep takes the longest matching name after `$`
-  - `$1a` refers to a group named "1a", not group 1 followed by "a"
-  - Use braces to separate: `${1}a` means group 1 followed by "a"
-- **Brace syntax**: Use `${name}` or `${1}` to disambiguate from following text
-- **Invalid references**: If a group doesn't exist, it's replaced with an empty string
-- **Literal dollar sign**: Use `$$` to write a literal `$`
+    - **Valid characters**: Group names consist of letters, numbers, and underscores only (`[_0-9A-Za-z]`)
+    - **Longest match**: Ripgrep takes the longest matching name after `$`
+      - `$1a` refers to a group named "1a", not group 1 followed by "a"
+      - Use braces to separate: `${1}a` means group 1 followed by "a"
+    - **Brace syntax**: Use `${name}` or `${1}` to disambiguate from following text
+    - **Invalid references**: If a group doesn't exist, it's replaced with an empty string
+    - **Literal dollar sign**: Use `$$` to write a literal `$`
 
 Examples:
 
@@ -84,17 +104,18 @@ rg 'price' -r '$$5.00'     # Outputs "$5.00"
 
 ## Shell Quoting
 
-**Important**: In shells like Bash and zsh, always use single quotes for the replacement string to prevent shell variable expansion:
+!!! danger "Critical: Always Use Single Quotes"
+    In shells like Bash and zsh, **always use single quotes** for the replacement string to prevent shell variable expansion.
 
-```bash
-# Wrong - shell expands $1 (usually to empty string)
-rg '(\w+)' -r "$1"
+    ```bash
+    # Wrong - shell expands $1 (usually to empty string)
+    rg '(\w+)' -r "$1"
 
-# Correct - single quotes prevent shell expansion
-rg '(\w+)' -r '$1'
-```
+    # Correct - single quotes prevent shell expansion
+    rg '(\w+)' -r '$1'
+    ```
 
-Without proper quoting, `$1` gets replaced by a shell variable (which is likely undefined and empty) before ripgrep even sees it.
+    Without proper quoting, `$1` gets replaced by a shell variable (which is likely undefined and empty) before ripgrep even sees it.
 
 ## Output Modification Behavior
 
@@ -261,14 +282,24 @@ rg 'short' -r 'very_long_replacement' --max-columns 50
 
 Example showing both:
 
-```bash
-# Numbered groups
-rg '(\d{4})-(\d{2})-(\d{2})' -r '$1/$2/$3'
+=== "Numbered Groups"
 
-# Named groups - clearer intent
-rg '(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})' \
-   -r '$year/$month/$day'
-```
+    ```bash
+    # Numbered groups - simple but requires counting
+    rg '(\d{4})-(\d{2})-(\d{2})' -r '$1/$2/$3'
+    ```
+
+    Good for simple patterns with few groups.
+
+=== "Named Groups"
+
+    ```bash
+    # Named groups - clearer intent
+    rg '(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})' \
+       -r '$year/$month/$day'
+    ```
+
+    Better for complex patterns where clarity matters.
 
 ## Common Mistakes and Troubleshooting
 
@@ -331,12 +362,14 @@ rg '(\w+),(\w+)' -r '$2 $1' -o | sort | uniq
 
 ## Performance Considerations
 
-Replacements require extracting capture groups, which adds some overhead compared to simple matching. However, this overhead is generally negligible for most use cases. Ripgrep's implementation amortizes allocations across matches for efficiency.
+!!! note "Performance Impact"
+    Replacements require extracting capture groups, which adds some overhead compared to simple matching. However, this overhead is generally negligible for most use cases. Ripgrep's implementation amortizes allocations across matches for efficiency.
 
-For performance-critical scenarios, consider:
-- Using simpler patterns when possible
-- Avoiding unnecessary capture groups
-- Using `--only-matching` to reduce output volume
+    For performance-critical scenarios, consider:
+
+    - Using simpler patterns when possible
+    - Avoiding unnecessary capture groups
+    - Using `--only-matching` to reduce output volume
 
 ## Reference: Replacement Syntax
 
@@ -350,6 +383,6 @@ For performance-critical scenarios, consider:
 
 ## See Also
 
-- [Basics](./basics.md) - For regex pattern syntax
-- [Advanced Patterns](./advanced-patterns.md) - For complex regex features
-- [Output Options](./output.md) - For other output formatting flags
+- [Output Formats](./output-formats.md) - For other output formatting options
+- [Introduction](./introduction.md) - For getting started with ripgrep
+- [Recursive Search](./recursive-search.md) - For file traversal and pattern matching
