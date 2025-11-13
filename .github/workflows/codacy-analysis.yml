@@ -1,0 +1,27 @@
+name: Codacy Analysis
+
+on:
+  workflow_dispatch:
+
+jobs:
+  codacy-analysis:
+    runs-on: ubuntu-latest
+    name: Codacy Analysis
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Codacy Analysis CLI
+        uses: codacy/codacy-analysis-cli-action@master
+        with:
+          output: codacy-results.json
+          format: json
+          gh-code-scanning-compat: false
+          max-allowed-issues: 2147483647
+
+      - name: Upload Codacy results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: codacy-results
+          path: codacy-results.json
