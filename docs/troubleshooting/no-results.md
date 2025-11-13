@@ -4,6 +4,50 @@
 
 If ripgrep returns zero results when you expect matches, try these troubleshooting steps:
 
+```mermaid
+flowchart TD
+    Start[No Results Found] --> Files{Are expected files<br/>being searched?}
+    Files -->|Check with --files| Listed{Files in<br/>--files output?}
+
+    Listed -->|No| Gitignore{Filtered by<br/>.gitignore?}
+    Gitignore -->|Yes| UseU[Use -u/-uu/-uuu<br/>to bypass ignores]
+    Gitignore -->|No| Hidden{Hidden files?}
+
+    Hidden -->|Yes| UseHidden[Use --hidden flag]
+    Hidden -->|No| Type{Wrong type filter?}
+
+    Type -->|Yes| FixType[Use -g glob or<br/>check --type-list]
+
+    Listed -->|Yes| Binary{Binary files?}
+    Binary -->|Yes| UseText[Use -a/--text flag]
+    Binary -->|No| Case{Case mismatch?}
+
+    Case -->|Yes| UseI[Use -i or -S flag]
+    Case -->|No| Pattern{Pattern issue?}
+
+    Pattern -->|Regex| TestF[Test with -F literal]
+    Pattern -->|Multiline| UseU2[Use -U multiline]
+
+    UseU --> Retest[Re-run search]
+    UseHidden --> Retest
+    FixType --> Retest
+    UseText --> Retest
+    UseI --> Retest
+    TestF --> Retest
+    UseU2 --> Retest
+
+    Retest --> Found{Results found?}
+    Found -->|Yes| Success[Problem Solved]
+    Found -->|No| Debug[Use --debug for details]
+
+    style Start fill:#ffebee
+    style Files fill:#fff3e0
+    style Success fill:#e8f5e9
+    style Debug fill:#e1f5ff
+```
+
+**Figure**: Diagnostic decision tree for troubleshooting "no results" issues.
+
 ## Check What Files Would Be Searched
 
 !!! tip "Primary Diagnostic Tool: `--files`"
@@ -32,15 +76,84 @@ If ripgrep returns zero results when you expect matches, try these troubleshooti
 ```bash
 # Source: docs/troubleshooting/debug-flags.md
 $ rg --debug "pattern"
-DEBUG|ignore::walk: ignoring ./node_modules: Ignore(IgnoreMatch(...))
+DEBUG|ignore::walk: ignoring ./node_modules: Ignore(IgnoreMatch(...))  # (1)!
 ```
+
+1. This line shows that `node_modules/` is being ignored due to a `.gitignore` match. The path and reason are shown for each filtered file/directory.
+
+```mermaid
+graph TD
+    All[All Files in Directory] --> VCS{.gitignore<br/>.git/info/exclude}
+    VCS -->|Filtered| Ignored1[Ignored Files]
+    VCS -->|Pass| Custom{.ignore<br/>.rgignore}
+
+    Custom -->|Filtered| Ignored2[Ignored Files]
+    Custom -->|Pass| Hidden{Hidden Files<br/>starting with .}
+
+    Hidden -->|Filtered| Ignored3[Hidden Files]
+    Hidden -->|Pass| Binary{Binary Files<br/>with NUL bytes}
+
+    Binary -->|Filtered| Ignored4[Binary Files]
+    Binary -->|Pass| Type{File Type<br/>-t filter}
+
+    Type -->|Filtered| Ignored5[Non-matching Types]
+    Type -->|Pass| Searched[Files Searched]
+
+    style All fill:#e3f2fd
+    style Searched fill:#e8f5e9
+    style Ignored1 fill:#ffebee
+    style Ignored2 fill:#ffebee
+    style Ignored3 fill:#ffebee
+    style Ignored4 fill:#ffebee
+    style Ignored5 fill:#ffebee
+```
+
+**Figure**: ripgrep's filtering layers - files must pass all filters to be searched.
 
 **Solutions:**
 
-- Use `-u` to ignore `.gitignore` files (but still respect `.ignore` and `.rgignore`)
-- Use `-uu` to ignore all ignore files (but still filter hidden files and binaries)
-- Use `-uuu` for completely unrestricted search (searches everything)
-- Use `--no-ignore-vcs` to ignore only version control ignore files
+=== "-u (bypass .gitignore)"
+    ```bash
+    $ rg -u "pattern"
+    ```
+
+    Ignores `.gitignore` and `.git/info/exclude`, but still respects:
+
+    - `.ignore` and `.rgignore` files
+    - Hidden file filtering (files starting with `.`)
+    - Binary file filtering (files with NUL bytes)
+
+=== "-uu (bypass all ignore files)"
+    ```bash
+    $ rg -uu "pattern"
+    ```
+
+    Ignores all ignore files (`.gitignore`, `.ignore`, `.rgignore`), but still respects:
+
+    - Hidden file filtering (files starting with `.`)
+    - Binary file filtering (files with NUL bytes)
+
+=== "-uuu (unrestricted)"
+    ```bash
+    $ rg -uuu "pattern"
+    ```
+
+    Completely unrestricted search - searches everything:
+
+    - Ignores all ignore files
+    - Searches hidden files
+    - Searches binary files
+
+=== "--no-ignore-vcs (VCS only)"
+    ```bash
+    $ rg --no-ignore-vcs "pattern"
+    ```
+
+    Ignores only version control ignore files (`.gitignore`, `.git/info/exclude`), but still respects:
+
+    - `.ignore` and `.rgignore` files
+    - Hidden file filtering
+    - Binary file filtering
 
 ## Hidden Files Skipped
 
@@ -62,8 +175,10 @@ For more details, see the [Binary and Encoding Problems](./binary-encoding.md) p
 ```bash
 # Source: docs/troubleshooting/debug-flags.md
 $ rg --debug "pattern"
-DEBUG|grep_searcher::searcher: binary file matches (but not printed): ./myfile.bin
+DEBUG|grep_searcher::searcher: binary file matches (but not printed): ./myfile.bin  # (1)!
 ```
+
+1. This indicates the file was searched and matches were found, but results weren't printed because a NUL byte was detected in the first few KB of the file.
 
 **Solutions:**
 
