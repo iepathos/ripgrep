@@ -8,6 +8,25 @@ These flags control how patterns are interpreted and matched against text.
 
 By default, ripgrep uses **smart case**: if your pattern is all lowercase, the search is case-insensitive; if it contains any uppercase letters, the search becomes case-sensitive.
 
+```mermaid
+flowchart TD
+    Start[Enter Pattern] --> HasUpper{Contains<br/>uppercase?}
+    HasUpper -->|Yes| CaseSens[Case-Sensitive Search]
+    HasUpper -->|No| CaseInsens[Case-Insensitive Search]
+
+    CaseSens --> Ex1["Matches: 'Error'<br/>Skips: 'error', 'ERROR'"]
+    CaseInsens --> Ex2["Matches: 'error',<br/>'Error', 'ERROR'"]
+
+    style HasUpper fill:#e1f5ff
+    style CaseSens fill:#ffebee
+    style CaseInsens fill:#e8f5e9
+```
+
+**Figure**: Smart case behavior - pattern case determines match sensitivity.
+
+!!! tip "Smart Case Default Behavior"
+    Ripgrep's smart case is usually what you want: `rg error` finds all variations, while `rg Error` finds only the capitalized form. Override with `-i` (always ignore case) or `-s` (always match case) when needed.
+
 - **`-i, --ignore-case`**: Force case-insensitive search regardless of pattern
   ```bash
   # Find "error", "ERROR", "Error", etc.
@@ -32,12 +51,37 @@ By default, ripgrep uses **smart case**: if your pattern is all lowercase, the s
 
 By default, ripgrep treats patterns as regular expressions. These flags change that behavior:
 
+```mermaid
+flowchart TD
+    Start[Pattern Input] --> Type{Pattern Type?}
+
+    Type -->|Default| Regex[Regular Expression]
+    Type -->|-F| Literal[Literal String]
+    Type -->|-w| Word[Word Boundary]
+    Type -->|-x| Line[Complete Line]
+
+    Regex --> R1["'test.*' matches<br/>'test', 'testing', etc."]
+    Literal --> L1["'test.*' matches<br/>literal 'test.*'"]
+    Word --> W1["'test' matches<br/>'test' only,<br/>not 'testing'"]
+    Line --> X1["'test' matches<br/>only if entire line<br/>is 'test'"]
+
+    style Type fill:#e1f5ff
+    style Regex fill:#fff3e0
+    style Literal fill:#e8f5e9
+    style Word fill:#f3e5f5
+    style Line fill:#fce4ec
+```
+
+**Figure**: Pattern type selection determines how ripgrep interprets your search pattern.
+
 - **`-F, --fixed-strings`**: Treat pattern as a literal string, not a regex
   ```bash
   # Find literal text "(.*)" without regex interpretation
   rg -F '(.*)'
   ```
-  Useful when searching for text containing regex special characters like `.*`, `[]`, `()`, etc.
+
+  !!! tip "When to Use Fixed Strings"
+      Use `-F` when searching for code snippets or text containing regex metacharacters like `.*`, `[]`, `()`, `{}`, `$`, `^`. This avoids regex syntax errors and matches exactly what you type.
 
 - **`-w, --word-regexp`**: Only match whole words
   ```bash
@@ -70,11 +114,30 @@ By default, patterns match within single lines. For patterns that span multiple 
   # Match struct definitions with any content between braces
   rg -U --multiline-dotall 'struct \w+ \{.*?\}'
   ```
-  Use with `-U` to make dot match newline characters. Without this, `.` doesn't match `\n` even in multiline mode.
+
+  !!! warning "Multiline Gotcha: Dot Behavior"
+      In multiline mode (`-U`), the `.` metacharacter **still doesn't match newlines** by default. You must add `--multiline-dotall` to make `.` match `\n`. Without it, `.*` stops at line boundaries even in multiline mode.
 
 ## Regex Engine Selection
 
 Ripgrep uses Rust's regex engine by default, which is very fast. For advanced regex features, you can switch to the PCRE2 engine:
+
+```mermaid
+flowchart LR
+    Pattern[Regex Pattern] --> Need{Need advanced<br/>features?}
+
+    Need -->|No| Default[Default Engine<br/>Fast & Efficient]
+    Need -->|Yes| PCRE2[PCRE2 Engine<br/>-P flag]
+
+    Default --> D1[Basic regex:<br/>., *, +, ?, [], etc.]
+    PCRE2 --> P1[Lookahead/Lookbehind<br/>Backreferences<br/>Conditional patterns]
+
+    style Default fill:#e8f5e9
+    style PCRE2 fill:#fff3e0
+    style Need fill:#e1f5ff
+```
+
+**Figure**: Regex engine selection - use PCRE2 only when you need advanced features.
 
 - **`-P, --pcre2`**: Use PCRE2 engine for advanced features like lookahead/lookbehind and backreferences
   ```bash
@@ -87,6 +150,10 @@ Ripgrep uses Rust's regex engine by default, which is very fast. For advanced re
   # Backreferences: find repeated words
   rg -P '(\w+)\s+\1'
   ```
+
+  !!! warning "PCRE2 Performance Impact"
+      PCRE2 is **significantly slower** than the default Rust regex engine. Only use `-P` when you genuinely need lookahead, lookbehind, or backreferences. For simple patterns, the default engine is much faster.
+
   See the [Regular Expressions](../basics/regex-basics.md) chapter for detailed regex syntax and PCRE2 features.
 
 - **`--engine ENGINE`**: Explicitly choose regex engine
@@ -126,3 +193,25 @@ Ripgrep uses Rust's regex engine by default, which is very fast. For advanced re
   # Search for all patterns listed in patterns.txt
   rg -f patterns.txt
   ```
+
+!!! example "Combining Multiple Patterns"
+    Use `-e` for OR logic (match any pattern):
+    ```bash
+    # Find any severity level
+    rg -e ERROR -e WARNING -e INFO
+
+    # Search for multiple function names
+    rg -e 'fn initialize' -e 'fn setup' -e 'fn configure'
+    ```
+
+    For complex pattern lists, use `-f` with a file:
+    ```bash
+    # patterns.txt
+    TODO
+    FIXME
+    HACK
+    XXX
+
+    # Find all code annotations
+    rg -f patterns.txt
+    ```
