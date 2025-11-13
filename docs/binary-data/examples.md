@@ -8,13 +8,21 @@ This table summarizes when binary detection triggers and what output you'll see:
 
 | Scenario | File Type | Flag | Binary Detection? | Output |
 |----------|-----------|------|-------------------|--------|
-| Recursive search | Binary | (none) | Yes | Silent skip |
-| Recursive search | Binary | `--binary` | Yes | Shows WARNING |
-| Explicit file | Binary | (none) | Yes | Shows warning |
-| Any file | Any | `--text` | No | Raw output (may corrupt terminal) |
-| Large file (>64KB) | Binary | `--mmap` | Maybe | Only checks first 64KB + match regions |
-| Large file (>64KB) | Binary | `--no-mmap` | Yes | Checks all buffers |
-| stdin | Binary | (none) | Yes | Shows warning (treated as explicit) |
+| Recursive search | Binary | (none) | Yes | Silent skip **(1)** |
+| Recursive search | Binary | `--binary` | Yes | Shows WARNING **(2)** |
+| Explicit file | Binary | (none) | Yes | Shows warning **(3)** |
+| Any file | Any | `--text` | No | Raw output (may corrupt terminal) **(4)** |
+| Large file (>64KB) | Binary | `--mmap` | Maybe | Only checks first 64KB + match regions **(5)** |
+| Large file (>64KB) | Binary | `--no-mmap` | Yes | Checks all buffers **(6)** |
+| stdin | Binary | (none) | Yes | Shows warning (treated as explicit) **(7)** |
+
+1. **Default behavior**: Implicit binary files produce no output to avoid cluttering results
+2. **`--binary` flag**: Enables warnings for implicit files to reveal what was skipped
+3. **Explicit files**: Always searched and warned about, even without `--binary`
+4. **`--text` flag**: Bypasses all binary detection - use with caution
+5. **`--mmap` mode**: Fast but may miss binary content after the first 64KB buffer
+6. **`--no-mmap` mode**: Slower but thorough - checks every 64KB chunk
+7. **stdin handling**: Always treated as explicit input, so warnings are shown
 
 ## Binary Detection Decision Flow
 
@@ -44,6 +52,38 @@ flowchart TD
 
 ## Examples
 
+### Implicit vs. Explicit File Handling
+
+```mermaid
+graph LR
+    subgraph Implicit["Implicit Files (Recursive Search)"]
+        I1[rg pattern] --> I2{Binary?}
+        I2 -->|Yes| I3[Silent skip<br/>no output]
+        I2 -->|No| I4[Show matches]
+    end
+
+    subgraph ImplicitBinary["With --binary Flag"]
+        IB1[rg --binary pattern] --> IB2{Binary?}
+        IB2 -->|Yes| IB3[Show WARNING]
+        IB2 -->|No| IB4[Show matches]
+    end
+
+    subgraph Explicit["Explicit Files"]
+        E1[rg pattern file.bin] --> E2{Binary?}
+        E2 -->|Yes| E3[Show warning<br/>binary file matches]
+        E2 -->|No| E4[Show matches]
+    end
+
+    style I3 fill:#f0f0f0
+    style IB3 fill:#fff4e6
+    style E3 fill:#fff4e6
+    style I4 fill:#e6ffe6
+    style IB4 fill:#e6ffe6
+    style E4 fill:#e6ffe6
+```
+
+**Figure**: File handling behavior comparison. Implicit files are silently skipped unless `--binary` is used, while explicit files always show warnings when binary content is detected.
+
 ### Example 1: Default Behavior (Implicit Files)
 
 ```bash
@@ -72,8 +112,10 @@ compiled.bin: WARNING: stopped searching binary file after match (found "\0" byt
 ```bash
 # Explicit file - shows binary warning
 $ rg "signature" compiled.bin
-binary file matches (found "\0" byte around offset 2048)
+binary file matches (found "\0" byte around offset 2048)  # (1)!
 ```
+
+1. The offset indicates where the NUL byte was detected (byte 2048 in this case), helping you understand how much of the file was scanned before binary content was found.
 
 !!! info "Source: tests/binary.rs:70, crates/printer/src/standard.rs:1412"
     Explicit files are always searched, even if binary. The offset value helps locate where binary content was detected.
@@ -91,19 +133,33 @@ $ rg --text "signature" compiled.bin
 
 ### Example 5: Memory Map vs. Buffered
 
-```bash
-# With mmap (only checks first 64KB + matches)
-$ rg --mmap "pattern" largefile.bin
-# Match near start of file: shown
-# Binary data after 64KB: might not be detected unless pattern matches
+=== "Memory-Mapped (--mmap)"
+    ```bash
+    # Only checks first 64KB + match regions
+    $ rg --mmap "pattern" largefile.bin
+    # Match near start of file: shown
+    # Binary data after 64KB: might not be detected unless pattern matches
+    ```
 
-# With buffered reading (thorough detection)
-$ rg --no-mmap "pattern" largefile.bin
-# All buffers scanned for NUL bytes
-```
+    **Detection scope**: First 64KB buffer + regions around pattern matches
 
-!!! tip "Source: crates/searcher/src/line_buffer.rs:6"
+    **Use when**: Performance is critical and binary content is near the start
+
+=== "Buffered (--no-mmap)"
+    ```bash
+    # Thorough detection across entire file
+    $ rg --no-mmap "pattern" largefile.bin
+    # All buffers scanned for NUL bytes
+    ```
+
+    **Detection scope**: Every 64KB chunk throughout the file
+
+    **Use when**: You need consistent binary detection across large files
+
+!!! tip "Buffer Size and Detection Coverage"
     The default buffer capacity is 64KB (65536 bytes). Memory-mapped files only check the first buffer plus regions around matches, while buffered reading checks every 64KB chunk sequentially for more thorough binary detection.
+
+    **Source**: crates/searcher/src/line_buffer.rs:6
 
 ### Example 6: stdin Input
 
