@@ -1,0 +1,76 @@
+{
+  "item_type": "page",
+  "page_id": "recursive-search",
+  "page_title": "recursive search",
+  "page_file": "docs/recursive-search.md",
+  "drift_detected": true,
+  "severity": "medium",
+  "quality_assessment": "Page has accurate technical content and comprehensive coverage of recursive search features. Main issue is a broken cross-reference link at the end of the document. Content aligns well with actual implementation in crates/ignore/src/walk.rs.",
+  "issues": [
+    {
+      "type": "broken_links",
+      "severity": "medium",
+      "section": "See Also",
+      "description": "Found 1 broken internal link",
+      "broken_links": [
+        {
+          "link_text": "Basics",
+          "original_target": "./basics.md",
+          "current_file": "docs/recursive-search.md",
+          "issue": "File does not exist",
+          "suggested_fix": "Either remove this link or create basics.md (or link to introduction.md instead)"
+        }
+      ],
+      "fix_suggestion": "Update cross-reference to point to an existing file. Consider linking to introduction.md instead of basics.md, or remove the link if the basics page is not planned.",
+      "source_reference": "docs/recursive-search.md:231"
+    }
+  ],
+  "positive_aspects": [
+    "Comprehensive coverage of recursive search functionality",
+    "Accurate documentation of --max-depth flag and its semantics (depth 0, 1, 2 behavior)",
+    "Correct documentation of -L/--follow flag for symbolic links",
+    "Accurate explanation of --one-file-system flag and its use cases",
+    "Good practical examples showing real-world usage patterns",
+    "Helpful troubleshooting section addressing common issues (permission errors, symlink loops, slow searches)",
+    "Clear explanation of how recursive traversal interacts with ignore files",
+    "Accurate technical details about WalkBuilder and WalkParallel implementation",
+    "Well-structured with clear sections and progression from basic to advanced",
+    "Good use of code examples with realistic directory structures",
+    "Comprehensive flag reference table at the end"
+  ],
+  "improvement_suggestions": [
+    "Fix the broken link to basics.md in the 'See Also' section (line 231)",
+    "Consider adding a note about min_depth functionality (present in WalkBuilder but not documented)",
+    "Could add an example showing how to combine --max-depth with ignore files",
+    "Consider adding a visual diagram showing depth levels for better clarity",
+    "Could mention the threads parameter and how parallelism affects recursive search performance",
+    "Consider adding a comparison table: 'Recursive Search vs Find vs Other Tools'",
+    "Could add admonition blocks (using MkDocs Material) for warnings about symlink loops and permission issues",
+    "Consider adding code annotations to highlight important parts of complex examples"
+  ],
+  "cross_references": [
+    "automatic-filtering",
+    "manual-filtering-globs",
+    "introduction"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-13T20:53:00Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": [
+      "recursive search",
+      "directory traversal",
+      "max-depth",
+      "symbolic links",
+      "file system boundaries"
+    ],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "internal_links_checked": 4,
+    "broken_links_found": 1,
+    "source_files_verified": [
+      "crates/ignore/src/walk.rs:WalkBuilder",
+      "crates/core/flags/defs.rs:MaxDepth",
+      "crates/core/flags/defs.rs:Follow",
+      "crates/core/flags/defs.rs:OneFileSystem"
+    ]
+  }
+}
