@@ -2,93 +2,119 @@
   "item_type": "page",
   "page_id": "performance",
   "page_title": "performance",
-  "page_file": "docs/performance.md",
+  "page_file": "docs/troubleshooting/performance.md",
   "drift_detected": true,
-  "severity": "low",
-  "quality_assessment": "Excellent comprehensive performance documentation with minor gaps in coverage of some tuning flags",
+  "severity": "high",
+  "quality_assessment": "Page provides basic troubleshooting steps but is missing several important performance features documented in the codebase. The page would benefit from MkDocs Material visual enhancements and cross-references to the more detailed advanced-patterns/performance.md page. Critical broken link to FAQ.md needs fixing.",
   "issues": [
     {
+      "type": "broken_links",
+      "severity": "medium",
+      "section": "Cross-References",
+      "description": "Found 1 broken internal link: Link to FAQ.md does not exist",
+      "broken_links": [
+        {
+          "link_text": "FAQ",
+          "target": "../FAQ.md#pcre2-slow",
+          "current_file": "docs/troubleshooting/performance.md",
+          "reason": "File docs/FAQ.md does not exist"
+        }
+      ],
+      "fix_suggestion": "Remove the broken link reference or create an FAQ section. Consider referencing docs/advanced-patterns/performance.md which has detailed PCRE2 performance information instead."
+    },
+    {
       "type": "missing_content",
-      "severity": "low",
-      "section": "Performance Tuning",
-      "description": "Missing documentation for --max-columns flag",
-      "feature_reference": "performance.performance_tuning.max_columns",
-      "fix_suggestion": "Add subsection explaining --max-columns flag for handling long lines and preventing excessive memory usage",
+      "severity": "high",
+      "section": "Performance Tuning Flags",
+      "description": "Missing documentation for several important performance tuning flags available in ripgrep",
+      "feature_reference": "performance.performance_tuning",
+      "missing_features": [
+        "--dfa-size-limit: Configure DFA memory limit for regex engine",
+        "--max-filesize: Skip files larger than specified size",
+        "--max-columns: Handle long lines by setting maximum line length",
+        "--max-count: Stop after finding N matches",
+        "--max-depth: Limit recursion depth",
+        "--one-file-system: Avoid crossing filesystem mounts",
+        "--regex-size-limit: Control maximum compiled regex size"
+      ],
+      "fix_suggestion": "Add a 'Performance Tuning Flags' section documenting these flags. See docs/advanced-patterns/performance.md:199-231 for examples.",
       "source_reference": "features.json:performance.performance_tuning"
     },
     {
       "type": "missing_content",
-      "severity": "low",
-      "section": "Performance Tuning",
-      "description": "Missing documentation for --max-count flag",
-      "feature_reference": "performance.performance_tuning.max_count",
-      "fix_suggestion": "Add example showing --max-count N to stop after N matches, useful for quick sampling",
-      "source_reference": "features.json:performance.performance_tuning"
+      "severity": "medium",
+      "section": "I/O Strategy",
+      "description": "Page mentions memory mapping briefly but doesn't explain when it's used or the automatic selection strategy",
+      "feature_reference": "performance.io_strategy",
+      "fix_suggestion": "Add explanation that ripgrep automatically selects memory mapping for single file searches and buffered reading for directory searches. Include when users might want to override this. See docs/advanced-patterns/performance.md:114-167 for detailed explanation.",
+      "source_reference": "features.json:performance.io_strategy"
     },
     {
       "type": "missing_content",
-      "severity": "low",
-      "section": "Performance Tuning",
-      "description": "Missing documentation for --one-file-system flag",
-      "feature_reference": "performance.performance_tuning.one_file_system",
-      "fix_suggestion": "Add example showing --one-file-system to avoid crossing mount points, useful for avoiding network mounts",
-      "source_reference": "features.json:performance.performance_tuning"
+      "severity": "medium",
+      "section": "Visual Enhancements",
+      "description": "Page lacks MkDocs Material visual features like admonitions, code annotations, or diagrams",
+      "feature_reference": "Auto-discovered page validation requirement",
+      "fix_suggestion": "Add admonitions for warnings (PCRE2 backtracking risk, multiline memory impact), tips for quick wins, and examples with code annotations. Consider adding a decision flowchart similar to docs/advanced-patterns/performance.md:51-74 for choosing optimization strategies.",
+      "source_reference": "docs/advanced-patterns/performance.md:14-16, 38-40, 186-191"
     },
     {
       "type": "incomplete_explanation",
-      "severity": "low",
-      "section": "Low-Level Optimizations",
-      "description": "Internal optimizations mentioned but not explained (RegexSet, UTF-8 decoding in DFA)",
-      "feature_reference": "performance.optimization_techniques",
-      "fix_suggestion": "Optional: Add brief explanation of RegexSet optimization for glob matching and UTF-8 DFA decoding as internal optimizations users benefit from automatically",
-      "source_reference": "features.json:performance.optimization_techniques"
+      "severity": "medium",
+      "section": "PCRE2 Performance",
+      "description": "PCRE2 performance issue is mentioned but lacks detail about why it's slow and when backtracking becomes problematic",
+      "current_content": "Problem: PCRE2 regexes (`-P` flag) can be much slower than ripgrep's default regex engine.\n\nWhy it's slow: PCRE2 uses backtracking, which can have exponential time complexity on certain patterns and inputs.",
+      "should_be": "Should explain specific pathological patterns (nested quantifiers like (a+)+), provide concrete examples of when PCRE2 is worth using, and warn about exponential time complexity risks",
+      "fix_suggestion": "Expand PCRE2 section with specific examples of problematic patterns, decision criteria for when to use PCRE2, and testing recommendations. See docs/advanced-patterns/performance.md:26-76 for comprehensive treatment.",
+      "source_reference": "docs/advanced-patterns/performance.md:26-76"
     },
     {
       "type": "missing_content",
       "severity": "low",
-      "section": "Memory Mapping",
-      "description": "Stdin handling optimization not mentioned",
-      "feature_reference": "performance.io_strategy.stdin_handling",
-      "fix_suggestion": "Add brief note about stdin handling optimization in the I/O strategy section",
-      "source_reference": "features.json:performance.io_strategy"
+      "section": "Cross-References",
+      "description": "Missing cross-reference to the comprehensive performance documentation in advanced-patterns section",
+      "fix_suggestion": "Add a note at the top or bottom of the page directing users to docs/advanced-patterns/performance.md for detailed performance information about multiline mode, PCRE2, I/O strategies, and regex limits.",
+      "source_reference": "docs/advanced-patterns/performance.md"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Testing and Profiling",
+      "description": "Missing guidance on how to test and profile performance improvements",
+      "feature_reference": "performance.optimization_techniques",
+      "fix_suggestion": "Add section on testing with --stats, profiling complex patterns, using time command for comparisons, and testing on actual datasets. See docs/advanced-patterns/performance.md:233-238.",
+      "source_reference": "docs/advanced-patterns/performance.md:233-238"
     }
   ],
   "positive_aspects": [
-    "Excellent philosophical introduction explaining performance design decisions",
-    "Clear and detailed explanation of parallelism with work-stealing architecture",
-    "Platform-specific notes (macOS memory mapping behavior)",
-    "Comprehensive benchmarking section with warm vs cold cache considerations",
-    "Practical performance tips organized by use case (large codebases, network filesystems, constrained environments)",
-    "Good troubleshooting section with step-by-step diagnostic approach",
-    "Real-world examples throughout",
-    "Well-organized progression from concepts to tuning to tips",
-    "Performance statistics section with example output and interpretation"
+    "Clear, actionable quick-start steps for common performance issues",
+    "Good progression from diagnosis (--stats) to solutions",
+    "Concise examples that are easy to follow",
+    "Covers the most common performance issues users will encounter",
+    "Good use of code examples for threading and memory mapping options"
   ],
   "improvement_suggestions": [
-    "Add the three missing performance tuning flags (--max-columns, --max-count, --one-file-system) with examples",
-    "Consider adding a reference table of all performance-related flags with their use cases",
-    "Optional: Add brief section on internal optimizations users benefit from automatically",
-    "Consider adding cross-reference to configuration page for setting performance defaults",
-    "Add admonition boxes to highlight critical performance tips (e.g., memory mapping on macOS)",
-    "Consider adding a quick reference section at the top for common performance flags"
+    "Add MkDocs Material admonitions to highlight important warnings (PCRE2 backtracking, multiline memory impact)",
+    "Include code annotations on examples to explain what each flag does",
+    "Add a decision flowchart for choosing optimization strategies (similar to advanced-patterns/performance.md)",
+    "Create a 'Quick Performance Wins' callout box listing the most impactful optimizations",
+    "Add cross-reference to advanced-patterns/performance.md for users who need detailed explanations",
+    "Fix broken FAQ.md link or replace with valid reference",
+    "Consider adding a section on regex limits (--dfa-size-limit, --regex-size-limit) for users hitting those errors",
+    "Include examples with expected output to show what improved performance looks like"
+  ],
+  "cross_references": [
+    "advanced-patterns/performance.md",
+    "troubleshooting/debug-flags.md",
+    "common-options/file-filtering.md"
   ],
   "metadata": {
-    "analyzed_at": "2025-11-13T20:53:28Z",
+    "analyzed_at": "2025-11-13T20:53:00Z",
     "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
-    "topics_covered": [
-      "parallelism",
-      "memory mapping",
-      "SIMD acceleration",
-      "regex engine tuning",
-      "buffer management",
-      "sorting performance",
-      "statistics",
-      "benchmarking",
-      "performance tips",
-      "troubleshooting"
-    ],
+    "topics_covered": ["performance", "optimization", "troubleshooting", "PCRE2", "threading", "memory mapping"],
     "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
-    "internal_links_validated": true,
-    "broken_links_found": 0
+    "related_comprehensive_page": "docs/advanced-patterns/performance.md",
+    "page_length": "69 lines (brief troubleshooting page)",
+    "comprehensive_page_length": "322 lines (detailed reference)"
   }
 }
