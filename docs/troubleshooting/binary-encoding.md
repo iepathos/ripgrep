@@ -36,6 +36,9 @@ graph TD
 
 If you need to search binary files, ripgrep provides several options depending on your needs:
 
+!!! tip "Quick Reference"
+    Use `-a/--text` for guaranteed text treatment, `--binary` for searching binaries without garbage output, or `--binary-files=without-match` to skip them silently in scripts.
+
 ### Flag Comparison
 
 | Flag | Behavior | Use When | Notes |
@@ -89,9 +92,15 @@ $ rg --debug "pattern"
 DEBUG|grep_searcher::searcher: binary file matches (but not printed): ./file.bin
 ```
 
+!!! tip "Finding Hidden Matches"
+    If you see "binary file matches (but not printed)", use `--binary` or `-a` to reveal those matches. This often happens with log files containing occasional binary data.
+
 ## Encoding Issues
 
 If files aren't UTF-8 encoded, ripgrep may fail to search them correctly. This manifests in several ways.
+
+!!! note "Default Encoding"
+    ripgrep defaults to UTF-8 for all files. Use `-E/--encoding` to specify alternative encodings like `latin1`, `utf-16le`, or `iso-8859-1`.
 
 ### Common Encoding Problems
 
@@ -118,9 +127,15 @@ If files aren't UTF-8 encoded, ripgrep may fail to search them correctly. This m
 
     **Fix:**
     ```bash
-    $ rg -E utf-16le "pattern"  # Little-endian (Windows)
-    $ rg -E utf-16be "pattern"  # Big-endian (less common)
+    $ rg -E utf-16le "pattern"  # (1)!
+    $ rg -E utf-16be "pattern"  # (2)!
     ```
+
+    1. Little-endian UTF-16 (Windows standard)
+    2. Big-endian UTF-16 (less common, some Unix systems)
+
+    !!! tip "Windows Files"
+        Windows text files (`.txt`, `.log`) are often UTF-16LE. If `-a` shows garbled output with lots of NUL bytes, try `-E utf-16le`.
 
 === "BOM bytes in output"
 
@@ -150,7 +165,7 @@ If files aren't UTF-8 encoded, ripgrep may fail to search them correctly. This m
 
 ### Pattern Encoding vs File Encoding
 
-!!! warning "Encoding mismatch"
+!!! warning "Common Pitfall: Encoding Mismatch"
     Your search pattern must match the file's encoding. If searching for "café" in a Latin1 file:
 
     ```bash
@@ -160,6 +175,8 @@ If files aren't UTF-8 encoded, ripgrep may fail to search them correctly. This m
     # Tell ripgrep the file is Latin1
     $ rg -E latin1 "café"  # Now matches
     ```
+
+    The `-E/--encoding` flag tells ripgrep how to **decode the file**, but your pattern is always interpreted as UTF-8 unless you use raw hex patterns.
 
 ### Diagnosis Workflow
 
