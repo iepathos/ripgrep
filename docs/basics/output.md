@@ -130,6 +130,26 @@ rg -I pattern
 
 ## Heading vs Non-Heading Mode
 
+Ripgrep offers two distinct output grouping modes optimized for different use cases:
+
+```mermaid
+graph LR
+    Input[Search Results] --> Decision{Output Mode?}
+    Decision -->|Default| Heading[Heading Mode<br/>Grouped by file]
+    Decision -->|--no-heading| NoHeading[Non-Heading Mode<br/>File on each line]
+    Decision -->|--vimgrep| Vim[Vimgrep Mode<br/>file:line:col:text]
+
+    Heading --> Human[Human Reading<br/>Terminal display]
+    NoHeading --> Parse[Machine Parsing<br/>Line-by-line processing]
+    Vim --> IDE[IDE Integration<br/>Quickfix lists]
+
+    style Heading fill:#e1f5ff
+    style NoHeading fill:#fff3e0
+    style Vim fill:#f3e5f5
+```
+
+**Figure**: Output mode selection based on use case.
+
 **Heading mode** (default): Group matches by file with file path as heading:
 ```
 src/main.rs
@@ -237,6 +257,26 @@ tests/test.rs:7
 lib/utils.rs:3
 ```
 
+**Understanding the difference:**
+
+```mermaid
+graph TD
+    Line[Line: "error: failed, error: timeout, error: crash"]
+    Line --> CountLine["-c counts lines"]
+    Line --> CountMatch["--count-matches counts"]
+
+    CountLine --> Result1["Result: 1<br/>(one matching line)"]
+    CountMatch --> Result2["Result: 3<br/>(three 'error' matches)"]
+
+    style Line fill:#f5f5f5
+    style CountLine fill:#e1f5ff
+    style CountMatch fill:#fff3e0
+    style Result1 fill:#e1f5ff
+    style Result2 fill:#fff3e0
+```
+
+**Figure**: Difference between `-c` (counts lines) and `--count-matches` (counts individual matches).
+
 !!! note "Difference"
     `-c` counts matching lines (a line with multiple matches counts as 1), while `--count-matches` counts each individual match (a line with 3 matches counts as 3).
 
@@ -304,10 +344,14 @@ rg --json pattern
 
 **Example output:**
 ```json
-{"type":"begin","data":{"path":{"text":"src/main.rs"}}}
-{"type":"match","data":{"path":{"text":"src/main.rs"},"lines":{"text":"    let pattern = \"TODO\";\n"},"line_number":42,"absolute_offset":1847,"submatches":[{"match":{"text":"TODO"},"start":20,"end":24}]}}
-{"type":"end","data":{"path":{"text":"src/main.rs"},"binary_offset":null,"stats":{"elapsed":{"secs":0,"nanos":123456},"searches":1,"searches_with_match":1}}}
+{"type":"begin","data":{"path":{"text":"src/main.rs"}}}  // (1)!
+{"type":"match","data":{"path":{"text":"src/main.rs"},"lines":{"text":"    let pattern = \"TODO\";\n"},"line_number":42,"absolute_offset":1847,"submatches":[{"match":{"text":"TODO"},"start":20,"end":24}]}}  // (2)!
+{"type":"end","data":{"path":{"text":"src/main.rs"},"binary_offset":null,"stats":{"elapsed":{"secs":0,"nanos":123456},"searches":1,"searches_with_match":1}}}  // (3)!
 ```
+
+1. **Begin message**: Signals the start of results for a file
+2. **Match message**: Contains the actual match with line number, byte offset, and submatch positions (start/end columns)
+3. **End message**: Signals completion with statistics (elapsed time, search counts)
 
 !!! note "JSON Lines Format"
     Each line is a separate JSON object. Use `jq` for processing: `rg --json pattern | jq -r '.data.path.text'`
@@ -355,6 +399,30 @@ rg -C 2 pattern
 # Asymmetric context
 rg -B 3 -A 1 pattern
 ```
+
+```mermaid
+graph TD
+    L38[Line 38: context] -.->|"-B 2"| L40
+    L39[Line 39: context] -.->|"-B 2"| L40
+    L40[Line 40: context] -.->|"-B 2"| L42
+    L41[Line 41: context] -.->|"-B 2"| L42
+    L42[Line 42: MATCH] -->|"-A 2"| L43
+    L42 -->|"-A 2"| L44
+    L43[Line 43: context]
+    L44[Line 44: context]
+    L45[Line 45: context]
+
+    L42 -.->|excluded| L45
+
+    style L42 fill:#ffebee,stroke:#c62828,stroke-width:3px
+    style L40 fill:#e1f5ff
+    style L41 fill:#e1f5ff
+    style L43 fill:#fff3e0
+    style L44 fill:#fff3e0
+    style L45 fill:#f5f5f5,stroke-dasharray: 5 5
+```
+
+**Figure**: Context line inclusion with `-C 2` (2 lines before and after match). Blue = before context, red = match, orange = after context.
 
 **Example:**
 ```bash
