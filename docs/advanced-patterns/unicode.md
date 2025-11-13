@@ -22,6 +22,37 @@ rg '\p{Alphabetic}+'
 rg '\p{Uppercase}+'
 ```
 
+### How Unicode Properties Work
+
+Unicode properties categorize characters by script, category, or attribute. When ripgrep evaluates a `\p{Property}` pattern, it checks each character's Unicode metadata:
+
+```mermaid
+graph LR
+    subgraph "Text: 'Hello Σ世界'"
+        C1[H] --> C2[e]
+        C2 --> C3[l]
+        C3 --> C4[l]
+        C4 --> C5[o]
+        C5 --> C6[' ']
+        C6 --> C7[Σ]
+        C7 --> C8[世]
+        C8 --> C9[界]
+    end
+
+    subgraph "Pattern: \\p{Greek}+"
+        P[Check each<br/>character]
+        P --> M1{Is Greek?}
+    end
+
+    C7 -.Unicode<br/>property.-> M1
+    M1 -->|Yes| R1[✓ Match Σ]
+
+    style C7 fill:#e8f5e9
+    style R1 fill:#c8e6c9
+```
+
+**Figure**: Unicode property matching examines character metadata. Only 'Σ' matches `\p{Greek}` in this example.
+
 ## Common Unicode Properties
 
 | Property | Matches |
@@ -36,7 +67,25 @@ rg '\p{Uppercase}+'
 | `\p{White_Space}` | Whitespace |
 | `\p{any}` | Any character (including newlines) |
 
+!!! note "Property Names Are Case-Insensitive"
+    Unicode property names can be written in any case: `\p{Greek}`, `\p{greek}`, and `\p{GREEK}` are all equivalent.
+
+!!! tip "Using \\p{any} for Newline Matching"
+    `\p{any}` matches **any** Unicode codepoint, including newlines (`\n`), regardless of [multiline mode](./multiline.md) settings. This provides an alternative to using `.` with the `--multiline-dotall` flag.
+
+    ```bash
+    # Match any character including newlines without --multiline-dotall
+    rg '\p{any}+'
+
+    # Equivalent to using . with multiline-dotall
+    rg --multiline-dotall '.+'
+    ```
+
+    See [crates/core/flags/defs.rs:4249-4250](../../crates/core/flags/defs.rs) for implementation details.
+
 **Note on Emoji Matching**: Emoji matching with `\p{Emoji}` may vary across different regex engines and Unicode versions. Some complex emoji (like multi-codepoint sequences, skin tone modifiers, or zero-width joiners) may require additional pattern logic. Always test emoji patterns with your specific use case and data.
+
+For a comprehensive list of Unicode properties, see the [Rust regex Unicode documentation](https://github.com/rust-lang/regex/blob/master/UNICODE.md).
 
 ## Unicode-Aware Metacharacters
 
@@ -76,4 +125,67 @@ For ASCII-only searches with better performance, use `--no-unicode`:
 rg --no-unicode '\w+'
 ```
 
+!!! warning "Performance Considerations"
+    While Unicode mode provides rich character class support, it can impact performance in certain scenarios:
+
+    - **Frequent word character matching**: Patterns like `\w{100}` (repeated Unicode word checks) are slower than their ASCII equivalents
+    - **Large files with ASCII-only content**: If you know your content is ASCII-only, `--no-unicode` provides measurable speedup
+    - **Word boundaries**: `\b` and `\B` use Unicode word definitions, which are more computationally expensive than ASCII boundaries
+
+    **When to disable Unicode**:
+
+    - Processing ASCII-only data (source code, logs, configuration files)
+    - Performance-critical searches on large codebases
+    - Pattern uses `\w`, `\d`, `\s`, or `\b` extensively
+
+    See [crates/core/flags/defs.rs:4930-4934](../../crates/core/flags/defs.rs) for implementation context.
+
 **Note**: `--no-unicode` affects the entire search, not individual patterns.
+
+## Common Use Cases
+
+### Validating International Names
+
+```bash
+# Match names with Unicode letters (supports accents, non-Latin scripts)
+rg '^\p{Alphabetic}+( \p{Alphabetic}+)*$'
+
+# Find names containing specific scripts
+rg '\p{Han}+\s+\p{Latin}+'  # Chinese + Latin names
+```
+
+### Processing Multilingual Text
+
+```bash
+# Extract sentences from mixed-script documents
+rg '\p{Uppercase}\p{Alphabetic}+.*?[.!?]'
+
+# Find all non-ASCII text
+rg '[^\p{ASCII}]+'
+
+# Identify specific language blocks
+rg '\p{Arabic}+' --only-matching  # Extract Arabic text
+```
+
+### Data Validation
+
+```bash
+# Validate Unicode whitespace handling
+rg '\p{White_Space}+' --replace ' '  # Normalize all whitespace
+
+# Find problematic characters
+rg '[^\p{Print}\p{White_Space}]'  # Non-printable characters
+```
+
+### Working with Emoji
+
+```bash
+# Find lines containing emoji
+rg '\p{Emoji}'
+
+# Extract emoji from text
+rg '\p{Emoji}+' --only-matching
+
+# Find text without emoji (using negative pattern in broader search)
+rg '^[^\p{Emoji}]+$'
+```
