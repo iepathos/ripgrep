@@ -11,15 +11,49 @@ Backreferences allow you to match previously captured groups within a regex patt
 
     **Quick tip**: Use `--engine auto` to let ripgrep automatically select PCRE2 when your pattern contains backreferences.
 
+```mermaid
+flowchart TD
+    Start[Write Regex Pattern] --> HasBackref{Pattern uses<br/>backreferences?}
+
+    HasBackref -->|Yes| NeedPCRE[PCRE2 Required]
+    HasBackref -->|No| DefaultOK[Default Engine OK]
+
+    NeedPCRE --> AutoEngine{Using<br/>--engine auto?}
+    AutoEngine -->|Yes| AutoSelect[Ripgrep selects PCRE2]
+    AutoEngine -->|No| ManualFlag{Using -P<br/>or --pcre2?}
+
+    ManualFlag -->|Yes| PCRE2[PCRE2 Engine]
+    ManualFlag -->|No| Error[Error: backreferences<br/>not supported]
+
+    AutoSelect --> PCRE2
+    DefaultOK --> Fast[Fast: O(n) linear time]
+    PCRE2 --> Slower[Slower: Potential O(2^n)<br/>with backtracking]
+
+    Error --> Fix[Add -P flag]
+    Fix --> PCRE2
+
+    style NeedPCRE fill:#fff3e0
+    style DefaultOK fill:#e8f5e9
+    style PCRE2 fill:#e1f5ff
+    style Error fill:#ffebee
+    style Fast fill:#e8f5e9
+    style Slower fill:#fff3e0
+```
+
+**Figure**: Engine selection flow for backreference patterns - shows automatic detection and performance trade-offs.
+
 ## Numbered Backreferences
 
 ```bash
 # Find repeated words (word followed by same word)
-rg -P '(\w+)\s+\1'
+rg -P '(\w+)\s+\1'              # (1)!
 
 # Find repeated patterns
-rg -P '(\d{3})-\1'
+rg -P '(\d{3})-\1'               # (2)!
 ```
+
+1. `(\w+)` captures a word, `\1` matches the same word again - finds "the the" or "test test"
+2. `(\d{3})` captures 3 digits, `\1` matches same digits - finds "123-123" pattern
 
 The `\1` refers to the first capture group, `\2` to the second, etc.
 
@@ -29,8 +63,10 @@ Use named captures with `(?P<name>...)` and reference with `\k<name>`:
 
 ```bash
 # Find repeated words using named captures
-rg -P '(?P<word>\w+)\s+\k<word>'
+rg -P '(?P<word>\w+)\s+\k<word>'    # (1)!
 ```
+
+1. `(?P<word>\w+)` captures word with name "word", `\k<word>` references it by name - more readable than `\1`
 
 ## Backreferences in Replacements
 
@@ -38,11 +74,14 @@ Backreferences are particularly useful with the `-r` flag for replacements:
 
 ```bash
 # Swap two words
-rg -P '(\w+)\s+(\w+)' -r '$2 $1'
+rg -P '(\w+)\s+(\w+)' -r '$2 $1'                        # (1)!
 
 # Transform patterns
-rg -P '(\w+)@(\w+)\.com' -r 'User: $1, Domain: $2'
+rg -P '(\w+)@(\w+)\.com' -r 'User: $1, Domain: $2'     # (2)!
 ```
+
+1. Captures two words, swaps their order in replacement - "foo bar" becomes "bar foo"
+2. Extracts email parts into structured format - "john@example.com" becomes "User: john, Domain: example"
 
 ### Replacement Syntax Rules
 
@@ -93,6 +132,46 @@ Backreferences have significant performance implications compared to ripgrep's d
     # On input 'aaaaaaaaaa' (no 'b'), this pattern tests
     # exponentially many ways to split the a's between groups
     ```
+
+```mermaid
+graph TD
+    subgraph "Default Engine: O(n) Linear Time"
+        D1[Input: 'test test'] --> D2[Finite Automata]
+        D2 --> D3[Single Pass]
+        D3 --> D4[Result in ~n steps]
+    end
+
+    subgraph "PCRE2 with Backreferences: O(n)"
+        P1[Input: 'test test'] --> P2["Pattern: (\w+)\s+\1"]
+        P2 --> P3[Capture 'test']
+        P3 --> P4[Match space]
+        P4 --> P5[Compare with \1]
+        P5 --> P6[Result in ~n steps]
+    end
+
+    subgraph "PCRE2 Pathological: O(2^n)"
+        B1[Input: 'aaaa...'] --> B2["Pattern: (a+)+b"]
+        B2 --> B3[Try: a,a,a,a...]
+        B3 --> B4[Backtrack: aa,a,a...]
+        B4 --> B5[Backtrack: a,aa,a...]
+        B5 --> B6[Backtrack: aaa,a...]
+        B6 --> B7[... 2^n combinations]
+        B7 --> B8[No match found]
+    end
+
+    style D2 fill:#e8f5e9
+    style D4 fill:#e8f5e9
+    style P3 fill:#e1f5ff
+    style P6 fill:#e1f5ff
+    style B3 fill:#ffebee
+    style B4 fill:#ffebee
+    style B5 fill:#ffebee
+    style B6 fill:#ffebee
+    style B7 fill:#ffebee
+    style B8 fill:#ffebee
+```
+
+**Figure**: Comparison of engine complexity - default engine maintains linear time, PCRE2 can be linear for good patterns but exponential for pathological ones.
 
 ### Performance Optimizations
 
