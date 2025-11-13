@@ -1,145 +1,105 @@
 {
-  "item_type": "auto-discovered",
+  "item_type": "page",
   "page_id": "index",
-  "page_title": "Advanced Patterns Index",
-  "page_file": "docs/advanced-patterns/index.md",
+  "page_title": "index",
+  "page_file": "docs/basics/index.md",
   "drift_detected": true,
   "severity": "medium",
-  "quality_assessment": "Page serves as a good overview and navigation hub for the advanced patterns section. The broken link to basics.md is the primary issue. Content is well-structured with a helpful decision tree and quick reference. The page appropriately summarizes advanced features without duplicating content from subpages.",
+  "quality_assessment": "Good overview page with broken link to advanced patterns section",
   "issues": [
     {
       "type": "broken_links",
       "severity": "medium",
-      "section": "Related Chapters",
+      "section": "Cross-References",
       "description": "Found 1 broken internal link",
       "broken_links": [
         {
-          "link_text": "Basic Usage",
-          "original_target": "../basics.md",
-          "expected_path": "docs/basics.md",
-          "current_file": "docs/advanced-patterns/index.md",
-          "reason": "File does not exist - basics.md has been split into a section with multiple pages",
-          "suggested_fixes": [
-            "Update link to point to ../basics/index.md (section index page)",
-            "Update link to point to ../basics/pattern-matching.md (for basic patterns)",
-            "Update link to point to ../basics/regex-basics.md (for regex fundamentals)"
-          ]
+          "link_text": "Advanced Patterns",
+          "original_target": "../advanced-patterns.md",
+          "expected_path": "docs/advanced-patterns.md",
+          "current_file": "docs/basics/index.md",
+          "actual_status": "file_not_found",
+          "note": "advanced-patterns is a directory, not a single file"
         }
       ],
-      "fix_suggestion": "Update the broken link from '../basics.md' to '../basics/index.md' to point to the basics section index page. This maintains the navigation intent while using the correct file structure.",
-      "source_reference": "docs/advanced-patterns/index.md:65"
+      "fix_suggestion": "Update link to point to ../advanced-patterns/index.md (directory index page)",
+      "source_reference": "docs/basics/index.md:71"
     },
     {
-      "type": "incomplete_explanation",
+      "type": "missing_content",
       "severity": "low",
-      "section": "Quick Reference - Decision Tree",
-      "description": "The decision tree mentions --engine=auto but doesn't explain what it does or when to use it",
-      "current_content": "Complex pattern with multiple features?\n└─ Consider --engine=auto for automatic selection",
-      "should_be": "Include a brief explanation of what --engine=auto does (automatically selects between default and PCRE2 engine based on pattern features)",
-      "fix_suggestion": "Add a footnote or brief explanation after the decision tree explaining that --engine=auto analyzes the pattern and automatically chooses the best engine (default or PCRE2) based on which features are needed.",
-      "source_reference": "docs/advanced-patterns/index.md:41"
+      "section": "Common Flags Cheat Sheet",
+      "description": "Missing --no-line-number flag in cheat sheet",
+      "current_content": "Cheat sheet includes --line-number but not its inverse",
+      "should_include": "--no-line-number (-N) to suppress line numbers",
+      "fix_suggestion": "Add --no-line-number flag to cheat sheet for completeness",
+      "source_reference": "features.json:output_control.standard_output"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Common Flags Cheat Sheet",
+      "description": "Missing --only-matching flag in cheat sheet",
+      "current_content": "Cheat sheet doesn't include --only-matching (-o) flag",
+      "should_include": "--only-matching (-o) to show only the matching part of lines",
+      "fix_suggestion": "Add --only-matching flag which is commonly used for extraction",
+      "source_reference": "features.json:output_control.standard_output"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Quick Start",
+      "description": "Missing example for combining multiple flags",
+      "current_content": "Examples show individual flags but not common combinations",
+      "should_include": "Example combining flags like 'rg -i -w -C 2 function' for case-insensitive word search with context",
+      "fix_suggestion": "Add example showing how flags can be combined for complex searches",
+      "source_reference": "features.json:meta_content.best_practices"
     }
   ],
   "positive_aspects": [
-    "Clear table of contents with links to all subpages",
-    "Helpful decision tree for choosing the right features",
-    "Concise summary of key principles",
-    "Good balance between overview and detail - doesn't duplicate subpage content",
-    "All subpage links are valid (multiline.md, pcre2.md, etc.)",
-    "Appropriate use of code blocks for the decision tree",
-    "Clear cross-references to related sections"
+    "Clear, concise introduction to basics chapter",
+    "Well-organized quick start with common commands",
+    "Comprehensive cheat sheet of common flags with short/long forms",
+    "Good navigation to subsections with clear descriptions",
+    "Effective 'Next Steps' section guiding users to advanced topics",
+    "All subsection links within basics/ directory are valid",
+    "Most cross-references to parent directory are valid"
   ],
   "improvement_suggestions": [
-    "Consider adding a visual example showing the difference between default line-by-line search and multiline mode",
-    "Could add a quick comparison table: 'Default Engine vs PCRE2' highlighting when to use each",
-    "The decision tree could benefit from being rendered as a mermaid diagram in MkDocs Material (using mermaid code blocks)",
-    "Consider adding admonitions (warning/tip boxes) for common gotchas mentioned in the summary"
+    "Fix broken link to advanced-patterns (should be ../advanced-patterns/index.md)",
+    "Consider adding --no-line-number and --only-matching to cheat sheet",
+    "Add one quick start example showing flag combination",
+    "Consider adding a 'Common Patterns' section linking to practice.md for quick reference",
+    "Consider mentioning --help flag in quick start for self-discovery"
   ],
   "cross_references": [
-    "basics/index.md",
-    "replacements.md",
-    "file-encoding.md",
-    "advanced-patterns/multiline.md",
-    "advanced-patterns/pcre2.md",
-    "advanced-patterns/lookaround.md",
-    "advanced-patterns/backreferences.md",
-    "advanced-patterns/unicode.md",
-    "advanced-patterns/inline-flags.md",
-    "advanced-patterns/performance.md",
-    "advanced-patterns/examples.md"
+    "pattern-matching",
+    "literal-search",
+    "regex-basics",
+    "case-sensitivity",
+    "boundaries",
+    "output",
+    "count-list",
+    "practice",
+    "recursive-search",
+    "automatic-filtering",
+    "manual-filtering-globs",
+    "advanced-patterns",
+    "replacements",
+    "output-formats"
   ],
-  "link_validation": {
-    "total_internal_links": 11,
-    "broken_links": 1,
-    "valid_links": 10,
-    "validation_details": {
-      "valid": [
-        "./multiline.md",
-        "./pcre2.md",
-        "./lookaround.md",
-        "./backreferences.md",
-        "./unicode.md",
-        "./inline-flags.md",
-        "./performance.md",
-        "./examples.md",
-        "../replacements.md",
-        "../file-encoding.md"
-      ],
-      "broken": [
-        {
-          "target": "../basics.md",
-          "resolved_path": "docs/basics.md",
-          "exists": false
-        }
-      ]
-    }
-  },
-  "visual_enhancement_opportunities": [
-    {
-      "type": "diagram",
-      "location": "Decision Tree section",
-      "description": "Convert the text-based decision tree to a mermaid flowchart",
-      "benefit": "More visually appealing and easier to follow in rendered documentation",
-      "example": "```mermaid\ngraph TD\n    A[Need to match across lines?] -->|Yes| B[Use -U]\n    A -->|No| C[Default search]\n```"
-    },
-    {
-      "type": "admonition",
-      "location": "Summary section - Key principles",
-      "description": "Wrap key gotchas in warning admonitions",
-      "benefit": "Makes important warnings more prominent",
-      "example": "!!! warning \"Common Gotcha\"\n    Remember: `.` doesn't match `\\n` by default in multiline mode. Use `--multiline-dotall` or `(?s)` flag."
-    },
-    {
-      "type": "comparison_table",
-      "location": "After Quick Reference",
-      "description": "Add a comparison table for Default vs PCRE2 engine",
-      "benefit": "Quick reference for choosing the right engine",
-      "columns": ["Feature", "Default Engine", "PCRE2 Engine"]
-    }
-  ],
-  "feature_coverage": {
-    "documented_features": [
-      "advanced_patterns.multiline_search",
-      "advanced_patterns.pcre2_engine",
-      "advanced_patterns.unicode_support"
-    ],
-    "missing_features": [],
-    "note": "This is an index/overview page, so it appropriately summarizes features without going into implementation details. Detailed coverage is in the subpages."
-  },
   "metadata": {
-    "analyzed_at": "2025-11-13T20:53:00Z",
+    "analyzed_at": "2025-11-13T20:53:28Z",
     "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
     "topics_covered": [
-      "multiline search",
-      "PCRE2 engine",
-      "lookaround assertions",
-      "backreferences",
-      "unicode patterns",
-      "inline flags",
-      "performance considerations"
+      "basics overview",
+      "quick start",
+      "common flags",
+      "navigation"
     ],
     "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
-    "page_structure": "Section index page with table of contents and overview",
-    "page_role": "Navigation hub and quick reference for advanced patterns section"
+    "internal_links_checked": 14,
+    "broken_links_found": 1,
+    "valid_links": 13
   }
 }
