@@ -95,10 +95,35 @@ When showing context, ripgrep prints `--` as a separator between match groups.
   rg --hyperlink-format vscode pattern
   rg --hyperlink-format cursor pattern
 
-  # Custom format with variables: {path}, {line}, {column}
+  # Custom format with variables: {path}, {line}, {column}, {host}
   rg --hyperlink-format 'file://{path}:{line}:{column}' pattern
   ```
-  Requires a terminal that supports OSC 8 hyperlinks. Built-in formats: `vscode`, `cursor`, `macvim`, `sublime`, `textmate`, `emacs`, `vim`.
+
+  !!! note "Terminal Support Required"
+      Requires a terminal emulator that supports OSC 8 hyperlinks (e.g., iTerm2, kitty, WezTerm, Windows Terminal).
+
+  **Built-in Format Aliases:**
+  <!-- Source: crates/printer/src/hyperlink/aliases.rs -->
+
+  | Alias | Description | Format |
+  |-------|-------------|--------|
+  | `default` | RFC 8089 file:// scheme (platform-aware) | Platform-dependent |
+  | `none` | Disable hyperlinks | - |
+  | `cursor` | Cursor editor | `cursor://file{path}:{line}:{column}` |
+  | `file` | RFC 8089 file:// with host | `file://{host}{path}` |
+  | `grep+` | grep+ scheme | `grep+://{path}:{line}` |
+  | `kitty` | kitty terminal with line anchor | `file://{host}{path}#{line}` |
+  | `macvim` | MacVim editor | `mvim://open?url=file://...` |
+  | `textmate` | TextMate editor | `txmt://open?url=file://...` |
+  | `vscode` | Visual Studio Code | `vscode://file{path}:{line}:{column}` |
+  | `vscode-insiders` | VS Code Insiders | `vscode-insiders://file{path}:{line}:{column}` |
+  | `vscodium` | VSCodium | `vscodium://file{path}:{line}:{column}` |
+
+  !!! tip "Custom Formats"
+      You can define custom formats using template variables: `{path}`, `{line}`, `{column}`, `{host}`. For example:
+      ```bash
+      rg --hyperlink-format 'myeditor://open?file={path}&line={line}' pattern
+      ```
 
 ## Color and Formatting
 
@@ -125,7 +150,50 @@ When showing context, ripgrep prints `--` as a separator between match groups.
   # Use 256-color palette or 24-bit RGB
   rg --colors 'match:fg:0,128,255' pattern
   ```
-  Types: `path`, `line`, `column`, `match`. Styles: `fg` (foreground), `bg` (background), `style` (bold, intense, underline, italic).
+
+  **Color Types:**
+  <!-- Source: crates/core/flags/defs.rs -->
+
+  - `path` - File path in output
+  - `line` - Line numbers
+  - `column` - Column numbers
+  - `match` - Matched text
+
+  **Style Properties:**
+
+  - `fg` - Foreground (text) color
+  - `bg` - Background color
+  - `style` - Text style: `bold`, `intense`, `underline`, `italic`
+
+  !!! example "Color Customization Examples"
+      === "Named Colors"
+          ```bash
+          # Red foreground for matches
+          rg --colors 'match:fg:red' pattern
+          ```
+
+      === "256-Color Palette"
+          ```bash
+          # Use extended color palette
+          rg --colors 'match:fg:208' pattern
+          ```
+
+      === "RGB Colors"
+          ```bash
+          # 24-bit RGB (R,G,B)
+          rg --colors 'match:fg:255,128,0' pattern
+          ```
+
+      === "Multiple Styles"
+          ```bash
+          # Combine styles for different elements
+          rg --colors 'path:fg:blue' \
+             --colors 'path:style:bold' \
+             --colors 'line:fg:yellow' \
+             --colors 'match:fg:red' \
+             --colors 'match:style:intense' \
+             pattern
+          ```
 
 - **`--heading`** / **`--no-heading`**: Control file grouping in output
   ```bash
