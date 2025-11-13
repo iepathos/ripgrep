@@ -8,17 +8,44 @@ Pattern matching is the core functionality of ripgrep. By default, ripgrep uses 
 
 Ripgrep supports two main types of pattern matching:
 
+```mermaid
+flowchart TD
+    Start[Need to Search?] --> HasSpecial{Pattern has<br/>special chars<br/>like *, ., (, )?}
+
+    HasSpecial -->|Yes| WantLiteral{Want to match<br/>those chars<br/>literally?}
+    HasSpecial -->|No| NeedFlex{Need flexible<br/>matching?}
+
+    WantLiteral -->|Yes| UseLiteral[Use -F flag<br/>Literal String]
+    WantLiteral -->|No| UseRegex[Use Regex<br/>Default]
+
+    NeedFlex -->|Yes| UseRegex
+    NeedFlex -->|No| UseLiteral
+
+    UseLiteral --> FastSearch[Fast, exact matching]
+    UseRegex --> PowerfulSearch[Powerful, flexible matching]
+
+    style UseLiteral fill:#e8f5e9
+    style UseRegex fill:#e1f5ff
+    style FastSearch fill:#c8e6c9
+    style PowerfulSearch fill:#bbdefb
+```
+
+**Figure**: Decision flow for choosing between regex and literal pattern matching.
+
 ### Regular Expressions (Default)
 
 By default, ripgrep treats patterns as regular expressions. This gives you powerful pattern matching capabilities but requires special characters to be escaped if you want to search for them literally.
 
 ```bash
 # Search for function definitions (regex pattern)
-rg "fn \w+\("
+rg "fn \w+\("  # (1)!
 
 # Search for TODO followed by any text
-rg "TODO:.*"
+rg "TODO:.*"   # (2)!
 ```
+
+1. `\w+` matches one or more word characters (function name), `\(` matches literal parenthesis
+2. `.*` matches any characters after the colon (wildcard pattern)
 
 !!! tip "When to use regex patterns"
     Use regular expressions when you need:
@@ -54,6 +81,30 @@ For more details on literal string matching, see [Literal Search](literal-search
 
 Ripgrep provides flexible case sensitivity options:
 
+```mermaid
+flowchart TD
+    Start[Search Pattern] --> Choice{What behavior<br/>do you need?}
+
+    Choice -->|Always case-insensitive| UseI[Use -i flag<br/>--ignore-case]
+    Choice -->|Automatic/Smart| UseS[Use -S flag<br/>--smart-case]
+    Choice -->|Always case-sensitive| UseDefault[Default behavior<br/>No flags]
+
+    UseS --> HasUpper{Pattern has<br/>uppercase?}
+    HasUpper -->|Yes| Sensitive[Case-sensitive<br/>search]
+    HasUpper -->|No| Insensitive[Case-insensitive<br/>search]
+
+    UseI --> Insensitive
+    UseDefault --> Sensitive
+
+    style UseI fill:#e1f5ff
+    style UseS fill:#fff3e0
+    style UseDefault fill:#f3e5f5
+    style Insensitive fill:#c8e6c9
+    style Sensitive fill:#ffccbc
+```
+
+**Figure**: Case sensitivity options and their behavior.
+
 ### Case-Insensitive Search
 
 Use `-i` or `--ignore-case` to search without regard to case:
@@ -69,11 +120,14 @@ Use `-S` or `--smart-case` for automatic case sensitivity: searches are case-ins
 
 ```bash
 # Case-insensitive (no uppercase in pattern)
-rg -S "todo"
+rg -S "todo"  # (1)!
 
 # Case-sensitive (uppercase present)
-rg -S "TODO"
+rg -S "TODO"  # (2)!
 ```
+
+1. Pattern is all lowercase → automatically searches case-insensitively (matches TODO, todo, Todo)
+2. Pattern has uppercase → automatically searches case-sensitively (matches only TODO)
 
 !!! note
     Smart case is especially useful for interactive searches where you want case-insensitivity by default but can trigger case-sensitive matching by capitalizing your pattern.
@@ -84,6 +138,29 @@ For more information, see [Case Sensitivity](case-sensitivity.md).
 
 You can search for multiple patterns in a single command. Ripgrep uses **OR logic** - a line matches if it contains any of the specified patterns.
 
+```mermaid
+graph LR
+    Input[Line of text] --> Check1{Contains<br/>pattern 1?}
+    Input --> Check2{Contains<br/>pattern 2?}
+    Input --> Check3{Contains<br/>pattern N?}
+
+    Check1 -->|Yes| Match[Line matches]
+    Check2 -->|Yes| Match
+    Check3 -->|Yes| Match
+
+    Check1 -->|No| NoMatch1[ ]
+    Check2 -->|No| NoMatch2[ ]
+    Check3 -->|No| NoMatch3[Line excluded]
+
+    style Match fill:#e8f5e9
+    style NoMatch3 fill:#ffebee
+    style Input fill:#e1f5ff
+    style NoMatch1 fill:#ffffff,stroke:#ffffff
+    style NoMatch2 fill:#ffffff,stroke:#ffffff
+```
+
+**Figure**: OR logic - a line matches if it contains ANY of the specified patterns.
+
 ### Using -e Flag
 
 The `-e` or `--regexp` flag allows you to specify multiple patterns:
@@ -91,11 +168,14 @@ The `-e` or `--regexp` flag allows you to specify multiple patterns:
 ```bash
 # Source: tests/feature.rs
 # Match lines containing either TODO or FIXME
-rg -e TODO -e FIXME
+rg -e TODO -e FIXME  # (1)!
 
 # Match multiple error levels
-rg -e "error" -e "warning" -e "critical"
+rg -e "error" -e "warning" -e "critical"  # (2)!
 ```
+
+1. Each `-e` flag adds a pattern; matches lines with TODO OR FIXME (or both)
+2. Searches for any of the three error levels in the same command
 
 !!! example "Output behavior"
     When using multiple patterns, ripgrep will show any line that matches **at least one** pattern. The patterns are combined with OR logic, not AND.
