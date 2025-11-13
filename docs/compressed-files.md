@@ -23,7 +23,8 @@ ripgrep's `-z` flag supports the following compression formats:
 | **Zstandard** | `.zst`, `.zstd` | `zstd` | Modern algorithm balancing speed and compression ratio |
 | **Compress** | `.Z` | `uncompress` | Legacy Unix compress format |
 
-**Note**: The external decompression tools must be available in your system's PATH for the corresponding formats to work.
+!!! note "External Dependencies Required"
+    The external decompression tools must be available in your system's PATH for the corresponding formats to work. See the [External Dependencies](#external-dependencies) section for installation instructions.
 
 ## Basic Usage
 
@@ -72,16 +73,33 @@ ripgrep detects the compression format based on file extension:
 5. Searches the decompressed stream
 6. Reports matches with the original compressed filename
 
+!!! info "Implementation Details"
+    Format detection is implemented in `crates/cli/src/decompress.rs:490-531`. Each compression format is mapped to its file extensions and decompression command. For example:
+
+    ```rust
+    // Source: crates/cli/src/decompress.rs:491-498
+    const ARGS_GZIP: &[&str] = &["gzip", "-d", "-c"];
+    const ARGS_BZIP: &[&str] = &["bzip2", "-d", "-c"];
+    const ARGS_XZ: &[&str] = &["xz", "-d", "-c"];
+    const ARGS_LZ4: &[&str] = &["lz4", "-d", "-c"];
+    const ARGS_LZMA: &[&str] = &["xz", "--format=lzma", "-d", "-c"];
+    const ARGS_BROTLI: &[&str] = &["brotli", "-d", "-c"];
+    const ARGS_ZSTD: &[&str] = &["zstd", "-q", "-d", "-c"];
+    const ARGS_UNCOMPRESS: &[&str] = &["uncompress", "-c"];
+    ```
+
 ### Out-of-Process Decompression
 
 Decompression happens in separate child processes using external tools to:
+
 - Isolate decompression failures (corrupted files won't crash ripgrep)
 - Enable parallel decompression across multiple files
 - Leverage optimized native decompression tools
 - Handle missing decompression tools gracefully (falls back to treating as binary)
 - Avoid security issues on Windows by resolving commands via PATH
 
-**Note**: If a decompression tool is not available in PATH, ripgrep will fall back to reading the file without decompression and log a debug message.
+!!! tip "Debugging Missing Tools"
+    If a decompression tool is not available in PATH, ripgrep will fall back to reading the file without decompression and log a debug message. Enable debug logging with `RUST_LOG=debug rg -z 'pattern'` to see which tools are missing.
 
 ## Combining with Other Flags
 
@@ -116,6 +134,9 @@ rg -z --json 'pattern' archive.tar.xz
 ```
 
 ## Performance Considerations
+
+!!! warning "Decompression Overhead"
+    Each compressed file requires spawning a decompression process, which adds CPU overhead compared to plain text search. Parallel processing helps amortize decompression costs, but for frequently searched archives, consider extracting them once rather than decompressing repeatedly.
 
 ### Decompression Overhead
 
@@ -277,4 +298,3 @@ rg -z -t rust -C 5 'unsafe' archive.tar.gz
 
 - [Preprocessor](preprocessor.md) - Custom file preprocessing for other formats
 - [Performance](performance.md) - Performance tuning and optimization
-- [Common Options](common-options.md) - Other frequently used flags
