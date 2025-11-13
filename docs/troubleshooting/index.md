@@ -4,15 +4,16 @@ This chapter helps you diagnose and solve common problems when using ripgrep. Mo
 
 ## Quick Troubleshooting Checklist
 
-If you're experiencing unexpected behavior, try these steps in order:
+!!! tip "Quick Troubleshooting Steps"
+    If you're experiencing unexpected behavior, try these steps in order:
 
-1. **Run with `--files`** to see which files would be searched (without actually searching)
-2. **Run with `--debug`** to see what files are being searched and why others are skipped
-3. **Try `-uuu`** (unrestricted search) to temporarily disable all filtering
-4. **Use `-F`** to search for literal text instead of a regex pattern
-5. **Try `-i`** to make the search case-insensitive
-6. **Check `--stats`** to see how many files were searched and matches found
-7. **Review the FAQ** and GUIDE for common issues
+    1. **Run with `--files`** to see which files would be searched (without actually searching)
+    2. **Run with `--debug`** to see what files are being searched and why others are skipped
+    3. **Try `-uuu`** (unrestricted search) to temporarily disable all filtering
+    4. **Use `-F`** to search for literal text instead of a regex pattern
+    5. **Try `-i`** to make the search case-insensitive
+    6. **Check `--stats`** to see how many files were searched and matches found
+    7. **Review the [Basics](../basics/index.md)** for fundamental concepts
 
 ## Navigation
 
@@ -27,7 +28,10 @@ This troubleshooting guide is organized into several focused sections:
 
 ## Related Resources
 
-- **FAQ**: Common questions and answers - [FAQ.md](../FAQ.md)
-- **User Guide**: Comprehensive documentation - [GUIDE.md](../GUIDE.md)
+- **Basics**: Learn fundamental concepts - [Basics Guide](../basics/index.md)
+- **Common Options**: See frequently used options - [Common Options Reference](../common-options/reference.md)
 - **Configuration**: See the [configuration file chapter](../configuration-file.md) for persistent settings
 - **File Encoding**: See the [file encoding chapter](../file-encoding.md) for encoding details
+
+!!! question "Still Stuck?"
+    If you've tried the troubleshooting steps and still can't resolve your issue, check the [bug reports page](./bug-reports.md) for guidance on how to file a detailed bug report and get help from the community.
