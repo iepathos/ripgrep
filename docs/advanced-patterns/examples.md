@@ -4,17 +4,54 @@
 
 Real-world examples demonstrating advanced pattern techniques.
 
+## Choosing the Right Flags
+
+Understanding which flags to use for different search scenarios:
+
+```mermaid
+flowchart TD
+    Start[Pattern Type] --> Multi{Spans multiple<br/>lines?}
+
+    Multi -->|Yes| Dotall{Need . to<br/>match newlines?}
+    Multi -->|No| Features{Need lookaround<br/>or backrefs?}
+
+    Dotall -->|Yes| UseDotall["Use: -U --multiline-dotall<br/>or -U '(?s)pattern'"]
+    Dotall -->|No| UseMulti["Use: -U pattern"]
+
+    Features -->|Yes| UsePCRE["Use: -P pattern"]
+    Features -->|No| UseDefault["Use: pattern<br/>(default engine)"]
+
+    UsePCRE --> PCREMulti{Also multiline?}
+    PCREMulti -->|Yes| UsePU["Use: -PU pattern"]
+    PCREMulti -->|No| End[Execute Search]
+
+    UseDotall --> End
+    UseMulti --> End
+    UseDefault --> End
+
+    style UsePCRE fill:#fff3e0
+    style UsePU fill:#fff3e0
+    style UseMulti fill:#e1f5ff
+    style UseDotall fill:#e1f5ff
+    style UseDefault fill:#e8f5e9
+```
+
+**Figure**: Decision flow for selecting the appropriate ripgrep flags based on pattern requirements.
+
 ## Multi-line Log Parsing
 
 Find ERROR entries with their stack traces:
 
 ```bash
 # Find ERROR with following context lines
-rg -U 'ERROR.*\n.*stack trace'
+rg -U 'ERROR.*\n.*stack trace'  # (1)!
 
 # Find ERROR with complete stack trace (multiple lines)
-rg -U --multiline-dotall 'ERROR.*?at .*?\)'
+rg -U --multiline-dotall 'ERROR.*?at .*?\)'  # (2)!
 ```
+
+1. `-U` enables multiline mode; `\n` explicitly matches the newline character
+2. `--multiline-dotall` makes `.` match newlines; `.*?` is non-greedy (stops at first match)
 
 !!! example "Expected Output"
     ```
@@ -30,11 +67,14 @@ Find function definitions that use specific features:
 
 ```bash
 # Find functions using a specific API (requires PCRE2 + multiline)
-rg -UP '(?s)fn (\w+).*?\{(?=.*use_api).*?\}'
+rg -UP '(?s)fn (\w+).*?\{(?=.*use_api).*?\}'  # (1)!
 
 # Find functions with TODO comments
-rg -UP '(?s)fn (\w+).*?\{(?=.*TODO).*?\}'
+rg -UP '(?s)fn (\w+).*?\{(?=.*TODO).*?\}'  # (2)!
 ```
+
+1. `(?s)` enables dotall mode inline; `(?=.*use_api)` is a lookahead that checks if `use_api` appears anywhere in the function body
+2. Lookahead doesn't consume characters, so it finds functions containing TODO without including TODO in the match
 
 !!! example "Expected Output"
     ```
@@ -104,14 +144,18 @@ Use backreferences to find duplications:
 
 ```bash
 # Find repeated words
-rg -P '\b(\w+)\s+\1\b'
+rg -P '\b(\w+)\s+\1\b'  # (1)!
 
 # Find repeated numbers
-rg -P '(\d{3})-\1'
+rg -P '(\d{3})-\1'  # (2)!
 
 # Find repeated lines (requires multiline)
-rg -UP '^(.+)$\n\1$'
+rg -UP '^(.+)$\n\1$'  # (3)!
 ```
+
+1. `(\w+)` captures a word; `\1` references the first capture group, matching the same word again
+2. `(\d{3})` captures three digits; `\1` ensures the same three digits appear after the hyphen
+3. `^(.+)$` captures an entire line; `\n\1$` matches a newline followed by the exact same line
 
 !!! example "Expected Output"
     ```
@@ -192,14 +236,18 @@ Powerful queries combining multiple features:
 
 ```bash
 # Find struct definitions with specific fields (multiline + lookahead)
-rg -UP '(?s)struct (\w+).*?\{(?=.*field_name).*?\}'
+rg -UP '(?s)struct (\w+).*?\{(?=.*field_name).*?\}'  # (1)!
 
 # Find functions calling deprecated APIs with context
-rg -UP '(?s)fn (\w+).*?\{(?=.*deprecated_api).*?\}' -A 2 -B 2
+rg -UP '(?s)fn (\w+).*?\{(?=.*deprecated_api).*?\}' -A 2 -B 2  # (2)!
 
 # Match code blocks with specific patterns
-rg -UP '(?s)fn test_\w+.*?\{(?=.*assert).*?\}'
+rg -UP '(?s)fn test_\w+.*?\{(?=.*assert).*?\}'  # (3)!
 ```
+
+1. Combines `-P` (PCRE2 for lookahead), `-U` (multiline), `(?s)` (dotall), and `(?=...)` (lookahead)
+2. `-A 2 -B 2` shows 2 lines of context before and after matches for debugging
+3. `test_\w+` matches test function names; lookahead ensures they contain assertions
 
 !!! example "Expected Output"
     ```
