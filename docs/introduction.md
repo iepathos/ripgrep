@@ -6,7 +6,7 @@ ripgrep is a line-oriented search tool that recursively searches the current dir
 
 ripgrep is a command line tool that searches your files for patterns that you give it. ripgrep behaves as if reading each file line by line. If a line matches the pattern provided to ripgrep, then that line will be printed. If a line does not match the pattern, then the line is not printed.
 
-This documentation covers ripgrep version 15.1.0.
+This documentation covers ripgrep version 14.1.1.
 
 ## Why ripgrep?
 
@@ -34,7 +34,7 @@ For comprehensive performance benchmarks and feature comparisons with grep, ag, 
 - **Multiline search**: Search patterns that span multiple lines with the `-U/--multiline` flag.
 - **Replacement support**: Replace matched patterns with the `-r/--replace` flag.
 - **JSON output**: Machine-readable JSON output format for integration with other tools.
-- **Hyperlink support**: Terminal hyperlinks for clickable file paths with `--hyperlink-format` (built-in support for VSCode, vim, and more).
+- **Hyperlink support**: Terminal hyperlinks for clickable file paths with `--hyperlink-format` (built-in support for VSCode, file://, and custom formats).
 - **Performance statistics**: Track and display search metrics with `--stats` for understanding search performance.
 
 ## Installation
@@ -96,11 +96,15 @@ rg -i pattern
 
 # Search only in specific file types
 rg -tpy pattern  # Search only Python files
+
+# List all files that would be searched
+rg --files
 ```
 
 ### ripgrep-Specific Features
 
-ripgrep automatically respects your project's `.gitignore` files and skips hidden and binary files:
+!!! tip "Smart Default Behavior"
+    ripgrep automatically respects your project's `.gitignore` files and skips hidden and binary files by default. This means you get relevant results without needing to configure exclusion rules.
 
 ```bash
 # This automatically skips files in .gitignore, .git/, node_modules/, etc.
@@ -110,7 +114,8 @@ rg TODO
 rg --no-ignore --hidden TODO
 ```
 
-Use PCRE2 for advanced regex features:
+!!! note "Advanced Regex with PCRE2"
+    Use the `-P/--pcre2` flag to enable advanced regex features like look-around assertions and backreferences:
 
 ```bash
 # Use look-ahead to find functions that use a specific API
@@ -120,7 +125,8 @@ rg -P 'fn \w+.*(?=.*api_call)'
 rg -P '\b(\w+)\s+\1\b'
 ```
 
-Search across multiple lines:
+!!! example "Multiline Search"
+    The `-U/--multiline` flag allows patterns to match across multiple lines:
 
 ```bash
 # Find struct definitions with specific fields (multiline search)
