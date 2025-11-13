@@ -1,0 +1,45 @@
+{
+  "validation_timestamp": "2025-11-13T21:00:00Z",
+  "project": "ripgrep",
+  "docs_dir": "docs",
+
+  "feature_enablement": {
+    "mermaid": false,
+    "admonitions": true,
+    "tabbed": true
+  },
+
+  "overall_metrics": {
+    "total_files": 55,
+    "total_diagrams": 88,
+    "total_admonitions": 362,
+    "total_tabs": 115,
+    "files_with_diagrams": 53,
+    "files_with_admonitions": 55,
+    "diagram_coverage_percent": 96.4,
+    "admonition_coverage_percent": 100.0
+  },
+
+  "quality_issues": {
+    "low_quality_pages": 1,
+    "missing_diagrams": 2,
+    "mermaid_not_enabled": true
+  },
+
+  "low_quality_files": [
+    "advanced-patterns/multiline.md"
+  ],
+
+  "files_without_diagrams": [
+    "advanced-patterns/multiline.md",
+    "basics/index.md"
+  ],
+
+  "recommendations": [
+    "Enable Mermaid in mkdocs.yml to properly render diagrams",
+    "Review 1 low-quality page (multiline.md - no admonitions)",
+    "Consider if index pages need diagrams (basics/index.md is likely fine without)"
+  ],
+
+  "status": "needs_review"
+}

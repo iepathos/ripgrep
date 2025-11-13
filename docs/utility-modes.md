@@ -12,6 +12,39 @@ Utility modes are special operating modes where ripgrep doesn't search for patte
 - Creating man pages
 - Checking version and feature availability
 
+```mermaid
+flowchart TD
+    Start[ripgrep command] --> Mode{Utility Mode?}
+
+    Mode -->|--files| Files[List Files Mode]
+    Mode -->|--type-list| Types[Type List Mode]
+    Mode -->|--generate| Gen[Generation Mode]
+    Mode -->|--version/-V| Ver[Version Mode]
+    Mode -->|--pcre2-version| PCRE[PCRE2 Check]
+    Mode -->|pattern| Search[Search Mode]
+
+    Files --> FilesOut[Output: File paths]
+    Types --> TypesOut[Output: Type definitions]
+    Gen --> GenType{Generator Type?}
+    Ver --> VerOut[Output: Version info]
+    PCRE --> PCREOut[Output: PCRE2 status]
+
+    GenType -->|complete-bash| Bash[Bash Completions]
+    GenType -->|complete-zsh| Zsh[Zsh Completions]
+    GenType -->|complete-fish| Fish[Fish Completions]
+    GenType -->|complete-powershell| PS[PowerShell Completions]
+    GenType -->|man| Man[Man Page]
+
+    style Files fill:#e1f5ff
+    style Types fill:#e1f5ff
+    style Gen fill:#fff3e0
+    style Ver fill:#e1f5ff
+    style PCRE fill:#e1f5ff
+    style Search fill:#f3e5f5
+```
+
+**Figure**: Utility mode selection flow showing how flags determine ripgrep's operating mode.
+
 ## Files Mode
 
 The `--files` flag lists all files that ripgrep would search, without performing any pattern matching.
@@ -27,6 +60,9 @@ rg --files /path/to/directory
 ```
 
 ### Use Cases
+
+!!! tip "Best Practice"
+    Always use `--files` to preview search scope before running expensive queries on large codebases. This helps verify your filters are working correctly.
 
 **Preview Search Scope:**
 ```bash
@@ -79,7 +115,8 @@ rg --files --hidden
 rg --files --no-ignore
 ```
 
-**Note**: The `--files` flag takes precedence over `--type-list`. If you specify both flags, ripgrep will list files rather than displaying type definitions.
+!!! note "Flag Precedence"
+    The `--files` flag takes precedence over `--type-list`. If you specify both flags, ripgrep will list files rather than displaying type definitions.
 
 ## Type List Mode
 
@@ -104,6 +141,9 @@ go: *.go
 ```
 
 ### Use Cases
+
+!!! tip "Discovering Types"
+    Use `--type-list | grep` to find the correct type name for your language instead of guessing. This ensures your `-t` filters work correctly.
 
 **Discover Available Types:**
 ```bash
@@ -135,15 +175,16 @@ rg --type-add 'config:*.{yml,yaml,toml,json}' --type-list | grep config
 rg --type-add 'config:*.{yml,yaml,toml}' -t config 'database_url'
 ```
 
-**Note**: The `--type-list` output reflects any custom types added via `--type-add` and respects `--type-clear` if used to remove built-in types. This makes it useful for verifying your type configuration:
+!!! example "Custom Type Verification"
+    The `--type-list` output reflects any custom types added via `--type-add` and respects `--type-clear` if used to remove built-in types. This makes it useful for verifying your type configuration:
 
-```bash
-# Clear all types and add only custom ones
-rg --type-clear --type-add 'web:*.{html,css,js}' --type-list
+    ```bash
+    # Clear all types and add only custom ones
+    rg --type-clear --type-add 'web:*.{html,css,js}' --type-list
 
-# Verify custom type is available
-rg --type-add 'config:*.{yml,yaml}' --type-list | grep config
-```
+    # Verify custom type is available
+    rg --type-add 'config:*.{yml,yaml}' --type-list | grep config
+    ```
 
 ## Generation Mode
 
@@ -159,47 +200,47 @@ ripgrep can generate completions for:
 
 ### Generating Shell Completions
 
-**Bash:**
-```bash
-# Generate Bash completions
-rg --generate complete-bash
+=== "Bash"
+    ```bash
+    # Generate Bash completions
+    rg --generate complete-bash
 
-# Install system-wide (Linux)
-rg --generate complete-bash | sudo tee /usr/share/bash-completion/completions/rg
+    # Install system-wide (Linux)
+    rg --generate complete-bash | sudo tee /usr/share/bash-completion/completions/rg
 
-# Install user-local (macOS with Homebrew)
-rg --generate complete-bash > $(brew --prefix)/etc/bash_completion.d/rg
-```
+    # Install user-local (macOS with Homebrew)
+    rg --generate complete-bash > $(brew --prefix)/etc/bash_completion.d/rg
+    ```
 
-**Zsh:**
-```bash
-# Generate Zsh completions
-rg --generate complete-zsh
+=== "Zsh"
+    ```bash
+    # Generate Zsh completions
+    rg --generate complete-zsh
 
-# Install in fpath (common location)
-rg --generate complete-zsh > ~/.zsh/completion/_rg
+    # Install in fpath (common location)
+    rg --generate complete-zsh > ~/.zsh/completion/_rg
 
-# Or system-wide
-sudo rg --generate complete-zsh > /usr/local/share/zsh/site-functions/_rg
-```
+    # Or system-wide
+    sudo rg --generate complete-zsh > /usr/local/share/zsh/site-functions/_rg
+    ```
 
-**Fish:**
-```bash
-# Generate Fish completions
-rg --generate complete-fish
+=== "Fish"
+    ```bash
+    # Generate Fish completions
+    rg --generate complete-fish
 
-# Install user-local
-rg --generate complete-fish > ~/.config/fish/completions/rg.fish
-```
+    # Install user-local
+    rg --generate complete-fish > ~/.config/fish/completions/rg.fish
+    ```
 
-**PowerShell:**
-```bash
-# Generate PowerShell completions
-rg --generate complete-powershell
+=== "PowerShell"
+    ```powershell
+    # Generate PowerShell completions
+    rg --generate complete-powershell
 
-# Add to profile
-rg --generate complete-powershell >> $PROFILE
-```
+    # Add to profile
+    rg --generate complete-powershell >> $PROFILE
+    ```
 
 ### Generating Man Pages
 
@@ -216,20 +257,21 @@ rg --generate man | man -l -
 
 ### Installation Workflow
 
-Complete shell integration setup:
+!!! example "Complete Shell Integration"
+    Complete shell integration setup for Zsh:
 
-```bash
-# Example: Zsh installation
-mkdir -p ~/.zsh/completion
-rg --generate complete-zsh > ~/.zsh/completion/_rg
+    ```bash
+    # Example: Zsh installation
+    mkdir -p ~/.zsh/completion
+    rg --generate complete-zsh > ~/.zsh/completion/_rg
 
-# Add to .zshrc if not already present
-echo 'fpath=(~/.zsh/completion $fpath)' >> ~/.zshrc
-echo 'autoload -Uz compinit && compinit' >> ~/.zshrc
+    # Add to .zshrc if not already present
+    echo 'fpath=(~/.zsh/completion $fpath)' >> ~/.zshrc
+    echo 'autoload -Uz compinit && compinit' >> ~/.zshrc
 
-# Reload shell
-exec zsh
-```
+    # Reload shell
+    exec zsh
+    ```
 
 ## Version Information
 
@@ -257,7 +299,8 @@ The output shows:
 - Compile-time features
 - Runtime CPU features detected
 
-**Note**: The `--version` flag provides more verbose output including feature information, while `-V` provides a more compact version string. Use `--version` when you need to check feature support, and `-V` when you only need the version number.
+!!! tip "Version Flag Usage"
+    The `--version` flag provides more verbose output including feature information, while `-V` provides a more compact version string. Use `--version` when you need to check feature support, and `-V` when you only need the version number.
 
 ### PCRE2 Version Check
 
@@ -279,6 +322,9 @@ This confirms:
 - Feature availability for advanced regex patterns
 
 ### Use Cases
+
+!!! tip "Check Before Using PCRE2"
+    Always verify PCRE2 is available before using advanced regex features in scripts. This prevents runtime errors on systems without PCRE2 support.
 
 **Check Feature Availability:**
 ```bash
@@ -408,34 +454,40 @@ rg --files -g '*_test.go' > test-files.txt
 
 ### Completions Not Working
 
-**Issue**: Shell completions not activated after generation
+!!! warning "Common Issue"
+    **Problem**: Shell completions not activated after generation
 
-**Solutions**:
-- Verify completion file is in correct directory
-- Check that completion system is enabled in shell
-- Restart shell or source configuration file
-- Verify file permissions (should be readable)
+    **Solutions**:
+
+    - Verify completion file is in correct directory
+    - Check that completion system is enabled in shell
+    - Restart shell or source configuration file
+    - Verify file permissions (should be readable)
 
 ### Files Mode Showing Unexpected Results
 
-**Issue**: `--files` shows more/fewer files than expected
+!!! warning "Unexpected File Count"
+    **Problem**: `--files` shows more/fewer files than expected
 
-**Solutions**:
-- Check ignore files (`.gitignore`, `.ignore`)
-- Verify `--hidden` or `--no-ignore` flags if needed
-- Test with different type filters to isolate issue
+    **Solutions**:
+
+    - Check ignore files (`.gitignore`, `.ignore`)
+    - Verify `--hidden` or `--no-ignore` flags if needed
+    - Test with different type filters to isolate issue
 
 ### PCRE2 Not Available
 
-**Issue**: `--pcre2-version` returns error
+!!! warning "PCRE2 Missing"
+    **Problem**: `--pcre2-version` returns error
 
-**Solutions**:
-- Verify ripgrep was compiled with PCRE2 support
-- Check ripgrep installation method (some packages exclude PCRE2)
-- Consider reinstalling from source with PCRE2 enabled
+    **Solutions**:
+
+    - Verify ripgrep was compiled with PCRE2 support
+    - Check ripgrep installation method (some packages exclude PCRE2)
+    - Consider reinstalling from source with PCRE2 enabled
 
 ## See Also
 
-- [Common Options](common-options.md) - Frequently used flags
+- [Common Options](common-options/index.md) - Frequently used flags
 - [Manual Filtering: File Types](manual-filtering-types.md) - File type filtering details
-- [Troubleshooting](troubleshooting.md) - General troubleshooting guide
+- [Troubleshooting](troubleshooting/index.md) - General troubleshooting guide

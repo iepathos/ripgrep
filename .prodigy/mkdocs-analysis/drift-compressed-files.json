@@ -1,0 +1,83 @@
+{
+  "item_type": "page",
+  "page_id": "compressed-files",
+  "page_title": "compressed files",
+  "page_file": "docs/compressed-files.md",
+  "drift_detected": true,
+  "severity": "medium",
+  "quality_assessment": "Page is generally accurate and well-structured, but has one broken internal link and could benefit from visual enhancements",
+  "issues": [
+    {
+      "type": "broken_links",
+      "severity": "medium",
+      "section": "Cross-References",
+      "description": "Found 1 broken internal link",
+      "broken_links": [
+        {
+          "link_text": "Common Options",
+          "target_path": "common-options.md",
+          "expected_resolved_path": "docs/common-options.md",
+          "current_file": "docs/compressed-files.md",
+          "status": "File does not exist",
+          "suggested_correction": "This file does not appear to exist in the current documentation structure. Consider removing this link or creating the referenced documentation page."
+        }
+      ],
+      "fix_suggestion": "Remove the broken link to 'common-options.md' from the 'See Also' section at the end of the page, or create the missing documentation page if common options documentation is needed."
+    },
+    {
+      "type": "missing_visual_features",
+      "severity": "low",
+      "section": "Visual Enhancements",
+      "description": "Page lacks MkDocs Material visual features that would improve readability and user experience",
+      "fix_suggestion": "Add MkDocs Material admonitions (notes, warnings) for important information like external dependencies and performance considerations. Consider using tabs for showing different compression format examples side-by-side.",
+      "examples": [
+        "Use !!! note admonition for the external dependencies requirement",
+        "Use !!! warning admonition for performance considerations",
+        "Use === tabs to show examples for different compression formats"
+      ]
+    }
+  ],
+  "positive_aspects": [
+    "Comprehensive coverage of all 8 compression formats supported by ripgrep",
+    "Accurate implementation details matching the source code (crates/cli/src/decompress.rs:490-531)",
+    "Clear explanation of automatic format detection and out-of-process decompression",
+    "Good troubleshooting section with common issues and solutions",
+    "Excellent comparison table between -z/--search-zip and --pre preprocessor",
+    "Practical examples showing real-world use cases",
+    "Accurate external dependencies table with installation examples",
+    "Proper explanation of security considerations on Windows (PATH resolution)",
+    "Well-organized structure with logical progression from overview to advanced topics"
+  ],
+  "improvement_suggestions": [
+    "Fix broken link: Replace 'common-options.md' reference with a valid page or remove it",
+    "Add MkDocs Material admonitions to highlight important notes and warnings",
+    "Consider adding tabs to show examples for different compression formats in parallel",
+    "Add a quick reference table at the top summarizing key points",
+    "Consider adding code annotations to explain complex command examples"
+  ],
+  "cross_references": [
+    "preprocessor",
+    "performance"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-13T21:54:16Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": [
+      "compressed file search",
+      "decompression formats",
+      "automatic format detection",
+      "external dependencies",
+      "performance considerations"
+    ],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "feature_coverage": {
+      "compressed_files": {
+        "documented": true,
+        "accurate": true,
+        "complete": true,
+        "source_reference": "crates/cli/src/decompress.rs",
+        "notes": "All 8 compression formats accurately documented with correct extensions and tools"
+      }
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "item_type": "auto-discovered",
+  "page_id": "flags",
+  "page_title": "flags",
+  "page_file": "docs/binary-data/flags.md",
+  "drift_detected": false,
+  "severity": "low",
+  "quality_assessment": "Page accurately documents binary file handling flags with clear explanations and helpful decision flowchart. Could be enhanced with visual features and more examples.",
+  "issues": [],
+  "positive_aspects": [
+    "Clear and accurate documentation of all binary-related flags (--binary, --text/-a, --no-binary, --no-text)",
+    "Excellent decision flowchart visualizing binary detection logic",
+    "Accurate explanation of SearchAndSuppress mode for explicit vs implicit files",
+    "Good use of warnings and caution callouts for terminal corruption risks",
+    "Practical examples showing when to use each flag",
+    "Clear explanation of the 'only affects implicit files' behavior for --binary"
+  ],
+  "improvement_suggestions": [
+    "Add admonition boxes for 'When to use' sections to make them more visually prominent",
+    "Add a 'Common Use Cases' section with practical examples combining flags",
+    "Include a comparison table showing behavior differences between Auto, SearchAndSuppress, and AsText modes",
+    "Add code annotations to examples explaining what each flag does in context",
+    "Include a 'See Also' section linking to related topics (encoding, filtering)",
+    "Add examples showing the difference in output between binary modes",
+    "Consider adding a 'Binary Detection Heuristics' section explaining how ripgrep detects binary files (NUL byte detection)"
+  ],
+  "cross_references": [
+    "binary-data/index"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-13T20:53:00Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": [
+      "binary file handling",
+      "binary detection",
+      "binary flags",
+      "text mode",
+      "NUL byte handling"
+    ],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "documentation_quality": "accurate",
+    "implementation_references": [
+      "crates/core/flags/lowargs.rs:233 - BinaryMode enum definition",
+      "crates/core/flags/defs.rs:427 - Binary flag implementation",
+      "crates/core/flags/defs.rs:6633 - Text flag implementation",
+      "crates/searcher/src/searcher/mod.rs:55 - BinaryDetection struct"
+    ]
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "item_type": "page",
+  "page_id": "lookaround",
+  "page_title": "lookaround",
+  "page_file": "docs/advanced-patterns/lookaround.md",
+  "drift_detected": true,
+  "severity": "medium",
+  "quality_assessment": "Page provides accurate basic information about lookaround assertions but lacks visual enhancements, practical workflow guidance, and integration with MkDocs Material features. Content is technically correct but could benefit from structured examples and decision-making guidance.",
+  "issues": [
+    {
+      "type": "missing_visual_features",
+      "severity": "medium",
+      "section": "Overall structure",
+      "description": "Page lacks MkDocs Material visual features like admonitions, tabs, and code annotations that are used extensively in other advanced pattern pages (e.g., index.md, examples.md, pcre2.md)",
+      "fix_suggestion": "Add visual features: (1) Use admonitions for warnings (e.g., '!!! warning' for PCRE2 requirement), (2) Add code annotations with (1)!, (2)! syntax to explain command components, (3) Consider tabs for organizing different lookaround types",
+      "examples_reference": "docs/advanced-patterns/index.md:50-51, docs/advanced-patterns/examples.md:73-77, docs/advanced-patterns/pcre2.md:104-106"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Use Cases",
+      "description": "Use cases section (lines 52-59) lists benefits but lacks concrete examples and decision guidance on when to choose lookaround over alternatives",
+      "fix_suggestion": "Expand use cases with: (1) Decision flow diagram showing when to use lookaround vs alternatives, (2) Before/after comparisons with non-lookaround approaches, (3) Performance implications, (4) Common pitfalls to avoid",
+      "feature_reference": "advanced_patterns.pcre2_engine.lookaround_assertions"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "medium",
+      "section": "Types of Lookaround",
+      "description": "Section lists four types of lookaround (lines 7-12) but provides minimal explanation of how they differ and when to use each type",
+      "fix_suggestion": "Add practical guidance: (1) Show visual diagram of match behavior for each type, (2) Explain zero-width nature of assertions, (3) Compare positive vs negative and ahead vs behind with examples, (4) Common use case for each type",
+      "feature_reference": "advanced_patterns.pcre2_engine.lookaround_assertions"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "PCRE2 Requirement",
+      "description": "Page mentions PCRE2 requirement in subtitle (line 5) but doesn't emphasize it as a warning or explain error when -P flag is missing",
+      "fix_suggestion": "Add prominent warning admonition after introduction: '!!! warning \"PCRE2 Required\" Lookaround assertions require the `-P` flag. Without it, patterns will fail with regex parse errors. See [PCRE2 Engine](./pcre2.md) for details.'",
+      "cross_reference": "docs/advanced-patterns/pcre2.md:46-53, docs/advanced-patterns/examples.md:302-311",
+      "feature_reference": "advanced_patterns.pcre2_engine"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Multiline lookbehind",
+      "description": "Example on line 31 shows multiline lookbehind but doesn't explain why -U is needed or link to multiline documentation",
+      "fix_suggestion": "Add explanation or annotation: 'Lookbehind across lines requires `-U` (multiline mode). See [Multiline Search](./multiline.md) for details.'",
+      "cross_reference": "docs/advanced-patterns/multiline.md"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Performance considerations",
+      "description": "No mention of performance implications of lookaround assertions compared to simpler patterns",
+      "fix_suggestion": "Add tip admonition: '!!! tip \"Performance Note\" Lookaround assertions can be slower than simple patterns, especially with backtracking. Use the simplest pattern that meets your needs. See [Performance Considerations](./performance.md) for details.'",
+      "cross_reference": "docs/advanced-patterns/performance.md",
+      "feature_reference": "advanced_patterns.pcre2_engine.performance_tradeoffs"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Code annotations",
+      "description": "Code examples lack annotations to explain pattern components, unlike examples.md and index.md which use (1)!, (2)! syntax extensively",
+      "fix_suggestion": "Add code annotations to explain complex parts: (1) Mark lookaround assertions with annotations, (2) Explain quantifiers and character classes, (3) Clarify why specific flags are needed",
+      "examples_reference": "docs/advanced-patterns/examples.md:73-77, docs/advanced-patterns/index.md:174-193"
+    }
+  ],
+  "positive_aspects": [
+    "Clear, concise structure with logical organization",
+    "Good variety of practical examples covering all four lookaround types",
+    "Effective use of code blocks with syntax highlighting",
+    "Includes combination with --only-matching for extraction use case",
+    "Accurate technical information with correct regex syntax",
+    "Proper cross-reference to parent Advanced Patterns page"
+  ],
+  "improvement_suggestions": [
+    "Add decision flow diagram showing when to use each type of lookaround (similar to index.md:58-80)",
+    "Include tabbed sections to organize lookahead vs lookbehind examples (like pcre2.md uses tabs)",
+    "Add example outputs using '!!! example' admonitions to show what users should expect",
+    "Create practical scenarios section with real-world use cases (e.g., log parsing, code analysis)",
+    "Add comparison with non-lookaround alternatives to show benefits and tradeoffs",
+    "Include troubleshooting section for common lookaround pattern errors",
+    "Add cross-reference to backreferences.md as lookaround and backreferences are often confused",
+    "Consider adding 'Related Topics' section linking to: PCRE2 Engine, Multiline Search, Examples, Performance"
+  ],
+  "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+  "cross_references": [
+    "index",
+    "pcre2",
+    "examples",
+    "multiline",
+    "backreferences",
+    "performance"
+  ],
+  "link_validation": {
+    "total_internal_links": 1,
+    "broken_links": 0,
+    "validated_links": [
+      {
+        "link_text": "Advanced Patterns",
+        "target": "./index.md",
+        "status": "valid",
+        "resolved_path": "docs/advanced-patterns/index.md"
+      }
+    ]
+  },
+  "metadata": {
+    "analyzed_at": "2025-11-13T20:53:28Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": [
+      "lookaround assertions",
+      "lookahead",
+      "lookbehind",
+      "PCRE2 patterns",
+      "pattern extraction"
+    ],
+    "feature_references": [
+      "advanced_patterns.pcre2_engine.lookaround_assertions",
+      "advanced_patterns.pcre2_engine.performance_tradeoffs"
+    ]
+  }
+}

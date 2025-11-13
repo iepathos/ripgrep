@@ -1,0 +1,128 @@
+{
+  "item_type": "page",
+  "page_id": "binary-encoding",
+  "page_title": "binary encoding",
+  "page_file": "docs/troubleshooting/binary-encoding.md",
+  "drift_detected": true,
+  "severity": "medium",
+  "quality_assessment": "Page provides accurate basic information but lacks depth and visual enhancements. Content is correct but minimal for troubleshooting guidance.",
+  "issues": [
+    {
+      "type": "incomplete_explanation",
+      "severity": "medium",
+      "section": "How ripgrep Detects Binary Files",
+      "description": "Explanation is too brief - doesn't explain what happens after detection, how many bytes are checked, or the detection behavior modes",
+      "current_content": "ripgrep uses a simple heuristic: if it encounters a NUL byte (`\\0`) in the first few KB of a file, it treats the file as binary and skips it by default.",
+      "fix_suggestion": "Expand to explain: (1) exactly how many bytes are checked, (2) what 'skips it' means in different contexts, (3) the BinaryDetection::Quit vs Convert modes, (4) when detection occurs during reading",
+      "source_reference": "crates/searcher/src/line_buffer.rs:51-77 (BinaryDetection enum and behavior)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Searching Binary Files",
+      "description": "Missing explanation of --text flag (-a) which is the more common short form",
+      "feature_reference": "file_handling.binary_handling.features[2]",
+      "fix_suggestion": "Add -a/--text flag explanation as it's more commonly used than --binary. Explain the difference: --binary enables searching but may skip, -a treats all files as text unconditionally",
+      "source_reference": "file_handling.binary_handling features: '--binary to search binary files' and '-a/--text to treat all files as text'"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Searching Binary Files",
+      "description": "Missing explanation of --binary-files flag with without-match option",
+      "feature_reference": "file_handling.binary_handling.features[3]",
+      "fix_suggestion": "Add --binary-files without-match option which silently skips binary files, useful for scripting",
+      "source_reference": "file_handling.binary_handling features: '--binary-files without-match to skip silently'"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Encoding Issues",
+      "description": "Missing common encoding problems beyond just UTF-8 failures",
+      "fix_suggestion": "Add examples of: (1) UTF-16 without BOM not matching, (2) mixed-encoding files, (3) BOM bytes appearing in search results, (4) pattern encoding vs file encoding mismatches",
+      "source_reference": "docs/file-encoding.md troubleshooting section"
+    },
+    {
+      "type": "broken_links",
+      "severity": "medium",
+      "section": "Cross-References",
+      "description": "Found 1 potentially broken internal link",
+      "broken_links": [
+        {
+          "link_text": "file encoding chapter",
+          "original_target": "../file-encoding.md",
+          "expected_resolved_path": "docs/file-encoding.md",
+          "exists": true,
+          "status": "valid"
+        }
+      ],
+      "fix_suggestion": "Link is valid - no fix needed"
+    }
+  ],
+  "positive_aspects": [
+    "Accurate description of NUL byte detection heuristic",
+    "Clear examples of --binary and -a flags",
+    "Good use of --debug flag for diagnosis",
+    "Correct cross-reference to file-encoding.md chapter",
+    "Encoding flag examples are correct and practical",
+    "Clear diagnosis and fix workflow for encoding errors"
+  ],
+  "improvement_suggestions": [
+    "Add visual diagrams showing binary detection flow (when detection occurs, what happens)",
+    "Include a flowchart for choosing between -a, --binary, and --binary-files flags",
+    "Add more encoding troubleshooting scenarios (UTF-16 without BOM, mixed encodings)",
+    "Expand with examples of common binary file types and how to handle them",
+    "Add admonitions (warnings/tips) using MkDocs Material syntax for key points",
+    "Include a comparison table of binary-related flags and their effects",
+    "Add cross-reference to binary-data section which has more comprehensive coverage",
+    "Consider adding code annotations to explain debug output format",
+    "Add a 'Quick Fix' section with most common solutions",
+    "Include performance notes about binary detection overhead"
+  ],
+  "cross_references": [
+    "file-encoding",
+    "binary-data",
+    "debug-flags",
+    "no-results"
+  ],
+  "visual_enhancements_needed": [
+    {
+      "type": "flowchart",
+      "description": "Binary detection decision flow - how ripgrep decides to skip/search/convert binary files",
+      "suggested_location": "After 'How ripgrep Detects Binary Files' section"
+    },
+    {
+      "type": "comparison_table",
+      "description": "Table comparing -a, --binary, --binary-files flags and their behaviors",
+      "suggested_location": "In 'Searching Binary Files' section"
+    },
+    {
+      "type": "admonition",
+      "description": "Warning box about performance implications of searching binary files",
+      "suggested_location": "After binary search examples"
+    },
+    {
+      "type": "tabs",
+      "description": "Tabbed examples for different encoding scenarios (UTF-16, Latin1, mixed)",
+      "suggested_location": "In 'Encoding Issues' section"
+    }
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-13T20:53:00Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": [
+      "binary detection",
+      "NUL byte heuristic",
+      "encoding errors",
+      "debug flags",
+      "file encoding"
+    ],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "page_context": "Troubleshooting section - focused help page for specific problem",
+    "link_validation": {
+      "total_internal_links": 1,
+      "broken_links": 0,
+      "valid_links": 1
+    }
+  }
+}

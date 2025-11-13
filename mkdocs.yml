@@ -67,7 +67,16 @@ markdown_extensions:
 nav:
   - Home: introduction.md
   - User Guide:
-      - Basics: basics.md
+      - Basics: basics/index.md
+      - Basics Subpages:
+          - Pattern Matching: basics/pattern-matching.md
+          - Literal String Search: basics/literal-search.md
+          - Regular Expressions: basics/regex-basics.md
+          - Case Sensitivity: basics/case-sensitivity.md
+          - Word and Line Boundaries: basics/boundaries.md
+          - Output Format: basics/output.md
+          - Count and List Modes: basics/count-list.md
+          - Practice Examples: basics/practice.md
       - Recursive Search: recursive-search.md
       - Automatic Filtering: automatic-filtering.md
       - Manual Filtering (Globs): manual-filtering-globs.md
@@ -75,17 +84,45 @@ nav:
       - Replacements: replacements.md
       - Configuration File: configuration-file.md
       - File Encoding: file-encoding.md
-      - Binary Data: binary-data.md
+      - Binary Data: binary-data/index.md
+      - Binary Data Subpages:
+          - Binary Detection: binary-data/detection.md
+          - Binary Modes: binary-data/modes.md
+          - Explicit vs Implicit Files: binary-data/explicit-implicit.md
+          - Binary Flags Reference: binary-data/flags.md
+          - Examples and Troubleshooting: binary-data/examples.md
       - Compressed Files: compressed-files.md
       - Preprocessor: preprocessor.md
-      - Common Options: common-options.md
+      - Common Options: common-options/index.md
+      - Common Options Subpages:
+          - Search Basics: common-options/search-basics.md
+          - Output Formatting: common-options/output-formatting.md
+          - File Filtering: common-options/file-filtering.md
+          - Output Modes: common-options/output-modes.md
+          - Quick Reference: common-options/reference.md
       - Context Lines: context-lines.md
       - Output Formats: output-formats.md
       - Sorting Results: sorting-results.md
       - Utility Modes: utility-modes.md
   - Advanced Topics:
-      - Advanced Patterns: advanced-patterns.md
+      - Advanced Patterns: advanced-patterns/index.md
+      - Advanced Patterns Subpages:
+          - Multiline Search: advanced-patterns/multiline.md
+          - PCRE2 Engine: advanced-patterns/pcre2.md
+          - Lookaround Assertions: advanced-patterns/lookaround.md
+          - Backreferences: advanced-patterns/backreferences.md
+          - Unicode Patterns: advanced-patterns/unicode.md
+          - Inline Regex Flags: advanced-patterns/inline-flags.md
+          - Performance Considerations: advanced-patterns/performance.md
+          - Practical Examples: advanced-patterns/examples.md
       - Performance: performance.md
       - Statistics and Metrics: statistics.md
       - Hyperlinks: hyperlinks.md
-      - Troubleshooting: troubleshooting.md
+      - Troubleshooting: troubleshooting/index.md
+      - Troubleshooting Subpages:
+          - Debug Flags: troubleshooting/debug-flags.md
+          - No Results Found: troubleshooting/no-results.md
+          - Performance Issues: troubleshooting/performance.md
+          - Common Error Messages: troubleshooting/errors.md
+          - Binary and Encoding Problems: troubleshooting/binary-encoding.md
+          - When to File a Bug: troubleshooting/bug-reports.md

@@ -10,6 +10,27 @@ Hyperlink support allows terminal emulators to display clickable file paths that
 - Quickly navigating between files
 - Integrating with IDE-like terminal experiences
 
+```mermaid
+flowchart LR
+    A[ripgrep Output] --> B[OSC 8 Escape<br/>Sequence]
+    B --> C[Terminal Emulator]
+    C --> D{User Clicks<br/>Link?}
+    D -->|Yes| E[Extract URL]
+    D -->|No| End[Display Only]
+    E --> F{URL Scheme<br/>Registered?}
+    F -->|Yes| G[Open in Editor/<br/>Application]
+    F -->|No| H[Error: No<br/>Handler]
+    G --> End
+    H --> End
+
+    style A fill:#e1f5ff
+    style C fill:#fff3e0
+    style G fill:#e8f5e9
+    style H fill:#ffebee
+```
+
+**Figure**: How terminal hyperlinks work - from ripgrep output to editor integration.
+
 ## Enabling Hyperlinks
 
 Use the `--hyperlink-format` flag to enable hyperlink generation:
@@ -19,9 +40,18 @@ Use the `--hyperlink-format` flag to enable hyperlink generation:
 rg --hyperlink-format default pattern
 ```
 
+!!! tip "Test Your Terminal First"
+    Before configuring hyperlinks globally, verify your terminal supports OSC 8 sequences:
+    ```bash
+    printf '\e]8;;http://example.com\e\\This is a link\e]8;;\e\\\n'
+    ```
+    If "This is a link" appears clickable, your terminal supports hyperlinks.
+
 ## Built-in Aliases
 
 Instead of writing full hyperlink format strings, ripgrep provides convenient built-in aliases for common editors and schemes:
+
+<!-- Source: crates/printer/src/hyperlink/aliases.rs:6-68 -->
 
 | Alias | Expands to |
 |-------|-----------|
@@ -43,7 +73,10 @@ Instead of writing full hyperlink format strings, ripgrep provides convenient bu
 
 The default alias follows RFC 8089 file:// URI specification and is the recommended choice for general use.
 
-**Note:** The `file` alias differs from `default` by always including the hostname, even on Windows. Use `default` for cross-platform compatibility.
+!!! note "Platform-Aware Behavior"
+    The `default` alias automatically adapts to your platform. On Unix/Linux/macOS it includes the hostname for network compatibility. On Windows it omits the hostname to prevent compatibility issues with some applications.
+
+    The `file` alias always includes the hostname regardless of platform. Use `default` for cross-platform scripts and configurations.
 
 **The `none` alias** can be used to explicitly disable hyperlinks, which is useful for overriding config file settings:
 
@@ -71,13 +104,19 @@ rg --hyperlink-format 'file://{path}:{line}' pattern
 
 Available variables for hyperlink templates:
 
-- `{path}`: Absolute or relative file path
-- `{line}`: Line number of the match
-- `{column}`: Column number of the match
-- `{host}`: Machine hostname (automatically populated by ripgrep from your system hostname)
-- `{wslprefix}`: WSL distro prefix like `wsl$/Ubuntu` (Windows only, set when running in WSL)
+| Variable | Description | Auto-populated |
+|----------|-------------|----------------|
+| `{path}` | Absolute or relative file path | Required in format |
+| `{line}` | Line number of the match | From search result |
+| `{column}` | Column number of the match | From search result |
+| `{host}` | Machine hostname | From system hostname |
+| `{wslprefix}` | WSL distro prefix (e.g., `wsl$/Ubuntu`) | From `WSL_DISTRO_NAME` env var (Windows/WSL only) |
 
-The `{host}` variable is useful for network file shares or remote development environments. The `{wslprefix}` variable enables proper file:// URLs when working in Windows Subsystem for Linux.
+!!! tip "Variable Usage Notes"
+    - `{host}` is useful for network file shares or remote development environments
+    - `{wslprefix}` enables proper file:// URLs when working in Windows Subsystem for Linux
+    - `{path}` is required in every hyperlink format
+    - `{column}` requires `{line}` to also be present in the format
 
 ## Terminal Support
 
@@ -150,7 +189,8 @@ rg --hyperlink-format grep+ pattern
 
 For editors not included in the built-in aliases, you can create custom hyperlink formats:
 
-**WARNING:** These are community-suggested formats and may require custom URL scheme handlers to be registered with your OS. They are not built into ripgrep or guaranteed to work.
+!!! warning "Community Formats - Registration Required"
+    These are community-suggested formats that require custom URL scheme handlers to be registered with your OS. They are not built into ripgrep and may not work without additional setup.
 
 ```bash
 # IntelliJ/PyCharm/WebStorm (community format)
@@ -163,7 +203,7 @@ rg --hyperlink-format 'subl://open?url=file://{path}&line={line}' pattern
 rg --hyperlink-format 'nvim://edit/{path}:+{line}' pattern
 ```
 
-Note: Custom editor formats may require additional URL scheme registration with your operating system.
+See the [URL Scheme Registration](#url-scheme-registration) section below for platform-specific setup instructions.
 
 ## Configuration
 
@@ -180,6 +220,14 @@ Set up hyperlinks globally via your ripgrep config file:
 ```
 
 ## Examples
+
+!!! example "Quick Start: VS Code Integration"
+    The fastest way to get started is using a built-in alias:
+    ```bash
+    # Search with VS Code hyperlinks
+    rg --hyperlink-format vscode TODO
+    ```
+    Click on any result to open the file at the exact line in VS Code. This is equivalent to the full format `vscode://file/{path}:{line}:{column}` but more concise.
 
 ### Example 1: VS Code Integration with Built-in Alias
 
@@ -224,6 +272,13 @@ Note: Custom formats require URL scheme registration with your operating system.
 
 ## Best Practices
 
+!!! tip "Configuration Recommendations"
+    1. **Test first**: Verify terminal compatibility before global configuration
+    2. **Use built-in aliases**: Prefer `vscode` over custom `vscode://...` formats
+    3. **Start with default**: Use `--hyperlink-format default` for cross-platform compatibility
+    4. **Configure globally**: Add to `~/.ripgreprc` for consistent behavior
+    5. **Include position**: Use formats with `{line}` and `{column}` for precise navigation
+
 - Test hyperlinks in your terminal before relying on them
 - Configure your terminal to handle custom URL schemes
 - Use absolute paths for hyperlinks when working with remote files
@@ -258,13 +313,31 @@ rg --version
 
 The URL scheme might be registered to a different application:
 
-```bash
-# macOS: Check default handler
-defaults read ~/Library/Preferences/com.apple.LaunchServices/com.apple.launchservices.secure.plist
+=== "macOS"
+    ```bash
+    # Check default handler for a URL scheme
+    defaults read ~/Library/Preferences/com.apple.LaunchServices/com.apple.launchservices.secure.plist
 
-# Linux: Update default application
-xdg-mime default code.desktop x-scheme-handler/vscode
-```
+    # Register VS Code as handler (if needed)
+    # Usually automatic when VS Code is installed
+    ```
+
+=== "Linux"
+    ```bash
+    # Update default application for vscode:// scheme
+    xdg-mime default code.desktop x-scheme-handler/vscode
+
+    # Verify registration
+    xdg-mime query default x-scheme-handler/vscode
+    ```
+
+=== "Windows"
+    ```powershell
+    # Check registry for URL scheme handler
+    # HKEY_CLASSES_ROOT\vscode\shell\open\command
+
+    # Usually registered automatically by editor installation
+    ```
 
 ### Path Resolution Issues
 
@@ -290,6 +363,26 @@ rg --hyperlink-format 'myscheme://{{literal}}/{path}' pattern
 
 Use `{{` for a literal `{` and `}}` for a literal `}`.
 
+### Format Validation Requirements
+
+Hyperlink formats must meet these validation constraints:
+
+- Must contain at least a `{path}` variable
+- If `{column}` is used, `{line}` must also be present
+- Format must start with a valid URL scheme (alphanumeric characters, `+`, `-`, or `.`)
+
+!!! warning "Invalid Format Examples"
+    ```bash
+    # Invalid: Missing {path}
+    rg --hyperlink-format 'file://{line}' pattern
+
+    # Invalid: {column} without {line}
+    rg --hyperlink-format 'file://{path}:{column}' pattern
+
+    # Invalid: No URL scheme
+    rg --hyperlink-format '{path}:{line}' pattern
+    ```
+
 ### Conditional Hyperlinks
 
 Only use hyperlinks when output is to terminal:
@@ -312,7 +405,73 @@ Process hyperlinks with other tools:
 rg --hyperlink-format file pattern | sed 's/.*file:\/\/\([^[:space:]]*\).*/\1/'
 ```
 
+## URL Scheme Registration
+
+To use custom editor hyperlink formats, you need to register URL scheme handlers with your operating system:
+
+=== "macOS"
+    **Method 1: Using an application's built-in registration**
+
+    Most editors (VS Code, Sublime Text, etc.) automatically register their URL schemes during installation.
+
+    **Method 2: Creating a custom .app bundle**
+
+    For custom schemes, create an application bundle with an `Info.plist` that declares the URL scheme:
+    ```xml
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleURLName</key>
+            <string>Custom Editor</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>myeditor</string>
+            </array>
+        </dict>
+    </array>
+    ```
+
+=== "Linux"
+    Create a `.desktop` file in `~/.local/share/applications/`:
+
+    ```ini
+    [Desktop Entry]
+    Name=My Editor Handler
+    Exec=/path/to/editor --open-url %u
+    Type=Application
+    MimeType=x-scheme-handler/myeditor;
+    ```
+
+    Then register it:
+    ```bash
+    xdg-mime default myeditor.desktop x-scheme-handler/myeditor
+    ```
+
+=== "Windows"
+    Add registry entries for the URL scheme:
+
+    ```registry
+    HKEY_CLASSES_ROOT
+        myeditor
+            (Default) = "URL:My Editor Protocol"
+            URL Protocol = ""
+            shell
+                open
+                    command
+                        (Default) = "C:\Path\To\Editor.exe" "%1"
+    ```
+
+    Most editors register their schemes automatically during installation.
+
 ## Security Considerations
+
+!!! warning "URL Scheme Security"
+    Be cautious when registering custom URL schemes:
+
+    - **Validate sources**: Only use hyperlink formats from trusted sources
+    - **Review handlers**: Some URL schemes can execute arbitrary commands
+    - **Audit custom schemes**: Review what custom URL handlers do before registration
+    - **Disable in sensitive contexts**: Consider `--hyperlink-format none` in security-sensitive environments
 
 - Be cautious with hyperlink formats from untrusted sources
 - Validate URL schemes before registering handlers
@@ -323,4 +482,4 @@ rg --hyperlink-format file pattern | sed 's/.*file:\/\/\([^[:space:]]*\).*/\1/'
 
 - [Output Formats](output-formats.md) - Other output customization options
 - [Configuration File](configuration-file.md) - Setting up persistent configuration
-- [Common Options](common-options.md) - Other frequently used flags
+- [Common Options](common-options/output-formatting.md) - Output formatting options

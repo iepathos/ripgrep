@@ -1,0 +1,50 @@
+{
+  "analysis_date": "2025-11-13T12:00:00Z",
+  "features_analyzed": 9,
+  "documented_pages": 21,
+  "gaps_found": 0,
+  "gaps": [],
+  "coverage_summary": {
+    "search_basics": {
+      "status": "documented",
+      "pages": ["basics.md", "recursive-search.md"]
+    },
+    "filtering": {
+      "status": "documented",
+      "pages": ["automatic-filtering.md", "manual-filtering-globs.md", "manual-filtering-types.md"]
+    },
+    "advanced_patterns": {
+      "status": "documented",
+      "pages": ["advanced-patterns.md"]
+    },
+    "output_control": {
+      "status": "documented",
+      "pages": ["output-formats.md", "context-lines.md", "sorting-results.md"]
+    },
+    "file_handling": {
+      "status": "documented",
+      "pages": ["file-encoding.md", "binary-data.md", "compressed-files.md", "preprocessor.md"]
+    },
+    "replacements": {
+      "status": "documented",
+      "pages": ["replacements.md"]
+    },
+    "configuration": {
+      "status": "documented",
+      "pages": ["configuration-file.md", "common-options.md"]
+    },
+    "performance": {
+      "status": "documented",
+      "pages": ["performance.md"]
+    },
+    "utility_features": {
+      "status": "documented",
+      "pages": ["utility-modes.md", "statistics.md", "hyperlinks.md"]
+    },
+    "meta_content": {
+      "status": "documented",
+      "note": "Meta-content (best practices, troubleshooting) documented in troubleshooting.md and embedded throughout guides"
+    }
+  },
+  "actions_taken": []
+}

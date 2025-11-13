@@ -1,0 +1,91 @@
+{
+  "item_type": "page",
+  "page_id": "practice",
+  "page_title": "practice",
+  "page_file": "docs/basics/practice.md",
+  "drift_detected": true,
+  "severity": "medium",
+  "quality_assessment": "Page provides solid practice exercises and common mistakes but lacks visual enhancements and structure improvements that would benefit from MkDocs Material features",
+  "issues": [
+    {
+      "type": "missing_visual_features",
+      "severity": "medium",
+      "section": "Page Structure",
+      "description": "Page is missing MkDocs Material visual features that would improve learning experience",
+      "fix_suggestion": "Add admonitions for tips, warnings, and notes; use tabs for multi-language examples if applicable; add code annotations for complex examples",
+      "source_reference": "docs/basics/practice.md:1-104"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "Practice Exercises",
+      "description": "Practice exercises lack expected output or validation guidance - learners don't know if they got the right result",
+      "fix_suggestion": "Add expected output examples or success criteria for each exercise so users can verify their understanding",
+      "source_reference": "docs/basics/practice.md:7-55"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Practice Exercises",
+      "description": "Missing exercises for advanced features like multiline search, PCRE2 patterns, and JSON output",
+      "feature_reference": "advanced_patterns.multiline_search, advanced_patterns.pcre2_engine, output_control.json_output",
+      "fix_suggestion": "Add practice exercises for advanced features: multiline patterns with -U, PCRE2 lookaheads with -P, and JSON output with --json",
+      "source_reference": "docs/basics/practice.md:7-55"
+    },
+    {
+      "type": "missing_visual_features",
+      "severity": "medium",
+      "section": "Common Mistakes",
+      "description": "Common Mistakes section would benefit from warning admonitions to make issues stand out",
+      "fix_suggestion": "Wrap each mistake in a warning admonition (!!! warning) to visually distinguish problems from solutions",
+      "source_reference": "docs/basics/practice.md:57-104"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Common Mistakes",
+      "description": "Missing common mistakes related to performance, file filtering, and binary files",
+      "feature_reference": "filtering.automatic_filtering, file_handling.binary_handling, performance.optimization_techniques",
+      "fix_suggestion": "Add common mistakes: forgetting that hidden files are excluded by default, expecting to search binary files, not using file type filters for better performance",
+      "source_reference": "docs/basics/practice.md:57-104"
+    }
+  ],
+  "positive_aspects": [
+    "Clear, progressive exercises from basic to more advanced",
+    "Good focus on practical, real-world search scenarios",
+    "Common Mistakes section addresses actual user pain points",
+    "Examples are concise and easy to understand",
+    "Cross-reference to parent Basics page",
+    "Covers important flags: -i, -F, -w, -c, -C, -v"
+  ],
+  "improvement_suggestions": [
+    "Add MkDocs Material admonitions to highlight tips, warnings, and notes",
+    "Include expected output for practice exercises so users can verify success",
+    "Add exercises for advanced features (multiline, PCRE2, JSON output, file type filtering)",
+    "Use warning admonitions for Common Mistakes section",
+    "Add a 'Next Steps' section linking to more advanced topics",
+    "Consider adding a 'Challenge Exercise' section combining multiple concepts",
+    "Add visual separators or icons to make sections more scannable"
+  ],
+  "cross_references": [
+    "basics/index"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-13T20:53:28Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": [
+      "basic search",
+      "case sensitivity",
+      "literal search",
+      "word boundaries",
+      "counting",
+      "context lines",
+      "regex patterns",
+      "inverted match",
+      "common mistakes"
+    ],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "internal_links_validated": true,
+    "broken_links_count": 0
+  }
+}

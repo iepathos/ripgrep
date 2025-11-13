@@ -1,0 +1,83 @@
+{
+  "item_type": "page",
+  "page_id": "literal-search",
+  "page_title": "literal search",
+  "page_file": "docs/basics/literal-search.md",
+  "drift_detected": true,
+  "severity": "medium",
+  "quality_assessment": "Page provides accurate but minimal coverage of literal search. Missing performance context, best practices, and lacks visual enhancements that would improve learning.",
+  "issues": [
+    {
+      "type": "incomplete_explanation",
+      "severity": "medium",
+      "section": "Fixed String Mode",
+      "description": "Missing explanation of performance benefits of literal search",
+      "feature_reference": "search_basics.pattern_matching.features[0], performance.optimization_techniques.features[0-2]",
+      "fix_suggestion": "Add explanation that -F enables SIMD acceleration and avoids regex compilation overhead, making searches significantly faster",
+      "source_reference": "features.json:search_basics.pattern_matching, performance.optimization_techniques"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "When to use -F",
+      "description": "Missing comparison with escaped regex patterns for clarity",
+      "feature_reference": "meta_content.best_practices.pattern_writing[4]",
+      "fix_suggestion": "Add example showing difference: rg 'file\\*\\.txt' (regex) vs rg -F 'file*.txt' (literal) to highlight the convenience",
+      "source_reference": "features.json:meta_content.best_practices.pattern_writing"
+    },
+    {
+      "type": "missing_visual_features",
+      "severity": "low",
+      "section": "Overall structure",
+      "description": "Page lacks MkDocs Material visual enhancements used in other pages",
+      "fix_suggestion": "Add admonition boxes for tips (when to use -F), code annotations to highlight key flags, and consider a comparison table for -F vs regex",
+      "source_reference": "docs/basics/case-sensitivity.md, docs/basics/boundaries.md"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "Fixed String Mode",
+      "description": "No mention of combining -F with other search options",
+      "feature_reference": "search_basics.pattern_matching.features[2-4]",
+      "fix_suggestion": "Add examples showing -F combined with -i (case-insensitive), -w (word boundaries), and file type filters",
+      "source_reference": "features.json:search_basics.pattern_matching"
+    }
+  ],
+  "positive_aspects": [
+    "Clear explanation of the -F flag purpose",
+    "Good practical examples with code snippets, URLs, and IP addresses",
+    "Concise 'When to use' guidance",
+    "Correct syntax and command examples",
+    "Valid cross-reference to Basics index page"
+  ],
+  "improvement_suggestions": [
+    "Add admonition box highlighting that -F is faster for literal searches (performance tip)",
+    "Include a comparison example showing escaped regex vs -F for same search",
+    "Add code annotations to highlight the -F flag in examples",
+    "Consider a practical example combining -F with -i for case-insensitive literal search",
+    "Add a 'Common Pitfalls' section about forgetting -F when searching for regex metacharacters",
+    "Include cross-reference to pattern-matching.md for readers who need regex features"
+  ],
+  "cross_references": [
+    "pattern-matching",
+    "case-sensitivity",
+    "performance"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-13T20:53:28Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": [
+      "literal search",
+      "fixed strings",
+      "regex metacharacters"
+    ],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "link_validation": {
+      "total_internal_links": 1,
+      "broken_links": 0,
+      "valid_links": [
+        "./index.md"
+      ]
+    }
+  }
+}

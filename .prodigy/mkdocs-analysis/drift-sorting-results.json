@@ -1,0 +1,87 @@
+{
+  "item_type": "page",
+  "page_id": "sorting-results",
+  "page_title": "sorting results",
+  "page_file": "docs/sorting-results.md",
+  "drift_detected": true,
+  "severity": "medium",
+  "quality_assessment": "Page is comprehensive and accurate but has a broken internal link and lacks visual features present in other enhanced pages",
+  "issues": [
+    {
+      "type": "broken_links",
+      "severity": "medium",
+      "section": "See Also",
+      "description": "Found 1 broken internal link",
+      "broken_links": [
+        {
+          "link_text": "Common Options",
+          "target": "common-options.md",
+          "expected_path": "docs/common-options.md",
+          "current_file": "docs/sorting-results.md",
+          "reason": "File does not exist. The file was reorganized into a section.",
+          "suggested_fix": "common-options/index.md"
+        }
+      ],
+      "fix_suggestion": "Update link from 'common-options.md' to 'common-options/index.md'"
+    },
+    {
+      "type": "missing_visual_features",
+      "severity": "low",
+      "section": "Overall Page Structure",
+      "description": "Page lacks MkDocs Material visual features found in other enhanced pages",
+      "current_content": "Plain markdown without admonitions, tabs, or other visual enhancements",
+      "should_add": "MkDocs Material extensions (admonitions for notes/tips/warnings, tabs for examples, code annotations)",
+      "fix_suggestion": "Add visual features consistent with other enhanced pages: use !!! note/tip/warning admonitions for callouts, === tabs for alternative examples, and code annotations where helpful",
+      "examples": [
+        "Convert **Note**: blocks to !!! note admonitions",
+        "Convert **Performance Note**: to !!! tip \"Performance Impact\" admonitions",
+        "Use === tabs for showing multiple sort option examples side-by-side",
+        "Add !!! warning for the deprecation notice about --sort-files"
+      ]
+    }
+  ],
+  "positive_aspects": [
+    "Comprehensive coverage of all sorting options (path, modified, accessed, created)",
+    "Accurate documentation of --sort and --sortr flags with clear examples",
+    "Correct explanation of performance impacts including parallelism and memory usage",
+    "Accurate note about streaming optimization for --sort path in ascending order (lines 77, 131)",
+    "Proper documentation of --sort=none for overriding config files (line 36)",
+    "Accurate documentation of deprecated --sort-files flag (lines 38-40)",
+    "Good explanation of platform differences in timestamp availability (lines 218-231)",
+    "Helpful best practices section covering when to use and avoid sorting",
+    "Clear examples showing combinations with other flags (context, file types, JSON)",
+    "Good organization with logical progression from basic to advanced topics",
+    "Accurate error handling documentation for unavailable sort criteria (line 225)"
+  ],
+  "improvement_suggestions": [
+    "Fix broken link to common-options by updating to common-options/index.md",
+    "Add MkDocs Material admonitions to enhance readability and match visual style of other pages",
+    "Convert plain **Note**: blocks to !!! note admonitions for better visual hierarchy",
+    "Convert **Performance Note**: to !!! tip \"Performance Impact\" admonitions",
+    "Use !!! warning for the deprecation notice about --sort-files",
+    "Consider using === tabs to show alternative sort option examples side-by-side",
+    "Add code annotations for complex examples in the Examples section",
+    "Consider adding a comparison table showing memory/performance characteristics of each sort mode",
+    "Add cross-reference links within the page content (e.g., from Best Practices to relevant sections)"
+  ],
+  "cross_references": [
+    "performance",
+    "output-formats",
+    "common-options/index"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-13T20:53:28Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": [
+      "sorting",
+      "performance",
+      "output control",
+      "command-line flags"
+    ],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "internal_links_checked": 3,
+    "broken_links_found": 1,
+    "visual_features_present": false,
+    "mkdocs_material_extensions_used": []
+  }
+}

@@ -25,6 +25,30 @@ This prints statistics after all search results.
 
 The statistics output includes several categories of information. Statistics are printed to stdout after all search results.
 
+```mermaid
+flowchart LR
+    Input[Search Input] --> Search[ripgrep Search]
+    Search --> Track[Track Metrics<br/>Internally]
+    Track --> M1[Matches Count]
+    Track --> M2[Bytes Searched]
+    Track --> M3[Files Processed]
+    Track --> M4[Elapsed Time]
+
+    Search --> Results[Search Results<br/>to stdout]
+    M1 --> Stats[Statistics Summary]
+    M2 --> Stats
+    M3 --> Stats
+    M4 --> Stats
+    Stats --> Output[Statistics Output<br/>to stdout]
+
+    style Track fill:#e1f5ff
+    style Stats fill:#fff3e0
+    style Results fill:#e8f5e9
+    style Output fill:#e8f5e9
+```
+
+**Figure**: Statistics collection flow showing how ripgrep tracks metrics during search and outputs them after results.
+
 ```
 3 matches
 2 matched lines
@@ -36,9 +60,33 @@ The statistics output includes several categories of information. Statistics are
 0.001000 seconds total
 ```
 
-Note that time values are formatted with 6 decimal places of precision.
+!!! note
+    Time values are formatted with 6 decimal places of precision.
 
 ## Key Metrics
+
+The statistics data structure tracks the following metrics:
+
+```rust
+// Source: crates/printer/src/stats.rs:13-21
+pub struct Stats {
+    elapsed: Duration,              // (1)!
+    searches: u64,                  // (2)!
+    searches_with_match: u64,       // (3)!
+    bytes_searched: u64,            // (4)!
+    bytes_printed: u64,             // (5)!
+    matched_lines: u64,             // (6)!
+    matches: u64,                   // (7)!
+}
+```
+
+1. Time spent searching across all threads
+2. Total number of files examined
+3. Number of files containing at least one match
+4. Total bytes read and searched
+5. Total bytes output (results + context lines)
+6. Number of lines containing matches
+7. Total number of pattern matches found
 
 ### Match Statistics
 
@@ -57,7 +105,8 @@ Note that time values are formatted with 6 decimal places of precision.
 - **Seconds spent searching**: Actual search time across all threads
 - **Seconds total**: Wall-clock time for the entire operation
 
-The `--stats` flag itself has minimal performance overhead since ripgrep tracks these metrics internally regardless. Enabling `--stats` only adds the cost of formatting and printing the final summary.
+!!! tip "Performance Overhead"
+    The `--stats` flag itself has minimal performance overhead since ripgrep tracks these metrics internally regardless. Enabling `--stats` only adds the cost of formatting and printing the final summary.
 
 ## Understanding the Metrics
 
@@ -78,13 +127,31 @@ the quick brown fox jumps over the lazy dog
 1 matched lines
 ```
 
+```mermaid
+graph TD
+    Line["Line: 'the quick brown fox jumps over the lazy dog'"]
+    Line --> Match1["Match 1: 'the' at position 0"]
+    Line --> Match2["Match 2: 'the' at position 31"]
+
+    Match1 --> Result["Result:<br/>2 matches<br/>1 matched line"]
+    Match2 --> Result
+
+    style Line fill:#e1f5ff
+    style Match1 fill:#fff3e0
+    style Match2 fill:#fff3e0
+    style Result fill:#e8f5e9
+```
+
+**Figure**: Illustration of how a single line can contain multiple matches. The line count is 1, but the match count is 2.
+
 ### Thread Time vs. Wall Time
 
 With parallel search:
 - **Searching time**: Sum of time across all threads (can exceed wall time)
 - **Total time**: Actual elapsed time
 
-The "seconds spent searching" metric accumulates CPU time across all threads. With parallel search, this will typically exceed wall-clock time. A ratio close to your thread count indicates good parallelization. For example, if you have 4 threads and the ratio is ~4x, your search is efficiently using all threads.
+!!! info "Understanding Thread Time"
+    The "seconds spent searching" metric accumulates CPU time across all threads. With parallel search, this will typically exceed wall-clock time. A ratio close to your thread count indicates good parallelization. For example, if you have 4 threads and the ratio is ~4x, your search is efficiently using all threads.
 
 Example:
 ```
@@ -93,6 +160,27 @@ Example:
 ```
 
 In this case, the 4:1 ratio (0.4s / 0.1s = 4) shows that all 4 threads were fully utilized during the search.
+
+```mermaid
+gantt
+    title Parallel Search Thread Utilization (4 threads)
+    dateFormat X
+    axisFormat %L ms
+
+    section Thread 1
+    Searching :t1, 0, 100
+    section Thread 2
+    Searching :t2, 0, 100
+    section Thread 3
+    Searching :t3, 0, 100
+    section Thread 4
+    Searching :t4, 0, 100
+
+    section Wall Time
+    Total elapsed :crit, wall, 0, 100
+```
+
+**Figure**: Visual representation of parallel search showing 4 threads running simultaneously. Wall-clock time is 100ms, but total CPU time is 400ms (4 threads × 100ms each), giving a 4:1 ratio indicating full parallelization.
 
 ## Use Cases
 
@@ -145,45 +233,67 @@ rg --stats -tjs 'import'
 rg --stats -q pattern
 ```
 
-Note: When combining `--stats` with `--quiet`, ripgrep will search all files completely to collect accurate statistics, even though `--quiet` alone would normally exit after the first match. This means `--stats` disables `--quiet`'s early-exit optimization. If you're just checking for pattern existence in a large codebase, using both flags together will be much slower than `--quiet` alone, as it must search all files to completion.
+!!! warning "Performance Impact with --quiet"
+    When combining `--stats` with `--quiet`, ripgrep will search all files completely to collect accurate statistics, even though `--quiet` alone would normally exit after the first match. This means `--stats` disables `--quiet`'s early-exit optimization. If you're just checking for pattern existence in a large codebase, using both flags together will be much slower than `--quiet` alone, as it must search all files to completion.
 
-### Statistics in JSON
+### Statistics Output Formats
 
-Statistics are fully supported in JSON output format:
+Statistics can be output in two formats:
 
-```bash
-# Get machine-readable statistics in JSON format
-rg --json --stats pattern
-```
+=== "Text Format"
+    ```bash
+    rg --stats pattern
+    ```
 
-This produces a summary message with `"type": "summary"` containing a `stats` object and `elapsed_total` field:
+    Human-readable output appended after search results:
+    ```
+    3 matches
+    2 matched lines
+    1 files contained matches
+    5 files searched
+    150 bytes printed
+    1500 bytes searched
+    0.025000 seconds spent searching
+    0.001000 seconds total
+    ```
 
-```json
-{
-  "type": "summary",
-  "data": {
-    "elapsed_total": {
-      "human": "0.001000s",
-      "secs": 0,
-      "nanos": 1000000
-    },
-    "stats": {
-      "elapsed": {
-        "secs": 0,
-        "nanos": 25000000
-      },
-      "searches": 5,
-      "searches_with_match": 1,
-      "bytes_searched": 1500,
-      "bytes_printed": 150,
-      "matched_lines": 2,
-      "matches": 3
+    **Best for:** Interactive use, quick performance checks
+
+=== "JSON Format"
+    ```bash
+    rg --json --stats pattern
+    ```
+
+    Machine-readable JSON with `"type": "summary"` message:
+    ```json
+    {
+      "type": "summary",
+      "data": {
+        "elapsed_total": {
+          "human": "0.001000s",
+          "secs": 0,
+          "nanos": 1000000
+        },
+        "stats": {
+          "elapsed": {
+            "secs": 0,
+            "nanos": 25000000
+          },
+          "searches": 5,
+          "searches_with_match": 1,
+          "bytes_searched": 1500,
+          "bytes_printed": 150,
+          "matched_lines": 2,
+          "matches": 3
+        }
+      }
     }
-  }
-}
-```
+    ```
 
-The `elapsed_total` object includes a `human` field with a formatted time string for readability, in addition to the precise `secs` and `nanos` fields for programmatic use.
+    **Best for:** Scripts, automation, metric collection systems
+
+!!! tip "JSON Statistics Parsing"
+    The `elapsed_total` object includes a `human` field with formatted time for readability, plus precise `secs` and `nanos` fields for programmatic use. Use `jq` to extract specific metrics: `rg --json --stats pattern | tail -1 | jq '.data.stats.matches'`
 
 ## Examples
 
@@ -220,6 +330,33 @@ rg --stats --debug 'pattern' 2>&1 | less
 ```
 
 ## Interpreting Results
+
+```mermaid
+flowchart TD
+    Start[Review Statistics] --> Check1{High matches,<br/>few files?}
+    Check1 -->|Yes| Common[Pattern is common<br/>or concentrated]
+    Check1 -->|No| Check2{Many files,<br/>few matches?}
+
+    Common --> Action1[Consider:<br/>- More specific pattern<br/>- Add context filters]
+
+    Check2 -->|Yes| Rare[Pattern is rare<br/>or too specific]
+    Check2 -->|No| Check3{Long search<br/>time?}
+
+    Rare --> Action2[Consider:<br/>- File type filters -t<br/>- Broader pattern]
+
+    Check3 -->|Yes| Slow[Performance issue]
+    Check3 -->|No| Good[Statistics look normal]
+
+    Slow --> Action3[Check:<br/>- File count<br/>- Regex complexity<br/>- Binary files<br/>- Ignore patterns]
+
+    style Start fill:#e1f5ff
+    style Common fill:#fff3e0
+    style Rare fill:#fff3e0
+    style Slow fill:#ffebee
+    style Good fill:#e8f5e9
+```
+
+**Figure**: Decision flow for interpreting statistics and identifying optimization opportunities.
 
 ### High Match Count, Few Files
 
@@ -294,5 +431,3 @@ echo "Found $MATCHES matches across $FILES files"
 ## See Also
 
 - [Performance](performance.md) - Performance tuning and optimization
-- [Troubleshooting](troubleshooting.md) - Debugging search issues
-- [Common Options](common-options.md) - Other useful flags

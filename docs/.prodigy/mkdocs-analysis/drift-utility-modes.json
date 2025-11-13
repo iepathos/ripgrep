@@ -1,0 +1,120 @@
+{
+  "item_type": "page",
+  "page_id": "utility-modes",
+  "page_title": "utility modes",
+  "page_file": "docs/utility-modes.md",
+  "drift_detected": true,
+  "severity": "medium",
+  "quality_assessment": "Page documents Files Mode, Type List Mode, and Generation Mode well, but is missing documentation for several utility features from the feature inventory: counting, statistics, passthru mode, and hyperlinks. Also contains broken cross-reference links.",
+  "issues": [
+    {
+      "type": "missing_content",
+      "severity": "high",
+      "section": "Utility Features",
+      "description": "Missing documentation for counting mode (--count, --count-matches)",
+      "feature_reference": "utility_features.counting",
+      "fix_suggestion": "Add section documenting counting modes: -c/--count for match counts per file, --count-matches for total match count across files, and --include-zero for including zero-count files. This is distinct from statistics mode.",
+      "source_reference": "features.json:utility_features.counting"
+    },
+    {
+      "type": "missing_content",
+      "severity": "high",
+      "section": "Utility Features",
+      "description": "Missing documentation for statistics mode (--stats)",
+      "feature_reference": "utility_features.statistics",
+      "fix_suggestion": "Add section documenting statistics mode with --stats flag that shows detailed statistics including files searched count, matches found count, bytes searched, time elapsed, and JSON format availability. Note: This feature is documented in a separate statistics.md file, so consider cross-referencing instead of duplicating.",
+      "source_reference": "features.json:utility_features.statistics"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Utility Features",
+      "description": "Missing documentation for passthru mode (--passthru)",
+      "feature_reference": "utility_features.passthru_mode",
+      "fix_suggestion": "Add section documenting passthru mode: --passthru flag that prints all lines with matches highlighted, useful for log analysis, and can combine with context flags.",
+      "source_reference": "features.json:utility_features.passthru_mode"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Utility Features",
+      "description": "Missing documentation for hyperlinks mode (--hyperlink-format)",
+      "feature_reference": "utility_features.hyperlinks",
+      "fix_suggestion": "Add section documenting hyperlinks feature: --hyperlink-format for custom hyperlink format supporting VSCode, file://, and custom formats for click-to-open in editor functionality (requires terminal support). Note: This feature is documented in a separate hyperlinks.md file, so consider cross-referencing instead of duplicating.",
+      "source_reference": "features.json:utility_features.hyperlinks"
+    },
+    {
+      "type": "broken_links",
+      "severity": "medium",
+      "section": "Cross-References",
+      "description": "Found 2 broken internal link(s)",
+      "broken_links": [
+        {
+          "link_text": "Common Options",
+          "original_target": "common-options.md",
+          "expected_path": "docs/common-options.md",
+          "current_file": "docs/utility-modes.md",
+          "line": 439,
+          "exists": false,
+          "suggested_fix": "common-options/index.md",
+          "reason": "File was moved to section directory"
+        },
+        {
+          "link_text": "Troubleshooting",
+          "original_target": "troubleshooting.md",
+          "expected_path": "docs/troubleshooting.md",
+          "current_file": "docs/utility-modes.md",
+          "line": 441,
+          "exists": false,
+          "suggested_fix": "troubleshooting/index.md",
+          "reason": "File was moved to section directory"
+        }
+      ],
+      "fix_suggestion": "Update links to point to current file locations: 'common-options.md' → 'common-options/index.md' and 'troubleshooting.md' → 'troubleshooting/index.md'"
+    }
+  ],
+  "positive_aspects": [
+    "Comprehensive documentation of Files Mode with excellent examples and use cases",
+    "Clear explanation of Type List Mode with custom type definition examples",
+    "Thorough coverage of Generation Mode for all supported shells",
+    "Good practical examples showing real-world usage patterns",
+    "Excellent integration examples for editors, CI/CD, and build scripts",
+    "Well-structured troubleshooting section for utility mode issues",
+    "Strong best practices section"
+  ],
+  "improvement_suggestions": [
+    "Add section for counting mode (-c, --count, --count-matches) or cross-reference to output-modes.md if documented there",
+    "Add section for passthru mode (--passthru) with log analysis examples",
+    "Consider adding cross-reference to statistics.md instead of duplicating content",
+    "Consider adding cross-reference to hyperlinks.md instead of duplicating content",
+    "Fix broken cross-reference links to use correct section paths",
+    "Add visual features: flowchart showing which utility mode to use for different tasks",
+    "Add admonition boxes for important notes (e.g., --files precedence over --type-list)",
+    "Consider adding code annotations for complex examples",
+    "Add tabbed content for shell-specific installation instructions"
+  ],
+  "cross_references": [
+    "manual-filtering-types",
+    "common-options/index",
+    "troubleshooting/index",
+    "statistics",
+    "hyperlinks",
+    "output-formats"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-13T20:53:28Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": [
+      "files mode",
+      "type list",
+      "generation mode",
+      "shell completions",
+      "version information",
+      "PCRE2 version"
+    ],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "total_internal_links": 3,
+    "broken_internal_links": 2,
+    "working_internal_links": 1
+  }
+}

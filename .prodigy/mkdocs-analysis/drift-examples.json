@@ -1,0 +1,45 @@
+{
+  "item_type": "auto-discovered",
+  "page_id": "examples",
+  "page_title": "examples",
+  "page_file": "docs/binary-data/examples.md",
+  "drift_detected": false,
+  "severity": "none",
+  "quality_assessment": "Good - Examples are accurate and cover the key binary data handling scenarios. The troubleshooting section provides practical solutions. Page could be enhanced with visual features like diagrams.",
+  "issues": [],
+  "positive_aspects": [
+    "Clear progression from default behavior through various flags (--binary, --text)",
+    "Examples accurately demonstrate explicit vs implicit file behavior",
+    "Warning message formats match actual implementation (verified against tests/binary.rs)",
+    "Troubleshooting section addresses real issues (UTF-16, mmap inconsistency, recursive search behavior)",
+    "Good coverage of stdin behavior (treated as explicit file)",
+    "Examples include realistic scenarios (memory map vs buffered)",
+    "Offset values in warning messages are consistent with implementation"
+  ],
+  "improvement_suggestions": [
+    "Add visual diagram showing the decision tree for binary detection modes",
+    "Include a comparison table showing when each example scenario applies",
+    "Add code annotations to highlight key concepts in examples using MkDocs Material features",
+    "Consider adding a 'Common Pitfalls' admonition box for the UTF-16 and mmap issues",
+    "Add cross-references using anchor links to related sections within binary-data pages",
+    "Consider adding tabs to show multiple related examples side-by-side",
+    "Add a visual flowchart showing how --binary, --text, and --no-mmap interact"
+  ],
+  "cross_references": [
+    "detection",
+    "modes",
+    "explicit-implicit",
+    "flags",
+    "file-encoding"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-13T20:53:28Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": ["binary detection", "examples", "troubleshooting", "mmap behavior", "explicit vs implicit files"],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "internal_links_validated": true,
+    "internal_links_status": "valid",
+    "total_internal_links": 1,
+    "broken_links": []
+  }
+}

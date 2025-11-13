@@ -1,0 +1,100 @@
+{
+  "item_type": "page",
+  "page_id": "debug-flags",
+  "page_title": "debug flags",
+  "page_file": "docs/troubleshooting/debug-flags.md",
+  "drift_detected": true,
+  "severity": "medium",
+  "quality_assessment": "Page accurately documents debug flags but could be enhanced with visual features and minor corrections",
+  "issues": [
+    {
+      "type": "incomplete_explanation",
+      "severity": "medium",
+      "section": "--stats",
+      "description": "Stats output format in example shows generic output but tests reveal more specific format",
+      "current_content": "6 matches\n3 matched lines\n2 files contained matches\n10 files searched\n52849 bytes printed\n96749 bytes searched\n0.002390 seconds spent searching\n0.000839 seconds",
+      "should_be": "Based on tests (tests/feature.rs:427-430), the format is:\n- 'N matched lines' (not 'N matches')\n- 'N files contained matches'\n- 'N files searched'\n- 'seconds' (timing info)\nThe example should better reflect actual output",
+      "fix_suggestion": "Update the example output to match the actual format from the codebase. The current example mixes different stat types that may not all appear together",
+      "source_reference": "tests/feature.rs:425-443"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "--stats",
+      "description": "Missing information about additional stats fields available",
+      "feature_reference": "utility_features.statistics",
+      "fix_suggestion": "Document that stats include: matches, matched_lines, searches (files searched), searches_with_match (files contained matches), bytes_searched, bytes_printed, and elapsed time. The exact format may vary.",
+      "source_reference": "crates/printer/src/stats.rs:13-21"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "--stats",
+      "description": "Missing mention that --stats can be combined with --json for structured output",
+      "feature_reference": "utility_features.statistics",
+      "fix_suggestion": "Add note: '--stats is implicitly enabled when --json is used, allowing structured statistics output'",
+      "source_reference": "crates/core/flags/defs.rs:6544"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "--stats",
+      "description": "Missing information about when --stats has no effect",
+      "feature_reference": "utility_features.statistics",
+      "fix_suggestion": "Add note: '--stats has no effect when used with --files, --files-with-matches, or --files-without-match'",
+      "source_reference": "crates/core/flags/defs.rs:6546-6547"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Page structure",
+      "description": "Page lacks visual enhancements expected in MkDocs Material documentation",
+      "fix_suggestion": "Add MkDocs Material features:\n- Use admonitions (tip, warning, info) for better visual organization\n- Add code annotations to explain output fields\n- Consider using tabs for different debug scenarios\n- Use admonition for the --trace warning instead of bold text",
+      "source_reference": "validation note: Auto-discovered page - check for drift and enhance with visual features"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "--debug",
+      "description": "Example output shows specific line numbers and paths that may not match current codebase structure",
+      "current_content": "DEBUG|ignore::walk|crates/ignore/src/walk.rs:1140",
+      "fix_suggestion": "Consider making the example more generic or add a note that line numbers and paths are illustrative and may vary by version",
+      "source_reference": "docs/troubleshooting/debug-flags.md:22"
+    }
+  ],
+  "positive_aspects": [
+    "Clear, focused documentation on debug flags",
+    "Good use cases for each flag ('Use --debug when...')",
+    "Appropriate warning about --trace verbosity",
+    "Concrete example output for --debug showing typical information",
+    "Proper cross-reference to parent troubleshooting page",
+    "All internal links are valid"
+  ],
+  "improvement_suggestions": [
+    "Add MkDocs Material admonitions to highlight warnings and tips",
+    "Use code annotations to label different parts of debug output",
+    "Add a comparison table showing Debug vs Trace vs Stats",
+    "Include a practical troubleshooting scenario showing debug flag usage",
+    "Add cross-references to configuration and performance tuning pages",
+    "Consider adding a 'Common Debug Scenarios' section with examples",
+    "Update stats example to reflect actual output format more accurately"
+  ],
+  "cross_references": [
+    "index",
+    "configuration",
+    "performance"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-13T20:53:28Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": [
+      "debugging",
+      "troubleshooting",
+      "statistics",
+      "logging"
+    ],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "links_validated": 1,
+    "broken_links": 0
+  }
+}

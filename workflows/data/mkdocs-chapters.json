@@ -1,0 +1,358 @@
+{
+  "pages": [
+    {
+      "id": "introduction",
+      "title": "Introduction",
+      "file": "docs/introduction.md",
+      "topics": ["Getting started", "Overview"],
+      "type": "single-file"
+    },
+    {
+      "id": "user-guide",
+      "title": "User Guide",
+      "type": "section",
+      "pages": [
+        {
+          "id": "basics",
+          "title": "Basics",
+          "type": "multi-subpage",
+          "index_file": "docs/basics/index.md",
+          "topics": ["Pattern matching", "Literal search", "Case sensitivity"],
+          "subpages": [
+            {
+              "id": "pattern-matching",
+              "title": "Pattern Matching",
+              "file": "docs/basics/pattern-matching.md",
+              "topics": ["Basic search", "Multiple patterns", "Patterns from file"]
+            },
+            {
+              "id": "literal-search",
+              "title": "Literal String Search",
+              "file": "docs/basics/literal-search.md",
+              "topics": ["Fixed string mode", "Literal search use cases"]
+            },
+            {
+              "id": "regex-basics",
+              "title": "Regular Expressions",
+              "file": "docs/basics/regex-basics.md",
+              "topics": ["Metacharacters", "Character classes", "Unicode", "Quantifiers", "Groups", "Regex engines", "PCRE2"]
+            },
+            {
+              "id": "case-sensitivity",
+              "title": "Case Sensitivity",
+              "file": "docs/basics/case-sensitivity.md",
+              "topics": ["Case-insensitive search", "Smart case"]
+            },
+            {
+              "id": "boundaries",
+              "title": "Word and Line Boundaries",
+              "file": "docs/basics/boundaries.md",
+              "topics": ["Whole word matching", "Whole line matching", "Boundary regex"]
+            },
+            {
+              "id": "output",
+              "title": "Output Format",
+              "file": "docs/basics/output.md",
+              "topics": ["Line numbers", "Column numbers", "Heading mode", "Color output", "Context lines"]
+            },
+            {
+              "id": "count-list",
+              "title": "Count and List Modes",
+              "file": "docs/basics/count-list.md",
+              "topics": ["Counting matches", "Listing files", "Inverted matching"]
+            },
+            {
+              "id": "practice",
+              "title": "Practice Examples",
+              "file": "docs/basics/practice.md",
+              "topics": ["Practice exercises", "Common mistakes"]
+            }
+          ]
+        },
+        {
+          "id": "recursive-search",
+          "title": "Recursive Search",
+          "file": "docs/recursive-search.md",
+          "topics": ["Directory traversal", "Symlinks", "Depth limits"]
+        },
+        {
+          "id": "automatic-filtering",
+          "title": "Automatic Filtering",
+          "file": "docs/automatic-filtering.md",
+          "topics": ["Gitignore", "Ignore files", "Hidden files"]
+        },
+        {
+          "id": "manual-filtering-globs",
+          "title": "Manual Filtering: Globs",
+          "file": "docs/manual-filtering-globs.md",
+          "topics": ["Glob patterns", "Include/exclude patterns"]
+        },
+        {
+          "id": "manual-filtering-types",
+          "title": "Manual Filtering: File Types",
+          "file": "docs/manual-filtering-types.md",
+          "topics": ["File type filters", "Custom types"]
+        },
+        {
+          "id": "replacements",
+          "title": "Replacements",
+          "file": "docs/replacements.md",
+          "topics": ["Search and replace", "Capture groups"]
+        },
+        {
+          "id": "configuration-file",
+          "title": "Configuration File",
+          "file": "docs/configuration-file.md",
+          "topics": ["Config files", "Persistent settings"]
+        },
+        {
+          "id": "file-encoding",
+          "title": "File Encoding",
+          "file": "docs/file-encoding.md",
+          "topics": ["Text encodings", "UTF-8", "UTF-16"]
+        },
+        {
+          "id": "binary-data",
+          "title": "Binary Data",
+          "type": "multi-subpage",
+          "index_file": "docs/binary-data/index.md",
+          "topics": ["Binary files", "Binary detection"],
+          "subpages": [
+            {
+              "id": "detection",
+              "title": "Binary Detection",
+              "file": "docs/binary-data/detection.md",
+              "topics": ["NUL byte heuristics", "Buffered vs memory-mapped search"]
+            },
+            {
+              "id": "modes",
+              "title": "Binary Modes",
+              "file": "docs/binary-data/modes.md",
+              "topics": ["Auto mode", "SearchAndSuppress", "AsText mode"]
+            },
+            {
+              "id": "explicit-implicit",
+              "title": "Explicit vs Implicit Files",
+              "file": "docs/binary-data/explicit-implicit.md",
+              "topics": ["Explicit files", "Implicit files", "Library usage"]
+            },
+            {
+              "id": "flags",
+              "title": "Binary Flags Reference",
+              "file": "docs/binary-data/flags.md",
+              "topics": ["--binary flag", "--text flag", "Decision flowchart"]
+            },
+            {
+              "id": "examples",
+              "title": "Examples and Troubleshooting",
+              "file": "docs/binary-data/examples.md",
+              "topics": ["Practical examples", "Common issues"]
+            }
+          ]
+        },
+        {
+          "id": "compressed-files",
+          "title": "Compressed Files",
+          "file": "docs/compressed-files.md",
+          "topics": ["Compression formats", "Archive search"]
+        },
+        {
+          "id": "preprocessor",
+          "title": "Preprocessor",
+          "file": "docs/preprocessor.md",
+          "topics": ["Custom filters", "File preprocessing"]
+        },
+        {
+          "id": "common-options",
+          "title": "Common Options",
+          "type": "multi-subpage",
+          "index_file": "docs/common-options/index.md",
+          "topics": ["Command-line options", "Flags"],
+          "subpages": [
+            {
+              "id": "search-basics",
+              "title": "Search Basics",
+              "file": "docs/common-options/search-basics.md",
+              "topics": ["Case sensitivity", "Pattern types", "Multiline", "Regex engine", "Invert match"]
+            },
+            {
+              "id": "output-formatting",
+              "title": "Output Formatting",
+              "file": "docs/common-options/output-formatting.md",
+              "topics": ["Line numbers", "Context lines", "Match output", "Color formatting"]
+            },
+            {
+              "id": "file-filtering",
+              "title": "File Filtering",
+              "file": "docs/common-options/file-filtering.md",
+              "topics": ["File type filtering", "Glob patterns", "Unrestricted search", "Hidden files", "Directory depth"]
+            },
+            {
+              "id": "output-modes",
+              "title": "Output Modes",
+              "file": "docs/common-options/output-modes.md",
+              "topics": ["Structured output", "Counting", "Listing files", "Quiet mode"]
+            },
+            {
+              "id": "reference",
+              "title": "Quick Reference",
+              "file": "docs/common-options/reference.md",
+              "topics": ["Quick reference", "Combining flags", "Comparison with grep"]
+            }
+          ]
+        },
+        {
+          "id": "context-lines",
+          "title": "Context Lines",
+          "file": "docs/context-lines.md",
+          "topics": ["Before/after context", "Surrounding lines"]
+        },
+        {
+          "id": "output-formats",
+          "title": "Output Formats",
+          "file": "docs/output-formats.md",
+          "topics": ["JSON output", "Vimgrep", "Standard output"]
+        },
+        {
+          "id": "sorting-results",
+          "title": "Sorting Results",
+          "file": "docs/sorting-results.md",
+          "topics": ["Result sorting", "Sort order"]
+        },
+        {
+          "id": "utility-modes",
+          "title": "Utility Modes",
+          "file": "docs/utility-modes.md",
+          "topics": ["Count mode", "Files mode", "Statistics"]
+        }
+      ]
+    },
+    {
+      "id": "advanced-topics",
+      "title": "Advanced Topics",
+      "type": "section",
+      "pages": [
+        {
+          "id": "advanced-patterns",
+          "title": "Advanced Patterns",
+          "type": "multi-subpage",
+          "index_file": "docs/advanced-patterns/index.md",
+          "topics": ["Multiline search", "PCRE2", "Unicode patterns"],
+          "subpages": [
+            {
+              "id": "multiline",
+              "title": "Multiline Search",
+              "file": "docs/advanced-patterns/multiline.md",
+              "topics": ["Multiline mode", "Dotall mode"]
+            },
+            {
+              "id": "pcre2",
+              "title": "PCRE2 Engine",
+              "file": "docs/advanced-patterns/pcre2.md",
+              "topics": ["PCRE2 features", "Default vs PCRE2"]
+            },
+            {
+              "id": "lookaround",
+              "title": "Lookaround Assertions",
+              "file": "docs/advanced-patterns/lookaround.md",
+              "topics": ["Lookahead", "Lookbehind", "Use cases"]
+            },
+            {
+              "id": "backreferences",
+              "title": "Backreferences",
+              "file": "docs/advanced-patterns/backreferences.md",
+              "topics": ["Numbered backreferences", "Named backreferences"]
+            },
+            {
+              "id": "unicode",
+              "title": "Unicode Patterns",
+              "file": "docs/advanced-patterns/unicode.md",
+              "topics": ["Unicode character classes", "Unicode-aware metacharacters"]
+            },
+            {
+              "id": "inline-flags",
+              "title": "Inline Regex Flags",
+              "file": "docs/advanced-patterns/inline-flags.md",
+              "topics": ["Pattern modifiers"]
+            },
+            {
+              "id": "performance",
+              "title": "Performance Considerations",
+              "file": "docs/advanced-patterns/performance.md",
+              "topics": ["Multiline performance", "PCRE2 performance", "Regex limits"]
+            },
+            {
+              "id": "examples",
+              "title": "Practical Examples",
+              "file": "docs/advanced-patterns/examples.md",
+              "topics": ["Real-world examples", "Limitations", "Gotchas"]
+            }
+          ]
+        },
+        {
+          "id": "performance",
+          "title": "Performance",
+          "file": "docs/performance.md",
+          "topics": ["Parallelism", "Optimization", "Thread control"]
+        },
+        {
+          "id": "statistics",
+          "title": "Statistics and Metrics",
+          "file": "docs/statistics.md",
+          "topics": ["Search statistics", "Metrics"]
+        },
+        {
+          "id": "hyperlinks",
+          "title": "Hyperlinks",
+          "file": "docs/hyperlinks.md",
+          "topics": ["Terminal hyperlinks", "Editor integration"]
+        },
+        {
+          "id": "troubleshooting",
+          "title": "Troubleshooting",
+          "type": "multi-subpage",
+          "index_file": "docs/troubleshooting/index.md",
+          "topics": ["Common issues", "Solutions"],
+          "subpages": [
+            {
+              "id": "debug-flags",
+              "title": "Debug Flags",
+              "file": "docs/troubleshooting/debug-flags.md",
+              "topics": ["Debug output", "Trace mode", "Statistics"]
+            },
+            {
+              "id": "no-results",
+              "title": "No Results Found",
+              "file": "docs/troubleshooting/no-results.md",
+              "topics": ["File filtering", "Hidden files", "Binary files", "Case sensitivity"]
+            },
+            {
+              "id": "performance",
+              "title": "Performance Issues",
+              "file": "docs/troubleshooting/performance.md",
+              "topics": ["Performance diagnostics", "Search scope optimization"]
+            },
+            {
+              "id": "errors",
+              "title": "Common Error Messages",
+              "file": "docs/troubleshooting/errors.md",
+              "topics": ["Error reference", "Exit codes"]
+            },
+            {
+              "id": "binary-encoding",
+              "title": "Binary and Encoding Problems",
+              "file": "docs/troubleshooting/binary-encoding.md",
+              "topics": ["Binary detection", "Encoding issues"]
+            },
+            {
+              "id": "bug-reports",
+              "title": "When to File a Bug",
+              "file": "docs/troubleshooting/bug-reports.md",
+              "topics": ["Bug reports", "Additional resources"]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

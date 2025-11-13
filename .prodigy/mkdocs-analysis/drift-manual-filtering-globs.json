@@ -1,0 +1,55 @@
+{
+  "item_type": "page",
+  "page_id": "manual-filtering-globs",
+  "page_title": "manual filtering globs",
+  "page_file": "docs/manual-filtering-globs.md",
+  "drift_detected": false,
+  "severity": "none",
+  "quality_assessment": "Excellent technical documentation with comprehensive coverage of glob patterns. Well-structured with clear examples and practical guidance.",
+  "issues": [],
+  "positive_aspects": [
+    "Comprehensive coverage of all glob pattern syntax: *, ?, [...], {...}, **",
+    "Clear explanation of include/exclude patterns with ! prefix",
+    "Excellent coverage of precedence rules and pattern ordering",
+    "Detailed explanation of case-insensitive globs (--iglob and --glob-case-insensitive)",
+    "Accurate documentation of gitignore compatibility",
+    "Good explanation of glob override behavior and ignore hierarchy",
+    "Practical examples section with real-world use cases",
+    "Helpful comparison table: Globs vs Type Filters",
+    "Performance considerations and optimization guidance",
+    "Common pitfall highlighted: directory matching with foo vs foo/**",
+    "Proper documentation of --files for previewing matches",
+    "Cross-platform escaping guidance using character classes",
+    "All internal links are valid (automatic-filtering.md exists)",
+    "Visual features already present: admonitions (✅/❌ checkmarks), code blocks with syntax highlighting, clear section structure"
+  ],
+  "improvement_suggestions": [
+    "Consider adding a visual diagram showing glob pattern matching behavior (e.g., how ** matches directories recursively)",
+    "Could add a 'Quick Reference' table summarizing all wildcards at the top",
+    "Consider adding more examples of complex real-world filtering scenarios",
+    "Could mention the GlobMatcher optimization strategies (Literal, BasenameLiteral, Extension, Prefix, Suffix, RequiredExtension, Regex) for advanced users interested in performance",
+    "Could add a troubleshooting subsection for common glob mistakes beyond the directory matching pitfall"
+  ],
+  "cross_references": [
+    "automatic-filtering",
+    "manual-filtering-types",
+    "performance"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-13T20:53:28Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": [
+      "glob patterns",
+      "manual filtering",
+      "file inclusion/exclusion",
+      "pattern precedence",
+      "case-insensitive matching",
+      "gitignore compatibility",
+      "performance optimization"
+    ],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "internal_links_validated": true,
+    "broken_links_found": 0,
+    "total_internal_links": 2
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "item_type": "page",
+  "page_id": "bug-reports",
+  "page_title": "bug reports",
+  "page_file": "docs/troubleshooting/bug-reports.md",
+  "drift_detected": true,
+  "severity": "medium",
+  "quality_assessment": "Page has broken internal links and references non-existent files within docs/. Links should point to repository root files (../../FAQ.md, ../../GUIDE.md) or to actual docs/ structure.",
+  "issues": [
+    {
+      "type": "broken_links",
+      "severity": "medium",
+      "section": "Cross-References",
+      "description": "Found 3 broken internal link(s)",
+      "broken_links": [
+        {
+          "link_text": "FAQ.md",
+          "original_target": "../FAQ.md",
+          "expected_resolved_path": "docs/FAQ.md",
+          "current_file": "docs/troubleshooting/bug-reports.md",
+          "reason": "File does not exist at docs/FAQ.md",
+          "suggested_fix": "Use ../../FAQ.md to reference FAQ.md at repository root"
+        },
+        {
+          "link_text": "GUIDE.md",
+          "original_target": "../GUIDE.md",
+          "expected_resolved_path": "docs/GUIDE.md",
+          "current_file": "docs/troubleshooting/bug-reports.md",
+          "reason": "File does not exist at docs/GUIDE.md",
+          "suggested_fix": "Use ../../GUIDE.md to reference GUIDE.md at repository root"
+        },
+        {
+          "link_text": "common options chapter",
+          "original_target": "../common-options.md",
+          "expected_resolved_path": "docs/common-options.md",
+          "current_file": "docs/troubleshooting/bug-reports.md",
+          "reason": "File does not exist at docs/common-options.md (common-options is a directory with index.md)",
+          "suggested_fix": "Use ../common-options/index.md to reference the common options overview page"
+        }
+      ],
+      "fix_suggestion": "Update links to point to current file locations. FAQ.md and GUIDE.md are at repository root (../../), common-options is a section (../common-options/index.md).",
+      "source_reference": "docs/troubleshooting/bug-reports.md:34,35,39"
+    },
+    {
+      "type": "outdated_information",
+      "severity": "low",
+      "section": "Before Filing a Bug Report",
+      "description": "Documentation references 'ripgrep' command (rg) and GitHub-specific issue filing process, which may not align with current project context if this is not the ripgrep project",
+      "current_content": "References rg --version, ripgrep-specific patterns, and BurntSushi/ripgrep GitHub repository",
+      "should_be": "Should reference current project's debugging and issue filing process",
+      "fix_suggestion": "Verify this documentation is intended for ripgrep project. If repurposed for another project, update references to match current project's tooling and repository.",
+      "source_reference": "docs/troubleshooting/bug-reports.md:10-30"
+    }
+  ],
+  "positive_aspects": [
+    "Clear structure with actionable steps",
+    "Good guidance on preparing minimal reproduction cases",
+    "Helpful list of common non-bugs to check first",
+    "References to the actual GitHub issue template",
+    "Comprehensive checklist for bug report contents"
+  ],
+  "improvement_suggestions": [
+    "Fix broken internal links to use correct relative paths",
+    "Consider adding MkDocs Material admonitions (!!!note, !!!warning) for better visual structure",
+    "Add examples of good vs. bad bug reports",
+    "Include troubleshooting workflow diagram",
+    "Add link to troubleshooting index page for related resources"
+  ],
+  "cross_references": [
+    "index",
+    "debug-flags",
+    "errors",
+    "no-results"
+  ],
+  "link_validation_summary": {
+    "total_internal_links": 6,
+    "broken_links": 3,
+    "valid_links": 3,
+    "external_links_skipped": 1
+  },
+  "metadata": {
+    "analyzed_at": "2025-11-13T20:53:28Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": [
+      "Bug reporting",
+      "Issue filing",
+      "Debugging",
+      "Troubleshooting workflow"
+    ],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features"
+  }
+}

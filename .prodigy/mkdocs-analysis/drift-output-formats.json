@@ -1,0 +1,123 @@
+{
+  "item_type": "page",
+  "page_id": "output-formats",
+  "page_title": "output formats",
+  "page_file": "docs/output-formats.md",
+  "drift_detected": true,
+  "severity": "medium",
+  "quality_assessment": "Page provides good coverage of output formatting features but has a broken link and could benefit from visual enhancements. Content is accurate and well-organized.",
+  "issues": [
+    {
+      "type": "broken_links",
+      "severity": "medium",
+      "section": "Cross-References",
+      "description": "Found 1 broken internal link",
+      "broken_links": [
+        {
+          "link_text": "Common Options",
+          "original_target": "common-options.md",
+          "expected_path": "docs/common-options.md",
+          "actual_location": "docs/common-options/index.md",
+          "line_reference": "output-formats.md:257"
+        }
+      ],
+      "fix_suggestion": "Update link from 'common-options.md' to 'common-options/index.md' to match current documentation structure.",
+      "source_reference": "docs/output-formats.md:257"
+    },
+    {
+      "type": "missing_visual_features",
+      "severity": "low",
+      "section": "Overall Page Structure",
+      "description": "Auto-discovered page lacks MkDocs Material visual enhancements",
+      "current_content": "Page uses basic markdown without Material extensions",
+      "should_include": [
+        "Admonitions (tips, warnings) for important formatting considerations",
+        "Tabbed code blocks for comparing different output formats",
+        "Code annotations for explaining complex command flags",
+        "Visual diagrams showing output format transformations"
+      ],
+      "fix_suggestion": "Add Material extensions: Use admonitions for best practices section, tabs for format comparisons (standard vs JSON vs vimgrep), and annotations for complex examples.",
+      "feature_reference": "output_control.json_output, output_control.alternative_formats"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "Hyperlink Support",
+      "description": "Hyperlink section mentions feature but could provide more examples of format strings",
+      "current_content": "Shows default and file:// format only",
+      "should_be": "Include VSCode format (vscode://file/{path}:{line}) and other common editor formats",
+      "fix_suggestion": "Add examples for VSCode, VSCode Insiders, and other common editor hyperlink formats. Reference feature inventory shows this is supported.",
+      "feature_reference": "utility_features.hyperlinks",
+      "source_reference": "features.json:418-425"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Statistics Integration",
+      "description": "JSON output section doesn't mention statistics availability in JSON format",
+      "feature_reference": "utility_features.statistics",
+      "fix_suggestion": "Add note that --stats can be combined with --json for structured statistics output",
+      "source_reference": "features.json:398-407"
+    }
+  ],
+  "positive_aspects": [
+    "Comprehensive coverage of all major output formatting options",
+    "Clear, well-organized sections progressing from basic to advanced",
+    "Excellent examples demonstrating real-world use cases",
+    "Good explanations of JSON output structure with type descriptions",
+    "Strong best practices section with practical guidance",
+    "Performance considerations appropriately included",
+    "Color customization thoroughly documented with all options",
+    "Good cross-references to related pages (2 of 3 links valid)"
+  ],
+  "improvement_suggestions": [
+    "Add visual comparison table showing when to use each output format",
+    "Include annotated example showing all fields in JSON match output",
+    "Add admonition boxes for important warnings (e.g., --color never for scripts)",
+    "Consider adding a decision tree diagram for choosing output format",
+    "Add troubleshooting section for common output format issues",
+    "Include example of chaining output formats with jq or other tools",
+    "Show side-by-side comparison of heading vs no-heading modes",
+    "Add cross-reference to statistics page for --stats usage"
+  ],
+  "cross_references": [
+    "replacements",
+    "context-lines",
+    "common-options/index",
+    "statistics"
+  ],
+  "link_validation": {
+    "total_internal_links": 3,
+    "broken_links": 1,
+    "valid_links": 2,
+    "broken_link_details": [
+      {
+        "target": "common-options.md",
+        "suggested_fix": "common-options/index.md",
+        "line": 257
+      }
+    ]
+  },
+  "metadata": {
+    "analyzed_at": "2025-11-13T20:53:28Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": [
+      "output formatting",
+      "JSON output",
+      "color customization",
+      "field separators",
+      "vimgrep format",
+      "hyperlinks",
+      "buffering modes"
+    ],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "features_referenced": [
+      "output_control.standard_output",
+      "output_control.json_output",
+      "output_control.alternative_formats",
+      "output_control.color_control",
+      "utility_features.hyperlinks",
+      "utility_features.statistics"
+    ]
+  }
+}
