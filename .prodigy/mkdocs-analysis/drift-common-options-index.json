@@ -1,0 +1,79 @@
+{
+  "item_type": "auto-discovered",
+  "page_id": "index",
+  "page_title": "index",
+  "page_file": "docs/common-options/index.md",
+  "drift_detected": true,
+  "severity": "medium",
+  "quality_assessment": "Good navigation page with clear subsection descriptions, but contains a broken link that would fail mkdocs build",
+  "issues": [
+    {
+      "type": "broken_links",
+      "severity": "medium",
+      "section": "See Also",
+      "description": "Found 1 broken internal link that would cause mkdocs build failure",
+      "broken_links": [
+        {
+          "link_text": "Regular Expressions",
+          "original_target": "../regex.md",
+          "expected_path": "docs/regex.md",
+          "current_file": "docs/common-options/index.md",
+          "exists": false,
+          "suggested_fix": "../basics/regex-basics.md",
+          "reason": "File was moved to basics/ subdirectory and renamed from regex.md to regex-basics.md"
+        }
+      ],
+      "fix_suggestion": "Update the link from '../regex.md' to '../basics/regex-basics.md' to match the current file location",
+      "link_validation_summary": {
+        "total_internal_links": 9,
+        "broken_links": 1,
+        "valid_links": 8
+      }
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "Introduction",
+      "description": "Missing introduction/overview paragraph before subsection list",
+      "current_content": "This chapter covers the most frequently used ripgrep flags that you'll need on a daily basis. For a complete list of all options, run `rg --help`. For a concise reference of just the common flags, use `rg -h`.\n\n## Subsections",
+      "should_be": "Add a brief paragraph explaining the organization of common options and what users will find in each subsection",
+      "fix_suggestion": "Add introductory paragraph explaining that common options are organized by use case: search behavior, output formatting, file filtering, and alternative output modes",
+      "source_reference": "features.json:search_basics,filtering,output_control"
+    }
+  ],
+  "positive_aspects": [
+    "Clear, concise introduction mentioning help flags",
+    "Well-organized subsections with descriptive titles",
+    "Good use of 'See Also' section for cross-references",
+    "Appropriate scope - acts as navigation hub without duplicating content",
+    "Subsection descriptions are accurate and helpful"
+  ],
+  "improvement_suggestions": [
+    "Add a brief overview paragraph explaining the organization philosophy (why options are grouped this way)",
+    "Consider adding a visual indicator (admonition or note) highlighting the difference between -h (common flags) and --help (all flags)",
+    "Could include a quick example showing a typical common option workflow"
+  ],
+  "cross_references": [
+    "basics/regex-basics.md",
+    "replacements.md",
+    "configuration-file.md",
+    "file-encoding.md",
+    "common-options/search-basics.md",
+    "common-options/output-formatting.md",
+    "common-options/file-filtering.md",
+    "common-options/output-modes.md",
+    "common-options/reference.md"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-13T13:53:00Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": [
+      "Common options overview",
+      "Navigation to subsections",
+      "Help flag reference"
+    ],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "page_type": "section_index",
+    "link_validation_performed": true
+  }
+}
