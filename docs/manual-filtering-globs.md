@@ -87,17 +87,18 @@ rg -g 'foo/**/bar' pattern
 
 ### Common Pitfall: Directory Matching
 
-A frequent mistake is using `-g foo` to search directory `foo`. This glob matches files named exactly `foo`, not files inside the directory:
+!!! warning "Common Mistake: Directory Matching"
+    A frequent mistake is using `-g foo` to search directory `foo`. This glob matches files named exactly `foo`, not files inside the directory:
 
-```bash
-# ❌ Wrong: doesn't match foo/bar.rs
-rg -g 'foo' pattern
+    ```bash
+    # ❌ Wrong: doesn't match foo/bar.rs
+    rg -g 'foo' pattern
 
-# ✅ Correct: matches all files under foo/
-rg -g 'foo/**' pattern
-```
+    # ✅ Correct: matches all files under foo/
+    rg -g 'foo/**' pattern
+    ```
 
-Always use `foo/**` to match files within a directory.
+    Always use `foo/**` to match files within a directory.
 
 ## Including and Excluding Files
 
@@ -124,6 +125,31 @@ rg -g '!**/tests/**' -g '**/tests/integration/**' pattern
 ```
 
 This allows building complex filters by layering include and exclude patterns.
+
+```mermaid
+flowchart TD
+    Start[File Encountered] --> Check{Any -g<br/>patterns?}
+    Check -->|No| Auto[Use Automatic Filtering<br/>.gitignore, .ignore]
+    Check -->|Yes| Eval[Evaluate Glob Patterns<br/>in order]
+
+    Eval --> Include{Matches<br/>include<br/>pattern?}
+    Include -->|No| Skip[Skip File]
+    Include -->|Yes| Exclude{Later pattern<br/>excludes?}
+
+    Exclude -->|Yes !pattern| Skip
+    Exclude -->|No| Search[Search File]
+
+    Auto --> AutoCheck{Ignored?}
+    AutoCheck -->|Yes| Skip
+    AutoCheck -->|No| Search
+
+    style Check fill:#e1f5ff
+    style Eval fill:#fff3e0
+    style Search fill:#e8f5e9
+    style Skip fill:#ffebee
+```
+
+**Figure**: Glob pattern evaluation flow showing precedence and override behavior.
 
 ## Multiple Glob Patterns
 
@@ -234,37 +260,42 @@ When you use `-g`, your patterns take precedence over all automatic ignore sourc
 
 ## Practical Examples
 
-### Search Only Rust Files
-```bash
-rg -g '*.rs' 'use std'
-```
+!!! example "Common Glob Patterns"
+    Here are practical patterns for common search scenarios:
 
-### Search All Files in src/
-```bash
-rg -g 'src/**' 'TODO'
-```
+    **Search only Rust files:**
+    ```bash
+    rg -g '*.rs' 'use std'
+    ```
 
-### Exclude Test Directories
-```bash
-# Exclude both common test directory naming conventions
-rg -g '!**/test/**' -g '!**/tests/**' pattern
-```
+    **Search all files in src/:**
+    ```bash
+    rg -g 'src/**' 'TODO'
+    ```
 
-### Combine Multiple Patterns
-```bash
-# Search Rust and TOML in src/, excluding tests
-rg -g 'src/**/*.{rs,toml}' -g '!**/tests/**' pattern
-```
+    **Exclude test directories:**
+    ```bash
+    # Exclude both common test directory naming conventions
+    rg -g '!**/test/**' -g '!**/tests/**' pattern
+    ```
 
-### Search Configuration Files
-```bash
-rg -g '*.{toml,json,yaml,yml}' 'database'
-```
+    **Combine multiple patterns:**
+    ```bash
+    # Search Rust and TOML in src/, excluding tests
+    rg -g 'src/**/*.{rs,toml}' -g '!**/tests/**' pattern  # (1)!
+    ```
 
-### Search Only Migration Files
-```bash
-rg -g '**/migrations/**/*.sql' 'CREATE TABLE'
-```
+    1. Combines directory filtering (`src/**`), extension matching (`.{rs,toml}`), and exclusion (`!**/tests/**`)
+
+    **Search configuration files:**
+    ```bash
+    rg -g '*.{toml,json,yaml,yml}' 'database'
+    ```
+
+    **Search only migration files:**
+    ```bash
+    rg -g '**/migrations/**/*.sql' 'CREATE TABLE'
+    ```
 
 ## Comparison: Globs vs Type Filters
 
@@ -289,7 +320,8 @@ Before running a search, preview which files match your globs using `--files`:
 rg --files -g '*.rs' -g '!**/tests/**'
 ```
 
-This helps verify your glob patterns match the files you expect.
+!!! tip "Verify Your Patterns"
+    Always preview with `rg --files -g 'pattern'` before running complex searches. This helps verify your glob patterns match the files you expect and avoids surprises from incorrect patterns.
 
 ## Performance Considerations
 
@@ -297,13 +329,17 @@ Glob patterns are evaluated for every file in the search tree. More specific pat
 
 ```bash
 # ✅ Specific pattern (faster)
-rg -g 'src/**/*.rs' pattern
+rg -g 'src/**/*.rs' pattern        # (1)!
 
 # ❌ Broad pattern requiring more exclusions (slower)
-rg -g '**/*.rs' -g '!target/**' -g '!.git/**' -g '!vendor/**' pattern
+rg -g '**/*.rs' -g '!target/**' -g '!.git/**' -g '!vendor/**' pattern  # (2)!
 ```
 
-When possible, use include patterns that target specific directories rather than exclude patterns that filter out large portions of the file tree.
+1. Targets specific directory, reducing files to evaluate
+2. Matches all .rs files, then excludes large directories - evaluates many unnecessary files
+
+!!! tip "Performance Best Practice"
+    Use include patterns that target specific directories rather than exclude patterns that filter out large portions of the file tree. This reduces the number of files ripgrep needs to evaluate.
 
 ### Advanced: Glob Optimization
 
