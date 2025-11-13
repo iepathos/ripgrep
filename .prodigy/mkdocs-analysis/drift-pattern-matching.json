@@ -1,0 +1,145 @@
+{
+  "item_type": "page",
+  "page_id": "pattern-matching",
+  "page_title": "pattern matching",
+  "page_file": "docs/basics/pattern-matching.md",
+  "drift_detected": true,
+  "severity": "high",
+  "quality_assessment": "Page is extremely sparse and missing critical content. Only covers multiple patterns briefly but lacks depth, context, and visual enhancements. Does not meet documentation standards for a subsection page.",
+  "issues": [
+    {
+      "type": "missing_content",
+      "severity": "high",
+      "section": "Introduction",
+      "description": "Missing introductory section explaining what pattern matching is and when to use it",
+      "feature_reference": "search_basics.pattern_matching",
+      "fix_suggestion": "Add introductory paragraph explaining ripgrep's pattern matching capabilities, mentioning that default is regex mode vs literal mode (-F)",
+      "source_reference": "features.json:search_basics.pattern_matching"
+    },
+    {
+      "type": "missing_content",
+      "severity": "high",
+      "section": "Pattern Types",
+      "description": "No explanation of different pattern types (literal vs regex) and when to use each",
+      "feature_reference": "search_basics.pattern_matching.features",
+      "fix_suggestion": "Add section explaining literal strings (-F/--fixed-strings) vs regular expressions (default), with examples of when each is appropriate",
+      "source_reference": "features.json:search_basics.pattern_matching.features[0,1]"
+    },
+    {
+      "type": "missing_content",
+      "severity": "high",
+      "section": "Boolean Operations",
+      "description": "Multiple patterns section mentions OR logic but doesn't explain it clearly or show how patterns combine",
+      "feature_reference": "search_basics.multiple_patterns.features",
+      "fix_suggestion": "Add explanation that multiple -e patterns use OR logic, and provide clear examples showing how patterns are combined",
+      "source_reference": "features.json:search_basics.multiple_patterns.features[2,3]"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Visual Enhancements",
+      "description": "Page lacks MkDocs Material visual features (admonitions, tabs, annotations) that are standard across other documentation pages",
+      "feature_reference": "meta_content",
+      "fix_suggestion": "Add admonition boxes for tips/warnings, use code annotations for explanations, consider tabs for alternative approaches",
+      "source_reference": "docs/basics/index.md (reference implementation)"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "medium",
+      "section": "Multiple Patterns",
+      "description": "Example shows -e flag usage but doesn't explain the output or how matches are distinguished",
+      "current_content": "# Match lines containing either TODO or FIXME\nrg -e TODO -e FIXME",
+      "fix_suggestion": "Add annotation or explanation of what the output looks like and that any line matching either pattern will be shown",
+      "source_reference": "features.json:search_basics.multiple_patterns"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "medium",
+      "section": "Patterns from a File",
+      "description": "Section shows how to create and use pattern files but doesn't explain use cases or best practices",
+      "current_content": "Each line in the patterns file is treated as a separate pattern.",
+      "fix_suggestion": "Expand with real-world use cases (e.g., large lists of error codes, excluding multiple patterns, sharing patterns across team)",
+      "source_reference": "features.json:search_basics.multiple_patterns.features[1]"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Cross-References",
+      "description": "No cross-references to related topics that users would benefit from",
+      "fix_suggestion": "Add cross-references to regex-basics.md for regex patterns, literal-search.md for -F flag details, case-sensitivity.md for -i flag",
+      "source_reference": "docs/basics/ directory structure"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Smart Case",
+      "description": "No mention of smart case (-S) behavior with patterns",
+      "feature_reference": "search_basics.pattern_matching.features",
+      "fix_suggestion": "Add note about smart case behavior: case-insensitive unless uppercase present in pattern",
+      "source_reference": "features.json:search_basics.pattern_matching.features[3]"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Common Patterns",
+      "description": "No examples of common real-world pattern use cases",
+      "feature_reference": "meta_content.common_patterns",
+      "fix_suggestion": "Add practical examples from features.json common_patterns (e.g., 'Find todos by author', 'Multiple error levels')",
+      "source_reference": "features.json:meta_content.common_patterns"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Troubleshooting",
+      "description": "No troubleshooting guidance for common pattern matching issues",
+      "feature_reference": "meta_content.troubleshooting",
+      "fix_suggestion": "Add common issues like 'Pattern not matching expected text' with solution to use -F for literals",
+      "source_reference": "features.json:meta_content.troubleshooting.common_issues[1]"
+    }
+  ],
+  "positive_aspects": [
+    "Clear code examples with proper syntax highlighting",
+    "Correct usage of -e and -f flags",
+    "Proper linking to parent Basics page",
+    "Examples are technically accurate"
+  ],
+  "improvement_suggestions": [
+    "Add MkDocs Material admonitions for tips and warnings (e.g., when to use -F vs regex)",
+    "Use code annotations (numbered comments) to explain what each example does",
+    "Add a comparison table showing pattern type vs use case",
+    "Include practical real-world examples beyond simple TODO/FIXME",
+    "Add 'See Also' section linking to related pages (regex-basics, literal-search, case-sensitivity)",
+    "Add visual examples showing actual output of commands",
+    "Structure content with clear hierarchy: Introduction → Pattern Types → Multiple Patterns → Pattern Files → Best Practices",
+    "Consider adding a decision tree or flowchart for choosing pattern type"
+  ],
+  "cross_references": [
+    "regex-basics.md - for regex syntax details",
+    "literal-search.md - for -F flag deep dive",
+    "case-sensitivity.md - for -i and -S flags",
+    "replacements.md - for using patterns with replacements",
+    "manual-filtering-globs.md - for combining patterns with file filtering"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-13T20:53:00Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": [
+      "basic search",
+      "multiple patterns",
+      "pattern files"
+    ],
+    "topics_missing": [
+      "pattern types (literal vs regex)",
+      "smart case",
+      "boolean operations",
+      "common use cases",
+      "troubleshooting"
+    ],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "content_completeness": "20%",
+    "visual_features_present": false,
+    "cross_references_present": false,
+    "internal_links_validated": true,
+    "broken_links": []
+  }
+}
