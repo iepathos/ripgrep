@@ -1,105 +1,70 @@
 {
-  "item_type": "page",
+  "item_type": "auto-discovered",
   "page_id": "index",
   "page_title": "index",
-  "page_file": "docs/basics/index.md",
-  "drift_detected": true,
-  "severity": "medium",
-  "quality_assessment": "Good overview page with broken link to advanced patterns section",
-  "issues": [
-    {
-      "type": "broken_links",
-      "severity": "medium",
-      "section": "Cross-References",
-      "description": "Found 1 broken internal link",
-      "broken_links": [
-        {
-          "link_text": "Advanced Patterns",
-          "original_target": "../advanced-patterns.md",
-          "expected_path": "docs/advanced-patterns.md",
-          "current_file": "docs/basics/index.md",
-          "actual_status": "file_not_found",
-          "note": "advanced-patterns is a directory, not a single file"
-        }
-      ],
-      "fix_suggestion": "Update link to point to ../advanced-patterns/index.md (directory index page)",
-      "source_reference": "docs/basics/index.md:71"
-    },
-    {
-      "type": "missing_content",
-      "severity": "low",
-      "section": "Common Flags Cheat Sheet",
-      "description": "Missing --no-line-number flag in cheat sheet",
-      "current_content": "Cheat sheet includes --line-number but not its inverse",
-      "should_include": "--no-line-number (-N) to suppress line numbers",
-      "fix_suggestion": "Add --no-line-number flag to cheat sheet for completeness",
-      "source_reference": "features.json:output_control.standard_output"
-    },
-    {
-      "type": "missing_content",
-      "severity": "low",
-      "section": "Common Flags Cheat Sheet",
-      "description": "Missing --only-matching flag in cheat sheet",
-      "current_content": "Cheat sheet doesn't include --only-matching (-o) flag",
-      "should_include": "--only-matching (-o) to show only the matching part of lines",
-      "fix_suggestion": "Add --only-matching flag which is commonly used for extraction",
-      "source_reference": "features.json:output_control.standard_output"
-    },
-    {
-      "type": "missing_content",
-      "severity": "low",
-      "section": "Quick Start",
-      "description": "Missing example for combining multiple flags",
-      "current_content": "Examples show individual flags but not common combinations",
-      "should_include": "Example combining flags like 'rg -i -w -C 2 function' for case-insensitive word search with context",
-      "fix_suggestion": "Add example showing how flags can be combined for complex searches",
-      "source_reference": "features.json:meta_content.best_practices"
-    }
-  ],
+  "page_file": "docs/binary-data/index.md",
+  "drift_detected": false,
+  "severity": "none",
+  "quality_assessment": "Excellent overview page with clear structure, accurate content, and valid cross-references. All subsection links are valid and all related topic links work correctly.",
+  "issues": [],
   "positive_aspects": [
-    "Clear, concise introduction to basics chapter",
-    "Well-organized quick start with common commands",
-    "Comprehensive cheat sheet of common flags with short/long forms",
-    "Good navigation to subsections with clear descriptions",
-    "Effective 'Next Steps' section guiding users to advanced topics",
-    "All subsection links within basics/ directory are valid",
-    "Most cross-references to parent directory are valid"
+    "Clear, concise introduction explaining why binary data handling matters",
+    "Well-organized subsection navigation with descriptive titles and summaries",
+    "Effective summary section highlighting the three key concerns (Performance, User intent, Safety)",
+    "Comprehensive key takeaways that provide actionable guidance",
+    "All internal links validated and working correctly (5 subsections + 3 related topics)",
+    "Uses MkDocs Material features appropriately for navigation",
+    "Properly scoped as an overview/index page - doesn't try to document everything inline",
+    "Good cross-references to related topics (file encoding, manual filtering, compressed files)"
   ],
   "improvement_suggestions": [
-    "Fix broken link to advanced-patterns (should be ../advanced-patterns/index.md)",
-    "Consider adding --no-line-number and --only-matching to cheat sheet",
-    "Add one quick start example showing flag combination",
-    "Consider adding a 'Common Patterns' section linking to practice.md for quick reference",
-    "Consider mentioning --help flag in quick start for self-discovery"
+    "Consider adding a quick example or visual diagram showing the binary detection flow",
+    "Could add a 'When to Read This' section to help users know which subpage to read first",
+    "Might benefit from a brief comparison table showing when to use --binary vs --text vs default behavior"
   ],
+  "link_validation": {
+    "total_internal_links": 8,
+    "broken_links": 0,
+    "valid_links": [
+      "./detection.md",
+      "./modes.md",
+      "./explicit-implicit.md",
+      "./flags.md",
+      "./examples.md",
+      "../file-encoding.md",
+      "../manual-filtering-types.md",
+      "../compressed-files.md"
+    ]
+  },
   "cross_references": [
-    "pattern-matching",
-    "literal-search",
-    "regex-basics",
-    "case-sensitivity",
-    "boundaries",
-    "output",
-    "count-list",
-    "practice",
-    "recursive-search",
-    "automatic-filtering",
-    "manual-filtering-globs",
-    "advanced-patterns",
-    "replacements",
-    "output-formats"
+    "file-encoding",
+    "manual-filtering-types",
+    "compressed-files",
+    "binary-detection",
+    "binary-modes",
+    "explicit-implicit",
+    "binary-flags",
+    "binary-examples"
   ],
   "metadata": {
     "analyzed_at": "2025-11-13T20:53:28Z",
     "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
     "topics_covered": [
-      "basics overview",
-      "quick start",
-      "common flags",
-      "navigation"
+      "Binary data handling overview",
+      "Binary detection",
+      "Binary modes",
+      "Explicit vs implicit files",
+      "Binary flags"
     ],
     "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
-    "internal_links_checked": 14,
-    "broken_links_found": 1,
-    "valid_links": 13
+    "page_type": "section_index",
+    "parent_section": "binary-data",
+    "subsections": [
+      "detection",
+      "modes",
+      "explicit-implicit",
+      "flags",
+      "examples"
+    ]
   }
 }
