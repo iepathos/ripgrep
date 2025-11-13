@@ -14,7 +14,54 @@ One of the most important concepts in ripgrep's binary handling is the distincti
 - If you explicitly name a file, you probably want to search it even if it's binary
 - If ripgrep discovers a file during recursive search, it should skip binary files to avoid wasting time and producing garbage output
 
+```mermaid
+flowchart TD
+    Start[Start Search] --> Type{File Type}
+
+    Type -->|Explicit<br/>rg pattern file.txt| ExplicitSearch[Search File]
+    Type -->|Implicit<br/>rg pattern recursive| ImplicitSearch[Search File]
+
+    ExplicitSearch --> ExplicitMatch{Match<br/>Found?}
+    ImplicitSearch --> ImplicitMatch{Match<br/>Found?}
+
+    ExplicitMatch -->|Yes| ExplicitBinary{Binary<br/>Data?}
+    ImplicitMatch -->|Yes| ImplicitBinary{Binary<br/>Data?}
+
+    ExplicitBinary -->|Yes| ExplicitWarn[Show Match<br/>+ Warning<br/>Continue Search]
+    ExplicitBinary -->|No| ExplicitShow[Show Match<br/>Continue Search]
+
+    ImplicitBinary -->|Yes| ImplicitWarn[Show Match<br/>+ WARNING<br/>STOP Search]
+    ImplicitBinary -->|No| ImplicitShow[Show Match<br/>Continue Search]
+
+    ExplicitMatch -->|No| ExplicitContinue[Continue<br/>Search]
+    ImplicitMatch -->|No| ImplicitContinue[Continue<br/>Search]
+
+    ExplicitWarn --> ExplicitContinue
+    ExplicitShow --> ExplicitContinue
+    ImplicitWarn --> End[Done]
+    ImplicitShow --> ImplicitContinue
+
+    ExplicitContinue --> ExplicitEOF{End of<br/>File?}
+    ImplicitContinue --> ImplicitEOF{End of<br/>File?}
+
+    ExplicitEOF -->|No| ExplicitSearch
+    ExplicitEOF -->|Yes| End
+    ImplicitEOF -->|No| ImplicitSearch
+    ImplicitEOF -->|Yes| End
+
+    style ExplicitSearch fill:#e3f2fd
+    style ImplicitSearch fill:#fff3e0
+    style ExplicitWarn fill:#e1f5fe
+    style ImplicitWarn fill:#ffecb3
+    style End fill:#e8f5e9
+```
+
+**Figure**: Explicit vs implicit file search behavior showing how binary detection affects search continuation.
+
 ## Example - Implicit (recursive search)
+
+!!! example "Implicit File Behavior"
+    When ripgrep discovers files recursively, it stops searching after finding binary data to avoid wasting time.
 
 ```bash
 # Recursive search stops at binary files
@@ -25,6 +72,9 @@ hay: WARNING: stopped searching binary file after match (found "\0" byte around 
 
 ## Example - Explicit file
 
+!!! example "Explicit File Behavior"
+    When you explicitly specify a file, ripgrep assumes you want to search it regardless of binary content.
+
 ```bash
 # Explicit file shows warning but continues
 $ rg "Project Gutenberg" hay
@@ -34,11 +84,14 @@ binary file matches (found "\0" byte around offset 77041)
 
 ## Making implicit files behave like explicit files
 
-Use the `--binary` flag to make recursively-discovered files emit warnings instead of being silently skipped:
+!!! tip "Converting Implicit to Explicit Behavior"
+    Use the `--binary` flag when you want recursive searches to treat all files like they were explicitly specified. This is useful when you need comprehensive search results even from binary files.
 
 ```bash
 # Recursive search with binary warnings
-rg --binary "pattern" -g '*.bin'
+rg --binary "pattern" -g '*.bin'  # (1)!
+
+# 1. Treats discovered files as explicit - shows warnings but continues searching
 ```
 
 ## Edge Cases and Gotchas
@@ -54,7 +107,9 @@ When using `-l` (just list filenames), ripgrep can list a binary file before det
 
 ```bash
 # Binary file might be listed even if it's binary
-rg -l "pattern"
+rg -l "pattern"  # (1)!
+
+# 1. Stops after first match - may list binary files before detecting NUL bytes
 ```
 
 This is an acceptable tradeoff: showing the filename is still useful, and the performance gain from stopping early is significant.
@@ -65,7 +120,9 @@ Similar to `-l`, quiet mode may skip binary detection because it exits immediate
 
 ```bash
 # May exit before detecting binary data
-rg --quiet "pattern"
+rg --quiet "pattern"  # (1)!
+
+# 1. Exits on first match - binary detection may not occur
 ```
 
 #### 3. `--count` / `-c`
@@ -74,7 +131,9 @@ Count mode scans the entire file to count all matches, so binary detection works
 
 ```bash
 # Binary detection works properly with count
-rg -c "pattern"
+rg -c "pattern"  # (1)!
+
+# 1. Scans entire file - binary detection always occurs
 ```
 
 ### Matches Before NUL Bytes
