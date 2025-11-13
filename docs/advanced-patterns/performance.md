@@ -11,6 +11,9 @@ Advanced regex features can impact performance. Understanding these implications
 - Cannot use memory mapping
 - Large files can consume significant RAM
 
+!!! warning "Multiline Memory Impact"
+    Multiline mode (`-U`) reads entire files into memory and disables memory mapping. A 1GB file will consume 1GB+ of RAM. Test on your largest files before using multiline mode in production scripts.
+
 **Automatic optimization**:
 - Ripgrep detects when patterns don't actually need multiline mode
 - Avoids memory penalty when possible
@@ -32,6 +35,9 @@ Advanced regex features can impact performance. Understanding these implications
 - Complex alternations with overlapping possibilities
 - Patterns that cause extensive backtracking on non-matches
 
+!!! warning "PCRE2 Backtracking Risk"
+    PCRE2 patterns can cause exponential time complexity with nested quantifiers like `(a+)+` or `(.*)*`. This can lead to extremely slow searches or even appear to hang on large files. Always test PCRE2 patterns on representative data before using in production scripts.
+
 The default engine uses finite automata which guarantees linear time complexity regardless of pattern complexity. This makes it much more predictable and safer for untrusted input.
 
 **When PCRE2 is worth it**:
@@ -41,6 +47,33 @@ The default engine uses finite automata which guarantees linear time complexity 
 - You've tested the pattern on representative data and performance is acceptable
 
 **Recommendation**: Use default engine unless you need PCRE2-specific features. When using PCRE2, test patterns on representative data to ensure acceptable performance, especially before using in production scripts or on large codebases.
+
+```mermaid
+flowchart TD
+    Start[Writing Regex Pattern] --> NeedFeature{Need lookaround<br/>or backreferences?}
+
+    NeedFeature -->|No| Default[Use Default Engine]
+    NeedFeature -->|Yes| TestSize{Limited<br/>search space?}
+
+    TestSize -->|Yes| TestPattern[Test Pattern<br/>on Real Data]
+    TestSize -->|No| Rethink[Reconsider Approach]
+
+    TestPattern --> Acceptable{Performance<br/>acceptable?}
+    Acceptable -->|Yes| UsePCRE2[Use PCRE2 Engine<br/>with -P flag]
+    Acceptable -->|No| Simplify[Simplify Pattern<br/>or Split Search]
+
+    Rethink --> Alternative[Find Alternative<br/>Approach]
+
+    Default --> Fast[Fast Linear Time<br/>SIMD Optimized]
+    UsePCRE2 --> Slower[Slower Backtracking<br/>Test Thoroughly]
+
+    style Default fill:#e8f5e9
+    style UsePCRE2 fill:#fff3e0
+    style Fast fill:#e8f5e9
+    style Slower fill:#ffebee
+```
+
+**Figure**: Decision flow for choosing between default engine and PCRE2 based on feature requirements and performance characteristics.
 
 ## Backreferences and Lookaround
 
@@ -102,6 +135,33 @@ rg --mmap 'pattern'
 rg --no-mmap 'pattern'
 ```
 
+```mermaid
+flowchart TD
+    Start[Search Request] --> Type{Search Type?}
+
+    Type -->|Single File| Large{Large File?}
+    Type -->|Directory| ManyFiles[Many Files to Scan]
+
+    Large -->|Yes| MMap[Memory Mapping<br/>mmap]
+    Large -->|No| MMap
+
+    ManyFiles --> Buffered[Buffered Reading<br/>Incremental]
+
+    MMap --> MMAPBenefits[✓ Maps file to memory<br/>✓ Faster for large files<br/>✓ Lower memory overhead]
+
+    Buffered --> BufferedBenefits[✓ Reads incrementally<br/>✓ Better for many small files<br/>✓ Predictable memory]
+
+    MMAPBenefits --> Result[Search Results]
+    BufferedBenefits --> Result
+
+    style MMap fill:#e1f5ff
+    style Buffered fill:#fff3e0
+    style MMAPBenefits fill:#e1f5ff
+    style BufferedBenefits fill:#fff3e0
+```
+
+**Figure**: I/O strategy selection showing how ripgrep automatically chooses between memory mapping and buffered reading based on search type.
+
 !!! tip
     Let ripgrep choose automatically unless you have specific performance issues.
 
@@ -141,26 +201,34 @@ This shows:
 **Skip large files**:
 ```bash
 # Skip files larger than 10MB
-rg --max-filesize 10M 'pattern'
+rg --max-filesize 10M 'pattern'  # (1)!
 ```
+
+1. Ignores files larger than 10MB. Useful for avoiding slow searches through large binary files or logs.
 
 **Handle long lines**:
 ```bash
 # Set maximum line length to process
-rg --max-columns 500 'pattern'
+rg --max-columns 500 'pattern'  # (1)!
 ```
+
+1. Ignores lines longer than 500 characters. Prevents slow regex matching on extremely long lines like minified code.
 
 **Stop after N matches**:
 ```bash
 # Stop searching after finding 100 matches
-rg --max-count 100 'pattern'
+rg --max-count 100 'pattern'  # (1)!
 ```
+
+1. Stops after finding 100 matches. Useful for quick verification or when you only need a few examples.
 
 **Avoid crossing filesystem boundaries**:
 ```bash
 # Stay on one filesystem
-rg --one-file-system 'pattern'
+rg --one-file-system 'pattern'  # (1)!
 ```
+
+1. Prevents searching across mount points. Avoids accidentally searching network drives or external disks.
 
 ### Testing and Profiling
 
@@ -179,8 +247,10 @@ Controls the maximum size of compiled regex (default: 10M):
 
 ```bash
 # Increase for extremely complex patterns
-rg --regex-size-limit 100M 'very_complex_pattern'
+rg --regex-size-limit 100M 'very_complex_pattern'  # (1)!
 ```
+
+1. Sets max compiled regex size to 100MB (default: 10M). Use when searching with large alternations or auto-generated patterns.
 
 **When you might need this**:
 - Very large alternations (`pattern1|pattern2|...|pattern1000`)
@@ -198,8 +268,10 @@ Controls DFA (deterministic finite automaton) size for the default engine:
 
 ```bash
 # Increase DFA size limit
-rg --dfa-size-limit 100M 'pattern'
+rg --dfa-size-limit 100M 'pattern'  # (1)!
 ```
+
+1. Sets max DFA size to 100MB (default: 10M). Needed for patterns with many states or large character class combinations.
 
 **When you might need this**:
 - Complex patterns with many possible states
@@ -215,6 +287,9 @@ help: use --regex-size-limit to increase the limit
 ```
 
 ### When to Increase Limits vs Simplify Patterns
+
+!!! tip "Limit Errors Are Often Design Signals"
+    Hitting regex limits usually means your pattern is too complex and should be simplified. Only increase limits for legitimate use cases like auto-generated patterns or comprehensive matching needs.
 
 Hitting regex limits is often a sign that your pattern needs simplification, but sometimes large patterns are legitimate. Here's how to decide:
 
