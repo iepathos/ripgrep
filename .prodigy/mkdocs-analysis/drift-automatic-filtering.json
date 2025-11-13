@@ -1,0 +1,61 @@
+{
+  "item_type": "page",
+  "page_id": "automatic-filtering",
+  "page_title": "automatic filtering",
+  "page_file": "docs/automatic-filtering.md",
+  "drift_detected": false,
+  "severity": "none",
+  "quality_assessment": "Excellent - comprehensive documentation with accurate examples, clear structure, and valid cross-references",
+  "issues": [],
+  "positive_aspects": [
+    "Comprehensive coverage of all automatic filtering mechanisms",
+    "Clear explanation of ignore file types and precedence rules",
+    "Excellent examples throughout with practical use cases",
+    "Well-organized progressive structure from basic to advanced",
+    "Detailed troubleshooting section addressing common issues",
+    "Accurate documentation of -u/-uu/-uuu flags and fine-grained --no-ignore-* options",
+    "Good coverage of hidden file handling, binary detection, and symlink behavior",
+    "Proper documentation of whitelist patterns and custom ignore files",
+    "Clear interaction documentation with manual filtering and explicit paths",
+    "All cross-references to other documentation pages are valid"
+  ],
+  "improvement_suggestions": [
+    "Consider adding a visual diagram showing ignore file precedence hierarchy",
+    "Could add a quick reference table summarizing all --no-ignore-* flags and their effects",
+    "Might benefit from a decision tree diagram for choosing which flags to use",
+    "Could add examples of common .ignore file patterns for different project types"
+  ],
+  "cross_references": [
+    "manual-filtering-globs",
+    "manual-filtering-types"
+  ],
+  "link_validation": {
+    "total_internal_links": 2,
+    "broken_links": 0,
+    "all_valid": true,
+    "validated_links": [
+      "manual-filtering-globs.md",
+      "manual-filtering-types.md"
+    ]
+  },
+  "metadata": {
+    "analyzed_at": "2025-11-13T20:53:28Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": [
+      "automatic filtering",
+      "ignore files",
+      "hidden files",
+      "binary files",
+      "symlinks",
+      "gitignore",
+      "precedence rules",
+      "unrestricted flags"
+    ],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "features_analyzed": [
+      "filtering.automatic_filtering.ignore_files",
+      "filtering.automatic_filtering.automatic_exclusions",
+      "filtering.automatic_filtering.override_flags"
+    ]
+  }
+}
