@@ -1,0 +1,108 @@
+{
+  "item_type": "page",
+  "page_id": "output-formatting",
+  "page_title": "output formatting",
+  "page_file": "docs/common-options/output-formatting.md",
+  "drift_detected": true,
+  "severity": "medium",
+  "quality_assessment": "Page has accurate information overall but contains incorrect hyperlink format aliases that need correction",
+  "issues": [
+    {
+      "type": "outdated_information",
+      "severity": "high",
+      "section": "Match Output - --hyperlink-format",
+      "description": "Documented hyperlink format aliases are incorrect",
+      "current_content": "Built-in formats: `vscode`, `cursor`, `macvim`, `sublime`, `textmate`, `emacs`, `vim`",
+      "should_be": "Built-in formats: `default`, `none`, `cursor`, `file`, `grep+`, `kitty`, `macvim`, `textmate`, `vscode`, `vscode-insiders`, `vscodium`",
+      "fix_suggestion": "Update the list of built-in hyperlink format aliases to match the actual implementation. Remove non-existent aliases (sublime, emacs, vim) and add missing ones (default, none, file, grep+, kitty, vscode-insiders, vscodium).",
+      "source_reference": "crates/printer/src/hyperlink/aliases.rs:6-68"
+    },
+    {
+      "type": "broken_links",
+      "severity": "medium",
+      "section": "Cross-References",
+      "description": "Found 0 broken internal link(s)",
+      "broken_links": [],
+      "fix_suggestion": "All internal links are valid.",
+      "validation_details": {
+        "total_links_checked": 2,
+        "valid_links": 2,
+        "broken_links": 0,
+        "checked_links": [
+          {
+            "target": "./index.md",
+            "resolved_path": "docs/common-options/index.md",
+            "status": "valid"
+          },
+          {
+            "target": "../replacements.md",
+            "resolved_path": "docs/replacements.md",
+            "status": "valid"
+          }
+        ]
+      }
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Match Output - --hyperlink-format",
+      "description": "Missing explanation of hyperlink format aliases and their purposes",
+      "fix_suggestion": "Add brief descriptions for each hyperlink format alias explaining which applications they're for (e.g., 'vscode' for Visual Studio Code, 'vscode-insiders' for VS Code Insiders, 'cursor' for Cursor editor, etc.)",
+      "source_reference": "crates/printer/src/hyperlink/aliases.rs"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "Color and Formatting - --colors",
+      "description": "Color types and styles could be more comprehensive",
+      "current_content": "Types: `path`, `line`, `column`, `match`. Styles: `fg` (foreground), `bg` (background), `style` (bold, intense, underline, italic).",
+      "fix_suggestion": "Clarify that 'style' is the property name, and its values include bold, intense, underline, italic. Consider providing examples for each type to make it clearer.",
+      "source_reference": "crates/core/flags/defs.rs:812-900"
+    }
+  ],
+  "positive_aspects": [
+    "Clear organization with logical groupings (Line Numbers, Context Lines, Match Output, Color and Formatting)",
+    "Good use of code examples throughout the page",
+    "Accurate documentation of context flags (-A, -B, -C) with clear explanations",
+    "Correct explanation of --pretty flag as alias for --color always --heading --line-number",
+    "Good coverage of standard output formatting options",
+    "Helpful explanations of when to use each option",
+    "Valid cross-references to related documentation pages"
+  ],
+  "improvement_suggestions": [
+    "Add admonitions using MkDocs Material extensions for important notes (e.g., terminal support requirements for hyperlinks)",
+    "Consider adding a comparison table showing different output format examples side-by-side",
+    "Add 'See Also' section at the bottom linking to related pages (output-modes.md, replacements.md)",
+    "Include troubleshooting tips for common color/formatting issues",
+    "Add examples showing how different --colors combinations look in practice",
+    "Consider using code annotations to highlight key parts of example outputs",
+    "Add information about the 'none' and 'default' hyperlink format aliases which have special meaning"
+  ],
+  "cross_references": [
+    "index",
+    "replacements",
+    "output-modes"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-13T21:47:17Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": [
+      "output formatting",
+      "line numbers",
+      "column numbers",
+      "context lines",
+      "match output",
+      "colors",
+      "hyperlinks",
+      "byte offsets"
+    ],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "features_referenced": [
+      "output_control.standard_output",
+      "output_control.context_lines",
+      "output_control.color_control",
+      "utility_features.hyperlinks",
+      "replacements.basic_replacement"
+    ]
+  }
+}
