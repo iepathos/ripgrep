@@ -30,6 +30,44 @@ Ripgrep uses a simple but effective heuristic: **the presence of NUL bytes** (`\
 
 Binary detection behavior depends on the search mode ripgrep uses:
 
+```mermaid
+flowchart TD
+    Start[Start File Search] --> Mode{Search Mode?}
+
+    Mode -->|Buffered<br/>--no-mmap| Buffered[Buffered Search]
+    Mode -->|Memory-Mapped<br/>--mmap| Mmap[Memory-Mapped Search]
+
+    Buffered --> ReadBuf[Read 64KB Buffer]
+    ReadBuf --> ScanBuf{NUL byte<br/>in buffer?}
+    ScanBuf -->|Yes| BinaryBuf[Mark as Binary]
+    ScanBuf -->|No| MoreBuf{More data?}
+    MoreBuf -->|Yes| ReadBuf
+    MoreBuf -->|No| TextBuf[Process as Text]
+
+    Mmap --> ScanFirst[Scan First 64KB]
+    ScanFirst --> NulFirst{NUL byte<br/>found?}
+    NulFirst -->|Yes| BinaryMmap[Mark as Binary]
+    NulFirst -->|No| Search[Search for Matches]
+    Search --> ScanMatch[Scan Match Lines]
+    ScanMatch --> NulMatch{NUL in<br/>matches?}
+    NulMatch -->|Yes| BinaryMmap
+    NulMatch -->|No| TextMmap[Process as Text]
+
+    BinaryBuf --> HandleBin[Handle Binary File]
+    BinaryMmap --> HandleBin
+    TextBuf --> Output[Output Matches]
+    TextMmap --> Output
+
+    style Buffered fill:#e1f5ff
+    style Mmap fill:#fff3e0
+    style BinaryBuf fill:#ffebee
+    style BinaryMmap fill:#ffebee
+    style TextBuf fill:#e8f5e9
+    style TextMmap fill:#e8f5e9
+```
+
+**Figure**: Binary detection flow comparing buffered search (continuous scanning) vs memory-mapped search (limited initial scan + match scanning).
+
 ### Buffered Search (Default, or `--no-mmap`)
 
 When ripgrep reads files using a fixed-size buffer (the default for most files, or explicitly with `--no-mmap`):
@@ -77,3 +115,45 @@ When ripgrep uses memory mapping (explicit with `--mmap`, or automatically for s
 # Memory-mapped search - only checks first 64KB + matches
 rg --mmap "pattern" largefile.bin
 ```
+
+### Comparison: Buffered vs Memory-Mapped
+
+Understanding when each mode is most effective:
+
+=== "Buffered Search"
+    **Best for:**
+
+    - Small to medium files (< 100 MB)
+    - Files where you need thorough binary detection
+    - When you want to detect binary data anywhere in the file
+
+    **Characteristics:**
+
+    - Scans entire file continuously
+    - More thorough detection (checks every byte)
+    - Lower memory usage (64KB buffer)
+    - Slower for very large files
+
+    ```bash
+    # Force buffered search
+    rg --no-mmap "pattern" file.txt
+    ```
+
+=== "Memory-Mapped Search"
+    **Best for:**
+
+    - Large files (> 100 MB)
+    - Performance-critical searches
+    - Files where binary data is likely early or in matches
+
+    **Characteristics:**
+
+    - Scans only first 64KB + match lines
+    - Faster for large files
+    - Higher memory usage (maps entire file)
+    - May miss binary data after first 64KB (if no matches)
+
+    ```bash
+    # Force memory-mapped search
+    rg --mmap "pattern" largefile.txt
+    ```
