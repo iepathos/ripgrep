@@ -45,6 +45,78 @@ $ rg 'TODO'
 # Searches all files except those matching .ignore patterns
 ```
 
+??? tip "Common .ignore Patterns by Project Type"
+
+    === "JavaScript/Node.js"
+        ```
+        # Dependencies
+        node_modules/
+        bower_components/
+
+        # Build outputs
+        dist/
+        build/
+        *.bundle.js
+
+        # Package manager
+        package-lock.json
+        yarn.lock
+
+        # Logs and temp
+        *.log
+        .cache/
+        ```
+
+    === "Rust"
+        ```
+        # Build artifacts
+        target/
+        Cargo.lock
+
+        # IDE files
+        .idea/
+        *.swp
+        *.swo
+
+        # Test coverage
+        tarpaulin-report.html
+        ```
+
+    === "Python"
+        ```
+        # Virtual environments
+        venv/
+        env/
+        .venv/
+
+        # Bytecode
+        __pycache__/
+        *.pyc
+        *.pyo
+
+        # Distribution
+        dist/
+        build/
+        *.egg-info/
+        ```
+
+    === "General"
+        ```
+        # Version control
+        .git/
+        .svn/
+
+        # OS files
+        .DS_Store
+        Thumbs.db
+
+        # Editor files
+        *.swp
+        *~
+        .vscode/
+        .idea/
+        ```
+
 ### Precedence Rules
 
 When multiple ignore files exist, ripgrep applies them in a specific order:
@@ -52,6 +124,23 @@ When multiple ignore files exist, ripgrep applies them in a specific order:
 1. **`.ignore` files override all `.gitignore` files**, regardless of directory hierarchy
 2. Within each ignore file type, more nested files have higher precedence
 3. Parent directory ignore files are respected by default
+
+!!! note "Ignore File Precedence Hierarchy"
+    ```
+    Highest Priority
+    ↓
+    .ignore files (ripgrep-specific)
+    ↓
+    .gitignore files (nested overrides parent)
+    ↓
+    .git/info/exclude (repository-specific)
+    ↓
+    Global gitignore (~/.config/git/ignore)
+    ↓
+    Custom ignore files (--ignore-file)
+    ↓
+    Lowest Priority
+    ```
 
 For example, if you have:
 - `/project/.gitignore` with `*.log`
@@ -76,6 +165,9 @@ You can use the `!` prefix in ignore files to whitelist paths, overriding earlie
 # Whitelist an entire directory
 !logs/keep/
 ```
+
+!!! tip "Whitelist Override Power"
+    Whitelist patterns in `.ignore` files can override exclusions from `.gitignore` files, even in parent directories. This makes `.ignore` files powerful for project-specific ripgrep configurations without modifying your Git settings.
 
 ### VCS and Global Ignore Files
 
@@ -136,12 +228,13 @@ $ rg 'pattern' --hidden
 # Searches all files including .bashrc, .git/, etc.
 ```
 
-**Important**: `--hidden` will search inside directories like `.git/` regardless of `--no-ignore-vcs`. To exclude such paths when using `--hidden`, you must explicitly ignore them:
+!!! warning "Hidden Directories and Version Control"
+    `--hidden` will search inside directories like `.git/` regardless of `--no-ignore-vcs`. To exclude such paths when using `--hidden`, you must explicitly ignore them:
 
-```bash
-$ rg 'pattern' --hidden --glob '!.git/'
-# Search hidden files but exclude .git directory
-```
+    ```bash
+    $ rg 'pattern' --hidden --glob '!.git/'
+    # Search hidden files but exclude .git directory
+    ```
 
 ### Explicit Hidden Files
 
@@ -162,6 +255,9 @@ Ripgrep uses a NUL byte (`\0`) heuristic:
 - If a file contains a NUL byte in the first few kilobytes, it's considered binary
 - Binary detection only applies during **recursive search**
 - Files specified directly are always searched
+
+!!! note "Binary Detection Scope"
+    Binary filtering only applies to recursive search. When you specify a file directly on the command line, ripgrep searches it regardless of content. Use `--no-binary` to force binary detection for explicit files.
 
 ### Controlling Binary Search
 
@@ -205,7 +301,8 @@ $ rg 'pattern' --follow
 # Follows symlinks to files and directories
 ```
 
-**Loop detection**: Ripgrep automatically detects and prevents infinite loops when following symlinks that create circular directory structures.
+!!! tip "Loop Prevention"
+    Ripgrep automatically detects and prevents infinite loops when following symlinks that create circular directory structures. It's safe to use `--follow` even in complex directory trees.
 
 ### Symlinks and Ignore Files
 
@@ -223,6 +320,29 @@ $ rg 'pattern' --follow --no-ignore
 ## Disabling Automatic Filtering
 
 Ripgrep provides several ways to disable automatic filtering.
+
+!!! tip "Choosing the Right Flag: Decision Tree"
+    ```
+    Do you need to search ignored files?
+    │
+    ├─ Yes, and also hidden files?
+    │  │
+    │  ├─ Yes, and also binary files?
+    │  │  └─ Use: -uuu (or --no-ignore --hidden --binary)
+    │  │
+    │  └─ No, just ignored + hidden
+    │     └─ Use: -uu (or --no-ignore --hidden)
+    │
+    ├─ Yes, just ignored files
+    │  └─ Use: -u (or --no-ignore)
+    │
+    └─ No, but need hidden files?
+       │
+       ├─ Yes → Use: --hidden
+       │
+       └─ No, just need specific control?
+          └─ Use: --no-ignore-vcs / --no-ignore-dot / etc.
+    ```
 
 ### Progressive Unrestricted Flags
 
@@ -294,17 +414,27 @@ $ rg 'pattern' ignored-file.txt
 # Searches ignored-file.txt even if it's in .gitignore
 ```
 
+!!! example "Explicit Path Behavior"
+
+    **Files bypass all filters:**
+
+    ```bash
+    $ rg 'pattern' .bashrc          # Searches hidden file
+    $ rg 'pattern' ignored.txt      # Searches ignored file
+    $ rg 'pattern' binary.exe       # Searches binary file
+    ```
+
+    **Directories still apply filters:**
+
+    ```bash
+    $ rg 'pattern' some-dir/
+    # Applies ignore rules to files inside some-dir/
+    ```
+
 This applies to:
 - Files listed in `.gitignore` or `.ignore`
 - Hidden files (when `--hidden` is not used)
 - Binary files (during recursive search)
-
-However, if you specify a directory explicitly, automatic filtering still applies to files within that directory:
-
-```bash
-$ rg 'pattern' some-dir/
-# Applies ignore rules to files inside some-dir/
-```
 
 ## Interaction with Manual Filtering
 
@@ -326,35 +456,37 @@ See the [Manual Filtering: Globs](manual-filtering-globs.md) and [Manual Filteri
 
 ## Common Use Cases
 
-### Search Everything Including Hidden and Binary Files
+!!! example "Quick Reference: Common Scenarios"
 
-```bash
-$ rg 'pattern' -uuu
-```
+    === "Search Everything"
+        **Including hidden and binary files:**
+        ```bash
+        $ rg 'pattern' -uuu
+        ```
 
-### Search Hidden Config Files but Respect .gitignore
+    === "Hidden Config Files"
+        **Search hidden files but respect .gitignore:**
+        ```bash
+        $ rg 'pattern' --hidden
+        ```
 
-```bash
-$ rg 'pattern' --hidden
-```
+    === "Custom Ignore File"
+        **Ignore Git files but use custom ignore file:**
+        ```bash
+        $ rg 'pattern' --no-ignore-vcs --ignore-file my-ignores.txt
+        ```
 
-### Ignore Git Files but Use Custom Ignore File
+    === "Specific Ignored File"
+        **Search a specific file even if ignored:**
+        ```bash
+        $ rg 'pattern' node_modules/package/file.js
+        ```
 
-```bash
-$ rg 'pattern' --no-ignore-vcs --ignore-file my-ignores.txt
-```
-
-### Search a Specific Ignored File
-
-```bash
-$ rg 'pattern' node_modules/package/file.js
-```
-
-### Search Without .gitignore but With .ignore
-
-```bash
-$ rg 'pattern' --no-ignore-vcs
-```
+    === "Only .ignore Files"
+        **Search without .gitignore but with .ignore:**
+        ```bash
+        $ rg 'pattern' --no-ignore-vcs
+        ```
 
 ## Troubleshooting
 
