@@ -1,0 +1,86 @@
+{
+  "item_type": "auto-discovered",
+  "page_id": "search-basics",
+  "page_title": "search basics",
+  "page_file": "docs/common-options/search-basics.md",
+  "drift_detected": true,
+  "severity": "medium",
+  "quality_assessment": "Page content is accurate but has broken link that needs fixing",
+  "issues": [
+    {
+      "type": "broken_links",
+      "severity": "medium",
+      "section": "Cross-References",
+      "description": "Found 1 broken internal link",
+      "broken_links": [
+        {
+          "link_text": "Regular Expressions",
+          "original_target": "../regex.md",
+          "expected_path": "docs/regex.md",
+          "current_file": "docs/common-options/search-basics.md",
+          "line_number": 90,
+          "suggested_fix": "../basics/regex-basics.md",
+          "reason": "File docs/regex.md does not exist. Found docs/basics/regex-basics.md instead."
+        }
+      ],
+      "fix_suggestion": "Update link from '../regex.md' to '../basics/regex-basics.md' on line 90.",
+      "source_reference": "docs/common-options/search-basics.md:90"
+    }
+  ],
+  "positive_aspects": [
+    "Comprehensive coverage of search pattern flags and options",
+    "Well-organized sections (Case Sensitivity, Pattern Types, Multiline Matching, etc.)",
+    "Excellent code examples for each flag demonstrating practical usage",
+    "Clear explanations of when to use each option",
+    "Good coverage of smart case, fixed strings, word regexp, and line regexp",
+    "Detailed multiline matching documentation with --multiline-dotall",
+    "Thorough regex engine selection coverage (default vs PCRE2)",
+    "Multiple patterns section covers -e and -f flags well",
+    "Invert match (-v) documented with useful examples",
+    "All content aligns with features.json inventory"
+  ],
+  "improvement_suggestions": [
+    "Fix broken link to regex documentation (change ../regex.md to ../basics/regex-basics.md)",
+    "Consider adding a brief troubleshooting section for common pattern matching issues",
+    "Could enhance with admonitions (tip/warning boxes) for important concepts like smart case behavior",
+    "Consider adding code annotations to highlight key parts of complex examples",
+    "Could add a comparison table showing when to use -F vs regex vs -w vs -x"
+  ],
+  "link_validation": {
+    "total_internal_links": 2,
+    "broken_links": 1,
+    "valid_links": 1,
+    "details": [
+      {
+        "link": "./index.md",
+        "status": "valid",
+        "resolved_to": "docs/common-options/index.md"
+      },
+      {
+        "link": "../regex.md",
+        "status": "broken",
+        "resolved_to": "docs/regex.md",
+        "suggestion": "../basics/regex-basics.md"
+      }
+    ]
+  },
+  "metadata": {
+    "analyzed_at": "2025-11-13T20:53:28Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": [
+      "case sensitivity",
+      "pattern types",
+      "multiline matching",
+      "regex engines",
+      "invert match",
+      "multiple patterns"
+    ],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "features_referenced": [
+      "search_basics.capabilities.pattern_matching",
+      "advanced_patterns.capabilities.multiline_search",
+      "advanced_patterns.capabilities.pcre2_engine",
+      "search_basics.capabilities.multiple_patterns"
+    ]
+  }
+}
