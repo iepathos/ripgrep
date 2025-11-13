@@ -1,0 +1,154 @@
+{
+  "project_name": "ripgrep",
+  "docs_dir": "docs",
+  "mkdocs_config": "mkdocs.yml",
+  "chapters_file": "docs/SUMMARY.md",
+  "analysis_targets": [
+    {
+      "area": "search_basics",
+      "description": "Core search functionality and pattern matching",
+      "source_files": [
+        "docs/basics.md",
+        "docs/recursive-search.md"
+      ],
+      "feature_categories": [
+        "pattern_matching",
+        "literal_search",
+        "regex_support",
+        "case_sensitivity",
+        "word_boundaries",
+        "multiple_patterns"
+      ]
+    },
+    {
+      "area": "filtering",
+      "description": "File and content filtering mechanisms",
+      "source_files": [
+        "docs/automatic-filtering.md",
+        "docs/manual-filtering-globs.md",
+        "docs/manual-filtering-types.md"
+      ],
+      "feature_categories": [
+        "gitignore_support",
+        "ignore_files",
+        "hidden_files",
+        "binary_files",
+        "glob_patterns",
+        "file_type_filters",
+        "custom_types"
+      ]
+    },
+    {
+      "area": "advanced_patterns",
+      "description": "Advanced regex and pattern features",
+      "source_files": [
+        "docs/advanced-patterns.md"
+      ],
+      "feature_categories": [
+        "multiline_search",
+        "pcre2_engine",
+        "lookaround_assertions",
+        "backreferences",
+        "unicode_patterns",
+        "engine_selection"
+      ]
+    },
+    {
+      "area": "output_control",
+      "description": "Output formatting and display options",
+      "source_files": [
+        "docs/output-formats.md",
+        "docs/context-lines.md",
+        "docs/sorting-results.md"
+      ],
+      "feature_categories": [
+        "standard_output",
+        "json_output",
+        "vimgrep_format",
+        "context_lines",
+        "color_control",
+        "field_separators",
+        "result_sorting"
+      ]
+    },
+    {
+      "area": "file_handling",
+      "description": "File encoding, compression, and preprocessing",
+      "source_files": [
+        "docs/file-encoding.md",
+        "docs/binary-data.md",
+        "docs/compressed-files.md",
+        "docs/preprocessor.md"
+      ],
+      "feature_categories": [
+        "encoding_support",
+        "utf16_detection",
+        "binary_handling",
+        "compression_formats",
+        "preprocessing_filters"
+      ]
+    },
+    {
+      "area": "replacements",
+      "description": "Search and replace functionality",
+      "source_files": [
+        "docs/replacements.md"
+      ],
+      "feature_categories": [
+        "replace_mode",
+        "capture_groups",
+        "replacement_syntax"
+      ]
+    },
+    {
+      "area": "configuration",
+      "description": "Configuration files and persistent settings",
+      "source_files": [
+        "docs/configuration-file.md",
+        "docs/common-options.md"
+      ],
+      "feature_categories": [
+        "config_files",
+        "config_locations",
+        "flag_aliases",
+        "environment_variables"
+      ]
+    },
+    {
+      "area": "performance",
+      "description": "Performance optimization and tuning",
+      "source_files": [
+        "docs/performance.md"
+      ],
+      "feature_categories": [
+        "parallelism",
+        "thread_control",
+        "memory_mapping",
+        "simd_acceleration",
+        "regex_optimization"
+      ]
+    },
+    {
+      "area": "utility_features",
+      "description": "Additional utility modes and features",
+      "source_files": [
+        "docs/utility-modes.md",
+        "docs/statistics.md",
+        "docs/hyperlinks.md"
+      ],
+      "feature_categories": [
+        "list_files_mode",
+        "count_mode",
+        "statistics",
+        "hyperlinks",
+        "passthru_mode"
+      ]
+    }
+  ],
+  "custom_analysis": {
+    "include_examples": true,
+    "include_best_practices": true,
+    "include_troubleshooting": true,
+    "extract_from_tests": false
+  }
+}
