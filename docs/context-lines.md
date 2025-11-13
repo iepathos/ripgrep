@@ -21,6 +21,33 @@ rg -B 2 pattern
 rg -C 2 pattern
 ```
 
+```mermaid
+graph TD
+    L1["Line 8"] --> L2["Line 9"]
+    L2 --> L3["Line 10: MATCH"]
+    L3 --> L4["Line 11"]
+    L4 --> L5["Line 12"]
+
+    B1["rg -B 2"] -.->|Shows| L1
+    B2["rg -B 2"] -.->|Shows| L2
+
+    A1["rg -A 2"] -.->|Shows| L4
+    A2["rg -A 2"] -.->|Shows| L5
+
+    C1["rg -C 2"] -.->|Shows| L1
+    C2["rg -C 2"] -.->|Shows| L2
+    C3["rg -C 2"] -.->|Shows| L4
+    C4["rg -C 2"] -.->|Shows| L5
+
+    style L3 fill:#fff3e0,stroke:#ff9800,stroke-width:3px
+    style L1 fill:#e3f2fd
+    style L2 fill:#e3f2fd
+    style L4 fill:#f3e5f5
+    style L5 fill:#f3e5f5
+```
+
+**Figure**: Context flag visualization showing which lines are displayed relative to the matching line.
+
 !!! note
     Context values can be very large (up to the maximum value supported by your system) for edge cases where you need extensive surrounding context. However, typical usage is 2-10 lines.
 
@@ -159,14 +186,18 @@ The separator between line numbers and content can be customized:
 
 ```bash
 # Change context line field separator (default is '-')
-rg -C 2 --field-context-separator '|' pattern
+rg -C 2 --field-context-separator '|' pattern  # (1)!
 
 # Change match line field separator (default is ':')
-rg -C 2 --field-match-separator '::' pattern
+rg -C 2 --field-match-separator '::' pattern  # (2)!
 
 # Combine both for custom formatting
-rg -C 2 --field-context-separator ' | ' --field-match-separator ' > ' pattern
+rg -C 2 --field-context-separator ' | ' --field-match-separator ' > ' pattern  # (3)!
 ```
+
+1. Changes the separator after line numbers for context lines (non-matching lines)
+2. Changes the separator after line numbers for matching lines
+3. Combines both customizations for consistent formatting across all output
 
 This produces output like:
 ```
@@ -327,6 +358,46 @@ rg -C 3 --heading pattern
 
 When matches are close together and their context windows overlap, ripgrep merges them into a single contiguous block without duplicating lines or adding separators between them.
 
+```mermaid
+graph TD
+    subgraph "Before Merge: Separate Context Windows"
+        M1["Line 10: MATCH 1"]
+        C1["Lines 11-12<br/>Context after"]
+        SEP1["--<br/>Separator"]
+        C2["Lines 13-14<br/>Context before"]
+        M2["Line 15: MATCH 2"]
+        C3["Lines 16-17<br/>Context after"]
+    end
+
+    subgraph "After Merge: Overlapping Regions Combined"
+        M1A["Line 10: MATCH 1"]
+        C1A["Lines 11-12<br/>Context"]
+        OVER["Lines 13-14<br/>Shared Context<br/>(No separator)"]
+        M2A["Line 15: MATCH 2"]
+        C3A["Lines 16-17<br/>Context"]
+    end
+
+    M1 --> C1
+    C1 --> SEP1
+    SEP1 --> C2
+    C2 --> M2
+    M2 --> C3
+
+    M1A --> C1A
+    C1A --> OVER
+    OVER --> M2A
+    M2A --> C3A
+
+    style M1 fill:#fff3e0,stroke:#ff9800
+    style M2 fill:#fff3e0,stroke:#ff9800
+    style M1A fill:#fff3e0,stroke:#ff9800
+    style M2A fill:#fff3e0,stroke:#ff9800
+    style OVER fill:#e8f5e9
+    style SEP1 fill:#ffebee
+```
+
+**Figure**: Context merging behavior when matches are close together (using `-C 2`).
+
 For example, with `-C 2` (2 lines of context):
 ```
 10: first match
@@ -353,6 +424,9 @@ Since the context windows overlap (lines 13-14 appear in both contexts), ripgrep
 ```
 
 No separator appears because the matches share context.
+
+!!! tip "Understanding Context Merging"
+    Ripgrep intelligently merges overlapping context windows to avoid duplicate lines. This happens when matches are closer together than twice the context size. For example, with `-C 3` (3 lines of context), matches within 6 lines of each other will have their contexts merged.
 
 ### No Separator Appearing
 
