@@ -9,6 +9,40 @@ Try these exercises to solidify your understanding:
 !!! tip "Learning by Doing"
     Try each exercise in order. The expected output is shown to help you verify your results.
 
+```mermaid
+graph TD
+    Start[Start Here] --> Basic[Basic Search<br/>Exercise 1]
+    Basic --> Flags[Search Flags<br/>Exercises 2-6]
+    Flags --> Case[Case Insensitive -i]
+    Flags --> Literal[Literal Search -F]
+    Flags --> Word[Word Boundaries -w]
+    Flags --> Count[Count Matches -c]
+    Flags --> Context[Context Lines -C]
+
+    Flags --> Advanced[Advanced Patterns<br/>Exercises 7-8]
+    Advanced --> Regex[Regex Patterns]
+    Advanced --> Invert[Inverted Match -v]
+
+    Advanced --> Filter[Filtering<br/>Exercises 9-10]
+    Filter --> Type[File Types -t]
+    Filter --> Multi[Multiline -U]
+
+    Filter --> Output[Output Format<br/>Exercise 11]
+    Output --> JSON[JSON --json]
+
+    Output --> Practice[Practice More]
+
+    style Start fill:#e8f5e9
+    style Basic fill:#e1f5ff
+    style Flags fill:#fff3e0
+    style Advanced fill:#f3e5f5
+    style Filter fill:#fce4ec
+    style Output fill:#e0f2f1
+    style Practice fill:#e8f5e9
+```
+
+**Figure**: Learning progression showing how exercises build from basic to advanced techniques.
+
 ### 1. Basic Search
 
 Find all TODO comments in your project:
@@ -114,8 +148,10 @@ rg -C 3 "error"
 Find hexadecimal numbers:
 
 ```bash
-rg "0x[0-9a-fA-F]+"
+rg "0x[0-9a-fA-F]+"  # (1)!
 ```
+
+1. **Pattern breakdown**: `0x` matches literal "0x" prefix, `[0-9a-fA-F]` matches any hex digit (0-9, a-f, A-F), `+` matches one or more digits
 
 !!! example "Expected Output"
     ```
@@ -158,8 +194,10 @@ rg -t rust "^use "
 Find struct definitions that span multiple lines:
 
 ```bash
-rg -U "struct \w+\s*\{[^}]+\}" --type rust
+rg -U "struct \w+\s*\{[^}]+\}" --type rust  # (1)!
 ```
+
+1. **Pattern breakdown**: `-U` enables multiline mode, `struct \w+` matches "struct" followed by a name, `\s*\{` matches optional whitespace and opening brace, `[^}]+` matches one or more non-brace characters (the struct body), `\}` matches closing brace
 
 !!! example "Expected Output"
     ```
@@ -190,6 +228,39 @@ rg "TODO" --json
     JSON output is useful for integrating ripgrep into tools and scripts.
 
 ## Common Mistakes
+
+```mermaid
+flowchart TD
+    Start[Need to Search?] --> Special{Contains<br/>special chars?<br/>. * + ? etc.}
+
+    Special -->|Yes| Literal[Use -F flag<br/>for literal search]
+    Special -->|No| Case{Case<br/>matters?}
+
+    Case -->|No| CaseFlag[Use -i flag<br/>case-insensitive]
+    Case -->|Yes| Whole{Match whole<br/>words only?}
+
+    Whole -->|Yes| Word[Use -w flag<br/>word boundaries]
+    Whole -->|No| Hidden{Search<br/>hidden files?}
+
+    Hidden -->|Yes| HiddenFlag[Use --hidden<br/>--no-ignore]
+    Hidden -->|No| Type{Specific<br/>file types?}
+
+    Type -->|Yes| TypeFlag[Use -t flag<br/>file type filter]
+    Type -->|No| Search[Run search]
+
+    Literal --> Search
+    CaseFlag --> Search
+    Word --> Search
+    HiddenFlag --> Search
+    TypeFlag --> Search
+
+    style Start fill:#e8f5e9
+    style Special fill:#fff3e0
+    style Literal fill:#e1f5ff
+    style Search fill:#c8e6c9
+```
+
+**Figure**: Decision flowchart for choosing the right ripgrep flags to avoid common mistakes.
 
 !!! warning "Forgetting to Escape Regex Metacharacters"
     **Problem:**
