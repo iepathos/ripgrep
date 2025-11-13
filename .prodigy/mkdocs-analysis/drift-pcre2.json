@@ -1,0 +1,106 @@
+{
+  "item_type": "auto-discovered-page",
+  "page_id": "pcre2",
+  "page_title": "pcre2",
+  "page_file": "docs/advanced-patterns/pcre2.md",
+  "drift_detected": true,
+  "severity": "medium",
+  "quality_assessment": "Content is accurate and comprehensive, but lacks visual enhancements consistent with other advanced-patterns pages. No technical drift, but missing educational features that would improve user understanding.",
+  "issues": [
+    {
+      "type": "missing_visual_features",
+      "severity": "medium",
+      "section": "Engine Selection",
+      "description": "Page lacks decision flow diagram for engine selection. Other pages in advanced-patterns/ use Mermaid diagrams to illustrate decision-making processes (see backreferences.md and examples.md).",
+      "fix_suggestion": "Add a Mermaid flowchart showing when to use default vs PCRE2 vs auto engine, similar to the decision flow in examples.md. This would help users understand the tradeoffs between --engine=default, --engine=pcre2, and --engine=auto.",
+      "source_reference": "docs/advanced-patterns/examples.md:11-37 (Mermaid flowchart example)",
+      "enhancement_type": "visual"
+    },
+    {
+      "type": "missing_code_annotations",
+      "severity": "low",
+      "section": "Examples throughout",
+      "description": "Code examples lack inline annotations. Other pages use MkDocs Material code annotations (# (1)! style) to explain command-line options inline.",
+      "fix_suggestion": "Add code annotations to examples explaining what each flag does. For example, in line 16: 'rg -P 'foo(?=bar)'' could have annotations explaining -P flag and lookahead syntax.",
+      "source_reference": "docs/advanced-patterns/backreferences.md:47-50 (code annotation examples)",
+      "enhancement_type": "code_documentation"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "medium",
+      "section": "Tradeoffs",
+      "description": "Section 'Tradeoffs' mentions predictable performance and error messages but doesn't explain WHY these differences exist (finite automata vs backtracking).",
+      "current_content": "Lines 93-102: Mentions tradeoffs but not the underlying technical reasons",
+      "should_be": "Add brief explanation that default engine uses finite automata (linear time, predictable), while PCRE2 uses backtracking (potentially exponential, more features)",
+      "fix_suggestion": "Expand the Tradeoffs section to explain the algorithmic differences: default engine = DFA/finite automata (O(n) time), PCRE2 = backtracking (potentially O(2^n) with worst-case patterns). This context helps users understand the performance implications.",
+      "source_reference": "docs/advanced-patterns/backreferences.md:10 (explains finite automata vs backtracking)"
+    },
+    {
+      "type": "missing_cross_reference",
+      "severity": "low",
+      "section": "When to Use PCRE2",
+      "description": "Section mentions lookahead/lookbehind and backreferences but doesn't link to dedicated pages for these topics",
+      "current_content": "Lines 46-54: Mentions features without linking to detailed documentation",
+      "fix_suggestion": "Add cross-references to lookaround.md and backreferences.md when mentioning these features. Example: 'Lookahead or lookbehind assertions (see [Lookaround](./lookaround.md))' and 'Backreferences for matching repeated patterns (see [Backreferences](./backreferences.md))'.",
+      "cross_references": ["lookaround", "backreferences"]
+    },
+    {
+      "type": "missing_admonition",
+      "severity": "low",
+      "section": "PCRE2 Error Messages",
+      "description": "Warning about cryptic PCRE2 errors uses bold text instead of MkDocs Material admonition. Other pages use admonition boxes for warnings.",
+      "current_content": "Line 58: '**Warning**: PCRE2 provides less helpful error messages...'",
+      "should_be": "!!! warning \"PCRE2 Error Messages\"\n    PCRE2 provides less helpful error messages than the default engine. If you get cryptic errors, try your pattern with the default engine first to debug.",
+      "fix_suggestion": "Convert the bold warning to a proper MkDocs Material admonition box for visual consistency with backreferences.md and other pages.",
+      "source_reference": "docs/advanced-patterns/backreferences.md:7-12 (admonition example)"
+    }
+  ],
+  "positive_aspects": [
+    "Accurate and comprehensive coverage of PCRE2 features",
+    "Clear comparison table between default and PCRE2 engines (lines 32-44)",
+    "Good explanation of engine selection with --engine flag",
+    "Helpful examples showing practical usage",
+    "Clear documentation of --pcre2-version flag",
+    "Excellent JIT compilation explanation (lines 122-123)",
+    "Proper cross-reference to parent page (line 3)",
+    "All internal links are valid (verified ./index.md exists)"
+  ],
+  "improvement_suggestions": [
+    "Add visual decision flow diagram for engine selection (aligns with advanced-patterns section style)",
+    "Use code annotations to explain flags inline (consistent with backreferences.md and examples.md)",
+    "Add cross-references to related pages (lookaround.md, backreferences.md) when mentioning those features",
+    "Convert warning text to MkDocs Material admonition for visual consistency",
+    "Expand Tradeoffs section with algorithmic explanation (finite automata vs backtracking)",
+    "Consider adding a 'Common Pitfalls' section for PCRE2 usage (regex catastrophic backtracking, etc.)",
+    "Add practical examples showing PCRE2 performance impact with benchmarks"
+  ],
+  "cross_references": [
+    "lookaround",
+    "backreferences",
+    "index",
+    "performance"
+  ],
+  "link_validation": {
+    "total_internal_links": 1,
+    "broken_links": 0,
+    "valid_links": [
+      {
+        "link_text": "Advanced Patterns",
+        "target": "./index.md",
+        "resolved_path": "docs/advanced-patterns/index.md",
+        "status": "valid"
+      }
+    ]
+  },
+  "metadata": {
+    "analyzed_at": "2025-11-13T21:00:00Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": ["PCRE2", "regex engines", "engine selection", "lookahead", "lookbehind", "backreferences"],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "technical_accuracy": "verified_against_source",
+    "code_references": [
+      "crates/pcre2/src/lib.rs",
+      "crates/core/flags/defs.rs:5330-5449"
+    ]
+  }
+}
