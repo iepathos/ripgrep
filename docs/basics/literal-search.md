@@ -57,11 +57,33 @@ Literal search works with other ripgrep flags:
 
 ```bash
 # Case-insensitive literal search
-rg -F -i "TODO"
+rg -F -i "TODO"                    # (1)!
 
 # Literal search with word boundaries
-rg -F -w "log"
+rg -F -w "log"                     # (2)!
 
 # Literal search in specific file types
-rg -F "api_key" --type python
+rg -F "api_key" --type python      # (3)!
 ```
+
+1. Combines literal search with case-insensitive matching
+2. Matches "log" as a complete word, not as part of "login" or "catalog"
+3. Restricts search to Python files while treating pattern as literal string
+
+!!! example "Common Use Cases"
+    Literal search is ideal for:
+
+    - **Log analysis:** `rg -F "[ERROR]" logs/`
+    - **Configuration values:** `rg -F "database.url" --type yaml`
+    - **Code patterns:** `rg -F "TODO(username)" --type rust`
+    - **IP addresses:** `rg -F "192.168.1.1" access.log`
+
+!!! warning "Limitations"
+    When using `-F`, you cannot use regex features like:
+
+    - Wildcards (`.*`, `.+`)
+    - Character classes (`[a-z]`, `\d`)
+    - Anchors (`^`, `$`)
+    - Alternation (`foo|bar`)
+
+    If you need regex features, use escaped patterns instead of `-F`.
