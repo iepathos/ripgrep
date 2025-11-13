@@ -4,6 +4,35 @@
 
 ripgrep provides several flags to help you understand what it's doing and diagnose search issues:
 
+```mermaid
+flowchart TD
+    Start[Having Search Issues?] --> Question{What's the<br/>problem?}
+
+    Question -->|Missing files<br/>in results| Debug[Use --debug]
+    Question -->|Performance<br/>issues| Stats[Use --stats]
+    Question -->|Need detailed<br/>internals| Trace[Use --trace]
+
+    Debug --> DebugInfo[Shows:<br/>- Files searched/skipped<br/>- Ignore files loaded<br/>- Binary detection<br/>- Regex engine]
+
+    Stats --> StatsInfo[Shows:<br/>- Match counts<br/>- Files searched<br/>- Bytes processed<br/>- Time taken]
+
+    Trace --> TraceInfo[Shows:<br/>- Low-level decisions<br/>- Filter processing<br/>- Algorithm internals]
+
+    DebugInfo --> DebugEnough{Got enough<br/>info?}
+    DebugEnough -->|No| Trace
+    DebugEnough -->|Yes| End[Problem Solved]
+
+    StatsInfo --> End
+    TraceInfo --> End
+
+    style Debug fill:#e1f5ff
+    style Stats fill:#e8f5e9
+    style Trace fill:#fff3e0
+    style End fill:#f3e5f5
+```
+
+**Figure**: Decision flowchart for choosing the right debug flag based on your troubleshooting needs.
+
 ## `--debug`
 
 The `--debug` flag shows detailed information about ripgrep's search decisions, including:
@@ -30,6 +59,9 @@ The `--debug` flag shows detailed information about ripgrep's search decisions, 
 - Files you expect to be searched are missing from results
 - You need to understand which ignore files are affecting the search
 - You're troubleshooting performance issues
+
+!!! tip "Start with --debug"
+    Always try `--debug` first before moving to `--trace`. In most cases, `--debug` provides sufficient information to diagnose search issues without overwhelming you with output.
 
 ## `--trace`
 
@@ -59,11 +91,16 @@ The `--stats` flag shows statistics about the search after completion. Statistic
     $ rg "Sherlock" --stats
     [normal search output]
 
-    2 matched lines
-    1 files contained matches
-    1 files searched
-    0.002390 seconds
+    2 matched lines              # (1)!
+    1 files contained matches    # (2)!
+    1 files searched             # (3)!
+    0.002390 seconds             # (4)!
     ```
+
+    1. Total number of lines that matched the pattern
+    2. Number of files that had at least one match
+    3. Total files examined (regardless of matches)
+    4. Time spent performing the search
 
 !!! tip "Structured Output"
     `--stats` is implicitly enabled when `--json` is used, providing structured statistics in JSON format.
