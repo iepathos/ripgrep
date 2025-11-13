@@ -21,6 +21,27 @@ Ripgrep can replace matched text in its output using the `-r/--replace` flag. Th
     rg '(\w+)' -r "$1"  # ✗ Wrong
     ```
 
+## How Replacements Work
+
+When you use the `-r/--replace` flag, ripgrep processes text through several stages:
+
+```mermaid
+flowchart LR
+    Input[Input Text] --> Match{Pattern<br/>Matches?}
+    Match -->|No| Skip[Skip Line]
+    Match -->|Yes| Extract[Extract Capture<br/>Groups]
+    Extract --> Replace[Apply Replacement<br/>String]
+    Replace --> Output[Modified Output]
+    Skip --> Output
+
+    style Input fill:#e1f5ff
+    style Extract fill:#fff3e0
+    style Replace fill:#e8f5e9
+    style Output fill:#f3e5f5
+```
+
+**Figure**: Replacement processing flow showing how matches are transformed into output.
+
 ## The Replace Flag
 
 The basic syntax is:
@@ -68,11 +89,18 @@ You can also use named capture groups for more readable patterns. The syntax is 
 
 ```bash
 # Using named groups for clarity
-rg '(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})' -r 'Year: ${year}, Month: ${month}'
+rg '(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})' \ # (1)!
+   -r 'Year: ${year}, Month: ${month}'                # (2)!
 
 # Extract protocol and domain from URLs
-rg '(?P<protocol>https?)://(?P<domain>[^/]+)' -r '$protocol at $domain'
+rg '(?P<protocol>https?)://(?P<domain>[^/]+)' \       # (3)!
+   -r '$protocol at $domain'                          # (4)!
 ```
+
+1. Named capture groups with `(?P<name>pattern)` syntax make complex patterns self-documenting
+2. Reference named groups with `$name` or `${name}` (braces required when followed by text)
+3. The `?` makes the `s` in `https?` optional, matching both `http` and `https`
+4. Can reference named groups without braces if not followed by valid name characters
 
 Named groups make complex patterns more maintainable and self-documenting.
 
@@ -88,6 +116,30 @@ Named groups make complex patterns more maintainable and self-documenting.
     - **Brace syntax**: Use `${name}` or `${1}` to disambiguate from following text
     - **Invalid references**: If a group doesn't exist, it's replaced with an empty string
     - **Literal dollar sign**: Use `$$` to write a literal `$`
+
+```mermaid
+flowchart TD
+    Start["$1a"] --> Parse{Has Braces?}
+    Parse -->|No| Longest[Parse Longest<br/>Valid Name]
+    Parse -->|Yes "${1}a"| Extract[Extract Group<br/>Reference]
+
+    Longest --> Check{Group "1a"<br/>Exists?}
+    Extract --> Check2{Group "1"<br/>Exists?}
+
+    Check -->|Yes| Output1["Value of group '1a'"]
+    Check -->|No| Output2[Empty String]
+
+    Check2 -->|Yes| Output3["Value of group 1<br/>+ literal 'a'"]
+    Check2 -->|No| Output4["Empty + literal 'a'"]
+
+    style Parse fill:#e1f5ff
+    style Longest fill:#fff3e0
+    style Extract fill:#e8f5e9
+    style Output1 fill:#f3e5f5
+    style Output3 fill:#f3e5f5
+```
+
+**Figure**: How ripgrep parses capture group references with and without braces.
 
 Examples:
 
@@ -335,12 +387,18 @@ rg '(\w+)' -r '${1}a'    # Group 1 followed by "a"
 
 ## Real-World Use Cases
 
+!!! example "Practical Applications"
+    These examples show how replacements solve common text processing tasks. All transformations happen in ripgrep's output without modifying source files.
+
 **Reformatting log entries:**
 ```bash
 # Convert Apache logs to simplified format
-rg '(\S+) - - \[([^\]]+)\] "GET (\S+)"' \
-   -r 'IP: $1 | Time: $2 | Path: $3'
+rg '(\S+) - - \[([^\]]+)\] "GET (\S+)"' \  # (1)!
+   -r 'IP: $1 | Time: $2 | Path: $3'       # (2)!
 ```
+
+1. Pattern captures IP address, timestamp, and request path from Apache log format
+2. Reformats into pipe-delimited format for easier parsing
 
 **Extracting structured data:**
 ```bash
