@@ -35,6 +35,36 @@ If PCRE2 is not compiled in, this command exits with an error.
 
 ## Default vs PCRE2 Features
 
+```mermaid
+graph LR
+    subgraph Default["Default Engine (Rust Regex)"]
+        DFA[Deterministic Finite Automata]
+        DFA --> DFeat1[O(n) linear time]
+        DFA --> DFeat2[Predictable performance]
+        DFA --> DFeat3[Better error messages]
+        DFA --> DLimit[No lookaround/backrefs]
+    end
+
+    subgraph PCRE["PCRE2 Engine"]
+        Back[Backtracking Algorithm]
+        Back --> PFeat1[Advanced features]
+        Back --> PFeat2[Lookaround support]
+        Back --> PFeat3[Backreferences]
+        Back --> PLimit[O(2^n) worst case]
+    end
+
+    Pattern[Your Pattern] --> Choose{Choose Engine}
+    Choose -->|Basic features| Default
+    Choose -->|Advanced features| PCRE
+
+    style Default fill:#e8f5e9
+    style PCRE fill:#fff3e0
+    style DFA fill:#c8e6c9
+    style Back fill:#ffe0b2
+```
+
+**Figure**: Architecture comparison of ripgrep's two regex engines and their fundamental algorithmic differences.
+
 | Feature | Default Engine | PCRE2 Engine |
 |---------|---------------|--------------|
 | Basic regex | ✓ | ✓ |
@@ -49,6 +79,9 @@ If PCRE2 is not compiled in, this command exits with an error.
 
 ## When to Use PCRE2
 
+!!! tip "Engine Selection Strategy"
+    Start with the default engine for best performance. Only switch to PCRE2 if you need lookaround or backreferences. Use `--engine=auto` to let ripgrep choose automatically based on your pattern.
+
 Use PCRE2 when you need:
 
 - Lookahead or lookbehind assertions (see [Lookaround](./lookaround.md))
@@ -56,6 +89,19 @@ Use PCRE2 when you need:
 - Complex pattern features not in the default engine
 
 For most searches, the default engine is faster and sufficient.
+
+!!! example "Practical Use Cases"
+    **Default engine** (fast):
+    ```bash
+    rg 'function \w+\('           # Find function definitions
+    rg 'TODO.*@username'          # Find TODOs by user
+    ```
+
+    **PCRE2 engine** (advanced):
+    ```bash
+    rg -P '(?<=class )\w+'        # Lookbehind: extract class names
+    rg -P '(\w+)=\1'              # Backreference: find duplicated words
+    ```
 
 ## PCRE2 Error Messages
 
@@ -148,6 +194,9 @@ Understanding the algorithmic differences helps explain the performance tradeoff
 - Enables advanced features (backreferences, lookaround) at performance cost
 - Can suffer from "catastrophic backtracking" with certain patterns
 
+!!! warning "Catastrophic Backtracking"
+    PCRE2's backtracking algorithm can become extremely slow with certain patterns. Avoid patterns like `(a+)+b` or `(a*)*b` that create exponential exploration paths. If a PCRE2 search hangs, this is likely the cause. Test complex patterns on small inputs first.
+
 **Explicit engine choice** (`--engine=default` or `--engine=pcre2`):
 - Predictable performance characteristics
 - Clear error messages if features unavailable
@@ -181,4 +230,5 @@ rg --pcre2-version                   # (1)!
 
 If PCRE2 is not compiled in, this command exits with an error.
 
-**JIT Compilation**: The "JIT: enabled" status indicates that PCRE2's Just-In-Time compiler is available. JIT compilation converts regex patterns into native machine code at runtime, providing significant performance improvements (often 2-10x faster) for PCRE2 pattern matching. When JIT is enabled, PCRE2 patterns run much faster, though still typically slower than ripgrep's default finite automata engine.
+!!! note "JIT Compilation Performance"
+    The "JIT: enabled" status indicates that PCRE2's Just-In-Time compiler is available. JIT compilation converts regex patterns into native machine code at runtime, providing significant performance improvements (often 2-10x faster) for PCRE2 pattern matching. When JIT is enabled, PCRE2 patterns run much faster, though still typically slower than ripgrep's default finite automata engine.
