@@ -73,8 +73,8 @@ markdown_extensions:
 nav:
   - Home: introduction.md
   - User Guide:
-      - Basics: basics/index.md
-      - Basics Subpages:
+      - Basics:
+          - basics/index.md
           - Pattern Matching: basics/pattern-matching.md
           - Literal String Search: basics/literal-search.md
           - Regular Expressions: basics/regex-basics.md
@@ -90,8 +90,8 @@ nav:
       - Replacements: replacements.md
       - Configuration File: configuration-file.md
       - File Encoding: file-encoding.md
-      - Binary Data: binary-data/index.md
-      - Binary Data Subpages:
+      - Binary Data:
+          - binary-data/index.md
           - Binary Detection: binary-data/detection.md
           - Binary Modes: binary-data/modes.md
           - Explicit vs Implicit Files: binary-data/explicit-implicit.md
@@ -99,8 +99,8 @@ nav:
           - Examples and Troubleshooting: binary-data/examples.md
       - Compressed Files: compressed-files.md
       - Preprocessor: preprocessor.md
-      - Common Options: common-options/index.md
-      - Common Options Subpages:
+      - Common Options:
+          - common-options/index.md
           - Search Basics: common-options/search-basics.md
           - Output Formatting: common-options/output-formatting.md
           - File Filtering: common-options/file-filtering.md
@@ -111,8 +111,8 @@ nav:
       - Sorting Results: sorting-results.md
       - Utility Modes: utility-modes.md
   - Advanced Topics:
-      - Advanced Patterns: advanced-patterns/index.md
-      - Advanced Patterns Subpages:
+      - Advanced Patterns:
+          - advanced-patterns/index.md
           - Multiline Search: advanced-patterns/multiline.md
           - PCRE2 Engine: advanced-patterns/pcre2.md
           - Lookaround Assertions: advanced-patterns/lookaround.md
@@ -124,8 +124,8 @@ nav:
       - Performance: performance.md
       - Statistics and Metrics: statistics.md
       - Hyperlinks: hyperlinks.md
-      - Troubleshooting: troubleshooting/index.md
-      - Troubleshooting Subpages:
+      - Troubleshooting:
+          - troubleshooting/index.md
           - Debug Flags: troubleshooting/debug-flags.md
           - No Results Found: troubleshooting/no-results.md
           - Performance Issues: troubleshooting/performance.md
