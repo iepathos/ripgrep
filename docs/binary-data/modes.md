@@ -43,7 +43,7 @@ The default mode automatically determines the binary handling strategy based on 
 flowchart TD
     Start[Search File] --> Check{File specification?}
     Check -->|"Explicit
-rg pattern file.bin"| Explicit[SearchAndSuppress mode]
+rg pattern file.bin"| Explicit["Search and Suppress mode"]
     Check -->|"Implicit
 rg pattern -g '*.bin'"| Implicit[Auto skip mode]
 

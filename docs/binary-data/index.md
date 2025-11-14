@@ -8,7 +8,7 @@ Binary data handling is one of ripgrep's most important and nuanced features. Un
 flowchart TD
     Start[File to search] --> Explicit{"Explicitly
 named?"}
-    Explicit -->|Yes| SearchSuppress[SearchAndSuppress mode]
+    Explicit -->|Yes| SearchSuppress["Search and Suppress mode"]
     Explicit -->|No| AutoMode[Auto mode]
 
     AutoMode --> CheckNUL{"Contains

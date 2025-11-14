@@ -215,11 +215,11 @@ No detection"]
 
     BinaryDetect --> FileType{File explicit or implicit?}
 
-    FileType -->|Explicit| Suppress1["SearchAndSuppress
+    FileType -->|Explicit| Suppress1["Search and Suppress
 Show warning"]
     FileType -->|Implicit| BinaryFlag{--binary flag set?}
 
-    BinaryFlag -->|Yes| Suppress2["SearchAndSuppress
+    BinaryFlag -->|Yes| Suppress2["Search and Suppress
 Show warning"]
     BinaryFlag -->|No| Skip["Quit early
 Silent skip"]
