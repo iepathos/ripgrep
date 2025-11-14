@@ -513,12 +513,16 @@ fi
 - ✅ Admonitions appear at decision points or gotchas
 - ✅ Code annotations explain non-obvious parameters
 - ✅ Tabs used for genuine alternatives or platform differences
+- ✅ Diagram labels use proper spacing (e.g., "Search and Suppress" not "SearchAndSuppress")
+- ✅ Multi-line labels use quoted syntax with actual newlines, not HTML `<br/>` tags
 
 **Bad Enhancements:**
 - ❌ Generic diagram that doesn't match page content
 - ❌ Too many admonitions (cluttered page)
 - ❌ Annotations stating the obvious
 - ❌ Tabs for single-variant content
+- ❌ Compound words without spaces in diagram labels (e.g., "SearchAndSuppress")
+- ❌ HTML tags like `<br/>` or HTML entities like `&#40;` in Mermaid diagrams
 
 ### Examples of Context-Aware Enhancement
 
