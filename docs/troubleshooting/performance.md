@@ -41,7 +41,8 @@ flowchart TD
 
     Engine -->|Yes| SimplifyRegex[Simplify Pattern]
     Engine -->|Yes| TryDefault[Test without -P]
-    Engine -->|No| ComplexPattern{Complex<br/>regex?}
+    Engine -->|No| ComplexPattern{"Complex
+regex?"}
 
     ComplexPattern -->|Yes| Literal[Try -F literal]
     ComplexPattern -->|No| Threads[Adjust --threads]

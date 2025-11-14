@@ -15,18 +15,24 @@ Sorting is useful when:
 
 ```mermaid
 flowchart TD
-    Start{Need to<br/>sort results?} --> NeedConsistent{Need consistent<br/>output?}
+    Start{"Need to
+sort results?"} --> NeedConsistent{"Need consistent
+output?"}
 
     NeedConsistent -->|Yes| UsePath[Use --sort path]
-    NeedConsistent -->|No| NeedRecent{Focus on<br/>recent changes?}
+    NeedConsistent -->|No| NeedRecent{"Focus on
+recent changes?"}
 
     NeedRecent -->|Yes| UseModified[Use --sort modified]
-    NeedRecent -->|No| NeedNew{Find newest<br/>files?}
+    NeedRecent -->|No| NeedNew{"Find newest
+files?"}
 
     NeedNew -->|Yes| UseCreated[Use --sort created]
-    NeedNew -->|No| NoSort[Use default<br/>no sorting]
+    NeedNew -->|No| NoSort["Use default
+no sorting"]
 
-    UsePath --> Reverse{Need reverse<br/>order?}
+    UsePath --> Reverse{"Need reverse
+order?"}
     UseModified --> Reverse
     UseCreated --> Reverse
 
@@ -34,7 +40,8 @@ flowchart TD
     Reverse -->|No| Done[Execute search]
     AddR --> Done
 
-    NoSort --> Fast[Fastest performance<br/>Parallel execution]
+    NoSort --> Fast["Fastest performance
+Parallel execution"]
 
     style UsePath fill:#e1f5ff
     style UseModified fill:#fff3e0
@@ -189,23 +196,32 @@ Sorting affects performance in several ways:
 
 ```mermaid
 graph TD
-    Search[Search Operation] --> SortCheck{Sorting<br/>enabled?}
+    Search[Search Operation] --> SortCheck{"Sorting
+enabled?"}
 
     SortCheck -->|No| Parallel[Parallel Execution]
     SortCheck -->|Yes| SortType{Sort type?}
 
-    SortType -->|--sort path<br/>ascending| Stream[Streaming Mode]
+    SortType -->|"--sort path
+ascending"| Stream[Streaming Mode]
     SortType -->|Other| Collect[Collect All Results]
 
-    Parallel --> Stream1[Stream results<br/>as found]
-    Stream --> Stream2[Stream in<br/>path order]
-    Collect --> Buffer[Buffer in<br/>memory]
+    Parallel --> Stream1["Stream results
+as found"]
+    Stream --> Stream2["Stream in
+path order"]
+    Collect --> Buffer["Buffer in
+memory"]
 
-    Stream1 --> Fast[Fastest<br/>Low memory]
-    Stream2 --> Medium[Medium speed<br/>Low memory]
+    Stream1 --> Fast["Fastest
+Low memory"]
+    Stream2 --> Medium["Medium speed
+Low memory"]
     Buffer --> Sort[Sort results]
-    Sort --> Output[Output all<br/>at once]
-    Output --> Slow[Slower<br/>High memory]
+    Sort --> Output["Output all
+at once"]
+    Output --> Slow["Slower
+High memory"]
 
     style Parallel fill:#c8e6c9
     style Stream fill:#e1f5ff

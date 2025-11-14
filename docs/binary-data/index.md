@@ -6,17 +6,21 @@ Binary data handling is one of ripgrep's most important and nuanced features. Un
 
 ```mermaid
 flowchart TD
-    Start[File to search] --> Explicit{Explicitly<br/>named?}
+    Start[File to search] --> Explicit{"Explicitly
+named?"}
     Explicit -->|Yes| SearchSuppress[SearchAndSuppress mode]
     Explicit -->|No| AutoMode[Auto mode]
 
-    AutoMode --> CheckNUL{Contains<br/>NUL byte?}
+    AutoMode --> CheckNUL{"Contains
+NUL byte?"}
     CheckNUL -->|Yes| Skip[Skip file silently]
     CheckNUL -->|No| Search[Search as text]
 
     SearchSuppress --> SearchFile[Search file]
-    SearchFile --> HasMatch{Match found<br/>with NUL?}
-    HasMatch -->|Yes| Warn[Show warning,<br/>suppress output]
+    SearchFile --> HasMatch{"Match found
+with NUL?"}
+    HasMatch -->|Yes| Warn["Show warning,
+suppress output"]
     HasMatch -->|No| Show[Show matches]
 
     style Skip fill:#ffcccc

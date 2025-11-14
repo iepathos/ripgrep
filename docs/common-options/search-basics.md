@@ -10,12 +10,15 @@ By default, ripgrep uses **smart case**: if your pattern is all lowercase, the s
 
 ```mermaid
 flowchart TD
-    Start[Enter Pattern] --> HasUpper{Contains<br/>uppercase?}
+    Start[Enter Pattern] --> HasUpper{"Contains
+uppercase?"}
     HasUpper -->|Yes| CaseSens[Case-Sensitive Search]
     HasUpper -->|No| CaseInsens[Case-Insensitive Search]
 
-    CaseSens --> Ex1["Matches: 'Error'<br/>Skips: 'error', 'ERROR'"]
-    CaseInsens --> Ex2["Matches: 'error',<br/>'Error', 'ERROR'"]
+    CaseSens --> Ex1["Matches: 'Error'
+Skips: 'error', 'ERROR'"]
+    CaseInsens --> Ex2["Matches: 'error',
+'Error', 'ERROR'"]
 
     style HasUpper fill:#e1f5ff
     style CaseSens fill:#ffebee
@@ -60,10 +63,16 @@ flowchart TD
     Type -->|-w| Word[Word Boundary]
     Type -->|-x| Line[Complete Line]
 
-    Regex --> R1["'test.*' matches<br/>'test', 'testing', etc."]
-    Literal --> L1["'test.*' matches<br/>literal 'test.*'"]
-    Word --> W1["'test' matches<br/>'test' only,<br/>not 'testing'"]
-    Line --> X1["'test' matches<br/>only if entire line<br/>is 'test'"]
+    Regex --> R1["'test.*' matches
+'test', 'testing', etc."]
+    Literal --> L1["'test.*' matches
+literal 'test.*'"]
+    Word --> W1["'test' matches
+'test' only,
+not 'testing'"]
+    Line --> X1["'test' matches
+only if entire line
+is 'test'"]
 
     style Type fill:#e1f5ff
     style Regex fill:#fff3e0
@@ -124,13 +133,19 @@ Ripgrep uses Rust's regex engine by default, which is very fast. For advanced re
 
 ```mermaid
 flowchart LR
-    Pattern[Regex Pattern] --> Need{Need advanced<br/>features?}
+    Pattern[Regex Pattern] --> Need{"Need advanced
+features?"}
 
-    Need -->|No| Default[Default Engine<br/>Fast & Efficient]
-    Need -->|Yes| PCRE2[PCRE2 Engine<br/>-P flag]
+    Need -->|No| Default["Default Engine
+Fast & Efficient"]
+    Need -->|Yes| PCRE2["PCRE2 Engine
+-P flag"]
 
-    Default --> D1[Basic regex:<br/>., *, +, ?, [], etc.]
-    PCRE2 --> P1[Lookahead/Lookbehind<br/>Backreferences<br/>Conditional patterns]
+    Default --> D1["Basic regex:
+., *, +, ?, ["], etc.]
+    PCRE2 --> P1["Lookahead/Lookbehind
+Backreferences
+Conditional patterns"]
 
     style Default fill:#e8f5e9
     style PCRE2 fill:#fff3e0

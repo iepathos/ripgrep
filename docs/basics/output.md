@@ -135,13 +135,19 @@ Ripgrep offers two distinct output grouping modes optimized for different use ca
 ```mermaid
 graph LR
     Input[Search Results] --> Decision{Output Mode?}
-    Decision -->|Default| Heading[Heading Mode<br/>Grouped by file]
-    Decision -->|--no-heading| NoHeading[Non-Heading Mode<br/>File on each line]
-    Decision -->|--vimgrep| Vim[Vimgrep Mode<br/>file:line:col:text]
+    Decision -->|Default| Heading["Heading Mode
+Grouped by file"]
+    Decision -->|--no-heading| NoHeading["Non-Heading Mode
+File on each line"]
+    Decision -->|--vimgrep| Vim["Vimgrep Mode
+file:line:col:text"]
 
-    Heading --> Human[Human Reading<br/>Terminal display]
-    NoHeading --> Parse[Machine Parsing<br/>Line-by-line processing]
-    Vim --> IDE[IDE Integration<br/>Quickfix lists]
+    Heading --> Human["Human Reading
+Terminal display"]
+    NoHeading --> Parse["Machine Parsing
+Line-by-line processing"]
+    Vim --> IDE["IDE Integration
+Quickfix lists"]
 
     style Heading fill:#e1f5ff
     style NoHeading fill:#fff3e0
@@ -265,8 +271,10 @@ graph TD
     Line --> CountLine["-c counts lines"]
     Line --> CountMatch["--count-matches counts"]
 
-    CountLine --> Result1["Result: 1<br/>(one matching line)"]
-    CountMatch --> Result2["Result: 3<br/>(three 'error' matches)"]
+    CountLine --> Result1["Result: 1
+(one matching line)"]
+    CountMatch --> Result2["Result: 3
+(three 'error' matches)"]
 
     style Line fill:#f5f5f5
     style CountLine fill:#e1f5ff

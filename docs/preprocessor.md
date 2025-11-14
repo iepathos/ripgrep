@@ -29,11 +29,17 @@ The preprocessor outputs the transformed content to stdout, which ripgrep then s
 
 ```mermaid
 flowchart LR
-    File[Binary File<br/>PDF, .gz, .docx] --> Check{--pre-glob<br/>match?}
-    Check -->|No Match| Direct[Direct Search<br/>UTF-8 content]
-    Check -->|Match| Pre[Preprocessor<br/>Transform to text]
-    Pre --> Stdout[Text Output<br/>to stdout]
-    Stdout --> Search[ripgrep<br/>Pattern Match]
+    File["Binary File
+PDF, .gz, .docx"] --> Check{"--pre-glob
+match?"}
+    Check -->|No Match| Direct["Direct Search
+UTF-8 content"]
+    Check -->|Match| Pre["Preprocessor
+Transform to text"]
+    Pre --> Stdout["Text Output
+to stdout"]
+    Stdout --> Search["ripgrep
+Pattern Match"]
     Direct --> Search
     Search --> Results[Search Results]
 
@@ -143,17 +149,20 @@ Make the preprocessor conditional on file type using two approaches:
 
 ```mermaid
 flowchart TD
-    Start[File Input] --> Approach{Detection<br/>Strategy}
+    Start[File Input] --> Approach{"Detection
+Strategy"}
 
     Approach -->|Extension-Based| Ext[Check File Extension]
     Ext --> ExtMatch{*.pdf?}
-    ExtMatch -->|Yes| NonEmpty{File<br/>Non-empty?}
+    ExtMatch -->|Yes| NonEmpty{"File
+Non-empty?"}
     ExtMatch -->|No| Cat1[cat - -]
     NonEmpty -->|Yes| PDF1[pdftotext - -]
     NonEmpty -->|No| Cat1
 
     Approach -->|Content Sniffing| Sniff[Run 'file' Command]
-    Sniff --> FileType{Content<br/>Type?}
+    Sniff --> FileType{"Content
+Type?"}
     FileType -->|PDF| PDF2[pdftotext - -]
     FileType -->|Zstandard| Zstd[pzstd -cdq]
     FileType -->|gzip| Gzip[gzip -cdq]

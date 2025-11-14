@@ -49,13 +49,17 @@ graph LR
 ```mermaid
 graph TD
     subgraph Direction
-        LA[Lookahead<br/>Check AFTER]
-        LB[Lookbehind<br/>Check BEFORE]
+        LA["Lookahead
+Check AFTER"]
+        LB["Lookbehind
+Check BEFORE"]
     end
 
     subgraph Condition
-        POS[Positive<br/>Must Match]
-        NEG[Negative<br/>Must NOT Match]
+        POS["Positive
+Must Match"]
+        NEG["Negative
+Must NOT Match"]
     end
 
     LA --- POS
@@ -63,10 +67,14 @@ graph TD
     LB --- POS
     LB --- NEG
 
-    POS --> P1["(?=...) Positive Lookahead<br/>Pattern must exist ahead"]
-    NEG --> N1["(?!...) Negative Lookahead<br/>Pattern must NOT exist ahead"]
-    POS --> P2["(?<=...) Positive Lookbehind<br/>Pattern must exist behind"]
-    NEG --> N2["(?<!...) Negative Lookbehind<br/>Pattern must NOT exist behind"]
+    POS --> P1["(?=...) Positive Lookahead
+Pattern must exist ahead"]
+    NEG --> N1["(?!...) Negative Lookahead
+Pattern must NOT exist ahead"]
+    POS --> P2["(?<=...) Positive Lookbehind
+Pattern must exist behind"]
+    NEG --> N2["(?<!...) Negative Lookbehind
+Pattern must NOT exist behind"]
 
     style LA fill:#e1f5ff
     style LB fill:#fff3e0
@@ -161,9 +169,11 @@ rg -Po '(?<=").*?(?=")' # (2)!
 graph TD
     A[Need to match pattern] --> B{Need context?}
     B -->|No| C[Use simple pattern]
-    B -->|Yes| D{Include context<br/>in result?}
+    B -->|Yes| D{"Include context
+in result?"}
     D -->|Yes| E[Use capture groups]
-    D -->|No| F{Context before<br/>or after?}
+    D -->|No| F{"Context before
+or after?"}
     F -->|Before| G[Use lookbehind]
     F -->|After| H[Use lookahead]
     F -->|Both| I[Combine both]

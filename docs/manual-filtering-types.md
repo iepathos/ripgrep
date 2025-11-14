@@ -521,13 +521,18 @@ Under the hood, file types are implemented as named collections of glob patterns
 
 ```mermaid
 flowchart TD
-    Start[File Encountered] --> IgnoreCheck{In .gitignore<br/>or ignore file?}
+    Start[File Encountered] --> IgnoreCheck{"In .gitignore
+or ignore file?"}
     IgnoreCheck -->|Yes| Skip[Skip File]
-    IgnoreCheck -->|No| TypeCheck{-t or -T<br/>specified?}
+    IgnoreCheck -->|No| TypeCheck{"-t or -T
+specified?"}
 
-    TypeCheck -->|No Type Flags| GlobCheck{-g glob<br/>specified?}
-    TypeCheck -->|Has -t| MatchType{File matches<br/>-t types?}
-    TypeCheck -->|Has -T| ExcludeType{File matches<br/>-T types?}
+    TypeCheck -->|No Type Flags| GlobCheck{"-g glob
+specified?"}
+    TypeCheck -->|Has -t| MatchType{"File matches
+-t types?"}
+    TypeCheck -->|Has -T| ExcludeType{"File matches
+-T types?"}
 
     MatchType -->|Yes| GlobCheck
     MatchType -->|No| Skip
@@ -536,7 +541,8 @@ flowchart TD
     ExcludeType -->|No| GlobCheck
 
     GlobCheck -->|No Glob| Search[Search File]
-    GlobCheck -->|Has -g| MatchGlob{File matches<br/>glob pattern?}
+    GlobCheck -->|Has -g| MatchGlob{"File matches
+glob pattern?"}
 
     MatchGlob -->|Yes| Search
     MatchGlob -->|No| Skip

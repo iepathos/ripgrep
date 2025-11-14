@@ -52,7 +52,8 @@ This lock-free parallel iteration (using atomic operations for work distribution
 
 ```mermaid
 graph TD
-    Start[Directory Traversal] --> WorkQueue[Work Queue<br/>Files to Search]
+    Start[Directory Traversal] --> WorkQueue["Work Queue
+Files to Search"]
     WorkQueue --> T1[Thread 1]
     WorkQueue --> T2[Thread 2]
     WorkQueue --> T3[Thread 3]
@@ -109,20 +110,26 @@ By default, ripgrep automatically chooses whether to use memory mapping based on
 ```mermaid
 flowchart TD
     Start[File to Search] --> Type{File Type}
-    Type -->|Stdin| BufferStdin[Buffered Read<br/>Streaming Input]
+    Type -->|Stdin| BufferStdin["Buffered Read
+Streaming Input"]
     Type -->|Regular File| Size{File Size}
 
     Size -->|Large File| Resources{RAM Available?}
-    Size -->|Small File| BufferSmall[Buffered Read<br/>Better for Small Files]
+    Size -->|Small File| BufferSmall["Buffered Read
+Better for Small Files"]
 
     Resources -->|Yes + Sufficient| FS{File System}
-    Resources -->|No/Limited| BufferMem[Buffered Read<br/>Memory Constrained]
+    Resources -->|No/Limited| BufferMem["Buffered Read
+Memory Constrained"]
 
     FS -->|Local Disk| Cache{In Page Cache?}
-    FS -->|Network/NFS| BufferNet[Buffered Read<br/>Network Overhead]
+    FS -->|Network/NFS| BufferNet["Buffered Read
+Network Overhead"]
 
-    Cache -->|Yes| MmapCache[Memory Mapping<br/>Zero-Copy Access]
-    Cache -->|No| MmapDisk[Memory Mapping<br/>OS Handles I/O]
+    Cache -->|Yes| MmapCache["Memory Mapping
+Zero-Copy Access"]
+    Cache -->|No| MmapDisk["Memory Mapping
+OS Handles I/O"]
 
     MmapCache --> Search[Search File]
     MmapDisk --> Search
@@ -295,13 +302,19 @@ rg --engine auto pattern
 graph LR
     Pattern[Regex Pattern] --> Analysis{Pattern Analysis}
 
-    Analysis -->|Simple Literal| Literal[SIMD Literal<br/>Matching]
-    Analysis -->|Standard Regex| DFA[Rust Regex<br/>Finite Automata]
-    Analysis -->|Look-around/Backrefs| PCRE[PCRE2<br/>Backtracking]
+    Analysis -->|Simple Literal| Literal["SIMD Literal
+Matching"]
+    Analysis -->|Standard Regex| DFA["Rust Regex
+Finite Automata"]
+    Analysis -->|Look-around/Backrefs| PCRE["PCRE2
+Backtracking"]
 
-    Literal --> Perf1[⚡ Fastest<br/>O&#40;n&#41; guaranteed]
-    DFA --> Perf2[⚡⚡ Fast<br/>O&#40;n&#41; guaranteed]
-    PCRE --> Perf3[⚠️ Variable<br/>Can be slow]
+    Literal --> Perf1["⚡ Fastest
+    O(n) guaranteed"]
+    DFA --> Perf2["⚡⚡ Fast
+    O(n) guaranteed"]
+    PCRE --> Perf3["⚠️ Variable
+    Can be slow"]
 
     style Literal fill:#c8e6c9
     style DFA fill:#e1f5ff

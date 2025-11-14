@@ -128,13 +128,19 @@ This allows building complex filters by layering include and exclude patterns.
 
 ```mermaid
 flowchart TD
-    Start[File Encountered] --> Check{Any -g<br/>patterns?}
-    Check -->|No| Auto[Use Automatic Filtering<br/>.gitignore, .ignore]
-    Check -->|Yes| Eval[Evaluate Glob Patterns<br/>in order]
+    Start[File Encountered] --> Check{"Any -g
+patterns?"}
+    Check -->|No| Auto["Use Automatic Filtering
+.gitignore, .ignore"]
+    Check -->|Yes| Eval["Evaluate Glob Patterns
+in order"]
 
-    Eval --> Include{Matches<br/>include<br/>pattern?}
+    Eval --> Include{"Matches
+include
+pattern?"}
     Include -->|No| Skip[Skip File]
-    Include -->|Yes| Exclude{Later pattern<br/>excludes?}
+    Include -->|Yes| Exclude{"Later pattern
+excludes?"}
 
     Exclude -->|Yes !pattern| Skip
     Exclude -->|No| Search[Search File]

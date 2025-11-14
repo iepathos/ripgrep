@@ -50,22 +50,31 @@ The default engine uses finite automata which guarantees linear time complexity 
 
 ```mermaid
 flowchart TD
-    Start[Writing Regex Pattern] --> NeedFeature{Need lookaround<br/>or backreferences?}
+    Start[Writing Regex Pattern] --> NeedFeature{"Need lookaround
+or backreferences?"}
 
     NeedFeature -->|No| Default[Use Default Engine]
-    NeedFeature -->|Yes| TestSize{Limited<br/>search space?}
+    NeedFeature -->|Yes| TestSize{"Limited
+search space?"}
 
-    TestSize -->|Yes| TestPattern[Test Pattern<br/>on Real Data]
+    TestSize -->|Yes| TestPattern["Test Pattern
+on Real Data"]
     TestSize -->|No| Rethink[Reconsider Approach]
 
-    TestPattern --> Acceptable{Performance<br/>acceptable?}
-    Acceptable -->|Yes| UsePCRE2[Use PCRE2 Engine<br/>with -P flag]
-    Acceptable -->|No| Simplify[Simplify Pattern<br/>or Split Search]
+    TestPattern --> Acceptable{"Performance
+acceptable?"}
+    Acceptable -->|Yes| UsePCRE2["Use PCRE2 Engine
+with -P flag"]
+    Acceptable -->|No| Simplify["Simplify Pattern
+or Split Search"]
 
-    Rethink --> Alternative[Find Alternative<br/>Approach]
+    Rethink --> Alternative["Find Alternative
+Approach"]
 
-    Default --> Fast[Fast Linear Time<br/>SIMD Optimized]
-    UsePCRE2 --> Slower[Slower Backtracking<br/>Test Thoroughly]
+    Default --> Fast["Fast Linear Time
+SIMD Optimized"]
+    UsePCRE2 --> Slower["Slower Backtracking
+Test Thoroughly"]
 
     style Default fill:#e8f5e9
     style UsePCRE2 fill:#fff3e0
@@ -142,14 +151,20 @@ flowchart TD
     Type -->|Single File| Large{Large File?}
     Type -->|Directory| ManyFiles[Many Files to Scan]
 
-    Large -->|Yes| MMap[Memory Mapping<br/>mmap]
+    Large -->|Yes| MMap["Memory Mapping
+mmap"]
     Large -->|No| MMap
 
-    ManyFiles --> Buffered[Buffered Reading<br/>Incremental]
+    ManyFiles --> Buffered["Buffered Reading
+Incremental"]
 
-    MMap --> MMAPBenefits[✓ Maps file to memory<br/>✓ Faster for large files<br/>✓ Lower memory overhead]
+    MMap --> MMAPBenefits["✓ Maps file to memory
+✓ Faster for large files
+✓ Lower memory overhead"]
 
-    Buffered --> BufferedBenefits[✓ Reads incrementally<br/>✓ Better for many small files<br/>✓ Predictable memory]
+    Buffered --> BufferedBenefits["✓ Reads incrementally
+✓ Better for many small files
+✓ Predictable memory"]
 
     MMAPBenefits --> Result[Search Results]
     BufferedBenefits --> Result

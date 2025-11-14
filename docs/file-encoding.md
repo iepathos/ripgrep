@@ -147,13 +147,16 @@ Other encodings in the WHATWG standard that have BOMs are not automatically dete
 
 ```mermaid
 flowchart TD
-    Start[Read First 3 Bytes] --> CheckUTF8{Bytes =<br/>EF BB BF?}
+    Start[Read First 3 Bytes] --> CheckUTF8{"Bytes =
+EF BB BF?"}
 
     CheckUTF8 -->|Yes| UTF8[Detected: UTF-8]
-    CheckUTF8 -->|No| CheckUTF16LE{Bytes start<br/>FF FE?}
+    CheckUTF8 -->|No| CheckUTF16LE{"Bytes start
+FF FE?"}
 
     CheckUTF16LE -->|Yes| UTF16LE[Detected: UTF-16LE]
-    CheckUTF16LE -->|No| CheckUTF16BE{Bytes start<br/>FE FF?}
+    CheckUTF16LE -->|No| CheckUTF16BE{"Bytes start
+FE FF?"}
 
     CheckUTF16BE -->|Yes| UTF16BE[Detected: UTF-16BE]
     CheckUTF16BE -->|No| NoBOM[No BOM Detected]
@@ -166,7 +169,8 @@ flowchart TD
     Transcode16LE --> SearchUTF8
     Transcode16BE --> SearchUTF8
 
-    NoBOM --> AssumeASCII[Assume ASCII-compatible<br/>or use explicit encoding]
+    NoBOM --> AssumeASCII["Assume ASCII-compatible
+or use explicit encoding"]
 
     style CheckUTF8 fill:#e1f5ff
     style CheckUTF16LE fill:#e1f5ff
@@ -243,22 +247,30 @@ These encodings require explicit `--encoding` specification or a BOM for reliabl
 graph TD
     File[File to Search] --> HasBOM{Has BOM?}
 
-    HasBOM -->|Yes| AutoDetect[Auto-detected<br/>UTF-8/UTF-16]
-    HasBOM -->|No| ExplicitEnc{Explicit<br/>--encoding?}
+    HasBOM -->|Yes| AutoDetect["Auto-detected
+UTF-8/UTF-16"]
+    HasBOM -->|No| ExplicitEnc{"Explicit
+--encoding?"}
 
-    ExplicitEnc -->|Yes| UseExplicit[Use specified<br/>encoding]
-    ExplicitEnc -->|No| AssumeASCII[Assume<br/>ASCII-compatible]
+    ExplicitEnc -->|Yes| UseExplicit["Use specified
+encoding"]
+    ExplicitEnc -->|No| AssumeASCII["Assume
+ASCII-compatible"]
 
     AutoDetect --> Transcode1[Transcode to UTF-8]
     UseExplicit --> IsUTF8{Is UTF-8?}
     IsUTF8 -->|No| Transcode2[Transcode to UTF-8]
     IsUTF8 -->|Yes| DirectSearch
 
-    AssumeASCII --> Compatible{Actually<br/>ASCII-compatible?}
-    Compatible -->|Yes UTF-8/Latin1| DirectSearch[Direct byte search<br/>Fast]
-    Compatible -->|No UTF-16/UTF-32| Mismatch[Pattern won't match<br/>Bytes don't align]
+    AssumeASCII --> Compatible{"Actually
+ASCII-compatible?"}
+    Compatible -->|Yes UTF-8/Latin1| DirectSearch["Direct byte search
+Fast"]
+    Compatible -->|No UTF-16/UTF-32| Mismatch["Pattern won't match
+Bytes don't align"]
 
-    Transcode1 --> Search[Search UTF-8 content<br/>Slower but reliable]
+    Transcode1 --> Search["Search UTF-8 content
+Slower but reliable"]
     Transcode2 --> Search
 
     style AutoDetect fill:#e8f5e9

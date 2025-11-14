@@ -40,11 +40,13 @@ graph LR
     end
 
     subgraph "Pattern: \\p{Greek}+"
-        P[Check each<br/>character]
+        P["Check each
+character"]
         P --> M1{Is Greek?}
     end
 
-    C7 -.Unicode<br/>property.-> M1
+    C7 -."Unicode
+property".-> M1
     M1 -->|Yes| R1[✓ Match Σ]
 
     style C7 fill:#e8f5e9

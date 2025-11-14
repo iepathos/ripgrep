@@ -34,22 +34,27 @@ Binary detection behavior depends on the search mode ripgrep uses:
 flowchart TD
     Start[Start File Search] --> Mode{Search Mode?}
 
-    Mode -->|Buffered<br/>--no-mmap| Buffered[Buffered Search]
-    Mode -->|Memory-Mapped<br/>--mmap| Mmap[Memory-Mapped Search]
+    Mode -->|"Buffered
+--no-mmap"| Buffered[Buffered Search]
+    Mode -->|"Memory-Mapped
+--mmap"| Mmap[Memory-Mapped Search]
 
     Buffered --> ReadBuf[Read 64KB Buffer]
-    ReadBuf --> ScanBuf{NUL byte<br/>in buffer?}
+    ReadBuf --> ScanBuf{"NUL byte
+in buffer?"}
     ScanBuf -->|Yes| BinaryBuf[Mark as Binary]
     ScanBuf -->|No| MoreBuf{More data?}
     MoreBuf -->|Yes| ReadBuf
     MoreBuf -->|No| TextBuf[Process as Text]
 
     Mmap --> ScanFirst[Scan First 64KB]
-    ScanFirst --> NulFirst{NUL byte<br/>found?}
+    ScanFirst --> NulFirst{"NUL byte
+found?"}
     NulFirst -->|Yes| BinaryMmap[Mark as Binary]
     NulFirst -->|No| Search[Search for Matches]
     Search --> ScanMatch[Scan Match Lines]
-    ScanMatch --> NulMatch{NUL in<br/>matches?}
+    ScanMatch --> NulMatch{"NUL in
+matches?"}
     NulMatch -->|Yes| BinaryMmap
     NulMatch -->|No| TextMmap[Process as Text]
 

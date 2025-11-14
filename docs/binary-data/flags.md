@@ -10,14 +10,15 @@ Ripgrep uses three binary handling modes (defined in `crates/core/flags/lowargs.
 
 | Mode | Description | Behavior | When Used |
 |------|-------------|----------|-----------|
-| **Auto** (default) | Automatically determines binary handling | Explicit files: SearchAndSuppress<br>Implicit files: Skip binary files | Default behavior |
-| **SearchAndSuppress** | Search binary files but suppress matches | Shows warning when binary match found<br>NUL bytes replaced with line terminators | Explicit files, or `--binary` flag |
-| **AsText** | Treat everything as text | No binary detection<br>No NUL byte replacement | `--text` / `-a` flag |
+| **Auto** (default) | Automatically determines binary handling | Explicit files: SearchAndSuppress; Implicit files: Skip binary files | Default behavior |
+| **SearchAndSuppress** | Search binary files but suppress matches | Shows warning when binary match found; NUL bytes replaced with line terminators | Explicit files, or `--binary` flag |
+| **AsText** | Treat everything as text | No binary detection; No NUL byte replacement | `--text` / `-a` flag |
 
 ```mermaid
 stateDiagram-v2
     [*] --> Auto: Default
-    Auto --> SearchAndSuppress: --binary flag<br/>or explicit file
+    Auto --> SearchAndSuppress: "--binary flag
+or explicit file"
     Auto --> AsText: --text/-a flag
     SearchAndSuppress --> Auto: --no-binary flag
     AsText --> Auto: --no-text flag
@@ -207,16 +208,21 @@ Here's how ripgrep decides what to do with binary data:
 flowchart TD
     Start[File to search] --> TextFlag{--text flag set?}
 
-    TextFlag -->|Yes| AsText[Treat as text<br/>AsText mode<br/>No detection]
+    TextFlag -->|Yes| AsText["Treat as text
+AsText mode
+No detection"]
     TextFlag -->|No| BinaryDetect[Binary detection enabled]
 
     BinaryDetect --> FileType{File explicit or implicit?}
 
-    FileType -->|Explicit| Suppress1[SearchAndSuppress<br/>Show warning]
+    FileType -->|Explicit| Suppress1["SearchAndSuppress
+Show warning"]
     FileType -->|Implicit| BinaryFlag{--binary flag set?}
 
-    BinaryFlag -->|Yes| Suppress2[SearchAndSuppress<br/>Show warning]
-    BinaryFlag -->|No| Skip[Quit early<br/>Silent skip]
+    BinaryFlag -->|Yes| Suppress2["SearchAndSuppress
+Show warning"]
+    BinaryFlag -->|No| Skip["Quit early
+Silent skip"]
 
     style AsText fill:#e1f5ff
     style Suppress1 fill:#fff3e0

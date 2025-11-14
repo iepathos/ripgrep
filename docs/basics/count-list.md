@@ -12,20 +12,25 @@ flowchart TD
     Mode -->|Count| CountType{Count what?}
     Mode -->|List| ListType{List which files?}
 
-    CountType -->|-c| Lines[Count matching lines<br/>per file]
-    CountType -->|--count-matches| Matches[Count individual matches<br/>can be multiple per line]
+    CountType -->|-c| Lines["Count matching lines
+per file"]
+    CountType -->|--count-matches| Matches["Count individual matches
+can be multiple per line"]
 
     Lines --> Zero1{Include zero?}
     Matches --> Zero2{Include zero?}
 
-    Zero1 -->|--include-zero| AllFiles1[Show all files<br/>including 0 counts]
+    Zero1 -->|--include-zero| AllFiles1["Show all files
+including 0 counts"]
     Zero1 -->|default| NonZero1[Only files with matches]
-    Zero2 -->|--include-zero| AllFiles2[Show all files<br/>including 0 counts]
+    Zero2 -->|--include-zero| AllFiles2["Show all files
+including 0 counts"]
     Zero2 -->|default| NonZero2[Only files with matches]
 
     ListType -->|-l| WithMatches[Files with matches]
     ListType -->|--files-without-match| WithoutMatches[Files without matches]
-    ListType -->|--files| AllSearchable[All searchable files<br/>no search performed]
+    ListType -->|--files| AllSearchable["All searchable files
+no search performed"]
 
     style Content fill:#e8f5e9
     style Lines fill:#e1f5ff

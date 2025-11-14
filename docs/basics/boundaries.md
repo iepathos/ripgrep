@@ -20,8 +20,10 @@ rg -w "test"        # Matches only "test"
 flowchart LR
     Text["Text: testing test contest latest"]
 
-    NoFlag["rg 'test'<br/>(no -w flag)"]
-    WithFlag["rg -w 'test'<br/>(with -w flag)"]
+    NoFlag["rg 'test'
+(no -w flag)"]
+    WithFlag["rg -w 'test'
+(with -w flag)"]
 
     NoFlag --> M1["✓ testing"]
     NoFlag --> M2["✓ test"]
@@ -99,8 +101,8 @@ flowchart TD
     HasX -->|Yes| CheckOrder{Which comes last?}
     HasX -->|No| HasW
 
-    CheckOrder -->|"-x last"| UseX[Use -x: Line matching]
-    CheckOrder -->|"-w last"| UseW[Use -w: Word matching]
+    CheckOrder -->|"-x last"| UseX["Use -x: Line matching"]
+    CheckOrder -->|"-w last"| UseW["Use -w: Word matching"]
 
     HasW -->|Yes| UseW
     HasW -->|No| Normal[Normal pattern matching]

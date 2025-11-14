@@ -362,19 +362,27 @@ When matches are close together and their context windows overlap, ripgrep merge
 graph TD
     subgraph "Before Merge: Separate Context Windows"
         M1["Line 10: MATCH 1"]
-        C1["Lines 11-12<br/>Context after"]
-        SEP1["--<br/>Separator"]
-        C2["Lines 13-14<br/>Context before"]
+        C1["Lines 11-12
+Context after"]
+        SEP1["--
+Separator"]
+        C2["Lines 13-14
+Context before"]
         M2["Line 15: MATCH 2"]
-        C3["Lines 16-17<br/>Context after"]
+        C3["Lines 16-17
+Context after"]
     end
 
     subgraph "After Merge: Overlapping Regions Combined"
         M1A["Line 10: MATCH 1"]
-        C1A["Lines 11-12<br/>Context"]
-        OVER["Lines 13-14<br/>Shared Context<br/>(No separator)"]
+        C1A["Lines 11-12
+Context"]
+        OVER[""Lines 13-14
+Shared Context
+(No separator")"]
         M2A["Line 15: MATCH 2"]
-        C3A["Lines 16-17<br/>Context"]
+        C3A["Lines 16-17
+Context"]
     end
 
     M1 --> C1

@@ -8,23 +8,30 @@ By default, ripgrep respects various ignore files, skips hidden files and direct
 
 ```mermaid
 flowchart TD
-    Start[File Encountered] --> Explicit{Specified<br/>Explicitly?}
+    Start[File Encountered] --> Explicit{"Specified
+Explicitly?"}
     Explicit -->|Yes| Search[Search File]
-    Explicit -->|No| Hidden{Hidden<br/>File?}
+    Explicit -->|No| Hidden{"Hidden
+File?"}
 
-    Hidden -->|Yes| HiddenFlag{--hidden<br/>enabled?}
+    Hidden -->|Yes| HiddenFlag{"--hidden
+enabled?"}
     HiddenFlag -->|No| Skip1[Skip File]
     HiddenFlag -->|Yes| Ignore
 
-    Hidden -->|No| Ignore{Matches<br/>Ignore Pattern?}
+    Hidden -->|No| Ignore{"Matches
+Ignore Pattern?"}
 
-    Ignore -->|Yes| IgnoreFlag{--no-ignore<br/>or -u?}
+    Ignore -->|Yes| IgnoreFlag{"--no-ignore
+or -u?"}
     IgnoreFlag -->|No| Skip2[Skip File]
     IgnoreFlag -->|Yes| Binary
 
-    Ignore -->|No| Binary{Binary<br/>Content?}
+    Ignore -->|No| Binary{"Binary
+Content?"}
 
-    Binary -->|Yes| BinaryFlag{--binary<br/>enabled?}
+    Binary -->|Yes| BinaryFlag{"--binary
+enabled?"}
     BinaryFlag -->|No| Skip3[Skip File]
     BinaryFlag -->|Yes| Search
 
@@ -383,12 +390,19 @@ The `-u/--unrestricted` flag can be used up to three times for progressive filte
 
 ```mermaid
 graph LR
-    Default[Default<br/>rg 'pattern'] --> U1[-u<br/>--no-ignore]
-    U1 --> U2[-uu<br/>+ --hidden]
-    U2 --> U3[-uuu<br/>+ --binary]
+    Default["Default
+rg 'pattern'"] --> U1["-u
+--no-ignore"]
+    U1 --> U2["-uu
++ --hidden"]
+    U2 --> U3["-uuu
++ --binary"]
 
-    Default -.->|Filters| F1[Ignore Files<br/>Hidden Files<br/>Binary Files]
-    U1 -.->|Filters| F2[Hidden Files<br/>Binary Files]
+    Default -.->|Filters| F1["Ignore Files
+Hidden Files
+Binary Files"]
+    U1 -.->|Filters| F2["Hidden Files
+Binary Files"]
     U2 -.->|Filters| F3[Binary Files]
     U3 -.->|Filters| F4[None]
 

@@ -6,17 +6,22 @@ If ripgrep returns zero results when you expect matches, try these troubleshooti
 
 ```mermaid
 flowchart TD
-    Start[No Results Found] --> Files{Are expected files<br/>being searched?}
-    Files -->|Check with --files| Listed{Files in<br/>--files output?}
+    Start[No Results Found] --> Files{"Are expected files
+being searched?"}
+    Files -->|Check with --files| Listed{"Files in
+--files output?"}
 
-    Listed -->|No| Gitignore{Filtered by<br/>.gitignore?}
-    Gitignore -->|Yes| UseU[Use -u/-uu/-uuu<br/>to bypass ignores]
+    Listed -->|No| Gitignore{"Filtered by
+.gitignore?"}
+    Gitignore -->|Yes| UseU["Use -u/-uu/-uuu
+to bypass ignores"]
     Gitignore -->|No| Hidden{Hidden files?}
 
     Hidden -->|Yes| UseHidden[Use --hidden flag]
     Hidden -->|No| Type{Wrong type filter?}
 
-    Type -->|Yes| FixType[Use -g glob or<br/>check --type-list]
+    Type -->|Yes| FixType["Use -g glob or
+check --type-list"]
 
     Listed -->|Yes| Binary{Binary files?}
     Binary -->|Yes| UseText[Use -a/--text flag]
@@ -83,18 +88,23 @@ DEBUG|ignore::walk: ignoring ./node_modules: Ignore(IgnoreMatch(...))  # (1)!
 
 ```mermaid
 graph TD
-    All[All Files in Directory] --> VCS{.gitignore<br/>.git/info/exclude}
+    All[All Files in Directory] --> VCS{".gitignore
+.git/info/exclude"}
     VCS -->|Filtered| Ignored1[Ignored Files]
-    VCS -->|Pass| Custom{.ignore<br/>.rgignore}
+    VCS -->|Pass| Custom{".ignore
+.rgignore"}
 
     Custom -->|Filtered| Ignored2[Ignored Files]
-    Custom -->|Pass| Hidden{Hidden Files<br/>starting with .}
+    Custom -->|Pass| Hidden{"Hidden Files
+starting with ."}
 
     Hidden -->|Filtered| Ignored3[Hidden Files]
-    Hidden -->|Pass| Binary{Binary Files<br/>with NUL bytes}
+    Hidden -->|Pass| Binary{"Binary Files
+with NUL bytes"}
 
     Binary -->|Filtered| Ignored4[Binary Files]
-    Binary -->|Pass| Type{File Type<br/>-t filter}
+    Binary -->|Pass| Type{"File Type
+-t filter"}
 
     Type -->|Filtered| Ignored5[Non-matching Types]
     Type -->|Pass| Searched[Files Searched]

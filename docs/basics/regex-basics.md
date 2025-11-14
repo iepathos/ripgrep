@@ -190,15 +190,24 @@ rg --auto-hybrid-regex pattern  # Synonym for --engine auto
 
 ```mermaid
 flowchart TD
-    Start[Need Regex Pattern] --> Check{Pattern<br/>Requirements?}
+    Start[Need Regex Pattern] --> Check{"Pattern
+Requirements?"}
 
-    Check -->|Basic matching<br/>Character classes<br/>Quantifiers| Default[Use Default Engine<br/>Fast & Efficient]
-    Check -->|Backreferences<br/>Lookahead/behind<br/>Advanced features| PCRE[Use PCRE2 Engine<br/>-P flag]
-    Check -->|Not sure| Auto[Use Auto Mode<br/>--auto-hybrid-regex]
+    Check -->|"Basic matching
+Character classes
+Quantifiers"| Default["Use Default Engine
+Fast & Efficient"]
+    Check -->|"Backreferences
+Lookahead/behind
+Advanced features"| PCRE["Use PCRE2 Engine
+-P flag"]
+    Check -->|Not sure| Auto["Use Auto Mode
+--auto-hybrid-regex"]
 
     Default --> Search[Execute Search]
     PCRE --> Search
-    Auto --> Detect{Auto-detect<br/>Pattern Type}
+    Auto --> Detect{"Auto-detect
+Pattern Type"}
     Detect -->|Simple| UseDefault[Select Default]
     Detect -->|Complex| UsePCRE[Select PCRE2]
     UseDefault --> Search

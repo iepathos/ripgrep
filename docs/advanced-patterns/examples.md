@@ -10,16 +10,21 @@ Understanding which flags to use for different search scenarios:
 
 ```mermaid
 flowchart TD
-    Start[Pattern Type] --> Multi{Spans multiple<br/>lines?}
+    Start[Pattern Type] --> Multi{"Spans multiple
+lines?"}
 
-    Multi -->|Yes| Dotall{Need . to<br/>match newlines?}
-    Multi -->|No| Features{Need lookaround<br/>or backrefs?}
+    Multi -->|Yes| Dotall{"Need . to
+match newlines?"}
+    Multi -->|No| Features{"Need lookaround
+or backrefs?"}
 
-    Dotall -->|Yes| UseDotall["Use: -U --multiline-dotall<br/>or -U '(?s)pattern'"]
+    Dotall -->|Yes| UseDotall[""Use: -U --multiline-dotall
+or -U '(?s")pattern'"]
     Dotall -->|No| UseMulti["Use: -U pattern"]
 
     Features -->|Yes| UsePCRE["Use: -P pattern"]
-    Features -->|No| UseDefault["Use: pattern<br/>(default engine)"]
+    Features -->|No| UseDefault[""Use: pattern
+(default engine")"]
 
     UsePCRE --> PCREMulti{Also multiline?}
     PCREMulti -->|Yes| UsePU["Use: -PU pattern"]

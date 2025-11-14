@@ -11,23 +11,28 @@ Try these exercises to solidify your understanding:
 
 ```mermaid
 graph TD
-    Start[Start Here] --> Basic[Basic Search<br/>Exercise 1]
-    Basic --> Flags[Search Flags<br/>Exercises 2-6]
+    Start[Start Here] --> Basic["Basic Search
+Exercise 1"]
+    Basic --> Flags["Search Flags
+Exercises 2-6"]
     Flags --> Case[Case Insensitive -i]
     Flags --> Literal[Literal Search -F]
     Flags --> Word[Word Boundaries -w]
     Flags --> Count[Count Matches -c]
     Flags --> Context[Context Lines -C]
 
-    Flags --> Advanced[Advanced Patterns<br/>Exercises 7-8]
+    Flags --> Advanced["Advanced Patterns
+Exercises 7-8"]
     Advanced --> Regex[Regex Patterns]
     Advanced --> Invert[Inverted Match -v]
 
-    Advanced --> Filter[Filtering<br/>Exercises 9-10]
+    Advanced --> Filter["Filtering
+Exercises 9-10"]
     Filter --> Type[File Types -t]
     Filter --> Multi[Multiline -U]
 
-    Filter --> Output[Output Format<br/>Exercise 11]
+    Filter --> Output["Output Format
+Exercise 11"]
     Output --> JSON[JSON --json]
 
     Output --> Practice[Practice More]
@@ -231,21 +236,32 @@ rg "TODO" --json
 
 ```mermaid
 flowchart TD
-    Start[Need to Search?] --> Special{Contains<br/>special chars?<br/>. * + ? etc.}
+    Start[Need to Search?] --> Special{"Contains
+special chars?
+. * + ? etc."}
 
-    Special -->|Yes| Literal[Use -F flag<br/>for literal search]
-    Special -->|No| Case{Case<br/>matters?}
+    Special -->|Yes| Literal["Use -F flag
+for literal search"]
+    Special -->|No| Case{"Case
+matters?"}
 
-    Case -->|No| CaseFlag[Use -i flag<br/>case-insensitive]
-    Case -->|Yes| Whole{Match whole<br/>words only?}
+    Case -->|No| CaseFlag["Use -i flag
+case-insensitive"]
+    Case -->|Yes| Whole{"Match whole
+words only?"}
 
-    Whole -->|Yes| Word[Use -w flag<br/>word boundaries]
-    Whole -->|No| Hidden{Search<br/>hidden files?}
+    Whole -->|Yes| Word["Use -w flag
+word boundaries"]
+    Whole -->|No| Hidden{"Search
+hidden files?"}
 
-    Hidden -->|Yes| HiddenFlag[Use --hidden<br/>--no-ignore]
-    Hidden -->|No| Type{Specific<br/>file types?}
+    Hidden -->|Yes| HiddenFlag["Use --hidden
+--no-ignore"]
+    Hidden -->|No| Type{"Specific
+file types?"}
 
-    Type -->|Yes| TypeFlag[Use -t flag<br/>file type filter]
+    Type -->|Yes| TypeFlag["Use -t flag
+file type filter"]
     Type -->|No| Search[Run search]
 
     Literal --> Search

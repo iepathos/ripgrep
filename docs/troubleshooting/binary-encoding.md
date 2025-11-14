@@ -26,10 +26,14 @@ graph TD
     A[Start reading file] --> B{NUL byte found?}
     B -->|No| C[Continue searching normally]
     B -->|Yes, Auto mode| D{Explicit file path?}
-    B -->|Yes, --binary mode| E[Replace NUL with newline<br/>Continue searching<br/>Suppress binary matches]
-    B -->|Yes, -a/--text mode| F[Treat as text<br/>Print NUL bytes]
+    B -->|Yes, --binary mode| E["Replace NUL with newline
+Continue searching
+Suppress binary matches"]
+    B -->|Yes, -a/--text mode| F["Treat as text
+Print NUL bytes"]
     D -->|Yes| E
-    D -->|No| G[Stop searching<br/>Skip file]
+    D -->|No| G["Stop searching
+Skip file"]
 ```
 
 ## Searching Binary Files

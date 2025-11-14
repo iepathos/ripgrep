@@ -13,17 +13,21 @@ Backreferences allow you to match previously captured groups within a regex patt
 
 ```mermaid
 flowchart TD
-    Start[Write Regex Pattern] --> HasBackref{Pattern uses<br/>backreferences?}
+    Start[Write Regex Pattern] --> HasBackref{"Pattern uses
+backreferences?"}
 
     HasBackref -->|Yes| NeedPCRE[PCRE2 Required]
     HasBackref -->|No| DefaultOK[Default Engine OK]
 
-    NeedPCRE --> AutoEngine{Using<br/>--engine auto?}
+    NeedPCRE --> AutoEngine{"Using
+--engine auto?"}
     AutoEngine -->|Yes| AutoSelect[Ripgrep selects PCRE2]
-    AutoEngine -->|No| ManualFlag{Using -P<br/>or --pcre2?}
+    AutoEngine -->|No| ManualFlag{"Using -P
+or --pcre2?"}
 
     ManualFlag -->|Yes| PCRE2[PCRE2 Engine]
-    ManualFlag -->|No| Error[Error: backreferences<br/>not supported]
+    ManualFlag -->|No| Error["Error: backreferences
+not supported"]
 
     AutoSelect --> PCRE2
     DefaultOK --> Fast["Fast: O(n) linear time"]

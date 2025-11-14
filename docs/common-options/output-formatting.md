@@ -6,13 +6,15 @@ These flags control what information is displayed with each match.
 
 ```mermaid
 flowchart TD
-    Start[Search Match Found] --> Format{Output<br/>Format?}
+    Start[Search Match Found] --> Format{"Output
+Format?"}
 
     Format -->|Default| Auto[Auto-detect Context]
     Format -->|--pretty| Pretty[Color + Heading + Line Numbers]
     Format -->|Custom| Custom[Apply Custom Flags]
 
-    Auto --> MultiFile{Multiple<br/>Files?}
+    Auto --> MultiFile{"Multiple
+Files?"}
     MultiFile -->|Yes| ShowFile[Show Filename]
     MultiFile -->|No| HideFile[Hide Filename]
 

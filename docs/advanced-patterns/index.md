@@ -21,21 +21,31 @@ The advanced features in ripgrep are organized into layers that can be combined:
 
 ```mermaid
 graph TD
-    Base[ripgrep Base Engine] --> Line[Line-by-line Mode<br/>Default]
-    Base --> Multi[Multiline Mode<br/>-U flag]
+    Base[ripgrep Base Engine] --> Line["Line-by-line Mode
+Default"]
+    Base --> Multi["Multiline Mode
+-U flag"]
 
-    Base --> Default[Default Regex Engine<br/>Fast, limited features]
-    Base --> PCRE[PCRE2 Engine<br/>-P flag]
+    Base --> Default["Default Regex Engine
+Fast, limited features"]
+    Base --> PCRE["PCRE2 Engine
+-P flag"]
 
-    Default --> Unicode1[Unicode Support<br/>\\p Properties]
-    PCRE --> Unicode2[Unicode Support<br/>\\p Properties]
+    Default --> Unicode1["Unicode Support
+\\p Properties"]
+    PCRE --> Unicode2["Unicode Support
+\\p Properties"]
 
-    Multi --> Dotall[Dotall Mode<br/>--multiline-dotall]
+    Multi --> Dotall["Dotall Mode
+--multiline-dotall"]
 
-    PCRE --> Look[Lookaround<br/>Assertions]
-    PCRE --> Back[Backreferences<br/>\\1, \\2, etc.]
+    PCRE --> Look["Lookaround
+Assertions"]
+    PCRE --> Back["Backreferences
+\\1, \\2, etc."]
 
-    Multi --> Combined[Combined Modes<br/>-PU for PCRE2 + Multiline]
+    Multi --> Combined["Combined Modes
+-PU for PCRE2 + Multiline"]
     PCRE --> Combined
 
     style Base fill:#e8f5e9
@@ -56,27 +66,36 @@ Use this guide to select appropriate flags for your search:
 
 ```mermaid
 graph TD
-    A[Start: Choose ripgrep features] --> B{Match across<br/>line boundaries?}
+    A[Start: Choose ripgrep features] --> B{"Match across
+line boundaries?"}
     B -->|Yes| C[Use -U --multiline]
     B -->|No| D[Default line-by-line]
 
-    C --> E{Does . need to<br/>match newlines?}
-    E -->|Yes| F[Add --multiline-dotall<br/>or use (?s)]
+    C --> E{"Does . need to
+match newlines?"}
+    E -->|Yes| F["Add --multiline-dotall
+or use (?s")]
     E -->|No| G[Just -U is sufficient]
 
-    A --> H{Need lookaround or<br/>backreferences?}
+    A --> H{"Need lookaround or
+backreferences?"}
     H -->|Yes| I[Use -P --pcre2]
     H -->|No| J[Default engine faster]
 
     I --> K{Matching across lines?}
     K -->|Yes| L[Use -PU together]
 
-    A --> M{Need Unicode<br/>character classes?}
-    M -->|Yes| N[Default behavior<br/>Unicode enabled]
-    M -->|No| O[Use --no-unicode<br/>ASCII-only faster]
+    A --> M{"Need Unicode
+character classes?"}
+    M -->|Yes| N["Default behavior
+Unicode enabled"]
+    M -->|No| O["Use --no-unicode
+ASCII-only faster"]
 
-    A --> P{Complex pattern with<br/>multiple features?}
-    P -->|Yes| Q[Use --engine=auto<br/>for automatic selection]
+    A --> P{"Complex pattern with
+multiple features?"}
+    P -->|Yes| Q["Use --engine=auto
+for automatic selection"]
 ```
 
 !!! note "About --engine=auto"

@@ -59,11 +59,16 @@ rg -d 3 FIXME ./                         # (3)!
 
 ```mermaid
 graph TD
-    Root[dir/] --> File1[file1.txt<br/>Depth 1]
-    Root --> SubDir[subdir/<br/>Depth 1]
-    SubDir --> File2[file2.txt<br/>Depth 2]
-    SubDir --> Deeper[deeper/<br/>Depth 2]
-    Deeper --> File3[file3.txt<br/>Depth 3]
+    Root[dir/] --> File1["file1.txt
+Depth 1"]
+    Root --> SubDir["subdir/
+Depth 1"]
+    SubDir --> File2["file2.txt
+Depth 2"]
+    SubDir --> Deeper["deeper/
+Depth 2"]
+    Deeper --> File3["file3.txt
+Depth 3"]
 
     style File1 fill:#e8f5e9
     style File2 fill:#fff3e0
@@ -163,22 +168,28 @@ This implementation allows ripgrep to efficiently search large directory trees w
 flowchart TD
     Start[Start Search] --> PathType{Path Type?}
 
-    PathType -->|File| SearchFile[Search File Directly<br/>Override ignore rules]
-    PathType -->|Directory| CheckDepth{max-depth<br/>reached?}
+    PathType -->|File| SearchFile["Search File Directly
+Override ignore rules"]
+    PathType -->|Directory| CheckDepth{"max-depth
+reached?"}
 
     CheckDepth -->|Yes| Skip[Skip Directory]
-    CheckDepth -->|No| CheckIgnore{Ignored by<br/>.gitignore?}
+    CheckDepth -->|No| CheckIgnore{"Ignored by
+.gitignore?"}
 
     CheckIgnore -->|Yes| Skip
-    CheckIgnore -->|No| CheckFS{File system<br/>boundary?}
+    CheckIgnore -->|No| CheckFS{"File system
+boundary?"}
 
     CheckFS -->|Yes + one-file-system| Skip
-    CheckFS -->|No or unrestricted| CheckSymlink{Symbolic<br/>link?}
+    CheckFS -->|No or unrestricted| CheckSymlink{"Symbolic
+link?"}
 
     CheckSymlink -->|Yes + no --follow| Skip
     CheckSymlink -->|No or --follow| Descend[Descend into Directory]
 
-    Descend --> Parallel[Parallel Walker<br/>Process Entries]
+    Descend --> Parallel["Parallel Walker
+Process Entries"]
     Parallel --> PathType
 
     SearchFile --> Complete[Complete]

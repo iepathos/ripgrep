@@ -10,13 +10,20 @@ Ripgrep supports two main types of pattern matching:
 
 ```mermaid
 flowchart TD
-    Start[Need to Search?] --> HasSpecial{Pattern has<br/>special chars<br/>like *, ., (, )?}
+    Start[Need to Search?] --> HasSpecial{"Pattern has
+special chars
+like *, ., (, )?"}
 
-    HasSpecial -->|Yes| WantLiteral{Want to match<br/>those chars<br/>literally?}
-    HasSpecial -->|No| NeedFlex{Need flexible<br/>matching?}
+    HasSpecial -->|Yes| WantLiteral{"Want to match
+those chars
+literally?"}
+    HasSpecial -->|No| NeedFlex{"Need flexible
+matching?"}
 
-    WantLiteral -->|Yes| UseLiteral[Use -F flag<br/>Literal String]
-    WantLiteral -->|No| UseRegex[Use Regex<br/>Default]
+    WantLiteral -->|Yes| UseLiteral["Use -F flag
+Literal String"]
+    WantLiteral -->|No| UseRegex["Use Regex
+Default"]
 
     NeedFlex -->|Yes| UseRegex
     NeedFlex -->|No| UseLiteral
@@ -83,15 +90,22 @@ Ripgrep provides flexible case sensitivity options:
 
 ```mermaid
 flowchart TD
-    Start[Search Pattern] --> Choice{What behavior<br/>do you need?}
+    Start[Search Pattern] --> Choice{"What behavior
+do you need?"}
 
-    Choice -->|Always case-insensitive| UseI[Use -i flag<br/>--ignore-case]
-    Choice -->|Automatic/Smart| UseS[Use -S flag<br/>--smart-case]
-    Choice -->|Always case-sensitive| UseDefault[Default behavior<br/>No flags]
+    Choice -->|Always case-insensitive| UseI["Use -i flag
+--ignore-case"]
+    Choice -->|Automatic/Smart| UseS["Use -S flag
+--smart-case"]
+    Choice -->|Always case-sensitive| UseDefault["Default behavior
+No flags"]
 
-    UseS --> HasUpper{Pattern has<br/>uppercase?}
-    HasUpper -->|Yes| Sensitive[Case-sensitive<br/>search]
-    HasUpper -->|No| Insensitive[Case-insensitive<br/>search]
+    UseS --> HasUpper{"Pattern has
+uppercase?"}
+    HasUpper -->|Yes| Sensitive["Case-sensitive
+search"]
+    HasUpper -->|No| Insensitive["Case-insensitive
+search"]
 
     UseI --> Insensitive
     UseDefault --> Sensitive
@@ -140,9 +154,12 @@ You can search for multiple patterns in a single command. Ripgrep uses **OR logi
 
 ```mermaid
 graph LR
-    Input[Line of text] --> Check1{Contains<br/>pattern 1?}
-    Input --> Check2{Contains<br/>pattern 2?}
-    Input --> Check3{Contains<br/>pattern N?}
+    Input[Line of text] --> Check1{"Contains
+pattern 1?"}
+    Input --> Check2{"Contains
+pattern 2?"}
+    Input --> Check3{"Contains
+pattern N?"}
 
     Check1 -->|Yes| Match[Line matches]
     Check2 -->|Yes| Match

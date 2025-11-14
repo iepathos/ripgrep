@@ -108,10 +108,18 @@ flowchart LR
     U1 --> U2[-uu flag]
     U2 --> U3[-uuu flag]
 
-    Default --> D1["✓ Respects .gitignore<br/>✓ Skips hidden files<br/>✓ Skips binary files"]
-    U1 --> D2["✗ Ignores .gitignore<br/>✓ Skips hidden files<br/>✓ Skips binary files"]
-    U2 --> D3["✗ Ignores .gitignore<br/>✗ Searches hidden files<br/>✗ Searches binary files"]
-    U3 --> D4["✗ All filtering disabled<br/>✗ Maximum coverage<br/>✗ Kitchen sink mode"]
+    Default --> D1["✓ Respects .gitignore
+✓ Skips hidden files
+✓ Skips binary files"]
+    U1 --> D2["✗ Ignores .gitignore
+✓ Skips hidden files
+✓ Skips binary files"]
+    U2 --> D3["✗ Ignores .gitignore
+✗ Searches hidden files
+✗ Searches binary files"]
+    U3 --> D4["✗ All filtering disabled
+✗ Maximum coverage
+✗ Kitchen sink mode"]
 
     style Default fill:#e8f5e9
     style U1 fill:#fff3e0
@@ -156,10 +164,14 @@ graph TD
     Default --> Dot[--no-ignore-dot]
     Default --> Parent[--no-ignore-parent]
 
-    VCS --> V1["Skip .gitignore, .hgignore<br/>Still respect .ignore"]
-    Global --> G1["Skip global gitignore<br/>~/.gitignore, etc."]
-    Dot --> D1["Skip .ignore files<br/>Still respect .gitignore"]
-    Parent --> P1["Skip parent directory<br/>ignore files"]
+    VCS --> V1["Skip .gitignore, .hgignore
+Still respect .ignore"]
+    Global --> G1["Skip global gitignore
+~/.gitignore, etc."]
+    Dot --> D1["Skip .ignore files
+Still respect .gitignore"]
+    Parent --> P1["Skip parent directory
+ignore files"]
 
     style Default fill:#e1f5ff
     style VCS fill:#fff3e0

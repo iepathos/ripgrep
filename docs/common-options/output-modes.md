@@ -8,14 +8,22 @@ Instead of showing matching lines, these flags produce alternative output format
 
 ```mermaid
 flowchart TD
-    Start{What's your<br/>use case?} --> Tool{Tool/Script<br/>Integration?}
-    Start --> Count{Just need<br/>counts?}
-    Start --> Files{Just need<br/>file lists?}
-    Start --> Debug{Performance<br/>analysis?}
+    Start{"What's your
+use case?"} --> Tool{"Tool/Script
+Integration?"}
+    Start --> Count{"Just need
+counts?"}
+    Start --> Files{"Just need
+file lists?"}
+    Start --> Debug{"Performance
+analysis?"}
 
-    Tool -->|Yes| Format{Format<br/>needed?}
-    Format -->|Machine-readable| JSON[--json<br/>JSON Lines]
-    Format -->|Editor integration| Vim[--vimgrep<br/>Quickfix format]
+    Tool -->|Yes| Format{"Format
+needed?"}
+    Format -->|Machine-readable| JSON["--json
+JSON Lines"]
+    Format -->|Editor integration| Vim["--vimgrep
+Quickfix format"]
 
     Count -->|Per line| CountFlag[-c, --count]
     Count -->|Total matches| CountMatches[--count-matches]

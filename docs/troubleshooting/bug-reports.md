@@ -8,17 +8,25 @@ Before filing a bug report, please check:
 
 ```mermaid
 flowchart TD
-    Start[Encountered Issue] --> FAQ{Check FAQ<br/>& GUIDE?}
+    Start[Encountered Issue] --> FAQ{"Check FAQ
+& GUIDE?"}
     FAQ -->|Found Solution| Resolved[Issue Resolved]
     FAQ -->|Not Found| Debug[Run with --debug]
 
-    Debug --> Common{Matches Common<br/>Non-Bug?}
+    Debug --> Common{"Matches Common
+Non-Bug?"}
     Common -->|Yes| Solution[Apply Known Fix]
-    Common -->|No| Minimal[Create Minimal<br/>Reproduction]
+    Common -->|No| Minimal["Create Minimal
+Reproduction"]
 
-    Minimal --> Test{Issue Still<br/>Occurs?}
+    Minimal --> Test{"Issue Still
+Occurs?"}
     Test -->|No| Resolved
-    Test -->|Yes| Gather[Gather Information:<br/>- rg --version<br/>- Installation method<br/>- OS version<br/>- Debug output]
+    Test -->|Yes| Gather["Gather Information:
+- rg --version
+- Installation method
+- OS version
+- Debug output"]
 
     Gather --> File[File Bug Report]
     File --> End[Submit to GitHub]

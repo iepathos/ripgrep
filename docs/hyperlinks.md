@@ -12,14 +12,19 @@ Hyperlink support allows terminal emulators to display clickable file paths that
 
 ```mermaid
 flowchart LR
-    A[ripgrep Output] --> B[OSC 8 Escape<br/>Sequence]
+    A[ripgrep Output] --> B["OSC 8 Escape
+Sequence"]
     B --> C[Terminal Emulator]
-    C --> D{User Clicks<br/>Link?}
+    C --> D{"User Clicks
+Link?"}
     D -->|Yes| E[Extract URL]
     D -->|No| End[Display Only]
-    E --> F{URL Scheme<br/>Registered?}
-    F -->|Yes| G[Open in Editor/<br/>Application]
-    F -->|No| H[Error: No<br/>Handler]
+    E --> F{"URL Scheme
+Registered?"}
+    F -->|Yes| G["Open in Editor/
+Application"]
+    F -->|No| H["Error: No
+Handler"]
     G --> End
     H --> End
 

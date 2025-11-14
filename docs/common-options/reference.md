@@ -15,20 +15,27 @@ flowchart TD
 
     SmartCase --> FileType
 
-    FileType -->|Yes| UseType[Use -t flag<br/>e.g., -tpy, -trust]
-    FileType -->|No| Pattern{What kind<br/>of pattern?}
+    FileType -->|Yes| UseType["Use -t flag
+e.g., -tpy, -trust"]
+    FileType -->|No| Pattern{"What kind
+of pattern?"}
 
     UseType --> Pattern
 
-    Pattern -->|Exact string| Literal[Use -F for literal<br/>no regex]
-    Pattern -->|Word boundaries| Word[Use -w for<br/>whole words]
-    Pattern -->|Complex regex| Regex[Use default<br/>regex mode]
+    Pattern -->|Exact string| Literal["Use -F for literal
+no regex"]
+    Pattern -->|Word boundaries| Word["Use -w for
+whole words"]
+    Pattern -->|Complex regex| Regex["Use default
+regex mode"]
 
-    Literal --> Context{Need context<br/>lines?}
+    Literal --> Context{"Need context
+lines?"}
     Word --> Context
     Regex --> Context
 
-    Context -->|Yes| AddContext[Use -A/-B/-C<br/>for context]
+    Context -->|Yes| AddContext["Use -A/-B/-C
+for context"]
     Context -->|No| Special{Special needs?}
 
     AddContext --> Special

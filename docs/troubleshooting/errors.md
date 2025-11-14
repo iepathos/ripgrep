@@ -106,18 +106,23 @@ ripgrep respects multiple types of ignore files, in order of precedence:
 
 ```mermaid
 graph TD
-    Start[File to Check] --> L1{.ignore<br/>exists?}
+    Start[File to Check] --> L1{".ignore
+exists?"}
     L1 -->|Yes, matches| Ignore1[Ignored by .ignore]
-    L1 -->|No match| L2{.rgignore<br/>exists?}
+    L1 -->|No match| L2{".rgignore
+exists?"}
 
     L2 -->|Yes, matches| Ignore2[Ignored by .rgignore]
-    L2 -->|No match| L3{.gitignore<br/>matches?}
+    L2 -->|No match| L3{".gitignore
+matches?"}
 
     L3 -->|Yes| Ignore3[Ignored by .gitignore]
-    L3 -->|No| L4{Global<br/>gitignore?}
+    L3 -->|No| L4{"Global
+gitignore?"}
 
     L4 -->|Yes| Ignore4[Ignored by global]
-    L4 -->|No| L5{Parent<br/>ignore?}
+    L4 -->|No| L5{"Parent
+ignore?"}
 
     L5 -->|Yes| Ignore5[Ignored by parent]
     L5 -->|No| Include[File Included]
@@ -287,16 +292,23 @@ src/lib.rs
 
 ```mermaid
 flowchart TD
-    Start[Run ripgrep command] --> Exec{Execution<br/>result?}
+    Start[Run ripgrep command] --> Exec{"Execution
+result?"}
 
-    Exec -->|Error occurred| Exit2[Exit Code 2<br/>Error]
-    Exec -->|Success| Matches{Matches<br/>found?}
+    Exec -->|Error occurred| Exit2["Exit Code 2
+Error"]
+    Exec -->|Success| Matches{"Matches
+found?"}
 
-    Matches -->|Yes| Exit0[Exit Code 0<br/>Success]
-    Matches -->|No| Exit1[Exit Code 1<br/>No matches]
+    Matches -->|Yes| Exit0["Exit Code 0
+Success"]
+    Matches -->|No| Exit1["Exit Code 1
+No matches"]
 
-    Exit0 --> Script0[if rg ...; then<br/>Pattern found]
-    Exit1 --> Script1[else<br/>No matches]
+    Exit0 --> Script0["if rg ...; then
+Pattern found"]
+    Exit1 --> Script1["else
+No matches"]
     Exit2 --> Script1
 
     style Exit0 fill:#e8f5e9

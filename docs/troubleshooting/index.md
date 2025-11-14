@@ -27,8 +27,10 @@ flowchart TD
     Type -->|Binary/encoding| Binary[Binary/Encoding]
 
     NoResults --> Debug1{Run --files}
-    Debug1 -->|Files shown| Debug2[Run --debug<br/>Check filtering]
-    Debug1 -->|No files| Filter[Check ignore rules<br/>.gitignore, .ignore]
+    Debug1 -->|Files shown| Debug2["Run --debug
+Check filtering"]
+    Debug1 -->|No files| Filter["Check ignore rules
+.gitignore, .ignore"]
 
     Debug2 --> Pattern{Pattern issue?}
     Pattern -->|Maybe regex| TryLiteral[Try -F for literal]
@@ -37,7 +39,8 @@ flowchart TD
 
     Perf --> Stats[Run --stats]
     Stats --> Many{Too many files?}
-    Many -->|Yes| TypeFilter[Use -t for file types<br/>or -g for globs]
+    Many -->|Yes| TypeFilter["Use -t for file types
+or -g for globs"]
     Many -->|No| PerfGuide[See Performance Guide]
 
     Error --> ErrorGuide[Check Error Messages page]

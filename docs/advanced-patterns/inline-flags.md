@@ -36,13 +36,17 @@ graph TD
     Pattern --> P2["(?i:bar)"]
     Pattern --> P3["baz"]
 
-    P1 --> Match1["Case-sensitive<br/>matches: foo"]
-    P2 --> Match2["Case-insensitive<br/>matches: bar, BAR, Bar"]
-    P3 --> Match3["Case-sensitive<br/>matches: baz"]
+    P1 --> Match1["Case-sensitive
+matches: foo"]
+    P2 --> Match2["Case-insensitive
+matches: bar, BAR, Bar"]
+    P3 --> Match3["Case-sensitive
+matches: baz"]
 
     Global[/"Pattern: (?i)foobar"/] --> G1["(?i)"]
     G1 --> G2["foobar"]
-    G2 --> GMatch["Case-insensitive<br/>matches: foobar, FOOBAR, FooBar"]
+    G2 --> GMatch["Case-insensitive
+matches: foobar, FOOBAR, FooBar"]
 
     style P1 fill:#e8f5e9
     style P2 fill:#fff3e0

@@ -13,7 +13,7 @@ By default, ripgrep performs case-sensitive searches.
 |------|------|----------|----------------|---------|
 | **Case-Insensitive** | `-i` / `--ignore-case` | Matches regardless of case | `todo` | TODO, todo, Todo, ToDo |
 | **Case-Sensitive** | `-s` / `--case-sensitive` | Matches exact case only | `TODO` | TODO only |
-| **Smart Case** | `-S` / `--smart-case` | Lowercase → insensitive<br>Uppercase → sensitive | `todo`<br>`TODO` | TODO, todo, Todo<br>TODO only |
+| **Smart Case** | `-S` / `--smart-case` | Lowercase → insensitive; Uppercase → sensitive | `todo`; `TODO` | TODO, todo, Todo; TODO only |
 
 ## Case-Insensitive Search
 
@@ -47,12 +47,17 @@ Use `-S` or `--smart-case` for automatic case sensitivity:
 
 ```mermaid
 flowchart TD
-    Start[Search Pattern] --> Check{Contains<br/>uppercase?}
-    Check -->|Yes| Sensitive[Case-Sensitive Search<br/>Exact match only]
-    Check -->|No| Insensitive[Case-Insensitive Search<br/>Matches all variants]
+    Start[Search Pattern] --> Check{"Contains
+uppercase?"}
+    Check -->|Yes| Sensitive["Case-Sensitive Search
+Exact match only"]
+    Check -->|No| Insensitive["Case-Insensitive Search
+Matches all variants"]
 
-    Sensitive --> Ex1["Example: 'TODO'<br/>Matches: TODO only"]
-    Insensitive --> Ex2["Example: 'todo'<br/>Matches: TODO, todo, Todo"]
+    Sensitive --> Ex1["Example: 'TODO'
+Matches: TODO only"]
+    Insensitive --> Ex2["Example: 'todo'
+Matches: TODO, todo, Todo"]
 
     style Sensitive fill:#ffebee
     style Insensitive fill:#e8f5e9

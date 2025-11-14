@@ -27,10 +27,13 @@ When you use the `-r/--replace` flag, ripgrep processes text through several sta
 
 ```mermaid
 flowchart LR
-    Input[Input Text] --> Match{Pattern<br/>Matches?}
+    Input[Input Text] --> Match{"Pattern
+Matches?"}
     Match -->|No| Skip[Skip Line]
-    Match -->|Yes| Extract[Extract Capture<br/>Groups]
-    Extract --> Replace[Apply Replacement<br/>String]
+    Match -->|Yes| Extract["Extract Capture
+Groups"]
+    Extract --> Replace["Apply Replacement
+String"]
     Replace --> Output[Modified Output]
     Skip --> Output
 
@@ -120,16 +123,21 @@ Named groups make complex patterns more maintainable and self-documenting.
 ```mermaid
 flowchart TD
     Start["$1a"] --> Parse{Has Braces?}
-    Parse -->|No| Longest[Parse Longest<br/>Valid Name]
-    Parse -->|Yes "${1}a"| Extract[Extract Group<br/>Reference]
+    Parse -->|No| Longest["Parse Longest
+Valid Name"]
+    Parse -->|Yes "${1}a"| Extract["Extract Group
+Reference"]
 
-    Longest --> Check{Group "1a"<br/>Exists?}
-    Extract --> Check2{Group "1"<br/>Exists?}
+    Longest --> Check{"Group "1a"
+Exists?"}
+    Extract --> Check2{"Group "1"
+Exists?"}
 
     Check -->|Yes| Output1["Value of group '1a'"]
     Check -->|No| Output2[Empty String]
 
-    Check2 -->|Yes| Output3["Value of group 1<br/>+ literal 'a'"]
+    Check2 -->|Yes| Output3["Value of group 1
++ literal 'a'"]
     Check2 -->|No| Output4["Empty + literal 'a'"]
 
     style Parse fill:#e1f5ff
