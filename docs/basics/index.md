@@ -40,19 +40,6 @@ rg -i -w -C 2 function         # (7)!
 6. `-C 2` shows 2 lines before and after each match for context
 7. `-w` ensures "function" matches as whole word, not "functions" or "malfunction"
 
-## Subsections
-
-This page is organized into the following subpages:
-
-- [Pattern Matching](./pattern-matching.md) - Learn how to search for patterns, use multiple patterns, and load patterns from files
-- [Literal String Search](./literal-search.md) - Search for exact strings without regex interpretation using fixed-string mode
-- [Regular Expressions](./regex-basics.md) - Master regex metacharacters, character classes, Unicode patterns, quantifiers, and groups
-- [Case Sensitivity](./case-sensitivity.md) - Control case-sensitive, case-insensitive, and smart-case search behavior
-- [Word and Line Boundaries](./boundaries.md) - Match whole words and entire lines with boundary matching options
-- [Output Format](./output.md) - Customize output with line numbers, column numbers, color, context lines, and heading modes
-- [Count and List Modes](./count-list.md) - Count matches and list files with or without matches
-- [Practice Examples](./practice.md) - Hands-on exercises and common mistakes to avoid
-
 ## Common Flags Cheat Sheet
 
 !!! note "Flag Syntax"

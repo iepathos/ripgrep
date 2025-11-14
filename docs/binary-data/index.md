@@ -40,16 +40,6 @@ This section helps you navigate the binary data documentation efficiently:
 | **Look up flag usage** | Use [Binary Flags Reference](./flags.md) |
 | **Solve a specific problem** | Jump to [Examples and Troubleshooting](./examples.md) |
 
-## Subsections
-
-This page is organized into the following subpages:
-
-- [Binary Detection](./detection.md) - Learn what binary detection is and why ripgrep uses NUL byte heuristics
-- [Binary Modes](./modes.md) - Understand Auto, SearchAndSuppress, and AsText modes for handling binary files
-- [Explicit vs Implicit Files](./explicit-implicit.md) - Learn the crucial distinction between explicit and implicit file searches
-- [Binary Flags Reference](./flags.md) - Complete reference for `--binary`, `--text`, and related flags
-- [Examples and Troubleshooting](./examples.md) - Practical examples and solutions to common binary data issues
-
 ## Flag Comparison
 
 Choose the right flag for your use case:

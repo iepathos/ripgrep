@@ -44,14 +44,6 @@ graph TD
 - **File filtering** - Select which files to search
 - **Alternative output modes** - Generate machine-readable or specialized output formats
 
-## Subsections
-
-- **[Search Basics](./search-basics.md)** - Pattern matching modes, case sensitivity, regex engines, and matching strategies
-- **[Output Formatting](./output-formatting.md)** - Line numbers, context lines, color, and display options
-- **[File Filtering](./file-filtering.md)** - File type filtering, glob patterns, hidden files, and binary file handling
-- **[Output Modes](./output-modes.md)** - Alternative output formats like JSON, quickfix, counting, and file listing
-- **[Reference](./reference.md)** - Quick reference guide, flag combinations, and grep comparisons
-
 !!! tip "Navigation Guide"
     Start with **Search Basics** if you're new to ripgrep. Once you understand pattern matching, explore **Output Formatting** to customize results, then **File Filtering** to narrow your search scope. The **Reference** page provides a quick lookup table of all common flags.
 
