@@ -1,0 +1,2228 @@
+
+<!DOCTYPE html>
+
+<html class="no-js" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="A comprehensive guide to using ripgrep, a line-oriented search tool" name="description"/>
+<meta content="Andrew Gallant" name="author"/>
+<link href="https://github.com/BurntSushi/ripgrep/automatic-filtering/" rel="canonical"/>
+<link href="../recursive-search/" rel="prev"/>
+<link href="../manual-filtering-globs/" rel="next"/>
+<link href="../assets/images/favicon.png" rel="icon"/>
+<meta content="mkdocs-1.6.1, mkdocs-material-9.7.0" name="generator"/>
+<title>Automatic Filtering - ripgrep User Guide</title>
+<link href="../assets/stylesheets/main.618322db.min.css" rel="stylesheet"/>
+<link href="../assets/stylesheets/palette.ab4e12ef.min.css" rel="stylesheet"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback" rel="stylesheet"/>
+<style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+<script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+</head>
+<body data-md-color-accent="indigo" data-md-color-primary="indigo" data-md-color-scheme="slate" dir="ltr">
+<input autocomplete="off" class="md-toggle" data-md-toggle="drawer" id="__drawer" type="checkbox"/>
+<input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
+<label class="md-overlay" for="__drawer"></label>
+<div data-md-component="skip">
+<a class="md-skip" href="#automatic-filtering">
+          Skip to content
+        </a>
+</div>
+<div data-md-component="announce">
+</div>
+<header class="md-header" data-md-component="header">
+<nav aria-label="Header" class="md-header__inner md-grid">
+<a aria-label="ripgrep User Guide" class="md-header__button md-logo" data-md-component="logo" href=".." title="ripgrep User Guide">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+</a>
+<label class="md-header__button md-icon" for="__drawer">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+</label>
+<div class="md-header__title" data-md-component="header-title">
+<div class="md-header__ellipsis">
+<div class="md-header__topic">
+<span class="md-ellipsis">
+            ripgrep User Guide
+          </span>
+</div>
+<div class="md-header__topic" data-md-component="header-topic">
+<span class="md-ellipsis">
+            
+              Automatic Filtering
+            
+          </span>
+</div>
+</div>
+</div>
+<form class="md-header__option" data-md-component="palette">
+<input aria-label="Switch to light mode" class="md-option" data-md-color-accent="indigo" data-md-color-media="" data-md-color-primary="indigo" data-md-color-scheme="slate" id="__palette_0" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_1" hidden="" title="Switch to light mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"></path></svg>
+</label>
+<input aria-label="Switch to dark mode" class="md-option" data-md-color-accent="indigo" data-md-color-media="" data-md-color-primary="indigo" data-md-color-scheme="default" id="__palette_1" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_0" hidden="" title="Switch to dark mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"></path></svg>
+</label>
+</form>
+<script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+<label class="md-header__button md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+</label>
+<div class="md-search" data-md-component="search" role="dialog">
+<label class="md-search__overlay" for="__search"></label>
+<div class="md-search__inner" role="search">
+<form class="md-search__form" name="search">
+<input aria-label="Search" autocapitalize="off" autocomplete="off" autocorrect="off" class="md-search__input" data-md-component="search-query" name="query" placeholder="Search" required="" spellcheck="false" type="text"/>
+<label class="md-search__icon md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+</label>
+<nav aria-label="Search" class="md-search__options">
+<a aria-label="Share" class="md-search__icon md-icon" data-clipboard="" data-clipboard-text="" data-md-component="search-share" href="javascript:void(0)" tabindex="-1" title="Share">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"></path></svg>
+</a>
+<button aria-label="Clear" class="md-search__icon md-icon" tabindex="-1" title="Clear" type="reset">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+</button>
+</nav>
+<div class="md-search__suggest" data-md-component="search-suggest"></div>
+</form>
+<div class="md-search__output">
+<div class="md-search__scrollwrap" data-md-scrollfix="" tabindex="0">
+<div class="md-search-result" data-md-component="search-result">
+<div class="md-search-result__meta">
+            Initializing search
+          </div>
+<ol class="md-search-result__list" role="presentation"></ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="md-header__source">
+<a class="md-source" data-md-component="source" href="https://github.com/BurntSushi/ripgrep" title="Go to repository">
+<div class="md-source__icon md-icon">
+<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"></path></svg>
+</div>
+<div class="md-source__repository">
+    BurntSushi/ripgrep
+  </div>
+</a>
+</div>
+</nav>
+</header>
+<div class="md-container" data-md-component="container">
+<nav aria-label="Tabs" class="md-tabs" data-md-component="tabs">
+<div class="md-grid">
+<ul class="md-tabs__list">
+<li class="md-tabs__item">
+<a class="md-tabs__link" href="../introduction/">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+</li>
+<li class="md-tabs__item md-tabs__item--active">
+<a class="md-tabs__link" href="../basics/">
+          
+  
+  
+  User Guide
+
+        </a>
+</li>
+<li class="md-tabs__item">
+<a class="md-tabs__link" href="../advanced-patterns/">
+          
+  
+  
+  Advanced Topics
+
+        </a>
+</li>
+</ul>
+</div>
+</nav>
+<main class="md-main" data-md-component="main">
+<div class="md-main__inner md-grid">
+<div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Navigation" class="md-nav md-nav--primary md-nav--lifted" data-md-level="0">
+<label class="md-nav__title" for="__drawer">
+<a aria-label="ripgrep User Guide" class="md-nav__button md-logo" data-md-component="logo" href=".." title="ripgrep User Guide">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+</a>
+    ripgrep User Guide
+  </label>
+<div class="md-nav__source">
+<a class="md-source" data-md-component="source" href="https://github.com/BurntSushi/ripgrep" title="Go to repository">
+<div class="md-source__icon md-icon">
+<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"></path></svg>
+</div>
+<div class="md-source__repository">
+    BurntSushi/ripgrep
+  </div>
+</a>
+</div>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../introduction/">
+<span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+<input checked="" class="md-nav__toggle md-toggle" id="__nav_2" type="checkbox"/>
+<label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+<span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="true" aria-labelledby="__nav_2_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_2">
+<span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--section md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_2_1" type="checkbox"/>
+<label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="">
+<span class="md-ellipsis">
+    
+  
+    Basics
+  
+
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_2_1_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_2_1">
+<span class="md-nav__icon md-icon"></span>
+            
+  
+    Basics
+  
+
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../basics/">
+<span class="md-ellipsis">
+    
+  
+    Basics
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../basics/pattern-matching/">
+<span class="md-ellipsis">
+    
+  
+    Pattern Matching
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../basics/literal-search/">
+<span class="md-ellipsis">
+    
+  
+    Literal String Search
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../basics/regex-basics/">
+<span class="md-ellipsis">
+    
+  
+    Regular Expressions
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../basics/case-sensitivity/">
+<span class="md-ellipsis">
+    
+  
+    Case Sensitivity
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../basics/boundaries/">
+<span class="md-ellipsis">
+    
+  
+    Word and Line Boundaries
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../basics/output/">
+<span class="md-ellipsis">
+    
+  
+    Output Format
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../basics/count-list/">
+<span class="md-ellipsis">
+    
+  
+    Count and List Modes
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../basics/practice/">
+<span class="md-ellipsis">
+    
+  
+    Practice Examples
+  
+
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../recursive-search/">
+<span class="md-ellipsis">
+    
+  
+    Recursive Search
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--active">
+<input class="md-nav__toggle md-toggle" id="__toc" type="checkbox"/>
+<label class="md-nav__link md-nav__link--active" for="__toc">
+<span class="md-ellipsis">
+    
+  
+    Automatic Filtering
+  
+
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<a class="md-nav__link md-nav__link--active" href="./">
+<span class="md-ellipsis">
+    
+  
+    Automatic Filtering
+  
+
+    
+  </span>
+</a>
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#overview">
+<span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#ignore-files">
+<span class="md-ellipsis">
+      
+        Ignore Files
+      
+    </span>
+</a>
+<nav aria-label="Ignore Files" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#supported-ignore-file-types">
+<span class="md-ellipsis">
+      
+        Supported Ignore File Types
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#example-usage">
+<span class="md-ellipsis">
+      
+        Example Usage
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#precedence-rules">
+<span class="md-ellipsis">
+      
+        Precedence Rules
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#whitelist-patterns">
+<span class="md-ellipsis">
+      
+        Whitelist Patterns
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#vcs-and-global-ignore-files">
+<span class="md-ellipsis">
+      
+        VCS and Global Ignore Files
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#custom-ignore-files">
+<span class="md-ellipsis">
+      
+        Custom Ignore Files
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#git-repository-requirements">
+<span class="md-ellipsis">
+      
+        Git Repository Requirements
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#hidden-files">
+<span class="md-ellipsis">
+      
+        Hidden Files
+      
+    </span>
+</a>
+<nav aria-label="Hidden Files" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#what-is-hidden">
+<span class="md-ellipsis">
+      
+        What is Hidden?
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#searching-hidden-files">
+<span class="md-ellipsis">
+      
+        Searching Hidden Files
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#explicit-hidden-files">
+<span class="md-ellipsis">
+      
+        Explicit Hidden Files
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#binary-files">
+<span class="md-ellipsis">
+      
+        Binary Files
+      
+    </span>
+</a>
+<nav aria-label="Binary Files" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#binary-detection">
+<span class="md-ellipsis">
+      
+        Binary Detection
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#controlling-binary-search">
+<span class="md-ellipsis">
+      
+        Controlling Binary Search
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#parent-directory-ignore-files">
+<span class="md-ellipsis">
+      
+        Parent Directory Ignore Files
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#symlinks">
+<span class="md-ellipsis">
+      
+        Symlinks
+      
+    </span>
+</a>
+<nav aria-label="Symlinks" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#following-symlinks">
+<span class="md-ellipsis">
+      
+        Following Symlinks
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#symlinks-and-ignore-files">
+<span class="md-ellipsis">
+      
+        Symlinks and Ignore Files
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#disabling-automatic-filtering">
+<span class="md-ellipsis">
+      
+        Disabling Automatic Filtering
+      
+    </span>
+</a>
+<nav aria-label="Disabling Automatic Filtering" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#progressive-unrestricted-flags">
+<span class="md-ellipsis">
+      
+        Progressive Unrestricted Flags
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fine-grained-control">
+<span class="md-ellipsis">
+      
+        Fine-Grained Control
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#ignore-file-error-handling">
+<span class="md-ellipsis">
+      
+        Ignore File Error Handling
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#case-insensitive-ignore-files">
+<span class="md-ellipsis">
+      
+        Case Insensitive Ignore Files
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#interaction-with-explicit-paths">
+<span class="md-ellipsis">
+      
+        Interaction with Explicit Paths
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#interaction-with-manual-filtering">
+<span class="md-ellipsis">
+      
+        Interaction with Manual Filtering
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#common-use-cases">
+<span class="md-ellipsis">
+      
+        Common Use Cases
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#troubleshooting">
+<span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+</a>
+<nav aria-label="Troubleshooting" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#files-are-being-ignored-unexpectedly">
+<span class="md-ellipsis">
+      
+        Files Are Being Ignored Unexpectedly
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#hidden-files-arent-being-searched">
+<span class="md-ellipsis">
+      
+        Hidden Files Aren't Being Searched
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#binary-files-are-being-searched">
+<span class="md-ellipsis">
+      
+        Binary Files Are Being Searched
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#ignore-files-arent-being-respected">
+<span class="md-ellipsis">
+      
+        Ignore Files Aren't Being Respected
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#summary">
+<span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../manual-filtering-globs/">
+<span class="md-ellipsis">
+    
+  
+    Manual Filtering (Globs)
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../manual-filtering-types/">
+<span class="md-ellipsis">
+    
+  
+    Manual Filtering (File Types)
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../replacements/">
+<span class="md-ellipsis">
+    
+  
+    Replacements
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../configuration-file/">
+<span class="md-ellipsis">
+    
+  
+    Configuration File
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../file-encoding/">
+<span class="md-ellipsis">
+    
+  
+    File Encoding
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--section md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_2_9" type="checkbox"/>
+<label class="md-nav__link" for="__nav_2_9" id="__nav_2_9_label" tabindex="">
+<span class="md-ellipsis">
+    
+  
+    Binary Data
+  
+
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_2_9_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_2_9">
+<span class="md-nav__icon md-icon"></span>
+            
+  
+    Binary Data
+  
+
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../binary-data/">
+<span class="md-ellipsis">
+    
+  
+    Binary Data
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../binary-data/detection/">
+<span class="md-ellipsis">
+    
+  
+    Binary Detection
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../binary-data/modes/">
+<span class="md-ellipsis">
+    
+  
+    Binary Modes
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../binary-data/explicit-implicit/">
+<span class="md-ellipsis">
+    
+  
+    Explicit vs Implicit Files
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../binary-data/flags/">
+<span class="md-ellipsis">
+    
+  
+    Binary Flags Reference
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../binary-data/examples/">
+<span class="md-ellipsis">
+    
+  
+    Examples and Troubleshooting
+  
+
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../compressed-files/">
+<span class="md-ellipsis">
+    
+  
+    Compressed Files
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../preprocessor/">
+<span class="md-ellipsis">
+    
+  
+    Preprocessor
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--section md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_2_12" type="checkbox"/>
+<label class="md-nav__link" for="__nav_2_12" id="__nav_2_12_label" tabindex="">
+<span class="md-ellipsis">
+    
+  
+    Common Options
+  
+
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_2_12_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_2_12">
+<span class="md-nav__icon md-icon"></span>
+            
+  
+    Common Options
+  
+
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../common-options/">
+<span class="md-ellipsis">
+    
+  
+    Common Options
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../common-options/search-basics/">
+<span class="md-ellipsis">
+    
+  
+    Search Basics
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../common-options/output-formatting/">
+<span class="md-ellipsis">
+    
+  
+    Output Formatting
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../common-options/file-filtering/">
+<span class="md-ellipsis">
+    
+  
+    File Filtering
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../common-options/output-modes/">
+<span class="md-ellipsis">
+    
+  
+    Output Modes
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../common-options/reference/">
+<span class="md-ellipsis">
+    
+  
+    Quick Reference
+  
+
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../context-lines/">
+<span class="md-ellipsis">
+    
+  
+    Context Lines
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../output-formats/">
+<span class="md-ellipsis">
+    
+  
+    Output Formats
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../sorting-results/">
+<span class="md-ellipsis">
+    
+  
+    Sorting Results
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../utility-modes/">
+<span class="md-ellipsis">
+    
+  
+    Utility Modes
+  
+
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_3" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+<span class="md-ellipsis">
+    
+  
+    Advanced Topics
+  
+
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_3_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_3">
+<span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced Topics
+  
+
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_3_1" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
+<span class="md-ellipsis">
+    
+  
+    Advanced Patterns
+  
+
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_3_1_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_3_1">
+<span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced Patterns
+  
+
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../advanced-patterns/">
+<span class="md-ellipsis">
+    
+  
+    Advanced Patterns
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../advanced-patterns/multiline/">
+<span class="md-ellipsis">
+    
+  
+    Multiline Search
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../advanced-patterns/pcre2/">
+<span class="md-ellipsis">
+    
+  
+    PCRE2 Engine
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../advanced-patterns/lookaround/">
+<span class="md-ellipsis">
+    
+  
+    Lookaround Assertions
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../advanced-patterns/backreferences/">
+<span class="md-ellipsis">
+    
+  
+    Backreferences
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../advanced-patterns/unicode/">
+<span class="md-ellipsis">
+    
+  
+    Unicode Patterns
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../advanced-patterns/inline-flags/">
+<span class="md-ellipsis">
+    
+  
+    Inline Regex Flags
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../advanced-patterns/performance/">
+<span class="md-ellipsis">
+    
+  
+    Performance Considerations
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../advanced-patterns/examples/">
+<span class="md-ellipsis">
+    
+  
+    Practical Examples
+  
+
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../performance/">
+<span class="md-ellipsis">
+    
+  
+    Performance
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../statistics/">
+<span class="md-ellipsis">
+    
+  
+    Statistics and Metrics
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../hyperlinks/">
+<span class="md-ellipsis">
+    
+  
+    Hyperlinks
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_3_5" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="0">
+<span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_3_5_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_3_5">
+<span class="md-nav__icon md-icon"></span>
+            
+  
+    Troubleshooting
+  
+
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../troubleshooting/">
+<span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../troubleshooting/debug-flags/">
+<span class="md-ellipsis">
+    
+  
+    Debug Flags
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../troubleshooting/no-results/">
+<span class="md-ellipsis">
+    
+  
+    No Results Found
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../troubleshooting/performance/">
+<span class="md-ellipsis">
+    
+  
+    Performance Issues
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../troubleshooting/errors/">
+<span class="md-ellipsis">
+    
+  
+    Common Error Messages
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../troubleshooting/binary-encoding/">
+<span class="md-ellipsis">
+    
+  
+    Binary and Encoding Problems
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../troubleshooting/bug-reports/">
+<span class="md-ellipsis">
+    
+  
+    When to File a Bug
+  
+
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#overview">
+<span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#ignore-files">
+<span class="md-ellipsis">
+      
+        Ignore Files
+      
+    </span>
+</a>
+<nav aria-label="Ignore Files" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#supported-ignore-file-types">
+<span class="md-ellipsis">
+      
+        Supported Ignore File Types
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#example-usage">
+<span class="md-ellipsis">
+      
+        Example Usage
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#precedence-rules">
+<span class="md-ellipsis">
+      
+        Precedence Rules
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#whitelist-patterns">
+<span class="md-ellipsis">
+      
+        Whitelist Patterns
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#vcs-and-global-ignore-files">
+<span class="md-ellipsis">
+      
+        VCS and Global Ignore Files
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#custom-ignore-files">
+<span class="md-ellipsis">
+      
+        Custom Ignore Files
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#git-repository-requirements">
+<span class="md-ellipsis">
+      
+        Git Repository Requirements
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#hidden-files">
+<span class="md-ellipsis">
+      
+        Hidden Files
+      
+    </span>
+</a>
+<nav aria-label="Hidden Files" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#what-is-hidden">
+<span class="md-ellipsis">
+      
+        What is Hidden?
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#searching-hidden-files">
+<span class="md-ellipsis">
+      
+        Searching Hidden Files
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#explicit-hidden-files">
+<span class="md-ellipsis">
+      
+        Explicit Hidden Files
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#binary-files">
+<span class="md-ellipsis">
+      
+        Binary Files
+      
+    </span>
+</a>
+<nav aria-label="Binary Files" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#binary-detection">
+<span class="md-ellipsis">
+      
+        Binary Detection
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#controlling-binary-search">
+<span class="md-ellipsis">
+      
+        Controlling Binary Search
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#parent-directory-ignore-files">
+<span class="md-ellipsis">
+      
+        Parent Directory Ignore Files
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#symlinks">
+<span class="md-ellipsis">
+      
+        Symlinks
+      
+    </span>
+</a>
+<nav aria-label="Symlinks" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#following-symlinks">
+<span class="md-ellipsis">
+      
+        Following Symlinks
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#symlinks-and-ignore-files">
+<span class="md-ellipsis">
+      
+        Symlinks and Ignore Files
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#disabling-automatic-filtering">
+<span class="md-ellipsis">
+      
+        Disabling Automatic Filtering
+      
+    </span>
+</a>
+<nav aria-label="Disabling Automatic Filtering" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#progressive-unrestricted-flags">
+<span class="md-ellipsis">
+      
+        Progressive Unrestricted Flags
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fine-grained-control">
+<span class="md-ellipsis">
+      
+        Fine-Grained Control
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#ignore-file-error-handling">
+<span class="md-ellipsis">
+      
+        Ignore File Error Handling
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#case-insensitive-ignore-files">
+<span class="md-ellipsis">
+      
+        Case Insensitive Ignore Files
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#interaction-with-explicit-paths">
+<span class="md-ellipsis">
+      
+        Interaction with Explicit Paths
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#interaction-with-manual-filtering">
+<span class="md-ellipsis">
+      
+        Interaction with Manual Filtering
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#common-use-cases">
+<span class="md-ellipsis">
+      
+        Common Use Cases
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#troubleshooting">
+<span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+</a>
+<nav aria-label="Troubleshooting" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#files-are-being-ignored-unexpectedly">
+<span class="md-ellipsis">
+      
+        Files Are Being Ignored Unexpectedly
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#hidden-files-arent-being-searched">
+<span class="md-ellipsis">
+      
+        Hidden Files Aren't Being Searched
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#binary-files-are-being-searched">
+<span class="md-ellipsis">
+      
+        Binary Files Are Being Searched
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#ignore-files-arent-being-respected">
+<span class="md-ellipsis">
+      
+        Ignore Files Aren't Being Respected
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#summary">
+<span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-content" data-md-component="content">
+<article class="md-content__inner md-typeset">
+<h1 id="automatic-filtering">Automatic Filtering<a class="headerlink" href="#automatic-filtering" title="Permanent link">¶</a></h1>
+<p>When you run <code>rg</code> recursively, ripgrep automatically filters out many files and directories to make searches faster and more relevant. This chapter explains ripgrep's automatic filtering mechanisms and how to control them.</p>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">¶</a></h2>
+<p>By default, ripgrep respects various ignore files, skips hidden files and directories, and avoids searching binary files. This behavior makes searches faster and reduces noise in results. Understanding these filters helps you search effectively and know when to disable them.</p>
+<pre class="mermaid"><code>flowchart TD
+    Start[File Encountered] --&gt; Explicit{Specified<br/>Explicitly?}
+    Explicit --&gt;|Yes| Search[Search File]
+    Explicit --&gt;|No| Hidden{Hidden<br/>File?}
+
+    Hidden --&gt;|Yes| HiddenFlag{--hidden<br/>enabled?}
+    HiddenFlag --&gt;|No| Skip1[Skip File]
+    HiddenFlag --&gt;|Yes| Ignore
+
+    Hidden --&gt;|No| Ignore{Matches<br/>Ignore Pattern?}
+
+    Ignore --&gt;|Yes| IgnoreFlag{--no-ignore<br/>or -u?}
+    IgnoreFlag --&gt;|No| Skip2[Skip File]
+    IgnoreFlag --&gt;|Yes| Binary
+
+    Ignore --&gt;|No| Binary{Binary<br/>Content?}
+
+    Binary --&gt;|Yes| BinaryFlag{--binary<br/>enabled?}
+    BinaryFlag --&gt;|No| Skip3[Skip File]
+    BinaryFlag --&gt;|Yes| Search
+
+    Binary --&gt;|No| Search
+
+    style Search fill:#e8f5e9
+    style Skip1 fill:#ffebee
+    style Skip2 fill:#ffebee
+    style Skip3 fill:#ffebee
+    style Start fill:#e1f5ff
+</code></pre>
+<p><strong>Figure</strong>: Ripgrep's automatic filtering decision flow. Files specified explicitly bypass most filters.</p>
+<h2 id="ignore-files">Ignore Files<a class="headerlink" href="#ignore-files" title="Permanent link">¶</a></h2>
+<p>Ripgrep automatically respects several types of ignore files during recursive search:</p>
+<h3 id="supported-ignore-file-types">Supported Ignore File Types<a class="headerlink" href="#supported-ignore-file-types" title="Permanent link">¶</a></h3>
+<p><strong><code>.ignore</code> files</strong>: Ripgrep-specific ignore files with the same syntax as <code>.gitignore</code>. These have the highest precedence.</p>
+<p><strong><code>.gitignore</code> files</strong>: Standard Git ignore files used by version control systems.</p>
+<p><strong><code>.git/info/exclude</code> files</strong>: Repository-specific Git ignore files not committed to the repository.</p>
+<p><strong>Global gitignore</strong>: Your global Git ignore file, typically located at <code>$XDG_CONFIG_HOME/git/ignore</code> or <code>~/.config/git/ignore</code>.</p>
+<p><strong><code>.rgignore</code> files</strong>: Legacy ripgrep ignore files (replaced by <code>.ignore</code>).</p>
+<h3 id="example-usage">Example Usage<a class="headerlink" href="#example-usage" title="Permanent link">¶</a></h3>
+<p>Create a <code>.ignore</code> file to exclude specific patterns:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a href="#__codelineno-0-1" id="__codelineno-0-1" name="__codelineno-0-1"></a># Ignore all log files
+</span><span id="__span-0-2"><a href="#__codelineno-0-2" id="__codelineno-0-2" name="__codelineno-0-2"></a>*.log
+</span><span id="__span-0-3"><a href="#__codelineno-0-3" id="__codelineno-0-3" name="__codelineno-0-3"></a>
+</span><span id="__span-0-4"><a href="#__codelineno-0-4" id="__codelineno-0-4" name="__codelineno-0-4"></a># Ignore node_modules directory
+</span><span id="__span-0-5"><a href="#__codelineno-0-5" id="__codelineno-0-5" name="__codelineno-0-5"></a>node_modules/
+</span><span id="__span-0-6"><a href="#__codelineno-0-6" id="__codelineno-0-6" name="__codelineno-0-6"></a>
+</span><span id="__span-0-7"><a href="#__codelineno-0-7" id="__codelineno-0-7" name="__codelineno-0-7"></a># Ignore temporary files
+</span><span id="__span-0-8"><a href="#__codelineno-0-8" id="__codelineno-0-8" name="__codelineno-0-8"></a>tmp/
+</span><span id="__span-0-9"><a href="#__codelineno-0-9" id="__codelineno-0-9" name="__codelineno-0-9"></a>*.tmp
+</span></code></pre></div>
+<p>Now when you search, these patterns are automatically excluded:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a href="#__codelineno-1-1" id="__codelineno-1-1" name="__codelineno-1-1"></a>$<span class="w"> </span>rg<span class="w"> </span><span class="s1">'TODO'</span>
+</span><span id="__span-1-2"><a href="#__codelineno-1-2" id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="c1"># Searches all files except those matching .ignore patterns</span>
+</span></code></pre></div>
+<details class="tip">
+<summary>Common .ignore Patterns by Project Type</summary>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:4"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio"><input id="__tabbed_1_2" name="__tabbed_1" type="radio"><input id="__tabbed_1_3" name="__tabbed_1" type="radio"><input id="__tabbed_1_4" name="__tabbed_1" type="radio"><div class="tabbed-labels"><label for="__tabbed_1_1">JavaScript/Node.js</label><label for="__tabbed_1_2">Rust</label><label for="__tabbed_1_3">Python</label><label for="__tabbed_1_4">General</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a href="#__codelineno-2-1" id="__codelineno-2-1" name="__codelineno-2-1"></a># Dependencies
+</span><span id="__span-2-2"><a href="#__codelineno-2-2" id="__codelineno-2-2" name="__codelineno-2-2"></a>node_modules/
+</span><span id="__span-2-3"><a href="#__codelineno-2-3" id="__codelineno-2-3" name="__codelineno-2-3"></a>bower_components/
+</span><span id="__span-2-4"><a href="#__codelineno-2-4" id="__codelineno-2-4" name="__codelineno-2-4"></a>
+</span><span id="__span-2-5"><a href="#__codelineno-2-5" id="__codelineno-2-5" name="__codelineno-2-5"></a># Build outputs
+</span><span id="__span-2-6"><a href="#__codelineno-2-6" id="__codelineno-2-6" name="__codelineno-2-6"></a>dist/
+</span><span id="__span-2-7"><a href="#__codelineno-2-7" id="__codelineno-2-7" name="__codelineno-2-7"></a>build/
+</span><span id="__span-2-8"><a href="#__codelineno-2-8" id="__codelineno-2-8" name="__codelineno-2-8"></a>*.bundle.js
+</span><span id="__span-2-9"><a href="#__codelineno-2-9" id="__codelineno-2-9" name="__codelineno-2-9"></a>
+</span><span id="__span-2-10"><a href="#__codelineno-2-10" id="__codelineno-2-10" name="__codelineno-2-10"></a># Package manager
+</span><span id="__span-2-11"><a href="#__codelineno-2-11" id="__codelineno-2-11" name="__codelineno-2-11"></a>package-lock.json
+</span><span id="__span-2-12"><a href="#__codelineno-2-12" id="__codelineno-2-12" name="__codelineno-2-12"></a>yarn.lock
+</span><span id="__span-2-13"><a href="#__codelineno-2-13" id="__codelineno-2-13" name="__codelineno-2-13"></a>
+</span><span id="__span-2-14"><a href="#__codelineno-2-14" id="__codelineno-2-14" name="__codelineno-2-14"></a># Logs and temp
+</span><span id="__span-2-15"><a href="#__codelineno-2-15" id="__codelineno-2-15" name="__codelineno-2-15"></a>*.log
+</span><span id="__span-2-16"><a href="#__codelineno-2-16" id="__codelineno-2-16" name="__codelineno-2-16"></a>.cache/
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a href="#__codelineno-3-1" id="__codelineno-3-1" name="__codelineno-3-1"></a># Build artifacts
+</span><span id="__span-3-2"><a href="#__codelineno-3-2" id="__codelineno-3-2" name="__codelineno-3-2"></a>target/
+</span><span id="__span-3-3"><a href="#__codelineno-3-3" id="__codelineno-3-3" name="__codelineno-3-3"></a>Cargo.lock
+</span><span id="__span-3-4"><a href="#__codelineno-3-4" id="__codelineno-3-4" name="__codelineno-3-4"></a>
+</span><span id="__span-3-5"><a href="#__codelineno-3-5" id="__codelineno-3-5" name="__codelineno-3-5"></a># IDE files
+</span><span id="__span-3-6"><a href="#__codelineno-3-6" id="__codelineno-3-6" name="__codelineno-3-6"></a>.idea/
+</span><span id="__span-3-7"><a href="#__codelineno-3-7" id="__codelineno-3-7" name="__codelineno-3-7"></a>*.swp
+</span><span id="__span-3-8"><a href="#__codelineno-3-8" id="__codelineno-3-8" name="__codelineno-3-8"></a>*.swo
+</span><span id="__span-3-9"><a href="#__codelineno-3-9" id="__codelineno-3-9" name="__codelineno-3-9"></a>
+</span><span id="__span-3-10"><a href="#__codelineno-3-10" id="__codelineno-3-10" name="__codelineno-3-10"></a># Test coverage
+</span><span id="__span-3-11"><a href="#__codelineno-3-11" id="__codelineno-3-11" name="__codelineno-3-11"></a>tarpaulin-report.html
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a href="#__codelineno-4-1" id="__codelineno-4-1" name="__codelineno-4-1"></a># Virtual environments
+</span><span id="__span-4-2"><a href="#__codelineno-4-2" id="__codelineno-4-2" name="__codelineno-4-2"></a>venv/
+</span><span id="__span-4-3"><a href="#__codelineno-4-3" id="__codelineno-4-3" name="__codelineno-4-3"></a>env/
+</span><span id="__span-4-4"><a href="#__codelineno-4-4" id="__codelineno-4-4" name="__codelineno-4-4"></a>.venv/
+</span><span id="__span-4-5"><a href="#__codelineno-4-5" id="__codelineno-4-5" name="__codelineno-4-5"></a>
+</span><span id="__span-4-6"><a href="#__codelineno-4-6" id="__codelineno-4-6" name="__codelineno-4-6"></a># Bytecode
+</span><span id="__span-4-7"><a href="#__codelineno-4-7" id="__codelineno-4-7" name="__codelineno-4-7"></a>__pycache__/
+</span><span id="__span-4-8"><a href="#__codelineno-4-8" id="__codelineno-4-8" name="__codelineno-4-8"></a>*.pyc
+</span><span id="__span-4-9"><a href="#__codelineno-4-9" id="__codelineno-4-9" name="__codelineno-4-9"></a>*.pyo
+</span><span id="__span-4-10"><a href="#__codelineno-4-10" id="__codelineno-4-10" name="__codelineno-4-10"></a>
+</span><span id="__span-4-11"><a href="#__codelineno-4-11" id="__codelineno-4-11" name="__codelineno-4-11"></a># Distribution
+</span><span id="__span-4-12"><a href="#__codelineno-4-12" id="__codelineno-4-12" name="__codelineno-4-12"></a>dist/
+</span><span id="__span-4-13"><a href="#__codelineno-4-13" id="__codelineno-4-13" name="__codelineno-4-13"></a>build/
+</span><span id="__span-4-14"><a href="#__codelineno-4-14" id="__codelineno-4-14" name="__codelineno-4-14"></a>*.egg-info/
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a href="#__codelineno-5-1" id="__codelineno-5-1" name="__codelineno-5-1"></a># Version control
+</span><span id="__span-5-2"><a href="#__codelineno-5-2" id="__codelineno-5-2" name="__codelineno-5-2"></a>.git/
+</span><span id="__span-5-3"><a href="#__codelineno-5-3" id="__codelineno-5-3" name="__codelineno-5-3"></a>.svn/
+</span><span id="__span-5-4"><a href="#__codelineno-5-4" id="__codelineno-5-4" name="__codelineno-5-4"></a>
+</span><span id="__span-5-5"><a href="#__codelineno-5-5" id="__codelineno-5-5" name="__codelineno-5-5"></a># OS files
+</span><span id="__span-5-6"><a href="#__codelineno-5-6" id="__codelineno-5-6" name="__codelineno-5-6"></a>.DS_Store
+</span><span id="__span-5-7"><a href="#__codelineno-5-7" id="__codelineno-5-7" name="__codelineno-5-7"></a>Thumbs.db
+</span><span id="__span-5-8"><a href="#__codelineno-5-8" id="__codelineno-5-8" name="__codelineno-5-8"></a>
+</span><span id="__span-5-9"><a href="#__codelineno-5-9" id="__codelineno-5-9" name="__codelineno-5-9"></a># Editor files
+</span><span id="__span-5-10"><a href="#__codelineno-5-10" id="__codelineno-5-10" name="__codelineno-5-10"></a>*.swp
+</span><span id="__span-5-11"><a href="#__codelineno-5-11" id="__codelineno-5-11" name="__codelineno-5-11"></a>*~
+</span><span id="__span-5-12"><a href="#__codelineno-5-12" id="__codelineno-5-12" name="__codelineno-5-12"></a>.vscode/
+</span><span id="__span-5-13"><a href="#__codelineno-5-13" id="__codelineno-5-13" name="__codelineno-5-13"></a>.idea/
+</span></code></pre></div>
+</div>
+</div>
+</input></input></input></input></div>
+</details>
+<h3 id="precedence-rules">Precedence Rules<a class="headerlink" href="#precedence-rules" title="Permanent link">¶</a></h3>
+<p>When multiple ignore files exist, ripgrep applies them in a specific order:</p>
+<ol>
+<li><strong><code>.ignore</code> files override all <code>.gitignore</code> files</strong>, regardless of directory hierarchy</li>
+<li>Within each ignore file type, more nested files have higher precedence</li>
+<li>Parent directory ignore files are respected by default</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Ignore File Precedence Hierarchy</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a href="#__codelineno-6-1" id="__codelineno-6-1" name="__codelineno-6-1"></a>Highest Priority
+</span><span id="__span-6-2"><a href="#__codelineno-6-2" id="__codelineno-6-2" name="__codelineno-6-2"></a>↓
+</span><span id="__span-6-3"><a href="#__codelineno-6-3" id="__codelineno-6-3" name="__codelineno-6-3"></a>.ignore files (ripgrep-specific)
+</span><span id="__span-6-4"><a href="#__codelineno-6-4" id="__codelineno-6-4" name="__codelineno-6-4"></a>↓
+</span><span id="__span-6-5"><a href="#__codelineno-6-5" id="__codelineno-6-5" name="__codelineno-6-5"></a>.gitignore files (nested overrides parent)
+</span><span id="__span-6-6"><a href="#__codelineno-6-6" id="__codelineno-6-6" name="__codelineno-6-6"></a>↓
+</span><span id="__span-6-7"><a href="#__codelineno-6-7" id="__codelineno-6-7" name="__codelineno-6-7"></a>.git/info/exclude (repository-specific)
+</span><span id="__span-6-8"><a href="#__codelineno-6-8" id="__codelineno-6-8" name="__codelineno-6-8"></a>↓
+</span><span id="__span-6-9"><a href="#__codelineno-6-9" id="__codelineno-6-9" name="__codelineno-6-9"></a>Global gitignore (~/.config/git/ignore)
+</span><span id="__span-6-10"><a href="#__codelineno-6-10" id="__codelineno-6-10" name="__codelineno-6-10"></a>↓
+</span><span id="__span-6-11"><a href="#__codelineno-6-11" id="__codelineno-6-11" name="__codelineno-6-11"></a>Custom ignore files (--ignore-file)
+</span><span id="__span-6-12"><a href="#__codelineno-6-12" id="__codelineno-6-12" name="__codelineno-6-12"></a>↓
+</span><span id="__span-6-13"><a href="#__codelineno-6-13" id="__codelineno-6-13" name="__codelineno-6-13"></a>Lowest Priority
+</span></code></pre></div>
+</div>
+<p>For example, if you have:
+- <code>/project/.gitignore</code> with <code>*.log</code>
+- <code>/project/subdir/.ignore</code> with <code>!important.log</code></p>
+<p>The <code>.ignore</code> file's whitelist pattern (<code>!important.log</code>) will override the <code>.gitignore</code> pattern, allowing <code>important.log</code> to be searched even in the root directory.</p>
+<p>Within the same ignore file type:
+- <code>/project/subdir/.gitignore</code> overrides <code>/project/.gitignore</code> for files in <code>subdir/</code></p>
+<h3 id="whitelist-patterns">Whitelist Patterns<a class="headerlink" href="#whitelist-patterns" title="Permanent link">¶</a></h3>
+<p>You can use the <code>!</code> prefix in ignore files to whitelist paths, overriding earlier ignore rules:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a href="#__codelineno-7-1" id="__codelineno-7-1" name="__codelineno-7-1"></a># In .gitignore
+</span><span id="__span-7-2"><a href="#__codelineno-7-2" id="__codelineno-7-2" name="__codelineno-7-2"></a>*.log
+</span><span id="__span-7-3"><a href="#__codelineno-7-3" id="__codelineno-7-3" name="__codelineno-7-3"></a>
+</span><span id="__span-7-4"><a href="#__codelineno-7-4" id="__codelineno-7-4" name="__codelineno-7-4"></a># Except this specific log file
+</span><span id="__span-7-5"><a href="#__codelineno-7-5" id="__codelineno-7-5" name="__codelineno-7-5"></a>!important.log
+</span><span id="__span-7-6"><a href="#__codelineno-7-6" id="__codelineno-7-6" name="__codelineno-7-6"></a>
+</span><span id="__span-7-7"><a href="#__codelineno-7-7" id="__codelineno-7-7" name="__codelineno-7-7"></a># Whitelist an entire directory
+</span><span id="__span-7-8"><a href="#__codelineno-7-8" id="__codelineno-7-8" name="__codelineno-7-8"></a>!logs/keep/
+</span></code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">Whitelist Override Power</p>
+<p>Whitelist patterns in <code>.ignore</code> files can override exclusions from <code>.gitignore</code> files, even in parent directories. This makes <code>.ignore</code> files powerful for project-specific ripgrep configurations without modifying your Git settings.</p>
+</div>
+<h3 id="vcs-and-global-ignore-files">VCS and Global Ignore Files<a class="headerlink" href="#vcs-and-global-ignore-files" title="Permanent link">¶</a></h3>
+<p>Ripgrep respects VCS-specific ignore files:</p>
+<ul>
+<li><code>.git/info/exclude</code>: Repository-specific patterns not in <code>.gitignore</code></li>
+<li>Global gitignore: System-wide patterns from your Git configuration</li>
+</ul>
+<p>These can be disabled with <code>--no-ignore-vcs</code> and <code>--no-ignore-global</code>:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a href="#__codelineno-8-1" id="__codelineno-8-1" name="__codelineno-8-1"></a>$<span class="w"> </span>rg<span class="w"> </span><span class="s1">'pattern'</span><span class="w"> </span>--no-ignore-vcs
+</span><span id="__span-8-2"><a href="#__codelineno-8-2" id="__codelineno-8-2" name="__codelineno-8-2"></a><span class="c1"># Ignores .gitignore and .git/info/exclude</span>
+</span><span id="__span-8-3"><a href="#__codelineno-8-3" id="__codelineno-8-3" name="__codelineno-8-3"></a>
+</span><span id="__span-8-4"><a href="#__codelineno-8-4" id="__codelineno-8-4" name="__codelineno-8-4"></a>$<span class="w"> </span>rg<span class="w"> </span><span class="s1">'pattern'</span><span class="w"> </span>--no-ignore-global
+</span><span id="__span-8-5"><a href="#__codelineno-8-5" id="__codelineno-8-5" name="__codelineno-8-5"></a><span class="c1"># Ignores global gitignore only</span>
+</span></code></pre></div>
+<h3 id="custom-ignore-files">Custom Ignore Files<a class="headerlink" href="#custom-ignore-files" title="Permanent link">¶</a></h3>
+<p>Use <code>--ignore-file</code> to add custom ignore file paths:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a href="#__codelineno-9-1" id="__codelineno-9-1" name="__codelineno-9-1"></a>$<span class="w"> </span>rg<span class="w"> </span><span class="s1">'pattern'</span><span class="w"> </span>--ignore-file<span class="w"> </span>/path/to/custom-ignore
+</span></code></pre></div>
+<p>Custom ignore files:
+- Have the lowest precedence (below all standard ignore files)
+- Are never disabled by <code>--no-ignore</code>
+- Can be specified multiple times</p>
+<h3 id="git-repository-requirements">Git Repository Requirements<a class="headerlink" href="#git-repository-requirements" title="Permanent link">¶</a></h3>
+<p>By default, <code>.gitignore</code> files are only respected inside Git repositories. Use <code>--no-require-git</code> to respect <code>.gitignore</code> files even outside repositories:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a href="#__codelineno-10-1" id="__codelineno-10-1" name="__codelineno-10-1"></a>$<span class="w"> </span>rg<span class="w"> </span><span class="s1">'pattern'</span><span class="w"> </span>--no-require-git
+</span></code></pre></div>
+<p>The default behavior can be made explicit with <code>--require-git</code>, which ensures <code>.gitignore</code> files are only respected inside Git repositories.</p>
+<h2 id="hidden-files">Hidden Files<a class="headerlink" href="#hidden-files" title="Permanent link">¶</a></h2>
+<p>Ripgrep skips hidden files and directories by default.</p>
+<h3 id="what-is-hidden">What is Hidden?<a class="headerlink" href="#what-is-hidden" title="Permanent link">¶</a></h3>
+<p>A file or directory is considered hidden if:
+- Its name starts with a dot (<code>.</code>), like <code>.bashrc</code> or <code>.config/</code>
+- On Windows, it has the "hidden" file attribute set</p>
+<h3 id="searching-hidden-files">Searching Hidden Files<a class="headerlink" href="#searching-hidden-files" title="Permanent link">¶</a></h3>
+<p>Use <code>-.</code>/<code>--hidden</code> to search hidden files:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a href="#__codelineno-11-1" id="__codelineno-11-1" name="__codelineno-11-1"></a>$<span class="w"> </span>rg<span class="w"> </span><span class="s1">'pattern'</span><span class="w"> </span>--hidden
+</span><span id="__span-11-2"><a href="#__codelineno-11-2" id="__codelineno-11-2" name="__codelineno-11-2"></a><span class="c1"># Searches all files including .bashrc, .git/, etc.</span>
+</span></code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Hidden Directories and Version Control</p>
+<p><code>--hidden</code> will search inside directories like <code>.git/</code> regardless of <code>--no-ignore-vcs</code>. To exclude such paths when using <code>--hidden</code>, you must explicitly ignore them:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a href="#__codelineno-12-1" id="__codelineno-12-1" name="__codelineno-12-1"></a>$<span class="w"> </span>rg<span class="w"> </span><span class="s1">'pattern'</span><span class="w"> </span>--hidden<span class="w"> </span>--glob<span class="w"> </span><span class="s1">'!.git/'</span>
+</span><span id="__span-12-2"><a href="#__codelineno-12-2" id="__codelineno-12-2" name="__codelineno-12-2"></a><span class="c1"># Search hidden files but exclude .git directory</span>
+</span></code></pre></div>
+</div>
+<h3 id="explicit-hidden-files">Explicit Hidden Files<a class="headerlink" href="#explicit-hidden-files" title="Permanent link">¶</a></h3>
+<p>Hidden files specified directly on the command line are always searched, even without <code>--hidden</code>:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a href="#__codelineno-13-1" id="__codelineno-13-1" name="__codelineno-13-1"></a>$<span class="w"> </span>rg<span class="w"> </span><span class="s1">'pattern'</span><span class="w"> </span>.bashrc
+</span><span id="__span-13-2"><a href="#__codelineno-13-2" id="__codelineno-13-2" name="__codelineno-13-2"></a><span class="c1"># Searches .bashrc even though it's hidden</span>
+</span></code></pre></div>
+<h2 id="binary-files">Binary Files<a class="headerlink" href="#binary-files" title="Permanent link">¶</a></h2>
+<p>Ripgrep automatically detects and skips binary files during recursive search.</p>
+<h3 id="binary-detection">Binary Detection<a class="headerlink" href="#binary-detection" title="Permanent link">¶</a></h3>
+<p>Ripgrep uses a NUL byte (<code>\0</code>) heuristic:
+- If a file contains a NUL byte in the first few kilobytes, it's considered binary
+- Binary detection only applies during <strong>recursive search</strong>
+- Files specified directly are always searched</p>
+<div class="admonition note">
+<p class="admonition-title">Binary Detection Scope</p>
+<p>Binary filtering only applies to recursive search. When you specify a file directly on the command line, ripgrep searches it regardless of content. Use <code>--no-binary</code> to force binary detection for explicit files.</p>
+</div>
+<h3 id="controlling-binary-search">Controlling Binary Search<a class="headerlink" href="#controlling-binary-search" title="Permanent link">¶</a></h3>
+<p><strong>Search binary files</strong> with <code>--binary</code> or <code>-a/--text</code>:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a href="#__codelineno-14-1" id="__codelineno-14-1" name="__codelineno-14-1"></a>$<span class="w"> </span>rg<span class="w"> </span><span class="s1">'pattern'</span><span class="w"> </span>--binary
+</span><span id="__span-14-2"><a href="#__codelineno-14-2" id="__codelineno-14-2" name="__codelineno-14-2"></a><span class="c1"># Searches all files including detected binary files</span>
+</span></code></pre></div>
+<p><strong>Force binary detection</strong> with <code>--no-binary</code>:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a href="#__codelineno-15-1" id="__codelineno-15-1" name="__codelineno-15-1"></a>$<span class="w"> </span>rg<span class="w"> </span><span class="s1">'pattern'</span><span class="w"> </span>file.exe<span class="w"> </span>--no-binary
+</span><span id="__span-15-2"><a href="#__codelineno-15-2" id="__codelineno-15-2" name="__codelineno-15-2"></a><span class="c1"># Skip file.exe if it contains NUL bytes</span>
+</span></code></pre></div>
+<p>Note: Binary filtering only applies to recursive search. When you specify a file directly, it's searched regardless of content.</p>
+<h2 id="parent-directory-ignore-files">Parent Directory Ignore Files<a class="headerlink" href="#parent-directory-ignore-files" title="Permanent link">¶</a></h2>
+<p>By default, ripgrep reads ignore files from parent directories of each searched path. This ensures that ignore rules are consistently applied across the directory tree.</p>
+<p>Disable this with <code>--no-ignore-parent</code>:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a href="#__codelineno-16-1" id="__codelineno-16-1" name="__codelineno-16-1"></a>$<span class="w"> </span>rg<span class="w"> </span><span class="s1">'pattern'</span><span class="w"> </span>--no-ignore-parent
+</span><span id="__span-16-2"><a href="#__codelineno-16-2" id="__codelineno-16-2" name="__codelineno-16-2"></a><span class="c1"># Only respect ignore files in or below current directory</span>
+</span></code></pre></div>
+<h2 id="symlinks">Symlinks<a class="headerlink" href="#symlinks" title="Permanent link">¶</a></h2>
+<p>By default, ripgrep does not follow symbolic links during recursive search.</p>
+<h3 id="following-symlinks">Following Symlinks<a class="headerlink" href="#following-symlinks" title="Permanent link">¶</a></h3>
+<p>Use <code>-L</code>/<code>--follow</code> to follow symbolic links:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a href="#__codelineno-17-1" id="__codelineno-17-1" name="__codelineno-17-1"></a>$<span class="w"> </span>rg<span class="w"> </span><span class="s1">'pattern'</span><span class="w"> </span>--follow
+</span><span id="__span-17-2"><a href="#__codelineno-17-2" id="__codelineno-17-2" name="__codelineno-17-2"></a><span class="c1"># Follows symlinks to files and directories</span>
+</span></code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">Loop Prevention</p>
+<p>Ripgrep automatically detects and prevents infinite loops when following symlinks that create circular directory structures. It's safe to use <code>--follow</code> even in complex directory trees.</p>
+</div>
+<h3 id="symlinks-and-ignore-files">Symlinks and Ignore Files<a class="headerlink" href="#symlinks-and-ignore-files" title="Permanent link">¶</a></h3>
+<p>When following symlinks with <code>--follow</code>, ignore files are still respected:
+- The symlink target is subject to ignore rules in its actual location
+- If a symlinked directory contains <code>.gitignore</code> or <code>.ignore</code> files, they apply to files within that directory</p>
+<p>To follow symlinks while bypassing ignore files:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-18-1"><a href="#__codelineno-18-1" id="__codelineno-18-1" name="__codelineno-18-1"></a>$<span class="w"> </span>rg<span class="w"> </span><span class="s1">'pattern'</span><span class="w"> </span>--follow<span class="w"> </span>--no-ignore
+</span><span id="__span-18-2"><a href="#__codelineno-18-2" id="__codelineno-18-2" name="__codelineno-18-2"></a><span class="c1"># Follow symlinks and ignore all ignore files</span>
+</span></code></pre></div>
+<h2 id="disabling-automatic-filtering">Disabling Automatic Filtering<a class="headerlink" href="#disabling-automatic-filtering" title="Permanent link">¶</a></h2>
+<p>Ripgrep provides several ways to disable automatic filtering.</p>
+<div class="admonition tip">
+<p class="admonition-title">Choosing the Right Flag: Decision Tree</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-19-1"><a href="#__codelineno-19-1" id="__codelineno-19-1" name="__codelineno-19-1"></a>Do you need to search ignored files?
+</span><span id="__span-19-2"><a href="#__codelineno-19-2" id="__codelineno-19-2" name="__codelineno-19-2"></a>│
+</span><span id="__span-19-3"><a href="#__codelineno-19-3" id="__codelineno-19-3" name="__codelineno-19-3"></a>├─ Yes, and also hidden files?
+</span><span id="__span-19-4"><a href="#__codelineno-19-4" id="__codelineno-19-4" name="__codelineno-19-4"></a>│  │
+</span><span id="__span-19-5"><a href="#__codelineno-19-5" id="__codelineno-19-5" name="__codelineno-19-5"></a>│  ├─ Yes, and also binary files?
+</span><span id="__span-19-6"><a href="#__codelineno-19-6" id="__codelineno-19-6" name="__codelineno-19-6"></a>│  │  └─ Use: -uuu (or --no-ignore --hidden --binary)
+</span><span id="__span-19-7"><a href="#__codelineno-19-7" id="__codelineno-19-7" name="__codelineno-19-7"></a>│  │
+</span><span id="__span-19-8"><a href="#__codelineno-19-8" id="__codelineno-19-8" name="__codelineno-19-8"></a>│  └─ No, just ignored + hidden
+</span><span id="__span-19-9"><a href="#__codelineno-19-9" id="__codelineno-19-9" name="__codelineno-19-9"></a>│     └─ Use: -uu (or --no-ignore --hidden)
+</span><span id="__span-19-10"><a href="#__codelineno-19-10" id="__codelineno-19-10" name="__codelineno-19-10"></a>│
+</span><span id="__span-19-11"><a href="#__codelineno-19-11" id="__codelineno-19-11" name="__codelineno-19-11"></a>├─ Yes, just ignored files
+</span><span id="__span-19-12"><a href="#__codelineno-19-12" id="__codelineno-19-12" name="__codelineno-19-12"></a>│  └─ Use: -u (or --no-ignore)
+</span><span id="__span-19-13"><a href="#__codelineno-19-13" id="__codelineno-19-13" name="__codelineno-19-13"></a>│
+</span><span id="__span-19-14"><a href="#__codelineno-19-14" id="__codelineno-19-14" name="__codelineno-19-14"></a>└─ No, but need hidden files?
+</span><span id="__span-19-15"><a href="#__codelineno-19-15" id="__codelineno-19-15" name="__codelineno-19-15"></a>   │
+</span><span id="__span-19-16"><a href="#__codelineno-19-16" id="__codelineno-19-16" name="__codelineno-19-16"></a>   ├─ Yes → Use: --hidden
+</span><span id="__span-19-17"><a href="#__codelineno-19-17" id="__codelineno-19-17" name="__codelineno-19-17"></a>   │
+</span><span id="__span-19-18"><a href="#__codelineno-19-18" id="__codelineno-19-18" name="__codelineno-19-18"></a>   └─ No, just need specific control?
+</span><span id="__span-19-19"><a href="#__codelineno-19-19" id="__codelineno-19-19" name="__codelineno-19-19"></a>      └─ Use: --no-ignore-vcs / --no-ignore-dot / etc.
+</span></code></pre></div>
+</div>
+<h3 id="progressive-unrestricted-flags">Progressive Unrestricted Flags<a class="headerlink" href="#progressive-unrestricted-flags" title="Permanent link">¶</a></h3>
+<p>The <code>-u/--unrestricted</code> flag can be used up to three times for progressive filtering removal:</p>
+<pre class="mermaid"><code>graph LR
+    Default[Default<br/>rg 'pattern'] --&gt; U1[-u<br/>--no-ignore]
+    U1 --&gt; U2[-uu<br/>+ --hidden]
+    U2 --&gt; U3[-uuu<br/>+ --binary]
+
+    Default -.-&gt;|Filters| F1[Ignore Files<br/>Hidden Files<br/>Binary Files]
+    U1 -.-&gt;|Filters| F2[Hidden Files<br/>Binary Files]
+    U2 -.-&gt;|Filters| F3[Binary Files]
+    U3 -.-&gt;|Filters| F4[None]
+
+    style Default fill:#ffebee
+    style U1 fill:#fff3e0
+    style U2 fill:#e1f5ff
+    style U3 fill:#e8f5e9
+</code></pre>
+<p><strong>Figure</strong>: Progressive filter removal with <code>-u</code> flags. Each level disables more filters.</p>
+<p><strong><code>-u</code> (once)</strong>: Disable ignore files (<code>.gitignore</code>, <code>.ignore</code>, etc.)
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-20-1"><a href="#__codelineno-20-1" id="__codelineno-20-1" name="__codelineno-20-1"></a>$<span class="w"> </span>rg<span class="w"> </span><span class="s1">'pattern'</span><span class="w"> </span>-u
+</span><span id="__span-20-2"><a href="#__codelineno-20-2" id="__codelineno-20-2" name="__codelineno-20-2"></a><span class="c1"># Same as --no-ignore</span>
+</span></code></pre></div></p>
+<p><strong><code>-uu</code> (twice)</strong>: Disable ignore files + search hidden files
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-21-1"><a href="#__codelineno-21-1" id="__codelineno-21-1" name="__codelineno-21-1"></a>$<span class="w"> </span>rg<span class="w"> </span><span class="s1">'pattern'</span><span class="w"> </span>-uu
+</span><span id="__span-21-2"><a href="#__codelineno-21-2" id="__codelineno-21-2" name="__codelineno-21-2"></a><span class="c1"># Same as --no-ignore --hidden</span>
+</span></code></pre></div></p>
+<p><strong><code>-uuu</code> (three times)</strong>: Disable ignore files + search hidden files + search binary files
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-22-1"><a href="#__codelineno-22-1" id="__codelineno-22-1" name="__codelineno-22-1"></a>$<span class="w"> </span>rg<span class="w"> </span><span class="s1">'pattern'</span><span class="w"> </span>-uuu
+</span><span id="__span-22-2"><a href="#__codelineno-22-2" id="__codelineno-22-2" name="__codelineno-22-2"></a><span class="c1"># Same as --no-ignore --hidden --binary</span>
+</span></code></pre></div></p>
+<h3 id="fine-grained-control">Fine-Grained Control<a class="headerlink" href="#fine-grained-control" title="Permanent link">¶</a></h3>
+<p>For more precise control, use specific <code>--no-ignore-*</code> flags:</p>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--no-ignore</code></td>
+<td>Disable all standard ignore files</td>
+</tr>
+<tr>
+<td><code>--no-ignore-dot</code></td>
+<td>Disable <code>.ignore</code> and <code>.rgignore</code> files only</td>
+</tr>
+<tr>
+<td><code>--no-ignore-vcs</code></td>
+<td>Disable <code>.gitignore</code> and <code>.git/info/exclude</code> only</td>
+</tr>
+<tr>
+<td><code>--no-ignore-exclude</code></td>
+<td>Disable <code>.git/info/exclude</code> only</td>
+</tr>
+<tr>
+<td><code>--no-ignore-global</code></td>
+<td>Disable global gitignore only</td>
+</tr>
+<tr>
+<td><code>--no-ignore-parent</code></td>
+<td>Don't read ignore files from parent directories</td>
+</tr>
+<tr>
+<td><code>--no-ignore-files</code></td>
+<td>Disable custom ignore files from <code>--ignore-file</code></td>
+</tr>
+</tbody>
+</table>
+<p>Example combining flags:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-23-1"><a href="#__codelineno-23-1" id="__codelineno-23-1" name="__codelineno-23-1"></a>$<span class="w"> </span>rg<span class="w"> </span><span class="s1">'pattern'</span><span class="w"> </span>--no-ignore-vcs<span class="w"> </span>--hidden
+</span><span id="__span-23-2"><a href="#__codelineno-23-2" id="__codelineno-23-2" name="__codelineno-23-2"></a><span class="c1"># Ignore .gitignore but respect .ignore, and search hidden files</span>
+</span></code></pre></div>
+<h2 id="ignore-file-error-handling">Ignore File Error Handling<a class="headerlink" href="#ignore-file-error-handling" title="Permanent link">¶</a></h2>
+<p>By default, ripgrep reports errors when ignore files are malformed. Suppress these messages with <code>--no-ignore-messages</code>:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-24-1"><a href="#__codelineno-24-1" id="__codelineno-24-1" name="__codelineno-24-1"></a>$<span class="w"> </span>rg<span class="w"> </span><span class="s1">'pattern'</span><span class="w"> </span>--no-ignore-messages
+</span><span id="__span-24-2"><a href="#__codelineno-24-2" id="__codelineno-24-2" name="__codelineno-24-2"></a><span class="c1"># Silently skip malformed ignore files</span>
+</span></code></pre></div>
+<h2 id="case-insensitive-ignore-files">Case Insensitive Ignore Files<a class="headerlink" href="#case-insensitive-ignore-files" title="Permanent link">¶</a></h2>
+<p>On Windows or case-insensitive filesystems, you may want case-insensitive glob matching in ignore files. Use <code>--ignore-file-case-insensitive</code>:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-25-1"><a href="#__codelineno-25-1" id="__codelineno-25-1" name="__codelineno-25-1"></a>$<span class="w"> </span>rg<span class="w"> </span><span class="s1">'pattern'</span><span class="w"> </span>--ignore-file-case-insensitive
+</span><span id="__span-25-2"><a href="#__codelineno-25-2" id="__codelineno-25-2" name="__codelineno-25-2"></a><span class="c1"># *.LOG in ignore file will match file.log</span>
+</span></code></pre></div>
+<h2 id="interaction-with-explicit-paths">Interaction with Explicit Paths<a class="headerlink" href="#interaction-with-explicit-paths" title="Permanent link">¶</a></h2>
+<p>Files and directories specified explicitly on the command line bypass automatic filtering:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-26-1"><a href="#__codelineno-26-1" id="__codelineno-26-1" name="__codelineno-26-1"></a>$<span class="w"> </span>rg<span class="w"> </span><span class="s1">'pattern'</span><span class="w"> </span>ignored-file.txt
+</span><span id="__span-26-2"><a href="#__codelineno-26-2" id="__codelineno-26-2" name="__codelineno-26-2"></a><span class="c1"># Searches ignored-file.txt even if it's in .gitignore</span>
+</span></code></pre></div>
+<div class="admonition example">
+<p class="admonition-title">Explicit Path Behavior</p>
+<p><strong>Files bypass all filters:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-27-1"><a href="#__codelineno-27-1" id="__codelineno-27-1" name="__codelineno-27-1"></a>$<span class="w"> </span>rg<span class="w"> </span><span class="s1">'pattern'</span><span class="w"> </span>.bashrc<span class="w">          </span><span class="c1"># Searches hidden file</span>
+</span><span id="__span-27-2"><a href="#__codelineno-27-2" id="__codelineno-27-2" name="__codelineno-27-2"></a>$<span class="w"> </span>rg<span class="w"> </span><span class="s1">'pattern'</span><span class="w"> </span>ignored.txt<span class="w">      </span><span class="c1"># Searches ignored file</span>
+</span><span id="__span-27-3"><a href="#__codelineno-27-3" id="__codelineno-27-3" name="__codelineno-27-3"></a>$<span class="w"> </span>rg<span class="w"> </span><span class="s1">'pattern'</span><span class="w"> </span>binary.exe<span class="w">       </span><span class="c1"># Searches binary file</span>
+</span></code></pre></div>
+<p><strong>Directories still apply filters:</strong></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-28-1"><a href="#__codelineno-28-1" id="__codelineno-28-1" name="__codelineno-28-1"></a>$<span class="w"> </span>rg<span class="w"> </span><span class="s1">'pattern'</span><span class="w"> </span>some-dir/
+</span><span id="__span-28-2"><a href="#__codelineno-28-2" id="__codelineno-28-2" name="__codelineno-28-2"></a><span class="c1"># Applies ignore rules to files inside some-dir/</span>
+</span></code></pre></div>
+</div>
+<p>This applies to:
+- Files listed in <code>.gitignore</code> or <code>.ignore</code>
+- Hidden files (when <code>--hidden</code> is not used)
+- Binary files (during recursive search)</p>
+<h2 id="interaction-with-manual-filtering">Interaction with Manual Filtering<a class="headerlink" href="#interaction-with-manual-filtering" title="Permanent link">¶</a></h2>
+<p>Automatic filtering works alongside manual filtering options like <code>--glob</code> and <code>--type</code>. The filters are combined:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-29-1"><a href="#__codelineno-29-1" id="__codelineno-29-1" name="__codelineno-29-1"></a>$<span class="w"> </span>rg<span class="w"> </span><span class="s1">'pattern'</span><span class="w"> </span>--type<span class="w"> </span>rust<span class="w"> </span>--hidden
+</span><span id="__span-29-2"><a href="#__codelineno-29-2" id="__codelineno-29-2" name="__codelineno-29-2"></a><span class="c1"># Search Rust files, including hidden ones, respecting ignore files</span>
+</span></code></pre></div>
+<p>All filtering mechanisms are applied:
+1. Glob overrides from <code>--glob</code>
+2. Ignore files (<code>.gitignore</code>, <code>.ignore</code>, etc.)
+3. File type filters (<code>--type</code>)
+4. Hidden file filtering (unless <code>--hidden</code>)
+5. Binary file filtering (unless <code>--binary</code>)</p>
+<p>See the <a href="../manual-filtering-globs/">Manual Filtering: Globs</a> and <a href="../manual-filtering-types/">Manual Filtering: Types</a> chapters for more details.</p>
+<h2 id="common-use-cases">Common Use Cases<a class="headerlink" href="#common-use-cases" title="Permanent link">¶</a></h2>
+<div class="admonition example">
+<p class="admonition-title">Quick Reference: Common Scenarios</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:5"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio"><input id="__tabbed_2_2" name="__tabbed_2" type="radio"><input id="__tabbed_2_3" name="__tabbed_2" type="radio"><input id="__tabbed_2_4" name="__tabbed_2" type="radio"><input id="__tabbed_2_5" name="__tabbed_2" type="radio"><div class="tabbed-labels"><label for="__tabbed_2_1">Search Everything</label><label for="__tabbed_2_2">Hidden Config Files</label><label for="__tabbed_2_3">Custom Ignore File</label><label for="__tabbed_2_4">Specific Ignored File</label><label for="__tabbed_2_5">Only .ignore Files</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p><strong>Including hidden and binary files:</strong>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-30-1"><a href="#__codelineno-30-1" id="__codelineno-30-1" name="__codelineno-30-1"></a>$<span class="w"> </span>rg<span class="w"> </span><span class="s1">'pattern'</span><span class="w"> </span>-uuu
+</span></code></pre></div></p>
+</div>
+<div class="tabbed-block">
+<p><strong>Search hidden files but respect .gitignore:</strong>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-31-1"><a href="#__codelineno-31-1" id="__codelineno-31-1" name="__codelineno-31-1"></a>$<span class="w"> </span>rg<span class="w"> </span><span class="s1">'pattern'</span><span class="w"> </span>--hidden
+</span></code></pre></div></p>
+</div>
+<div class="tabbed-block">
+<p><strong>Ignore Git files but use custom ignore file:</strong>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-32-1"><a href="#__codelineno-32-1" id="__codelineno-32-1" name="__codelineno-32-1"></a>$<span class="w"> </span>rg<span class="w"> </span><span class="s1">'pattern'</span><span class="w"> </span>--no-ignore-vcs<span class="w"> </span>--ignore-file<span class="w"> </span>my-ignores.txt
+</span></code></pre></div></p>
+</div>
+<div class="tabbed-block">
+<p><strong>Search a specific file even if ignored:</strong>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-33-1"><a href="#__codelineno-33-1" id="__codelineno-33-1" name="__codelineno-33-1"></a>$<span class="w"> </span>rg<span class="w"> </span><span class="s1">'pattern'</span><span class="w"> </span>node_modules/package/file.js
+</span></code></pre></div></p>
+</div>
+<div class="tabbed-block">
+<p><strong>Search without .gitignore but with .ignore:</strong>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-34-1"><a href="#__codelineno-34-1" id="__codelineno-34-1" name="__codelineno-34-1"></a>$<span class="w"> </span>rg<span class="w"> </span><span class="s1">'pattern'</span><span class="w"> </span>--no-ignore-vcs
+</span></code></pre></div></p>
+</div>
+</div>
+</input></input></input></input></input></div>
+</div>
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">¶</a></h2>
+<h3 id="files-are-being-ignored-unexpectedly">Files Are Being Ignored Unexpectedly<a class="headerlink" href="#files-are-being-ignored-unexpectedly" title="Permanent link">¶</a></h3>
+<ol>
+<li>
+<p>Check if the file matches an ignore pattern:
+   <div class="language-bash highlight"><pre><span></span><code><span id="__span-35-1"><a href="#__codelineno-35-1" id="__codelineno-35-1" name="__codelineno-35-1"></a>$<span class="w"> </span>rg<span class="w"> </span>--files<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>filename
+</span><span id="__span-35-2"><a href="#__codelineno-35-2" id="__codelineno-35-2" name="__codelineno-35-2"></a><span class="c1"># If missing, the file is being filtered</span>
+</span></code></pre></div></p>
+</li>
+<li>
+<p>Use <code>--debug</code> to see why files are ignored:
+   <div class="language-bash highlight"><pre><span></span><code><span id="__span-36-1"><a href="#__codelineno-36-1" id="__codelineno-36-1" name="__codelineno-36-1"></a>$<span class="w"> </span>rg<span class="w"> </span><span class="s1">'pattern'</span><span class="w"> </span>--debug<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>filename
+</span></code></pre></div></p>
+</li>
+<li>
+<p>Try disabling ignore files progressively:
+   <div class="language-bash highlight"><pre><span></span><code><span id="__span-37-1"><a href="#__codelineno-37-1" id="__codelineno-37-1" name="__codelineno-37-1"></a>$<span class="w"> </span>rg<span class="w"> </span><span class="s1">'pattern'</span><span class="w"> </span>-u<span class="w">      </span><span class="c1"># Disable ignore files</span>
+</span><span id="__span-37-2"><a href="#__codelineno-37-2" id="__codelineno-37-2" name="__codelineno-37-2"></a>$<span class="w"> </span>rg<span class="w"> </span><span class="s1">'pattern'</span><span class="w"> </span>-uu<span class="w">     </span><span class="c1"># Also search hidden</span>
+</span><span id="__span-37-3"><a href="#__codelineno-37-3" id="__codelineno-37-3" name="__codelineno-37-3"></a>$<span class="w"> </span>rg<span class="w"> </span><span class="s1">'pattern'</span><span class="w"> </span>-uuu<span class="w">    </span><span class="c1"># Also search binary</span>
+</span></code></pre></div></p>
+</li>
+</ol>
+<h3 id="hidden-files-arent-being-searched">Hidden Files Aren't Being Searched<a class="headerlink" href="#hidden-files-arent-being-searched" title="Permanent link">¶</a></h3>
+<p>Ensure you're using <code>--hidden</code> or specifying the file directly:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-38-1"><a href="#__codelineno-38-1" id="__codelineno-38-1" name="__codelineno-38-1"></a>$<span class="w"> </span>rg<span class="w"> </span><span class="s1">'pattern'</span><span class="w"> </span>--hidden<span class="w">           </span><span class="c1"># Search all hidden files</span>
+</span><span id="__span-38-2"><a href="#__codelineno-38-2" id="__codelineno-38-2" name="__codelineno-38-2"></a>$<span class="w"> </span>rg<span class="w"> </span><span class="s1">'pattern'</span><span class="w"> </span>.config/file.conf<span class="w">  </span><span class="c1"># Search specific hidden file</span>
+</span></code></pre></div>
+<h3 id="binary-files-are-being-searched">Binary Files Are Being Searched<a class="headerlink" href="#binary-files-are-being-searched" title="Permanent link">¶</a></h3>
+<p>If you don't want binary files, ensure you're not using <code>--binary</code> or <code>-uuu</code>:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-39-1"><a href="#__codelineno-39-1" id="__codelineno-39-1" name="__codelineno-39-1"></a>$<span class="w"> </span>rg<span class="w"> </span><span class="s1">'pattern'</span><span class="w">  </span><span class="c1"># Binary files skipped by default in recursive search</span>
+</span></code></pre></div>
+<h3 id="ignore-files-arent-being-respected">Ignore Files Aren't Being Respected<a class="headerlink" href="#ignore-files-arent-being-respected" title="Permanent link">¶</a></h3>
+<p>Check if you've accidentally disabled them:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-40-1"><a href="#__codelineno-40-1" id="__codelineno-40-1" name="__codelineno-40-1"></a>$<span class="w"> </span>rg<span class="w"> </span><span class="s1">'pattern'</span><span class="w">  </span><span class="c1"># Default: ignore files enabled</span>
+</span><span id="__span-40-2"><a href="#__codelineno-40-2" id="__codelineno-40-2" name="__codelineno-40-2"></a><span class="c1"># Not: rg 'pattern' --no-ignore</span>
+</span></code></pre></div>
+<p>Verify ignore file syntax matches <code>.gitignore</code> format.</p>
+<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">¶</a></h2>
+<p>Ripgrep's automatic filtering makes searches fast and relevant by:
+- Respecting <code>.ignore</code>, <code>.gitignore</code>, and other ignore files with clear precedence rules
+- Skipping hidden files and directories by default
+- Detecting and skipping binary files during recursive search
+- Providing progressive <code>-u/-uu/-uuu</code> flags and fine-grained <code>--no-ignore-*</code> options for control</p>
+<p>Understanding these filters helps you search effectively and know when to use flags like <code>--hidden</code>, <code>--binary</code>, or <code>-uuu</code> to broaden your search.</p>
+</article>
+</div>
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+</div>
+<button class="md-top md-icon" data-md-component="top" hidden="" type="button">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"></path></svg>
+  Back to top
+</button>
+</main>
+<footer class="md-footer">
+<div class="md-footer-meta md-typeset">
+<div class="md-footer-meta__inner md-grid">
+<div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" rel="noopener" target="_blank">
+      Material for MkDocs
+    </a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<div class="md-dialog" data-md-component="dialog">
+<div class="md-dialog__inner md-typeset"></div>
+</div>
+<script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.highlight", "search.share", "search.suggest", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+<script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
+<script type="module">import mermaid from "https://unpkg.com/mermaid@10.4.0/dist/mermaid.esm.min.mjs";
+window.mermaidConfig = {default: {
+    startOnLoad: false
+}};</script></body>
+</html>

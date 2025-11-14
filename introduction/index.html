@@ -7,16 +7,17 @@
 <meta content="width=device-width,initial-scale=1" name="viewport"/>
 <meta content="A comprehensive guide to using ripgrep, a line-oriented search tool" name="description"/>
 <meta content="Andrew Gallant" name="author"/>
-<link href="https://github.com/BurntSushi/ripgrep/" rel="canonical"/>
-<link href="assets/images/favicon.png" rel="icon"/>
+<link href="https://github.com/BurntSushi/ripgrep/introduction/" rel="canonical"/>
+<link href="../basics/" rel="next"/>
+<link href="../assets/images/favicon.png" rel="icon"/>
 <meta content="mkdocs-1.6.1, mkdocs-material-9.7.0" name="generator"/>
-<title>ripgrep User Guide</title>
-<link href="assets/stylesheets/main.618322db.min.css" rel="stylesheet"/>
-<link href="assets/stylesheets/palette.ab4e12ef.min.css" rel="stylesheet"/>
+<title>Home - ripgrep User Guide</title>
+<link href="../assets/stylesheets/main.618322db.min.css" rel="stylesheet"/>
+<link href="../assets/stylesheets/palette.ab4e12ef.min.css" rel="stylesheet"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback" rel="stylesheet"/>
 <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
-<script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+<script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
 </head>
 <body data-md-color-accent="indigo" data-md-color-primary="indigo" data-md-color-scheme="slate" dir="ltr">
 <input autocomplete="off" class="md-toggle" data-md-toggle="drawer" id="__drawer" type="checkbox"/>
@@ -31,7 +32,7 @@
 </div>
 <header class="md-header" data-md-component="header">
 <nav aria-label="Header" class="md-header__inner md-grid">
-<a aria-label="ripgrep User Guide" class="md-header__button md-logo" data-md-component="logo" href="." title="ripgrep User Guide">
+<a aria-label="ripgrep User Guide" class="md-header__button md-logo" data-md-component="logo" href=".." title="ripgrep User Guide">
 <svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
 </a>
 <label class="md-header__button md-icon" for="__drawer">
@@ -47,7 +48,7 @@
 <div class="md-header__topic" data-md-component="header-topic">
 <span class="md-ellipsis">
             
-              Introduction
+              Home
             
           </span>
 </div>
@@ -114,8 +115,8 @@
 <nav aria-label="Tabs" class="md-tabs" data-md-component="tabs">
 <div class="md-grid">
 <ul class="md-tabs__list">
-<li class="md-tabs__item">
-<a class="md-tabs__link" href="introduction/">
+<li class="md-tabs__item md-tabs__item--active">
+<a class="md-tabs__link" href="./">
         
   
   
@@ -126,7 +127,7 @@
       </a>
 </li>
 <li class="md-tabs__item">
-<a class="md-tabs__link" href="basics/">
+<a class="md-tabs__link" href="../basics/">
           
   
   
@@ -135,7 +136,7 @@
         </a>
 </li>
 <li class="md-tabs__item">
-<a class="md-tabs__link" href="advanced-patterns/">
+<a class="md-tabs__link" href="../advanced-patterns/">
           
   
   
@@ -153,7 +154,7 @@
 <div class="md-sidebar__inner">
 <nav aria-label="Navigation" class="md-nav md-nav--primary md-nav--lifted" data-md-level="0">
 <label class="md-nav__title" for="__drawer">
-<a aria-label="ripgrep User Guide" class="md-nav__button md-logo" data-md-component="logo" href="." title="ripgrep User Guide">
+<a aria-label="ripgrep User Guide" class="md-nav__button md-logo" data-md-component="logo" href=".." title="ripgrep User Guide">
 <svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
 </a>
     ripgrep User Guide
@@ -169,8 +170,20 @@
 </a>
 </div>
 <ul class="md-nav__list" data-md-scrollfix="">
-<li class="md-nav__item">
-<a class="md-nav__link" href="introduction/">
+<li class="md-nav__item md-nav__item--active">
+<input class="md-nav__toggle md-toggle" id="__toc" type="checkbox"/>
+<label class="md-nav__link md-nav__link--active" for="__toc">
+<span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<a class="md-nav__link md-nav__link--active" href="./">
 <span class="md-ellipsis">
     
   
@@ -180,6 +193,103 @@
     
   </span>
 </a>
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#what-is-ripgrep">
+<span class="md-ellipsis">
+      
+        What is ripgrep?
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#why-ripgrep">
+<span class="md-ellipsis">
+      
+        Why ripgrep?
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#key-features">
+<span class="md-ellipsis">
+      
+        Key Features
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#installation">
+<span class="md-ellipsis">
+      
+        Installation
+      
+    </span>
+</a>
+<nav aria-label="Installation" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#quick-installation">
+<span class="md-ellipsis">
+      
+        Quick Installation
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#quick-start">
+<span class="md-ellipsis">
+      
+        Quick Start
+      
+    </span>
+</a>
+<nav aria-label="Quick Start" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#ripgrep-specific-features">
+<span class="md-ellipsis">
+      
+        ripgrep-Specific Features
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#getting-help">
+<span class="md-ellipsis">
+      
+        Getting Help
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#assumptions">
+<span class="md-ellipsis">
+      
+        Assumptions
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
 </li>
 <li class="md-nav__item md-nav__item--nested">
 <input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_2" type="checkbox"/>
@@ -228,7 +338,7 @@
           </label>
 <ul class="md-nav__list" data-md-scrollfix="">
 <li class="md-nav__item">
-<a class="md-nav__link" href="basics/">
+<a class="md-nav__link" href="../basics/">
 <span class="md-ellipsis">
     
   
@@ -240,7 +350,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="basics/pattern-matching/">
+<a class="md-nav__link" href="../basics/pattern-matching/">
 <span class="md-ellipsis">
     
   
@@ -252,7 +362,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="basics/literal-search/">
+<a class="md-nav__link" href="../basics/literal-search/">
 <span class="md-ellipsis">
     
   
@@ -264,7 +374,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="basics/regex-basics/">
+<a class="md-nav__link" href="../basics/regex-basics/">
 <span class="md-ellipsis">
     
   
@@ -276,7 +386,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="basics/case-sensitivity/">
+<a class="md-nav__link" href="../basics/case-sensitivity/">
 <span class="md-ellipsis">
     
   
@@ -288,7 +398,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="basics/boundaries/">
+<a class="md-nav__link" href="../basics/boundaries/">
 <span class="md-ellipsis">
     
   
@@ -300,7 +410,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="basics/output/">
+<a class="md-nav__link" href="../basics/output/">
 <span class="md-ellipsis">
     
   
@@ -312,7 +422,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="basics/count-list/">
+<a class="md-nav__link" href="../basics/count-list/">
 <span class="md-ellipsis">
     
   
@@ -324,7 +434,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="basics/practice/">
+<a class="md-nav__link" href="../basics/practice/">
 <span class="md-ellipsis">
     
   
@@ -339,7 +449,7 @@
 </nav>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="recursive-search/">
+<a class="md-nav__link" href="../recursive-search/">
 <span class="md-ellipsis">
     
   
@@ -351,7 +461,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="automatic-filtering/">
+<a class="md-nav__link" href="../automatic-filtering/">
 <span class="md-ellipsis">
     
   
@@ -363,7 +473,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="manual-filtering-globs/">
+<a class="md-nav__link" href="../manual-filtering-globs/">
 <span class="md-ellipsis">
     
   
@@ -375,7 +485,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="manual-filtering-types/">
+<a class="md-nav__link" href="../manual-filtering-types/">
 <span class="md-ellipsis">
     
   
@@ -387,7 +497,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="replacements/">
+<a class="md-nav__link" href="../replacements/">
 <span class="md-ellipsis">
     
   
@@ -399,7 +509,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="configuration-file/">
+<a class="md-nav__link" href="../configuration-file/">
 <span class="md-ellipsis">
     
   
@@ -411,7 +521,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="file-encoding/">
+<a class="md-nav__link" href="../file-encoding/">
 <span class="md-ellipsis">
     
   
@@ -446,7 +556,7 @@
           </label>
 <ul class="md-nav__list" data-md-scrollfix="">
 <li class="md-nav__item">
-<a class="md-nav__link" href="binary-data/">
+<a class="md-nav__link" href="../binary-data/">
 <span class="md-ellipsis">
     
   
@@ -458,7 +568,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="binary-data/detection/">
+<a class="md-nav__link" href="../binary-data/detection/">
 <span class="md-ellipsis">
     
   
@@ -470,7 +580,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="binary-data/modes/">
+<a class="md-nav__link" href="../binary-data/modes/">
 <span class="md-ellipsis">
     
   
@@ -482,7 +592,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="binary-data/explicit-implicit/">
+<a class="md-nav__link" href="../binary-data/explicit-implicit/">
 <span class="md-ellipsis">
     
   
@@ -494,7 +604,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="binary-data/flags/">
+<a class="md-nav__link" href="../binary-data/flags/">
 <span class="md-ellipsis">
     
   
@@ -506,7 +616,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="binary-data/examples/">
+<a class="md-nav__link" href="../binary-data/examples/">
 <span class="md-ellipsis">
     
   
@@ -521,7 +631,7 @@
 </nav>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="compressed-files/">
+<a class="md-nav__link" href="../compressed-files/">
 <span class="md-ellipsis">
     
   
@@ -533,7 +643,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="preprocessor/">
+<a class="md-nav__link" href="../preprocessor/">
 <span class="md-ellipsis">
     
   
@@ -568,7 +678,7 @@
           </label>
 <ul class="md-nav__list" data-md-scrollfix="">
 <li class="md-nav__item">
-<a class="md-nav__link" href="common-options/">
+<a class="md-nav__link" href="../common-options/">
 <span class="md-ellipsis">
     
   
@@ -580,7 +690,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="common-options/search-basics/">
+<a class="md-nav__link" href="../common-options/search-basics/">
 <span class="md-ellipsis">
     
   
@@ -592,7 +702,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="common-options/output-formatting/">
+<a class="md-nav__link" href="../common-options/output-formatting/">
 <span class="md-ellipsis">
     
   
@@ -604,7 +714,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="common-options/file-filtering/">
+<a class="md-nav__link" href="../common-options/file-filtering/">
 <span class="md-ellipsis">
     
   
@@ -616,7 +726,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="common-options/output-modes/">
+<a class="md-nav__link" href="../common-options/output-modes/">
 <span class="md-ellipsis">
     
   
@@ -628,7 +738,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="common-options/reference/">
+<a class="md-nav__link" href="../common-options/reference/">
 <span class="md-ellipsis">
     
   
@@ -643,7 +753,7 @@
 </nav>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="context-lines/">
+<a class="md-nav__link" href="../context-lines/">
 <span class="md-ellipsis">
     
   
@@ -655,7 +765,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="output-formats/">
+<a class="md-nav__link" href="../output-formats/">
 <span class="md-ellipsis">
     
   
@@ -667,7 +777,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="sorting-results/">
+<a class="md-nav__link" href="../sorting-results/">
 <span class="md-ellipsis">
     
   
@@ -679,7 +789,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="utility-modes/">
+<a class="md-nav__link" href="../utility-modes/">
 <span class="md-ellipsis">
     
   
@@ -740,7 +850,7 @@
           </label>
 <ul class="md-nav__list" data-md-scrollfix="">
 <li class="md-nav__item">
-<a class="md-nav__link" href="advanced-patterns/">
+<a class="md-nav__link" href="../advanced-patterns/">
 <span class="md-ellipsis">
     
   
@@ -752,7 +862,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="advanced-patterns/multiline/">
+<a class="md-nav__link" href="../advanced-patterns/multiline/">
 <span class="md-ellipsis">
     
   
@@ -764,7 +874,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="advanced-patterns/pcre2/">
+<a class="md-nav__link" href="../advanced-patterns/pcre2/">
 <span class="md-ellipsis">
     
   
@@ -776,7 +886,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="advanced-patterns/lookaround/">
+<a class="md-nav__link" href="../advanced-patterns/lookaround/">
 <span class="md-ellipsis">
     
   
@@ -788,7 +898,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="advanced-patterns/backreferences/">
+<a class="md-nav__link" href="../advanced-patterns/backreferences/">
 <span class="md-ellipsis">
     
   
@@ -800,7 +910,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="advanced-patterns/unicode/">
+<a class="md-nav__link" href="../advanced-patterns/unicode/">
 <span class="md-ellipsis">
     
   
@@ -812,7 +922,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="advanced-patterns/inline-flags/">
+<a class="md-nav__link" href="../advanced-patterns/inline-flags/">
 <span class="md-ellipsis">
     
   
@@ -824,7 +934,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="advanced-patterns/performance/">
+<a class="md-nav__link" href="../advanced-patterns/performance/">
 <span class="md-ellipsis">
     
   
@@ -836,7 +946,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="advanced-patterns/examples/">
+<a class="md-nav__link" href="../advanced-patterns/examples/">
 <span class="md-ellipsis">
     
   
@@ -851,7 +961,7 @@
 </nav>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="performance/">
+<a class="md-nav__link" href="../performance/">
 <span class="md-ellipsis">
     
   
@@ -863,7 +973,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="statistics/">
+<a class="md-nav__link" href="../statistics/">
 <span class="md-ellipsis">
     
   
@@ -875,7 +985,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="hyperlinks/">
+<a class="md-nav__link" href="../hyperlinks/">
 <span class="md-ellipsis">
     
   
@@ -910,7 +1020,7 @@
           </label>
 <ul class="md-nav__list" data-md-scrollfix="">
 <li class="md-nav__item">
-<a class="md-nav__link" href="troubleshooting/">
+<a class="md-nav__link" href="../troubleshooting/">
 <span class="md-ellipsis">
     
   
@@ -922,7 +1032,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="troubleshooting/debug-flags/">
+<a class="md-nav__link" href="../troubleshooting/debug-flags/">
 <span class="md-ellipsis">
     
   
@@ -934,7 +1044,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="troubleshooting/no-results/">
+<a class="md-nav__link" href="../troubleshooting/no-results/">
 <span class="md-ellipsis">
     
   
@@ -946,7 +1056,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="troubleshooting/performance/">
+<a class="md-nav__link" href="../troubleshooting/performance/">
 <span class="md-ellipsis">
     
   
@@ -958,7 +1068,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="troubleshooting/errors/">
+<a class="md-nav__link" href="../troubleshooting/errors/">
 <span class="md-ellipsis">
     
   
@@ -970,7 +1080,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="troubleshooting/binary-encoding/">
+<a class="md-nav__link" href="../troubleshooting/binary-encoding/">
 <span class="md-ellipsis">
     
   
@@ -982,7 +1092,7 @@
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="troubleshooting/bug-reports/">
+<a class="md-nav__link" href="../troubleshooting/bug-reports/">
 <span class="md-ellipsis">
     
   
@@ -1296,8 +1406,8 @@
 <div class="md-dialog" data-md-component="dialog">
 <div class="md-dialog__inner md-typeset"></div>
 </div>
-<script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.highlight", "search.share", "search.suggest", "content.code.copy", "content.code.annotate"], "search": "assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
-<script src="assets/javascripts/bundle.e71a0d61.min.js"></script>
+<script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.highlight", "search.share", "search.suggest", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+<script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
 <script type="module">import mermaid from "https://unpkg.com/mermaid@10.4.0/dist/mermaid.esm.min.mjs";
 window.mermaidConfig = {default: {
     startOnLoad: false

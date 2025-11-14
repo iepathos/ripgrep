@@ -1,0 +1,2446 @@
+
+<!DOCTYPE html>
+
+<html class="no-js" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="A comprehensive guide to using ripgrep, a line-oriented search tool" name="description"/>
+<meta content="Andrew Gallant" name="author"/>
+<link href="https://github.com/BurntSushi/ripgrep/performance/" rel="canonical"/>
+<link href="../advanced-patterns/examples/" rel="prev"/>
+<link href="../statistics/" rel="next"/>
+<link href="../assets/images/favicon.png" rel="icon"/>
+<meta content="mkdocs-1.6.1, mkdocs-material-9.7.0" name="generator"/>
+<title>Performance - ripgrep User Guide</title>
+<link href="../assets/stylesheets/main.618322db.min.css" rel="stylesheet"/>
+<link href="../assets/stylesheets/palette.ab4e12ef.min.css" rel="stylesheet"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback" rel="stylesheet"/>
+<style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+<script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+</head>
+<body data-md-color-accent="indigo" data-md-color-primary="indigo" data-md-color-scheme="slate" dir="ltr">
+<input autocomplete="off" class="md-toggle" data-md-toggle="drawer" id="__drawer" type="checkbox"/>
+<input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
+<label class="md-overlay" for="__drawer"></label>
+<div data-md-component="skip">
+<a class="md-skip" href="#performance">
+          Skip to content
+        </a>
+</div>
+<div data-md-component="announce">
+</div>
+<header class="md-header" data-md-component="header">
+<nav aria-label="Header" class="md-header__inner md-grid">
+<a aria-label="ripgrep User Guide" class="md-header__button md-logo" data-md-component="logo" href=".." title="ripgrep User Guide">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+</a>
+<label class="md-header__button md-icon" for="__drawer">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+</label>
+<div class="md-header__title" data-md-component="header-title">
+<div class="md-header__ellipsis">
+<div class="md-header__topic">
+<span class="md-ellipsis">
+            ripgrep User Guide
+          </span>
+</div>
+<div class="md-header__topic" data-md-component="header-topic">
+<span class="md-ellipsis">
+            
+              Performance
+            
+          </span>
+</div>
+</div>
+</div>
+<form class="md-header__option" data-md-component="palette">
+<input aria-label="Switch to light mode" class="md-option" data-md-color-accent="indigo" data-md-color-media="" data-md-color-primary="indigo" data-md-color-scheme="slate" id="__palette_0" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_1" hidden="" title="Switch to light mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"></path></svg>
+</label>
+<input aria-label="Switch to dark mode" class="md-option" data-md-color-accent="indigo" data-md-color-media="" data-md-color-primary="indigo" data-md-color-scheme="default" id="__palette_1" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_0" hidden="" title="Switch to dark mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"></path></svg>
+</label>
+</form>
+<script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+<label class="md-header__button md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+</label>
+<div class="md-search" data-md-component="search" role="dialog">
+<label class="md-search__overlay" for="__search"></label>
+<div class="md-search__inner" role="search">
+<form class="md-search__form" name="search">
+<input aria-label="Search" autocapitalize="off" autocomplete="off" autocorrect="off" class="md-search__input" data-md-component="search-query" name="query" placeholder="Search" required="" spellcheck="false" type="text"/>
+<label class="md-search__icon md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+</label>
+<nav aria-label="Search" class="md-search__options">
+<a aria-label="Share" class="md-search__icon md-icon" data-clipboard="" data-clipboard-text="" data-md-component="search-share" href="javascript:void(0)" tabindex="-1" title="Share">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"></path></svg>
+</a>
+<button aria-label="Clear" class="md-search__icon md-icon" tabindex="-1" title="Clear" type="reset">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+</button>
+</nav>
+<div class="md-search__suggest" data-md-component="search-suggest"></div>
+</form>
+<div class="md-search__output">
+<div class="md-search__scrollwrap" data-md-scrollfix="" tabindex="0">
+<div class="md-search-result" data-md-component="search-result">
+<div class="md-search-result__meta">
+            Initializing search
+          </div>
+<ol class="md-search-result__list" role="presentation"></ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="md-header__source">
+<a class="md-source" data-md-component="source" href="https://github.com/BurntSushi/ripgrep" title="Go to repository">
+<div class="md-source__icon md-icon">
+<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"></path></svg>
+</div>
+<div class="md-source__repository">
+    BurntSushi/ripgrep
+  </div>
+</a>
+</div>
+</nav>
+</header>
+<div class="md-container" data-md-component="container">
+<nav aria-label="Tabs" class="md-tabs" data-md-component="tabs">
+<div class="md-grid">
+<ul class="md-tabs__list">
+<li class="md-tabs__item">
+<a class="md-tabs__link" href="../introduction/">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+</li>
+<li class="md-tabs__item">
+<a class="md-tabs__link" href="../basics/">
+          
+  
+  
+  User Guide
+
+        </a>
+</li>
+<li class="md-tabs__item md-tabs__item--active">
+<a class="md-tabs__link" href="../advanced-patterns/">
+          
+  
+  
+  Advanced Topics
+
+        </a>
+</li>
+</ul>
+</div>
+</nav>
+<main class="md-main" data-md-component="main">
+<div class="md-main__inner md-grid">
+<div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Navigation" class="md-nav md-nav--primary md-nav--lifted" data-md-level="0">
+<label class="md-nav__title" for="__drawer">
+<a aria-label="ripgrep User Guide" class="md-nav__button md-logo" data-md-component="logo" href=".." title="ripgrep User Guide">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+</a>
+    ripgrep User Guide
+  </label>
+<div class="md-nav__source">
+<a class="md-source" data-md-component="source" href="https://github.com/BurntSushi/ripgrep" title="Go to repository">
+<div class="md-source__icon md-icon">
+<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"></path></svg>
+</div>
+<div class="md-source__repository">
+    BurntSushi/ripgrep
+  </div>
+</a>
+</div>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../introduction/">
+<span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_2" type="checkbox"/>
+<label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+<span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_2_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_2">
+<span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_2_1" type="checkbox"/>
+<label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+<span class="md-ellipsis">
+    
+  
+    Basics
+  
+
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_2_1_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_2_1">
+<span class="md-nav__icon md-icon"></span>
+            
+  
+    Basics
+  
+
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../basics/">
+<span class="md-ellipsis">
+    
+  
+    Basics
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../basics/pattern-matching/">
+<span class="md-ellipsis">
+    
+  
+    Pattern Matching
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../basics/literal-search/">
+<span class="md-ellipsis">
+    
+  
+    Literal String Search
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../basics/regex-basics/">
+<span class="md-ellipsis">
+    
+  
+    Regular Expressions
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../basics/case-sensitivity/">
+<span class="md-ellipsis">
+    
+  
+    Case Sensitivity
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../basics/boundaries/">
+<span class="md-ellipsis">
+    
+  
+    Word and Line Boundaries
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../basics/output/">
+<span class="md-ellipsis">
+    
+  
+    Output Format
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../basics/count-list/">
+<span class="md-ellipsis">
+    
+  
+    Count and List Modes
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../basics/practice/">
+<span class="md-ellipsis">
+    
+  
+    Practice Examples
+  
+
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../recursive-search/">
+<span class="md-ellipsis">
+    
+  
+    Recursive Search
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../automatic-filtering/">
+<span class="md-ellipsis">
+    
+  
+    Automatic Filtering
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../manual-filtering-globs/">
+<span class="md-ellipsis">
+    
+  
+    Manual Filtering (Globs)
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../manual-filtering-types/">
+<span class="md-ellipsis">
+    
+  
+    Manual Filtering (File Types)
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../replacements/">
+<span class="md-ellipsis">
+    
+  
+    Replacements
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../configuration-file/">
+<span class="md-ellipsis">
+    
+  
+    Configuration File
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../file-encoding/">
+<span class="md-ellipsis">
+    
+  
+    File Encoding
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_2_9" type="checkbox"/>
+<label class="md-nav__link" for="__nav_2_9" id="__nav_2_9_label" tabindex="0">
+<span class="md-ellipsis">
+    
+  
+    Binary Data
+  
+
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_2_9_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_2_9">
+<span class="md-nav__icon md-icon"></span>
+            
+  
+    Binary Data
+  
+
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../binary-data/">
+<span class="md-ellipsis">
+    
+  
+    Binary Data
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../binary-data/detection/">
+<span class="md-ellipsis">
+    
+  
+    Binary Detection
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../binary-data/modes/">
+<span class="md-ellipsis">
+    
+  
+    Binary Modes
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../binary-data/explicit-implicit/">
+<span class="md-ellipsis">
+    
+  
+    Explicit vs Implicit Files
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../binary-data/flags/">
+<span class="md-ellipsis">
+    
+  
+    Binary Flags Reference
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../binary-data/examples/">
+<span class="md-ellipsis">
+    
+  
+    Examples and Troubleshooting
+  
+
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../compressed-files/">
+<span class="md-ellipsis">
+    
+  
+    Compressed Files
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../preprocessor/">
+<span class="md-ellipsis">
+    
+  
+    Preprocessor
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_2_12" type="checkbox"/>
+<label class="md-nav__link" for="__nav_2_12" id="__nav_2_12_label" tabindex="0">
+<span class="md-ellipsis">
+    
+  
+    Common Options
+  
+
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_2_12_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_2_12">
+<span class="md-nav__icon md-icon"></span>
+            
+  
+    Common Options
+  
+
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../common-options/">
+<span class="md-ellipsis">
+    
+  
+    Common Options
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../common-options/search-basics/">
+<span class="md-ellipsis">
+    
+  
+    Search Basics
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../common-options/output-formatting/">
+<span class="md-ellipsis">
+    
+  
+    Output Formatting
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../common-options/file-filtering/">
+<span class="md-ellipsis">
+    
+  
+    File Filtering
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../common-options/output-modes/">
+<span class="md-ellipsis">
+    
+  
+    Output Modes
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../common-options/reference/">
+<span class="md-ellipsis">
+    
+  
+    Quick Reference
+  
+
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../context-lines/">
+<span class="md-ellipsis">
+    
+  
+    Context Lines
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../output-formats/">
+<span class="md-ellipsis">
+    
+  
+    Output Formats
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../sorting-results/">
+<span class="md-ellipsis">
+    
+  
+    Sorting Results
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../utility-modes/">
+<span class="md-ellipsis">
+    
+  
+    Utility Modes
+  
+
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+<input checked="" class="md-nav__toggle md-toggle" id="__nav_3" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+<span class="md-ellipsis">
+    
+  
+    Advanced Topics
+  
+
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="true" aria-labelledby="__nav_3_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_3">
+<span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced Topics
+  
+
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--section md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_3_1" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="">
+<span class="md-ellipsis">
+    
+  
+    Advanced Patterns
+  
+
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_3_1_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_3_1">
+<span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced Patterns
+  
+
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../advanced-patterns/">
+<span class="md-ellipsis">
+    
+  
+    Advanced Patterns
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../advanced-patterns/multiline/">
+<span class="md-ellipsis">
+    
+  
+    Multiline Search
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../advanced-patterns/pcre2/">
+<span class="md-ellipsis">
+    
+  
+    PCRE2 Engine
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../advanced-patterns/lookaround/">
+<span class="md-ellipsis">
+    
+  
+    Lookaround Assertions
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../advanced-patterns/backreferences/">
+<span class="md-ellipsis">
+    
+  
+    Backreferences
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../advanced-patterns/unicode/">
+<span class="md-ellipsis">
+    
+  
+    Unicode Patterns
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../advanced-patterns/inline-flags/">
+<span class="md-ellipsis">
+    
+  
+    Inline Regex Flags
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../advanced-patterns/performance/">
+<span class="md-ellipsis">
+    
+  
+    Performance Considerations
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../advanced-patterns/examples/">
+<span class="md-ellipsis">
+    
+  
+    Practical Examples
+  
+
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--active">
+<input class="md-nav__toggle md-toggle" id="__toc" type="checkbox"/>
+<label class="md-nav__link md-nav__link--active" for="__toc">
+<span class="md-ellipsis">
+    
+  
+    Performance
+  
+
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<a class="md-nav__link md-nav__link--active" href="./">
+<span class="md-ellipsis">
+    
+  
+    Performance
+  
+
+    
+  </span>
+</a>
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#performance-philosophy">
+<span class="md-ellipsis">
+      
+        Performance Philosophy
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#parallel-search">
+<span class="md-ellipsis">
+      
+        Parallel Search
+      
+    </span>
+</a>
+<nav aria-label="Parallel Search" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#thread-count-control">
+<span class="md-ellipsis">
+      
+        Thread Count Control
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#work-stealing-architecture">
+<span class="md-ellipsis">
+      
+        Work Stealing Architecture
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#when-parallelism-is-disabled">
+<span class="md-ellipsis">
+      
+        When Parallelism is Disabled
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#memory-mapping">
+<span class="md-ellipsis">
+      
+        Memory Mapping
+      
+    </span>
+</a>
+<nav aria-label="Memory Mapping" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#automatic-selection">
+<span class="md-ellipsis">
+      
+        Automatic Selection
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#manual-control">
+<span class="md-ellipsis">
+      
+        Manual Control
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#stdin-handling">
+<span class="md-ellipsis">
+      
+        Stdin Handling
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#low-level-optimizations">
+<span class="md-ellipsis">
+      
+        Low-Level Optimizations
+      
+    </span>
+</a>
+<nav aria-label="Low-Level Optimizations" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#simd-acceleration">
+<span class="md-ellipsis">
+      
+        SIMD Acceleration
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#literal-extraction">
+<span class="md-ellipsis">
+      
+        Literal Extraction
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#binary-detection">
+<span class="md-ellipsis">
+      
+        Binary Detection
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#automatic-internal-optimizations">
+<span class="md-ellipsis">
+      
+        Automatic Internal Optimizations
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#regex-engine-tuning">
+<span class="md-ellipsis">
+      
+        Regex Engine Tuning
+      
+    </span>
+</a>
+<nav aria-label="Regex Engine Tuning" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#dfa-size-limits">
+<span class="md-ellipsis">
+      
+        DFA Size Limits
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#regex-size-limits">
+<span class="md-ellipsis">
+      
+        Regex Size Limits
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#engine-selection">
+<span class="md-ellipsis">
+      
+        Engine Selection
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#buffer-and-memory-tuning">
+<span class="md-ellipsis">
+      
+        Buffer and Memory Tuning
+      
+    </span>
+</a>
+<nav aria-label="Buffer and Memory Tuning" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#buffer-size">
+<span class="md-ellipsis">
+      
+        Buffer Size
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#buffering-modes">
+<span class="md-ellipsis">
+      
+        Buffering Modes
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#heap-limits">
+<span class="md-ellipsis">
+      
+        Heap Limits
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#additional-performance-tuning-flags">
+<span class="md-ellipsis">
+      
+        Additional Performance Tuning Flags
+      
+    </span>
+</a>
+<nav aria-label="Additional Performance Tuning Flags" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#limiting-output-and-resources">
+<span class="md-ellipsis">
+      
+        Limiting Output and Resources
+      
+    </span>
+</a>
+<nav aria-label="Limiting Output and Resources" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#max-count-m-max-count">
+<span class="md-ellipsis">
+      
+        Max Count (-m/--max-count)
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#max-columns-m-max-columns">
+<span class="md-ellipsis">
+      
+        Max Columns (-M/--max-columns)
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#one-file-system-one-file-system">
+<span class="md-ellipsis">
+      
+        One File System (--one-file-system)
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#sorting-results">
+<span class="md-ellipsis">
+      
+        Sorting Results
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#performance-statistics">
+<span class="md-ellipsis">
+      
+        Performance Statistics
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#benchmarking">
+<span class="md-ellipsis">
+      
+        Benchmarking
+      
+    </span>
+</a>
+<nav aria-label="Benchmarking" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#warm-vs-cold-cache">
+<span class="md-ellipsis">
+      
+        Warm vs. Cold Cache
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fair-comparisons">
+<span class="md-ellipsis">
+      
+        Fair Comparisons
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#performance-factors">
+<span class="md-ellipsis">
+      
+        Performance Factors
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#reproducible-benchmarks">
+<span class="md-ellipsis">
+      
+        Reproducible Benchmarks
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#performance-tips">
+<span class="md-ellipsis">
+      
+        Performance Tips
+      
+    </span>
+</a>
+<nav aria-label="Performance Tips" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#for-large-codebases">
+<span class="md-ellipsis">
+      
+        For Large Codebases
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#for-network-file-systems">
+<span class="md-ellipsis">
+      
+        For Network File Systems
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#for-memory-constrained-environments">
+<span class="md-ellipsis">
+      
+        For Memory-Constrained Environments
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#for-maximum-speed">
+<span class="md-ellipsis">
+      
+        For Maximum Speed
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#common-performance-pitfalls">
+<span class="md-ellipsis">
+      
+        Common Performance Pitfalls
+      
+    </span>
+</a>
+<nav aria-label="Common Performance Pitfalls" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#avoid-these-patterns">
+<span class="md-ellipsis">
+      
+        Avoid These Patterns
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#troubleshooting-slow-searches">
+<span class="md-ellipsis">
+      
+        Troubleshooting Slow Searches
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#summary">
+<span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../statistics/">
+<span class="md-ellipsis">
+    
+  
+    Statistics and Metrics
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../hyperlinks/">
+<span class="md-ellipsis">
+    
+  
+    Hyperlinks
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--section md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_3_5" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="">
+<span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_3_5_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_3_5">
+<span class="md-nav__icon md-icon"></span>
+            
+  
+    Troubleshooting
+  
+
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../troubleshooting/">
+<span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../troubleshooting/debug-flags/">
+<span class="md-ellipsis">
+    
+  
+    Debug Flags
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../troubleshooting/no-results/">
+<span class="md-ellipsis">
+    
+  
+    No Results Found
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../troubleshooting/performance/">
+<span class="md-ellipsis">
+    
+  
+    Performance Issues
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../troubleshooting/errors/">
+<span class="md-ellipsis">
+    
+  
+    Common Error Messages
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../troubleshooting/binary-encoding/">
+<span class="md-ellipsis">
+    
+  
+    Binary and Encoding Problems
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../troubleshooting/bug-reports/">
+<span class="md-ellipsis">
+    
+  
+    When to File a Bug
+  
+
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#performance-philosophy">
+<span class="md-ellipsis">
+      
+        Performance Philosophy
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#parallel-search">
+<span class="md-ellipsis">
+      
+        Parallel Search
+      
+    </span>
+</a>
+<nav aria-label="Parallel Search" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#thread-count-control">
+<span class="md-ellipsis">
+      
+        Thread Count Control
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#work-stealing-architecture">
+<span class="md-ellipsis">
+      
+        Work Stealing Architecture
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#when-parallelism-is-disabled">
+<span class="md-ellipsis">
+      
+        When Parallelism is Disabled
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#memory-mapping">
+<span class="md-ellipsis">
+      
+        Memory Mapping
+      
+    </span>
+</a>
+<nav aria-label="Memory Mapping" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#automatic-selection">
+<span class="md-ellipsis">
+      
+        Automatic Selection
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#manual-control">
+<span class="md-ellipsis">
+      
+        Manual Control
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#stdin-handling">
+<span class="md-ellipsis">
+      
+        Stdin Handling
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#low-level-optimizations">
+<span class="md-ellipsis">
+      
+        Low-Level Optimizations
+      
+    </span>
+</a>
+<nav aria-label="Low-Level Optimizations" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#simd-acceleration">
+<span class="md-ellipsis">
+      
+        SIMD Acceleration
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#literal-extraction">
+<span class="md-ellipsis">
+      
+        Literal Extraction
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#binary-detection">
+<span class="md-ellipsis">
+      
+        Binary Detection
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#automatic-internal-optimizations">
+<span class="md-ellipsis">
+      
+        Automatic Internal Optimizations
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#regex-engine-tuning">
+<span class="md-ellipsis">
+      
+        Regex Engine Tuning
+      
+    </span>
+</a>
+<nav aria-label="Regex Engine Tuning" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#dfa-size-limits">
+<span class="md-ellipsis">
+      
+        DFA Size Limits
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#regex-size-limits">
+<span class="md-ellipsis">
+      
+        Regex Size Limits
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#engine-selection">
+<span class="md-ellipsis">
+      
+        Engine Selection
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#buffer-and-memory-tuning">
+<span class="md-ellipsis">
+      
+        Buffer and Memory Tuning
+      
+    </span>
+</a>
+<nav aria-label="Buffer and Memory Tuning" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#buffer-size">
+<span class="md-ellipsis">
+      
+        Buffer Size
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#buffering-modes">
+<span class="md-ellipsis">
+      
+        Buffering Modes
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#heap-limits">
+<span class="md-ellipsis">
+      
+        Heap Limits
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#additional-performance-tuning-flags">
+<span class="md-ellipsis">
+      
+        Additional Performance Tuning Flags
+      
+    </span>
+</a>
+<nav aria-label="Additional Performance Tuning Flags" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#limiting-output-and-resources">
+<span class="md-ellipsis">
+      
+        Limiting Output and Resources
+      
+    </span>
+</a>
+<nav aria-label="Limiting Output and Resources" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#max-count-m-max-count">
+<span class="md-ellipsis">
+      
+        Max Count (-m/--max-count)
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#max-columns-m-max-columns">
+<span class="md-ellipsis">
+      
+        Max Columns (-M/--max-columns)
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#one-file-system-one-file-system">
+<span class="md-ellipsis">
+      
+        One File System (--one-file-system)
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#sorting-results">
+<span class="md-ellipsis">
+      
+        Sorting Results
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#performance-statistics">
+<span class="md-ellipsis">
+      
+        Performance Statistics
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#benchmarking">
+<span class="md-ellipsis">
+      
+        Benchmarking
+      
+    </span>
+</a>
+<nav aria-label="Benchmarking" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#warm-vs-cold-cache">
+<span class="md-ellipsis">
+      
+        Warm vs. Cold Cache
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#fair-comparisons">
+<span class="md-ellipsis">
+      
+        Fair Comparisons
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#performance-factors">
+<span class="md-ellipsis">
+      
+        Performance Factors
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#reproducible-benchmarks">
+<span class="md-ellipsis">
+      
+        Reproducible Benchmarks
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#performance-tips">
+<span class="md-ellipsis">
+      
+        Performance Tips
+      
+    </span>
+</a>
+<nav aria-label="Performance Tips" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#for-large-codebases">
+<span class="md-ellipsis">
+      
+        For Large Codebases
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#for-network-file-systems">
+<span class="md-ellipsis">
+      
+        For Network File Systems
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#for-memory-constrained-environments">
+<span class="md-ellipsis">
+      
+        For Memory-Constrained Environments
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#for-maximum-speed">
+<span class="md-ellipsis">
+      
+        For Maximum Speed
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#common-performance-pitfalls">
+<span class="md-ellipsis">
+      
+        Common Performance Pitfalls
+      
+    </span>
+</a>
+<nav aria-label="Common Performance Pitfalls" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#avoid-these-patterns">
+<span class="md-ellipsis">
+      
+        Avoid These Patterns
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#troubleshooting-slow-searches">
+<span class="md-ellipsis">
+      
+        Troubleshooting Slow Searches
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#summary">
+<span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-content" data-md-component="content">
+<article class="md-content__inner md-typeset">
+<h1 id="performance">Performance<a class="headerlink" href="#performance" title="Permanent link">¶</a></h1>
+<p>Ripgrep is designed for speed. This chapter explains ripgrep's performance characteristics, the optimizations that make it fast, and how to tune performance for different use cases.</p>
+<h2 id="performance-philosophy">Performance Philosophy<a class="headerlink" href="#performance-philosophy" title="Permanent link">¶</a></h2>
+<p>Ripgrep achieves its speed through several architectural decisions:</p>
+<ul>
+<li><strong>Parallelism by default</strong>: Multi-threaded directory traversal and searching</li>
+<li><strong>Smart I/O</strong>: Automatic selection between memory-mapped and incremental reading</li>
+<li><strong>SIMD acceleration</strong>: Hardware-accelerated literal matching where available</li>
+<li><strong>Efficient regex engines</strong>: Finite automata (default) for predictable performance, PCRE2 for advanced features</li>
+<li><strong>Minimal allocations</strong>: Careful memory management to reduce overhead</li>
+</ul>
+<h2 id="parallel-search">Parallel Search<a class="headerlink" href="#parallel-search" title="Permanent link">¶</a></h2>
+<p>By default, ripgrep uses multiple threads to search files in parallel, providing significant speedups on multi-core systems.</p>
+<h3 id="thread-count-control">Thread Count Control<a class="headerlink" href="#thread-count-control" title="Permanent link">¶</a></h3>
+<p>Use the <code>-j</code>/<code>--threads</code> flag to control the number of threads:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a href="#__codelineno-0-1" id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="c1"># Use 4 threads</span>
+</span><span id="__span-0-2"><a href="#__codelineno-0-2" id="__codelineno-0-2" name="__codelineno-0-2"></a>rg<span class="w"> </span>-j<span class="w"> </span><span class="m">4</span><span class="w"> </span>pattern<span class="w">                </span><span class="c1"># (1)!</span>
+</span><span id="__span-0-3"><a href="#__codelineno-0-3" id="__codelineno-0-3" name="__codelineno-0-3"></a>
+</span><span id="__span-0-4"><a href="#__codelineno-0-4" id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="c1"># Single-threaded mode</span>
+</span><span id="__span-0-5"><a href="#__codelineno-0-5" id="__codelineno-0-5" name="__codelineno-0-5"></a>rg<span class="w"> </span>--threads<span class="w"> </span><span class="m">1</span><span class="w"> </span>pattern<span class="w">         </span><span class="c1"># (2)!</span>
+</span><span id="__span-0-6"><a href="#__codelineno-0-6" id="__codelineno-0-6" name="__codelineno-0-6"></a>
+</span><span id="__span-0-7"><a href="#__codelineno-0-7" id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="c1"># Use number of logical CPUs (default)</span>
+</span><span id="__span-0-8"><a href="#__codelineno-0-8" id="__codelineno-0-8" name="__codelineno-0-8"></a>rg<span class="w"> </span>pattern<span class="w">                     </span><span class="c1"># (3)!</span>
+</span></code></pre></div>
+<ol>
+<li>Explicitly set thread count for performance tuning</li>
+<li>Forces sequential processing—useful for debugging or deterministic output</li>
+<li>Default behavior: automatically uses all available logical CPUs</li>
+</ol>
+<p>The default behavior uses the number of logical CPUs available.</p>
+<div class="admonition tip">
+<p class="admonition-title">When to Use Single-Threaded Mode</p>
+<p>Single-threaded mode (<code>--threads 1</code>) is useful for:</p>
+<ul>
+<li>Debugging performance issues</li>
+<li>Ensuring deterministic output order</li>
+<li>Systems with limited resources</li>
+</ul>
+</div>
+<h3 id="work-stealing-architecture">Work Stealing Architecture<a class="headerlink" href="#work-stealing-architecture" title="Permanent link">¶</a></h3>
+<p>Ripgrep uses a work-stealing scheduler for parallel iteration. When one thread finishes its work early, it can "steal" work from other threads, ensuring all cores stay busy and maximizing throughput.</p>
+<p>This lock-free parallel iteration (using atomic operations for work distribution) means ripgrep scales well across many cores without contention overhead.</p>
+<pre class="mermaid"><code>graph TD
+    Start[Directory Traversal] --&gt; WorkQueue[Work Queue<br/>Files to Search]
+    WorkQueue --&gt; T1[Thread 1]
+    WorkQueue --&gt; T2[Thread 2]
+    WorkQueue --&gt; T3[Thread 3]
+    WorkQueue --&gt; TN[Thread N]
+
+    T1 --&gt;|Work Done| Steal1{More Work?}
+    T2 --&gt;|Work Done| Steal2{More Work?}
+    T3 --&gt;|Work Done| Steal3{More Work?}
+
+    Steal1 --&gt;|Queue Empty| StealFrom2[Steal from Thread 2]
+    Steal2 --&gt;|Queue Empty| StealFrom3[Steal from Thread 3]
+    Steal3 --&gt;|Queue Empty| StealFrom1[Steal from Thread 1]
+
+    StealFrom2 --&gt; T1
+    StealFrom3 --&gt; T2
+    StealFrom1 --&gt; T3
+
+    Steal1 --&gt;|Found Work| T1
+    Steal2 --&gt;|Found Work| T2
+    Steal3 --&gt;|Found Work| T3
+
+    T1 --&gt; Results[Aggregate Results]
+    T2 --&gt; Results
+    T3 --&gt; Results
+    TN --&gt; Results
+
+    style WorkQueue fill:#e1f5ff
+    style T1 fill:#fff3e0
+    style T2 fill:#fff3e0
+    style T3 fill:#fff3e0
+    style TN fill:#fff3e0
+    style Results fill:#e8f5e9
+</code></pre>
+<p><strong>Figure</strong>: Work-stealing parallel search showing how threads dynamically balance load using lock-free atomic operations.</p>
+<h3 id="when-parallelism-is-disabled">When Parallelism is Disabled<a class="headerlink" href="#when-parallelism-is-disabled" title="Permanent link">¶</a></h3>
+<p>Some operations disable parallel search automatically:</p>
+<ul>
+<li><strong>Sorting</strong> (<code>--sort</code>, <code>--sortr</code>): Requires collecting all results before outputting</li>
+<li><strong>Context lines with overlap</strong>: Complex context merging requires sequential processing in some cases</li>
+</ul>
+<h2 id="memory-mapping">Memory Mapping<a class="headerlink" href="#memory-mapping" title="Permanent link">¶</a></h2>
+<p>Ripgrep can use memory-mapped I/O for large files, which allows the operating system to handle file reading more efficiently.</p>
+<h3 id="automatic-selection">Automatic Selection<a class="headerlink" href="#automatic-selection" title="Permanent link">¶</a></h3>
+<p>By default, ripgrep automatically chooses whether to use memory mapping based on file size and type. Generally:
+- Large files benefit from memory mapping
+- Small files are faster with incremental buffered reads</p>
+<pre class="mermaid"><code>flowchart TD
+    Start[File to Search] --&gt; Type{File Type}
+    Type --&gt;|Stdin| BufferStdin[Buffered Read<br/>Streaming Input]
+    Type --&gt;|Regular File| Size{File Size}
+
+    Size --&gt;|Large File| Resources{RAM Available?}
+    Size --&gt;|Small File| BufferSmall[Buffered Read<br/>Better for Small Files]
+
+    Resources --&gt;|Yes + Sufficient| FS{File System}
+    Resources --&gt;|No/Limited| BufferMem[Buffered Read<br/>Memory Constrained]
+
+    FS --&gt;|Local Disk| Cache{In Page Cache?}
+    FS --&gt;|Network/NFS| BufferNet[Buffered Read<br/>Network Overhead]
+
+    Cache --&gt;|Yes| MmapCache[Memory Mapping<br/>Zero-Copy Access]
+    Cache --&gt;|No| MmapDisk[Memory Mapping<br/>OS Handles I/O]
+
+    MmapCache --&gt; Search[Search File]
+    MmapDisk --&gt; Search
+    BufferSmall --&gt; Search
+    BufferMem --&gt; Search
+    BufferNet --&gt; Search
+    BufferStdin --&gt; Search
+
+    style BufferStdin fill:#e1f5ff
+    style BufferSmall fill:#e1f5ff
+    style BufferMem fill:#e1f5ff
+    style BufferNet fill:#e1f5ff
+    style MmapCache fill:#c8e6c9
+    style MmapDisk fill:#fff9c4
+    style Search fill:#f3e5f5
+</code></pre>
+<p><strong>Figure</strong>: I/O strategy selection showing how ripgrep automatically chooses between memory mapping and buffered reads based on file characteristics.</p>
+<h3 id="manual-control">Manual Control<a class="headerlink" href="#manual-control" title="Permanent link">¶</a></h3>
+<p>Force memory mapping on or off:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a href="#__codelineno-1-1" id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="c1"># Force memory mapping</span>
+</span><span id="__span-1-2"><a href="#__codelineno-1-2" id="__codelineno-1-2" name="__codelineno-1-2"></a>rg<span class="w"> </span>--mmap<span class="w"> </span>pattern<span class="w">              </span><span class="c1"># (1)!</span>
+</span><span id="__span-1-3"><a href="#__codelineno-1-3" id="__codelineno-1-3" name="__codelineno-1-3"></a>
+</span><span id="__span-1-4"><a href="#__codelineno-1-4" id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="c1"># Disable memory mapping</span>
+</span><span id="__span-1-5"><a href="#__codelineno-1-5" id="__codelineno-1-5" name="__codelineno-1-5"></a>rg<span class="w"> </span>--no-mmap<span class="w"> </span>pattern<span class="w">           </span><span class="c1"># (2)!</span>
+</span></code></pre></div>
+<ol>
+<li>Override automatic selection and force memory-mapped I/O</li>
+<li>Force buffered reading even for large files</li>
+</ol>
+<p>Memory mapping is beneficial when:
+- Searching very large files (&gt;10 MB)
+- The file is likely to be in the OS page cache
+- You have sufficient RAM</p>
+<p>Avoid memory mapping when:
+- Searching many small files (&lt;1 MB)
+- Working with network file systems (NFS, SMB)
+- Memory is constrained</p>
+<div class="admonition warning">
+<p class="admonition-title">macOS Memory Mapping</p>
+<p>Memory mapping is disabled by default on macOS due to performance overhead in the kernel's mmap implementation. You can enable it with <code>--mmap</code> if benchmarking shows it's beneficial for your specific use case.</p>
+</div>
+<h3 id="stdin-handling">Stdin Handling<a class="headerlink" href="#stdin-handling" title="Permanent link">¶</a></h3>
+<p>When reading from stdin (piped input), ripgrep automatically uses optimized buffered reading instead of memory mapping, since stdin cannot be memory-mapped. The buffer strategy is tuned for streaming input to provide good performance when processing piped data:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a href="#__codelineno-2-1" id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="c1"># Ripgrep automatically optimizes stdin handling</span>
+</span><span id="__span-2-2"><a href="#__codelineno-2-2" id="__codelineno-2-2" name="__codelineno-2-2"></a>cat<span class="w"> </span>large_file.txt<span class="w"> </span><span class="p">|</span><span class="w"> </span>rg<span class="w"> </span>pattern
+</span><span id="__span-2-3"><a href="#__codelineno-2-3" id="__codelineno-2-3" name="__codelineno-2-3"></a>
+</span><span id="__span-2-4"><a href="#__codelineno-2-4" id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="c1"># Or using process substitution</span>
+</span><span id="__span-2-5"><a href="#__codelineno-2-5" id="__codelineno-2-5" name="__codelineno-2-5"></a>rg<span class="w"> </span>pattern<span class="w"> </span>&lt;<span class="w"> </span>large_file.txt
+</span></code></pre></div>
+<h2 id="low-level-optimizations">Low-Level Optimizations<a class="headerlink" href="#low-level-optimizations" title="Permanent link">¶</a></h2>
+<p>Ripgrep uses several low-level optimizations to maximize search speed.</p>
+<h3 id="simd-acceleration">SIMD Acceleration<a class="headerlink" href="#simd-acceleration" title="Permanent link">¶</a></h3>
+<p>Modern CPUs support SIMD (Single Instruction, Multiple Data) instructions that can process multiple bytes at once. Ripgrep automatically uses SIMD when available for:</p>
+<ul>
+<li>Fast literal string matching</li>
+<li>Multi-pattern searching</li>
+<li>BOM detection</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Automatic SIMD Detection</p>
+<p>No configuration needed—ripgrep detects and uses available CPU features automatically. This includes SSE2, SSSE3, AVX2, and other instruction sets depending on your CPU.</p>
+</div>
+<h3 id="literal-extraction">Literal Extraction<a class="headerlink" href="#literal-extraction" title="Permanent link">¶</a></h3>
+<p>When you provide a regex pattern, ripgrep analyzes it to extract literal strings that must appear in any match. For example:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a href="#__codelineno-3-1" id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="c1"># Pattern requires "TODO" to appear</span>
+</span><span id="__span-3-2"><a href="#__codelineno-3-2" id="__codelineno-3-2" name="__codelineno-3-2"></a>rg<span class="w"> </span><span class="s1">'TODO.*urgent'</span>
+</span></code></pre></div>
+<p>Ripgrep first uses fast literal matching to find "TODO", then applies the full regex only to those candidates. This makes complex regex searches nearly as fast as literal searches.</p>
+<h3 id="binary-detection">Binary Detection<a class="headerlink" href="#binary-detection" title="Permanent link">¶</a></h3>
+<p>Ripgrep quickly detects binary files by scanning for NUL bytes. By default, binary files are skipped or have binary data suppressed.</p>
+<p>Control binary handling:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a href="#__codelineno-4-1" id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="c1"># Search binary files as text</span>
+</span><span id="__span-4-2"><a href="#__codelineno-4-2" id="__codelineno-4-2" name="__codelineno-4-2"></a>rg<span class="w"> </span>--binary<span class="w"> </span>pattern
+</span><span id="__span-4-3"><a href="#__codelineno-4-3" id="__codelineno-4-3" name="__codelineno-4-3"></a>
+</span><span id="__span-4-4"><a href="#__codelineno-4-4" id="__codelineno-4-4" name="__codelineno-4-4"></a><span class="c1"># Skip binary files (default for most file types)</span>
+</span><span id="__span-4-5"><a href="#__codelineno-4-5" id="__codelineno-4-5" name="__codelineno-4-5"></a>rg<span class="w"> </span>pattern
+</span></code></pre></div>
+<p>The heuristic-based detection is very fast and avoids wasting time on non-text content.</p>
+<h3 id="automatic-internal-optimizations">Automatic Internal Optimizations<a class="headerlink" href="#automatic-internal-optimizations" title="Permanent link">¶</a></h3>
+<p>Ripgrep includes several internal optimizations that work automatically without configuration:</p>
+<p><strong>RegexSet for Glob Matching</strong> (Source: crates/globset/src/lib.rs)</p>
+<p>When filtering files by globs or file types, ripgrep uses <code>RegexSet</code> to compile multiple patterns into a single optimized finite automaton. This allows testing a path against hundreds of patterns in a single pass, making file filtering nearly free compared to the actual search cost.</p>
+<p><strong>UTF-8 DFA Decoding</strong> (Source: crates/searcher/src/searcher/)</p>
+<p>The regex engine includes optimized UTF-8 validation integrated directly into the DFA execution. This means ripgrep can validate text encoding while searching, eliminating a separate validation pass and improving cache locality.</p>
+<p>These optimizations are built into ripgrep's core and provide performance benefits automatically—no flags or configuration needed.</p>
+<h2 id="regex-engine-tuning">Regex Engine Tuning<a class="headerlink" href="#regex-engine-tuning" title="Permanent link">¶</a></h2>
+<p>Ripgrep provides options to control the regex engine's memory usage and behavior.</p>
+<h3 id="dfa-size-limits">DFA Size Limits<a class="headerlink" href="#dfa-size-limits" title="Permanent link">¶</a></h3>
+<p>The default regex engine uses deterministic finite automata (DFA). Control DFA memory:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a href="#__codelineno-5-1" id="__codelineno-5-1" name="__codelineno-5-1"></a><span class="c1"># Set DFA cache size limit (in bytes)</span>
+</span><span id="__span-5-2"><a href="#__codelineno-5-2" id="__codelineno-5-2" name="__codelineno-5-2"></a>rg<span class="w"> </span>--dfa-size-limit<span class="w"> </span>100M<span class="w"> </span>pattern<span class="w">   </span><span class="c1"># (1)!</span>
+</span></code></pre></div>
+<ol>
+<li>Increase DFA cache from default 1 MB to 100 MB for complex patterns</li>
+</ol>
+<p>The default is 1 MB (1000000 bytes). Increase this if you see warnings about DFA cache thrashing on very large or complex patterns.</p>
+<div class="admonition tip">
+<p class="admonition-title">When to Increase DFA Size</p>
+<p>If you see "DFA cache capacity exceeded" warnings or notice slowdowns with complex patterns, try increasing to 10M or 100M. The trade-off is higher memory usage for faster matching.</p>
+</div>
+<h3 id="regex-size-limits">Regex Size Limits<a class="headerlink" href="#regex-size-limits" title="Permanent link">¶</a></h3>
+<p>Limit the compiled size of the regex:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a href="#__codelineno-6-1" id="__codelineno-6-1" name="__codelineno-6-1"></a><span class="c1"># Set regex bytecode size limit (in bytes)</span>
+</span><span id="__span-6-2"><a href="#__codelineno-6-2" id="__codelineno-6-2" name="__codelineno-6-2"></a>rg<span class="w"> </span>--regex-size-limit<span class="w"> </span>10M<span class="w"> </span>pattern
+</span></code></pre></div>
+<p>The default is 100 MB. Useful in memory-constrained environments or when dealing with extremely large patterns.</p>
+<h3 id="engine-selection">Engine Selection<a class="headerlink" href="#engine-selection" title="Permanent link">¶</a></h3>
+<p>Choose between regex engines:</p>
+<div class="language-bash highlight"><span class="filename">Selecting Regex Engine</span><pre><span></span><code><span id="__span-7-1"><a href="#__codelineno-7-1" id="__codelineno-7-1" name="__codelineno-7-1"></a><span class="c1"># Use default Rust regex (finite automata)</span>
+</span><span id="__span-7-2"><a href="#__codelineno-7-2" id="__codelineno-7-2" name="__codelineno-7-2"></a>rg<span class="w"> </span>pattern
+</span><span id="__span-7-3"><a href="#__codelineno-7-3" id="__codelineno-7-3" name="__codelineno-7-3"></a>
+</span><span id="__span-7-4"><a href="#__codelineno-7-4" id="__codelineno-7-4" name="__codelineno-7-4"></a><span class="c1"># Use PCRE2 (supports backtracking features)</span>
+</span><span id="__span-7-5"><a href="#__codelineno-7-5" id="__codelineno-7-5" name="__codelineno-7-5"></a>rg<span class="w"> </span>-P<span class="w"> </span><span class="s1">'pattern'</span>
+</span><span id="__span-7-6"><a href="#__codelineno-7-6" id="__codelineno-7-6" name="__codelineno-7-6"></a>
+</span><span id="__span-7-7"><a href="#__codelineno-7-7" id="__codelineno-7-7" name="__codelineno-7-7"></a><span class="c1"># Automatic engine selection</span>
+</span><span id="__span-7-8"><a href="#__codelineno-7-8" id="__codelineno-7-8" name="__codelineno-7-8"></a>rg<span class="w"> </span>--engine<span class="w"> </span>auto<span class="w"> </span>pattern
+</span></code></pre></div>
+<div class="admonition example">
+<p class="admonition-title">Performance Characteristics</p>
+<p><strong>Default (Rust regex)</strong>: Finite automata provide guaranteed linear time complexity. Best for most use cases.</p>
+<p><strong>PCRE2</strong>: Backtracking engine supports advanced features (look-around, backreferences) but can be slower and has worst-case exponential behavior on certain patterns.</p>
+<p><strong>Auto</strong>: Attempts to choose the best engine based on pattern analysis.</p>
+</div>
+<pre class="mermaid"><code>graph LR
+    Pattern[Regex Pattern] --&gt; Analysis{Pattern Analysis}
+
+    Analysis --&gt;|Simple Literal| Literal[SIMD Literal<br/>Matching]
+    Analysis --&gt;|Standard Regex| DFA[Rust Regex<br/>Finite Automata]
+    Analysis --&gt;|Look-around/Backrefs| PCRE[PCRE2<br/>Backtracking]
+
+    Literal --&gt; Perf1[⚡ Fastest<br/>O(n) guaranteed]
+    DFA --&gt; Perf2[⚡⚡ Fast<br/>O(n) guaranteed]
+    PCRE --&gt; Perf3[⚠️ Variable<br/>Can be slow]
+
+    style Literal fill:#c8e6c9
+    style DFA fill:#e1f5ff
+    style PCRE fill:#fff9c4
+    style Perf1 fill:#a5d6a7
+    style Perf2 fill:#90caf9
+    style Perf3 fill:#fff59d
+</code></pre>
+<p><strong>Figure</strong>: Regex engine selection showing performance characteristics and when each engine is used.</p>
+<h2 id="buffer-and-memory-tuning">Buffer and Memory Tuning<a class="headerlink" href="#buffer-and-memory-tuning" title="Permanent link">¶</a></h2>
+<p>Control how ripgrep buffers output and manages memory.</p>
+<h3 id="buffer-size">Buffer Size<a class="headerlink" href="#buffer-size" title="Permanent link">¶</a></h3>
+<p>Ripgrep uses a 64 KB default buffer for reading files. This is automatically managed but understanding the buffer size can help diagnose memory usage patterns and performance characteristics.</p>
+<h3 id="buffering-modes">Buffering Modes<a class="headerlink" href="#buffering-modes" title="Permanent link">¶</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a href="#__codelineno-8-1" id="__codelineno-8-1" name="__codelineno-8-1"></a><span class="c1"># Line buffered output (flush after each line)</span>
+</span><span id="__span-8-2"><a href="#__codelineno-8-2" id="__codelineno-8-2" name="__codelineno-8-2"></a>rg<span class="w"> </span>--line-buffered<span class="w"> </span>pattern
+</span><span id="__span-8-3"><a href="#__codelineno-8-3" id="__codelineno-8-3" name="__codelineno-8-3"></a>
+</span><span id="__span-8-4"><a href="#__codelineno-8-4" id="__codelineno-8-4" name="__codelineno-8-4"></a><span class="c1"># Block buffered output (default, better performance)</span>
+</span><span id="__span-8-5"><a href="#__codelineno-8-5" id="__codelineno-8-5" name="__codelineno-8-5"></a>rg<span class="w"> </span>--block-buffered<span class="w"> </span>pattern
+</span></code></pre></div>
+<p>Line buffering is useful when piping to another program that needs immediate output. Block buffering (default) provides better throughput.</p>
+<h3 id="heap-limits">Heap Limits<a class="headerlink" href="#heap-limits" title="Permanent link">¶</a></h3>
+<p>Ripgrep has internal heap limit controls to prevent excessive memory usage. While these are automatically managed, you can configure heap allocation behavior through other memory parameters like <code>--dfa-size-limit</code> to indirectly influence heap usage. These controls are important when:
+- Searching extremely large files
+- Using complex patterns with many capture groups
+- Running in memory-constrained environments</p>
+<p>The default heap allocation strategy is eager allocation, which provides good performance for most use cases. In constrained environments, reducing memory limits through flags like <code>--dfa-size-limit</code> and <code>--regex-size-limit</code> helps control heap usage.</p>
+<h2 id="additional-performance-tuning-flags">Additional Performance Tuning Flags<a class="headerlink" href="#additional-performance-tuning-flags" title="Permanent link">¶</a></h2>
+<h3 id="limiting-output-and-resources">Limiting Output and Resources<a class="headerlink" href="#limiting-output-and-resources" title="Permanent link">¶</a></h3>
+<p>Several flags help control resource usage and improve performance in specific scenarios:</p>
+<h4 id="max-count-m-max-count">Max Count (<code>-m</code>/<code>--max-count</code>)<a class="headerlink" href="#max-count-m-max-count" title="Permanent link">¶</a></h4>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a href="#__codelineno-9-1" id="__codelineno-9-1" name="__codelineno-9-1"></a><span class="c1"># Source: crates/core/flags/defs.rs:3872-3909</span>
+</span><span id="__span-9-2"><a href="#__codelineno-9-2" id="__codelineno-9-2" name="__codelineno-9-2"></a><span class="c1"># Stop after finding N matching lines per file</span>
+</span><span id="__span-9-3"><a href="#__codelineno-9-3" id="__codelineno-9-3" name="__codelineno-9-3"></a>rg<span class="w"> </span>--max-count<span class="w"> </span><span class="m">10</span><span class="w"> </span>pattern
+</span><span id="__span-9-4"><a href="#__codelineno-9-4" id="__codelineno-9-4" name="__codelineno-9-4"></a>
+</span><span id="__span-9-5"><a href="#__codelineno-9-5" id="__codelineno-9-5" name="__codelineno-9-5"></a><span class="c1"># Quick sampling - get first match from each file</span>
+</span><span id="__span-9-6"><a href="#__codelineno-9-6" id="__codelineno-9-6" name="__codelineno-9-6"></a>rg<span class="w"> </span>-m<span class="w"> </span><span class="m">1</span><span class="w"> </span>pattern
+</span></code></pre></div>
+<p>Stops searching a file after finding N matching lines. Useful for:
+- Quick sampling of large codebases
+- Finding representative examples without processing all matches
+- Improving performance when you only need a few results</p>
+<div class="admonition tip">
+<p class="admonition-title">Performance Boost</p>
+<p>Using <code>--max-count 1</code> can speed up searches by 10-100x when you only need to know if a pattern exists, not count all occurrences. Combine with <code>--files-with-matches</code> to quickly identify which files contain matches without processing all occurrences.</p>
+</div>
+<h4 id="max-columns-m-max-columns">Max Columns (<code>-M</code>/<code>--max-columns</code>)<a class="headerlink" href="#max-columns-m-max-columns" title="Permanent link">¶</a></h4>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a href="#__codelineno-10-1" id="__codelineno-10-1" name="__codelineno-10-1"></a><span class="c1"># Source: crates/core/flags/defs.rs:3759-3789</span>
+</span><span id="__span-10-2"><a href="#__codelineno-10-2" id="__codelineno-10-2" name="__codelineno-10-2"></a><span class="c1"># Omit lines longer than 500 bytes</span>
+</span><span id="__span-10-3"><a href="#__codelineno-10-3" id="__codelineno-10-3" name="__codelineno-10-3"></a>rg<span class="w"> </span>--max-columns<span class="w"> </span><span class="m">500</span><span class="w"> </span>pattern
+</span><span id="__span-10-4"><a href="#__codelineno-10-4" id="__codelineno-10-4" name="__codelineno-10-4"></a>
+</span><span id="__span-10-5"><a href="#__codelineno-10-5" id="__codelineno-10-5" name="__codelineno-10-5"></a><span class="c1"># Skip very long lines (common in minified files)</span>
+</span><span id="__span-10-6"><a href="#__codelineno-10-6" id="__codelineno-10-6" name="__codelineno-10-6"></a>rg<span class="w"> </span>-M<span class="w"> </span><span class="m">1000</span><span class="w"> </span>pattern
+</span></code></pre></div>
+<p>Omits lines longer than the specified byte limit. Instead of printing long lines, only the number of matches in that line is shown. Useful for:
+- Preventing excessive memory usage on files with very long lines
+- Avoiding output flooding from minified JavaScript/CSS files
+- Improving performance when searching logs with extremely long entries</p>
+<div class="admonition warning">
+<p class="admonition-title">Byte Limit, Not Character Limit</p>
+<p>This limits line length in <strong>bytes</strong>, not characters. Multibyte UTF-8 characters count as multiple bytes. A line with 100 emoji characters could be 400+ bytes.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Minified File Handling</p>
+<p>When searching web projects, use <code>--max-columns 500</code> to avoid processing minified JavaScript/CSS files that often have 10,000+ character lines. This prevents memory spikes and output floods.</p>
+</div>
+<h4 id="one-file-system-one-file-system">One File System (<code>--one-file-system</code>)<a class="headerlink" href="#one-file-system-one-file-system" title="Permanent link">¶</a></h4>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a href="#__codelineno-11-1" id="__codelineno-11-1" name="__codelineno-11-1"></a><span class="c1"># Source: crates/core/flags/defs.rs:5090-5114</span>
+</span><span id="__span-11-2"><a href="#__codelineno-11-2" id="__codelineno-11-2" name="__codelineno-11-2"></a><span class="c1"># Don't cross filesystem boundaries</span>
+</span><span id="__span-11-3"><a href="#__codelineno-11-3" id="__codelineno-11-3" name="__codelineno-11-3"></a>rg<span class="w"> </span>--one-file-system<span class="w"> </span>pattern
+</span><span id="__span-11-4"><a href="#__codelineno-11-4" id="__codelineno-11-4" name="__codelineno-11-4"></a>
+</span><span id="__span-11-5"><a href="#__codelineno-11-5" id="__codelineno-11-5" name="__codelineno-11-5"></a><span class="c1"># Avoid searching network mounts</span>
+</span><span id="__span-11-6"><a href="#__codelineno-11-6" id="__codelineno-11-6" name="__codelineno-11-6"></a>rg<span class="w"> </span>--one-file-system<span class="w"> </span>pattern<span class="w"> </span>/home/user
+</span></code></pre></div>
+<p>Prevents ripgrep from crossing filesystem boundaries during directory traversal. Useful for:
+- Avoiding slow network filesystems (NFS, SMB)
+- Skipping mounted external drives
+- Preventing searches from traversing into Docker volumes or other mounts</p>
+<p>Similar to <code>find</code>'s <code>-xdev</code> or <code>-mount</code> flag.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This applies per path argument. Searching multiple paths on different filesystems will still search all of them, but won't cross boundaries within each path's tree.</p>
+</div>
+<h2 id="sorting-results">Sorting Results<a class="headerlink" href="#sorting-results" title="Permanent link">¶</a></h2>
+<p>Ripgrep can sort results, but with a performance cost.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a href="#__codelineno-12-1" id="__codelineno-12-1" name="__codelineno-12-1"></a><span class="c1"># Sort by file path</span>
+</span><span id="__span-12-2"><a href="#__codelineno-12-2" id="__codelineno-12-2" name="__codelineno-12-2"></a>rg<span class="w"> </span>--sort<span class="w"> </span>path<span class="w"> </span>pattern
+</span><span id="__span-12-3"><a href="#__codelineno-12-3" id="__codelineno-12-3" name="__codelineno-12-3"></a>
+</span><span id="__span-12-4"><a href="#__codelineno-12-4" id="__codelineno-12-4" name="__codelineno-12-4"></a><span class="c1"># Sort by modification time (newest first)</span>
+</span><span id="__span-12-5"><a href="#__codelineno-12-5" id="__codelineno-12-5" name="__codelineno-12-5"></a>rg<span class="w"> </span>--sort<span class="w"> </span>modified<span class="w"> </span>pattern
+</span><span id="__span-12-6"><a href="#__codelineno-12-6" id="__codelineno-12-6" name="__codelineno-12-6"></a>
+</span><span id="__span-12-7"><a href="#__codelineno-12-7" id="__codelineno-12-7" name="__codelineno-12-7"></a><span class="c1"># Sort in reverse order</span>
+</span><span id="__span-12-8"><a href="#__codelineno-12-8" id="__codelineno-12-8" name="__codelineno-12-8"></a>rg<span class="w"> </span>--sortr<span class="w"> </span>path<span class="w"> </span>pattern
+</span></code></pre></div>
+<p><strong>Available sort keys:</strong>
+- <code>path</code>: File path
+- <code>modified</code>: Last modification time
+- <code>accessed</code>: Last access time
+- <code>created</code>: Creation time</p>
+<p><strong>Performance impact:</strong>
+- Disables parallel search (must collect all results first)
+- Requires buffering all output before displaying
+- Slower for large result sets</p>
+<div class="admonition warning">
+<p class="admonition-title">Sorting Performance Cost</p>
+<p>Sorting disables parallel search entirely, which can make searches 4-10x slower on multi-core systems. Only use sorting when deterministic order is required (e.g., for diffing outputs, generating reports).</p>
+<p>For most interactive searches, the performance cost outweighs the benefit of sorted output.</p>
+</div>
+<h2 id="performance-statistics">Performance Statistics<a class="headerlink" href="#performance-statistics" title="Permanent link">¶</a></h2>
+<p>Use <code>--stats</code> to see detailed performance metrics:</p>
+<div class="language-bash highlight"><span class="filename">Performance Statistics</span><pre><span></span><code><span id="__span-13-1"><a href="#__codelineno-13-1" id="__codelineno-13-1" name="__codelineno-13-1"></a>rg<span class="w"> </span>--stats<span class="w"> </span>pattern
+</span></code></pre></div>
+<p><strong>Example output:</strong>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-14-1"><a href="#__codelineno-14-1" id="__codelineno-14-1" name="__codelineno-14-1"></a>3 matches
+</span><span id="__span-14-2"><a href="#__codelineno-14-2" id="__codelineno-14-2" name="__codelineno-14-2"></a>3 matched lines
+</span><span id="__span-14-3"><a href="#__codelineno-14-3" id="__codelineno-14-3" name="__codelineno-14-3"></a>1 file contained matches
+</span><span id="__span-14-4"><a href="#__codelineno-14-4" id="__codelineno-14-4" name="__codelineno-14-4"></a>1 file searched
+</span><span id="__span-14-5"><a href="#__codelineno-14-5" id="__codelineno-14-5" name="__codelineno-14-5"></a>500 bytes printed
+</span><span id="__span-14-6"><a href="#__codelineno-14-6" id="__codelineno-14-6" name="__codelineno-14-6"></a>1500 bytes searched
+</span><span id="__span-14-7"><a href="#__codelineno-14-7" id="__codelineno-14-7" name="__codelineno-14-7"></a>0.002 seconds spent searching
+</span><span id="__span-14-8"><a href="#__codelineno-14-8" id="__codelineno-14-8" name="__codelineno-14-8"></a>0.005 seconds
+</span></code></pre></div></p>
+<div class="admonition tip">
+<p class="admonition-title">Understanding Performance Metrics</p>
+<p><strong>Key metrics:</strong></p>
+<ul>
+<li><strong>Bytes searched</strong>: Total data scanned</li>
+<li><strong>Time spent searching</strong>: Actual regex matching time</li>
+<li><strong>Total time</strong>: Includes file traversal, filtering, output formatting</li>
+</ul>
+<p>Use statistics to:</p>
+<ul>
+<li>Identify performance bottlenecks</li>
+<li>Compare different search strategies</li>
+<li>Verify optimization effectiveness</li>
+<li>Debug unexpected slowness</li>
+</ul>
+</div>
+<h2 id="benchmarking">Benchmarking<a class="headerlink" href="#benchmarking" title="Permanent link">¶</a></h2>
+<p>When benchmarking ripgrep, consider these factors:</p>
+<h3 id="warm-vs-cold-cache">Warm vs. Cold Cache<a class="headerlink" href="#warm-vs-cold-cache" title="Permanent link">¶</a></h3>
+<p>File system caches dramatically affect performance:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a href="#__codelineno-15-1" id="__codelineno-15-1" name="__codelineno-15-1"></a><span class="c1"># Cold cache (first run after clearing cache)</span>
+</span><span id="__span-15-2"><a href="#__codelineno-15-2" id="__codelineno-15-2" name="__codelineno-15-2"></a>sudo<span class="w"> </span>purge<span class="w">  </span><span class="c1"># macOS</span>
+</span><span id="__span-15-3"><a href="#__codelineno-15-3" id="__codelineno-15-3" name="__codelineno-15-3"></a>sudo<span class="w"> </span>sh<span class="w"> </span>-c<span class="w"> </span><span class="s1">'echo 3 &gt; /proc/sys/vm/drop_caches'</span><span class="w">  </span><span class="c1"># Linux</span>
+</span><span id="__span-15-4"><a href="#__codelineno-15-4" id="__codelineno-15-4" name="__codelineno-15-4"></a>
+</span><span id="__span-15-5"><a href="#__codelineno-15-5" id="__codelineno-15-5" name="__codelineno-15-5"></a><span class="c1"># Warm cache (subsequent runs)</span>
+</span><span id="__span-15-6"><a href="#__codelineno-15-6" id="__codelineno-15-6" name="__codelineno-15-6"></a>rg<span class="w"> </span>pattern<span class="w">  </span><span class="c1"># Fast due to OS caching</span>
+</span></code></pre></div>
+<p>For realistic benchmarks, run searches multiple times and measure warm cache performance.</p>
+<h3 id="fair-comparisons">Fair Comparisons<a class="headerlink" href="#fair-comparisons" title="Permanent link">¶</a></h3>
+<p>When comparing ripgrep to other tools:
+- Use equivalent search parameters (case sensitivity, file filtering, etc.)
+- Compare on same directory structure and file contents
+- Run on same hardware with same background load
+- Measure wall clock time, not just CPU time
+- Account for file system cache effects</p>
+<h3 id="performance-factors">Performance Factors<a class="headerlink" href="#performance-factors" title="Permanent link">¶</a></h3>
+<p>Performance depends on:
+- <strong>Pattern complexity</strong>: Literal strings vs. complex regex
+- <strong>File size distribution</strong>: Many small files vs. few large files
+- <strong>Match density</strong>: Few matches vs. many matches per file
+- <strong>File system</strong>: SSD vs. HDD, local vs. network
+- <strong>CPU features</strong>: SIMD availability, core count
+- <strong>Memory</strong>: Available RAM for file caching</p>
+<h3 id="reproducible-benchmarks">Reproducible Benchmarks<a class="headerlink" href="#reproducible-benchmarks" title="Permanent link">¶</a></h3>
+<p>For consistent results:</p>
+<div class="language-bash highlight"><span class="filename">Benchmark Best Practices</span><pre><span></span><code><span id="__span-16-1"><a href="#__codelineno-16-1" id="__codelineno-16-1" name="__codelineno-16-1"></a><span class="c1"># Run multiple iterations</span>
+</span><span id="__span-16-2"><a href="#__codelineno-16-2" id="__codelineno-16-2" name="__codelineno-16-2"></a>hyperfine<span class="w"> </span><span class="s1">'rg pattern'</span><span class="w"> </span>--warmup<span class="w"> </span><span class="m">3</span><span class="w"> </span>--runs<span class="w"> </span><span class="m">10</span>
+</span><span id="__span-16-3"><a href="#__codelineno-16-3" id="__codelineno-16-3" name="__codelineno-16-3"></a>
+</span><span id="__span-16-4"><a href="#__codelineno-16-4" id="__codelineno-16-4" name="__codelineno-16-4"></a><span class="c1"># Pin to specific CPU cores (Linux)</span>
+</span><span id="__span-16-5"><a href="#__codelineno-16-5" id="__codelineno-16-5" name="__codelineno-16-5"></a>taskset<span class="w"> </span>-c<span class="w"> </span><span class="m">0</span>-3<span class="w"> </span>rg<span class="w"> </span>pattern
+</span><span id="__span-16-6"><a href="#__codelineno-16-6" id="__codelineno-16-6" name="__codelineno-16-6"></a>
+</span><span id="__span-16-7"><a href="#__codelineno-16-7" id="__codelineno-16-7" name="__codelineno-16-7"></a><span class="c1"># Use --stats to see internal metrics</span>
+</span><span id="__span-16-8"><a href="#__codelineno-16-8" id="__codelineno-16-8" name="__codelineno-16-8"></a>rg<span class="w"> </span>--stats<span class="w"> </span>pattern
+</span></code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Use <a href="https://github.com/sharkdp/hyperfine">hyperfine</a> for reliable benchmarking with statistical analysis. It automatically handles warmup runs and provides min/mean/max timing with standard deviation.</p>
+</div>
+<h2 id="performance-tips">Performance Tips<a class="headerlink" href="#performance-tips" title="Permanent link">¶</a></h2>
+<h3 id="for-large-codebases">For Large Codebases<a class="headerlink" href="#for-large-codebases" title="Permanent link">¶</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a href="#__codelineno-17-1" id="__codelineno-17-1" name="__codelineno-17-1"></a><span class="c1"># Source: crates/core/flags/defs.rs</span>
+</span><span id="__span-17-2"><a href="#__codelineno-17-2" id="__codelineno-17-2" name="__codelineno-17-2"></a><span class="c1"># Use file type filtering</span>
+</span><span id="__span-17-3"><a href="#__codelineno-17-3" id="__codelineno-17-3" name="__codelineno-17-3"></a>rg<span class="w"> </span>-t<span class="w"> </span>rust<span class="w"> </span>pattern
+</span><span id="__span-17-4"><a href="#__codelineno-17-4" id="__codelineno-17-4" name="__codelineno-17-4"></a>
+</span><span id="__span-17-5"><a href="#__codelineno-17-5" id="__codelineno-17-5" name="__codelineno-17-5"></a><span class="c1"># Limit search depth</span>
+</span><span id="__span-17-6"><a href="#__codelineno-17-6" id="__codelineno-17-6" name="__codelineno-17-6"></a>rg<span class="w"> </span>--max-depth<span class="w"> </span><span class="m">3</span><span class="w"> </span>pattern
+</span><span id="__span-17-7"><a href="#__codelineno-17-7" id="__codelineno-17-7" name="__codelineno-17-7"></a>
+</span><span id="__span-17-8"><a href="#__codelineno-17-8" id="__codelineno-17-8" name="__codelineno-17-8"></a><span class="c1"># Skip large files</span>
+</span><span id="__span-17-9"><a href="#__codelineno-17-9" id="__codelineno-17-9" name="__codelineno-17-9"></a>rg<span class="w"> </span>--max-filesize<span class="w"> </span>1M<span class="w"> </span>pattern
+</span><span id="__span-17-10"><a href="#__codelineno-17-10" id="__codelineno-17-10" name="__codelineno-17-10"></a>
+</span><span id="__span-17-11"><a href="#__codelineno-17-11" id="__codelineno-17-11" name="__codelineno-17-11"></a><span class="c1"># Skip directories on other file systems (avoid network mounts)</span>
+</span><span id="__span-17-12"><a href="#__codelineno-17-12" id="__codelineno-17-12" name="__codelineno-17-12"></a>rg<span class="w"> </span>--one-file-system<span class="w"> </span>pattern
+</span><span id="__span-17-13"><a href="#__codelineno-17-13" id="__codelineno-17-13" name="__codelineno-17-13"></a>
+</span><span id="__span-17-14"><a href="#__codelineno-17-14" id="__codelineno-17-14" name="__codelineno-17-14"></a><span class="c1"># Stop after N matches for quick sampling</span>
+</span><span id="__span-17-15"><a href="#__codelineno-17-15" id="__codelineno-17-15" name="__codelineno-17-15"></a>rg<span class="w"> </span>--max-count<span class="w"> </span><span class="m">100</span><span class="w"> </span>pattern
+</span><span id="__span-17-16"><a href="#__codelineno-17-16" id="__codelineno-17-16" name="__codelineno-17-16"></a>
+</span><span id="__span-17-17"><a href="#__codelineno-17-17" id="__codelineno-17-17" name="__codelineno-17-17"></a><span class="c1"># Omit very long lines to prevent memory issues</span>
+</span><span id="__span-17-18"><a href="#__codelineno-17-18" id="__codelineno-17-18" name="__codelineno-17-18"></a>rg<span class="w"> </span>--max-columns<span class="w"> </span><span class="m">500</span><span class="w"> </span>pattern
+</span></code></pre></div>
+<h3 id="for-network-file-systems">For Network File Systems<a class="headerlink" href="#for-network-file-systems" title="Permanent link">¶</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-18-1"><a href="#__codelineno-18-1" id="__codelineno-18-1" name="__codelineno-18-1"></a><span class="c1"># Disable memory mapping (often slower on NFS)</span>
+</span><span id="__span-18-2"><a href="#__codelineno-18-2" id="__codelineno-18-2" name="__codelineno-18-2"></a>rg<span class="w"> </span>--no-mmap<span class="w"> </span>pattern
+</span><span id="__span-18-3"><a href="#__codelineno-18-3" id="__codelineno-18-3" name="__codelineno-18-3"></a>
+</span><span id="__span-18-4"><a href="#__codelineno-18-4" id="__codelineno-18-4" name="__codelineno-18-4"></a><span class="c1"># Reduce thread count to avoid overwhelming network</span>
+</span><span id="__span-18-5"><a href="#__codelineno-18-5" id="__codelineno-18-5" name="__codelineno-18-5"></a>rg<span class="w"> </span>-j<span class="w"> </span><span class="m">2</span><span class="w"> </span>pattern
+</span></code></pre></div>
+<h3 id="for-memory-constrained-environments">For Memory-Constrained Environments<a class="headerlink" href="#for-memory-constrained-environments" title="Permanent link">¶</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-19-1"><a href="#__codelineno-19-1" id="__codelineno-19-1" name="__codelineno-19-1"></a><span class="c1"># Reduce thread count</span>
+</span><span id="__span-19-2"><a href="#__codelineno-19-2" id="__codelineno-19-2" name="__codelineno-19-2"></a>rg<span class="w"> </span>--threads<span class="w"> </span><span class="m">2</span><span class="w"> </span>pattern
+</span><span id="__span-19-3"><a href="#__codelineno-19-3" id="__codelineno-19-3" name="__codelineno-19-3"></a>
+</span><span id="__span-19-4"><a href="#__codelineno-19-4" id="__codelineno-19-4" name="__codelineno-19-4"></a><span class="c1"># Set conservative limits</span>
+</span><span id="__span-19-5"><a href="#__codelineno-19-5" id="__codelineno-19-5" name="__codelineno-19-5"></a>rg<span class="w"> </span>--dfa-size-limit<span class="w"> </span>10M<span class="w"> </span>--regex-size-limit<span class="w"> </span>5M<span class="w"> </span>pattern
+</span><span id="__span-19-6"><a href="#__codelineno-19-6" id="__codelineno-19-6" name="__codelineno-19-6"></a>
+</span><span id="__span-19-7"><a href="#__codelineno-19-7" id="__codelineno-19-7" name="__codelineno-19-7"></a><span class="c1"># Disable memory mapping</span>
+</span><span id="__span-19-8"><a href="#__codelineno-19-8" id="__codelineno-19-8" name="__codelineno-19-8"></a>rg<span class="w"> </span>--no-mmap<span class="w"> </span>pattern
+</span></code></pre></div>
+<h3 id="for-maximum-speed">For Maximum Speed<a class="headerlink" href="#for-maximum-speed" title="Permanent link">¶</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-20-1"><a href="#__codelineno-20-1" id="__codelineno-20-1" name="__codelineno-20-1"></a><span class="c1"># Use literal search when possible</span>
+</span><span id="__span-20-2"><a href="#__codelineno-20-2" id="__codelineno-20-2" name="__codelineno-20-2"></a>rg<span class="w"> </span>-F<span class="w"> </span><span class="s1">'exact string'</span>
+</span><span id="__span-20-3"><a href="#__codelineno-20-3" id="__codelineno-20-3" name="__codelineno-20-3"></a>
+</span><span id="__span-20-4"><a href="#__codelineno-20-4" id="__codelineno-20-4" name="__codelineno-20-4"></a><span class="c1"># Use simple patterns instead of complex regex</span>
+</span><span id="__span-20-5"><a href="#__codelineno-20-5" id="__codelineno-20-5" name="__codelineno-20-5"></a>rg<span class="w"> </span><span class="s1">'foo.*bar'</span><span class="w"> </span><span class="c1"># Good</span>
+</span><span id="__span-20-6"><a href="#__codelineno-20-6" id="__codelineno-20-6" name="__codelineno-20-6"></a>rg<span class="w"> </span><span class="s1">'foo[^\n]*bar'</span><span class="w"> </span><span class="c1"># Slower</span>
+</span><span id="__span-20-7"><a href="#__codelineno-20-7" id="__codelineno-20-7" name="__codelineno-20-7"></a>
+</span><span id="__span-20-8"><a href="#__codelineno-20-8" id="__codelineno-20-8" name="__codelineno-20-8"></a><span class="c1"># Filter by file type</span>
+</span><span id="__span-20-9"><a href="#__codelineno-20-9" id="__codelineno-20-9" name="__codelineno-20-9"></a>rg<span class="w"> </span>-t<span class="w"> </span>py<span class="w"> </span>pattern<span class="w">  </span><span class="c1"># Faster than searching all files</span>
+</span></code></pre></div>
+<h2 id="common-performance-pitfalls">Common Performance Pitfalls<a class="headerlink" href="#common-performance-pitfalls" title="Permanent link">¶</a></h2>
+<h3 id="avoid-these-patterns">Avoid These Patterns<a class="headerlink" href="#avoid-these-patterns" title="Permanent link">¶</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Common Performance Mistakes</p>
+<ol>
+<li><strong>Overly complex regex</strong>: Use literal search (<code>-F</code>) when possible—it's 10-50x faster</li>
+<li><strong>Unnecessary PCRE2</strong>: Default engine is faster for most patterns unless you need look-around/backreferences</li>
+<li><strong>Sorting when not needed</strong>: Disables parallelism (4-10x slower on multi-core systems)</li>
+<li><strong>Too many threads</strong>: Overhead can exceed benefit (usually &gt; 16 threads)</li>
+<li><strong>Memory mapping small files</strong>: Buffered I/O is faster for files under a few MB</li>
+</ol>
+</div>
+<h3 id="troubleshooting-slow-searches">Troubleshooting Slow Searches<a class="headerlink" href="#troubleshooting-slow-searches" title="Permanent link">¶</a></h3>
+<p>If ripgrep seems slow:</p>
+<ol>
+<li>
+<p><strong>Check what's being searched</strong>:
+   <div class="language-bash highlight"><pre><span></span><code><span id="__span-21-1"><a href="#__codelineno-21-1" id="__codelineno-21-1" name="__codelineno-21-1"></a>rg<span class="w"> </span>--files<span class="w"> </span><span class="p">|</span><span class="w"> </span>wc<span class="w"> </span>-l<span class="w">  </span><span class="c1"># How many files?</span>
+</span><span id="__span-21-2"><a href="#__codelineno-21-2" id="__codelineno-21-2" name="__codelineno-21-2"></a>rg<span class="w"> </span>--stats<span class="w"> </span>pattern<span class="w">  </span><span class="c1"># How much data?</span>
+</span></code></pre></div></p>
+</li>
+<li>
+<p><strong>Verify file filtering</strong>:
+   <div class="language-bash highlight"><pre><span></span><code><span id="__span-22-1"><a href="#__codelineno-22-1" id="__codelineno-22-1" name="__codelineno-22-1"></a>rg<span class="w"> </span>--debug<span class="w"> </span>pattern<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-i<span class="w"> </span>ignore
+</span></code></pre></div></p>
+</li>
+<li>
+<p><strong>Test with simpler pattern</strong>:
+   <div class="language-bash highlight"><pre><span></span><code><span id="__span-23-1"><a href="#__codelineno-23-1" id="__codelineno-23-1" name="__codelineno-23-1"></a>rg<span class="w"> </span>-F<span class="w"> </span><span class="s1">'literal'</span><span class="w">  </span><span class="c1"># Is regex the bottleneck?</span>
+</span></code></pre></div></p>
+</li>
+<li>
+<p><strong>Check for network file systems</strong>: Much slower than local disks</p>
+</li>
+<li>
+<p><strong>Measure with --stats</strong>: Identify time spent in different phases</p>
+</li>
+</ol>
+<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">¶</a></h2>
+<p>Ripgrep's performance comes from:
+- Parallel multi-threaded search by default
+- Automatic memory mapping for large files
+- SIMD-accelerated literal matching
+- Efficient regex engines with smart optimizations
+- Careful memory management</p>
+<p>For most use cases, the defaults are optimal. Use the tuning options described in this chapter when you have specific performance requirements or constraints.</p>
+</article>
+</div>
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+</div>
+<button class="md-top md-icon" data-md-component="top" hidden="" type="button">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"></path></svg>
+  Back to top
+</button>
+</main>
+<footer class="md-footer">
+<div class="md-footer-meta md-typeset">
+<div class="md-footer-meta__inner md-grid">
+<div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" rel="noopener" target="_blank">
+      Material for MkDocs
+    </a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<div class="md-dialog" data-md-component="dialog">
+<div class="md-dialog__inner md-typeset"></div>
+</div>
+<script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.highlight", "search.share", "search.suggest", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+<script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
+<script type="module">import mermaid from "https://unpkg.com/mermaid@10.4.0/dist/mermaid.esm.min.mjs";
+window.mermaidConfig = {default: {
+    startOnLoad: false
+}};</script></body>
+</html>

@@ -12,25 +12,31 @@
         <meta name="author" content="Andrew Gallant">
       
       
+        <link rel="canonical" href="https://github.com/BurntSushi/ripgrep/basics/literal-search/">
       
+      
+        <link rel="prev" href="../pattern-matching/">
+      
+      
+        <link rel="next" href="../regex-basics/">
       
       
         
       
       
-      <link rel="icon" href="/BurntSushi/ripgrep/assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
     
     
       
-        <title>ripgrep User Guide</title>
+        <title>Literal String Search - ripgrep User Guide</title>
       
     
     
-      <link rel="stylesheet" href="/BurntSushi/ripgrep/assets/stylesheets/main.618322db.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
       
         
-        <link rel="stylesheet" href="/BurntSushi/ripgrep/assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -49,7 +55,7 @@
       
     
     
-    <script>__md_scope=new URL("/BurntSushi/ripgrep/",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -73,6 +79,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#literal-string-search" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -83,7 +94,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="/BurntSushi/ripgrep/." title="ripgrep User Guide" class="md-header__button md-logo" aria-label="ripgrep User Guide" data-md-component="logo">
+    <a href="../.." title="ripgrep User Guide" class="md-header__button md-logo" aria-label="ripgrep User Guide" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -103,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              
+              Literal String Search
             
           </span>
         </div>
@@ -221,7 +232,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="/BurntSushi/ripgrep/introduction/" class="md-tabs__link">
+      <a href="../../introduction/" class="md-tabs__link">
         
   
   
@@ -238,6 +249,8 @@
   
   
   
+    
+  
   
     
     
@@ -245,11 +258,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="/BurntSushi/ripgrep/basics/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
           
   
   
@@ -279,7 +294,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="/BurntSushi/ripgrep/advanced-patterns/" class="md-tabs__link">
+        <a href="../../advanced-patterns/" class="md-tabs__link">
           
   
   
@@ -316,7 +331,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="/BurntSushi/ripgrep/." title="ripgrep User Guide" class="md-nav__button md-logo" aria-label="ripgrep User Guide" data-md-component="logo">
+    <a href="../.." title="ripgrep User Guide" class="md-nav__button md-logo" aria-label="ripgrep User Guide" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -346,7 +361,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/introduction/" class="md-nav__link">
+      <a href="../../introduction/" class="md-nav__link">
         
   
   
@@ -370,28 +385,31 @@
       
   
   
+    
   
   
+  
     
     
     
     
+      
+        
+        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
         
           
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
-        
-          
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
             
   
   
@@ -409,7 +427,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
             
@@ -424,28 +442,31 @@
                 
   
   
+    
   
   
+  
     
     
     
     
       
       
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
         
           
+          
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_1" >
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" checked>
         
           
-          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="">
             
   
   
@@ -463,7 +484,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2_1">
             <span class="md-nav__icon md-icon"></span>
             
@@ -481,7 +502,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/basics/" class="md-nav__link">
+      <a href="../" class="md-nav__link">
         
   
   
@@ -509,7 +530,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/basics/pattern-matching/" class="md-nav__link">
+      <a href="../pattern-matching/" class="md-nav__link">
         
   
   
@@ -534,10 +555,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/basics/literal-search/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Literal String Search
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -553,6 +601,65 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#fixed-string-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed String Mode
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Fixed String Mode">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#literal-vs-escaped-regex" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Literal vs Escaped Regex
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#combining-with-other-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Combining with Other Options
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -565,7 +672,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/basics/regex-basics/" class="md-nav__link">
+      <a href="../regex-basics/" class="md-nav__link">
         
   
   
@@ -593,7 +700,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/basics/case-sensitivity/" class="md-nav__link">
+      <a href="../case-sensitivity/" class="md-nav__link">
         
   
   
@@ -621,7 +728,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/basics/boundaries/" class="md-nav__link">
+      <a href="../boundaries/" class="md-nav__link">
         
   
   
@@ -649,7 +756,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/basics/output/" class="md-nav__link">
+      <a href="../output/" class="md-nav__link">
         
   
   
@@ -677,7 +784,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/basics/count-list/" class="md-nav__link">
+      <a href="../count-list/" class="md-nav__link">
         
   
   
@@ -705,7 +812,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/basics/practice/" class="md-nav__link">
+      <a href="../practice/" class="md-nav__link">
         
   
   
@@ -741,7 +848,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/recursive-search/" class="md-nav__link">
+      <a href="../../recursive-search/" class="md-nav__link">
         
   
   
@@ -769,7 +876,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/automatic-filtering/" class="md-nav__link">
+      <a href="../../automatic-filtering/" class="md-nav__link">
         
   
   
@@ -797,7 +904,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/manual-filtering-globs/" class="md-nav__link">
+      <a href="../../manual-filtering-globs/" class="md-nav__link">
         
   
   
@@ -825,7 +932,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/manual-filtering-types/" class="md-nav__link">
+      <a href="../../manual-filtering-types/" class="md-nav__link">
         
   
   
@@ -853,7 +960,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/replacements/" class="md-nav__link">
+      <a href="../../replacements/" class="md-nav__link">
         
   
   
@@ -881,7 +988,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/configuration-file/" class="md-nav__link">
+      <a href="../../configuration-file/" class="md-nav__link">
         
   
   
@@ -909,7 +1016,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/file-encoding/" class="md-nav__link">
+      <a href="../../file-encoding/" class="md-nav__link">
         
   
   
@@ -943,10 +1050,13 @@
       
       
         
+          
+          
+        
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
@@ -955,7 +1065,7 @@
         <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_9" >
         
           
-          <label class="md-nav__link" for="__nav_2_9" id="__nav_2_9_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_2_9" id="__nav_2_9_label" tabindex="">
             
   
   
@@ -991,7 +1101,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/binary-data/" class="md-nav__link">
+      <a href="../../binary-data/" class="md-nav__link">
         
   
   
@@ -1019,7 +1129,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/binary-data/detection/" class="md-nav__link">
+      <a href="../../binary-data/detection/" class="md-nav__link">
         
   
   
@@ -1047,7 +1157,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/binary-data/modes/" class="md-nav__link">
+      <a href="../../binary-data/modes/" class="md-nav__link">
         
   
   
@@ -1075,7 +1185,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/binary-data/explicit-implicit/" class="md-nav__link">
+      <a href="../../binary-data/explicit-implicit/" class="md-nav__link">
         
   
   
@@ -1103,7 +1213,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/binary-data/flags/" class="md-nav__link">
+      <a href="../../binary-data/flags/" class="md-nav__link">
         
   
   
@@ -1131,7 +1241,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/binary-data/examples/" class="md-nav__link">
+      <a href="../../binary-data/examples/" class="md-nav__link">
         
   
   
@@ -1167,7 +1277,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/compressed-files/" class="md-nav__link">
+      <a href="../../compressed-files/" class="md-nav__link">
         
   
   
@@ -1195,7 +1305,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/preprocessor/" class="md-nav__link">
+      <a href="../../preprocessor/" class="md-nav__link">
         
   
   
@@ -1229,10 +1339,13 @@
       
       
         
+          
+          
+        
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
@@ -1241,7 +1354,7 @@
         <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_12" >
         
           
-          <label class="md-nav__link" for="__nav_2_12" id="__nav_2_12_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_2_12" id="__nav_2_12_label" tabindex="">
             
   
   
@@ -1277,7 +1390,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/common-options/" class="md-nav__link">
+      <a href="../../common-options/" class="md-nav__link">
         
   
   
@@ -1305,7 +1418,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/common-options/search-basics/" class="md-nav__link">
+      <a href="../../common-options/search-basics/" class="md-nav__link">
         
   
   
@@ -1333,7 +1446,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/common-options/output-formatting/" class="md-nav__link">
+      <a href="../../common-options/output-formatting/" class="md-nav__link">
         
   
   
@@ -1361,7 +1474,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/common-options/file-filtering/" class="md-nav__link">
+      <a href="../../common-options/file-filtering/" class="md-nav__link">
         
   
   
@@ -1389,7 +1502,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/common-options/output-modes/" class="md-nav__link">
+      <a href="../../common-options/output-modes/" class="md-nav__link">
         
   
   
@@ -1417,7 +1530,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/common-options/reference/" class="md-nav__link">
+      <a href="../../common-options/reference/" class="md-nav__link">
         
   
   
@@ -1453,7 +1566,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/context-lines/" class="md-nav__link">
+      <a href="../../context-lines/" class="md-nav__link">
         
   
   
@@ -1481,7 +1594,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/output-formats/" class="md-nav__link">
+      <a href="../../output-formats/" class="md-nav__link">
         
   
   
@@ -1509,7 +1622,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/sorting-results/" class="md-nav__link">
+      <a href="../../sorting-results/" class="md-nav__link">
         
   
   
@@ -1537,7 +1650,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/utility-modes/" class="md-nav__link">
+      <a href="../../utility-modes/" class="md-nav__link">
         
   
   
@@ -1680,7 +1793,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/advanced-patterns/" class="md-nav__link">
+      <a href="../../advanced-patterns/" class="md-nav__link">
         
   
   
@@ -1708,7 +1821,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/advanced-patterns/multiline/" class="md-nav__link">
+      <a href="../../advanced-patterns/multiline/" class="md-nav__link">
         
   
   
@@ -1736,7 +1849,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/advanced-patterns/pcre2/" class="md-nav__link">
+      <a href="../../advanced-patterns/pcre2/" class="md-nav__link">
         
   
   
@@ -1764,7 +1877,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/advanced-patterns/lookaround/" class="md-nav__link">
+      <a href="../../advanced-patterns/lookaround/" class="md-nav__link">
         
   
   
@@ -1792,7 +1905,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/advanced-patterns/backreferences/" class="md-nav__link">
+      <a href="../../advanced-patterns/backreferences/" class="md-nav__link">
         
   
   
@@ -1820,7 +1933,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/advanced-patterns/unicode/" class="md-nav__link">
+      <a href="../../advanced-patterns/unicode/" class="md-nav__link">
         
   
   
@@ -1848,7 +1961,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/advanced-patterns/inline-flags/" class="md-nav__link">
+      <a href="../../advanced-patterns/inline-flags/" class="md-nav__link">
         
   
   
@@ -1876,7 +1989,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/advanced-patterns/performance/" class="md-nav__link">
+      <a href="../../advanced-patterns/performance/" class="md-nav__link">
         
   
   
@@ -1904,7 +2017,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/advanced-patterns/examples/" class="md-nav__link">
+      <a href="../../advanced-patterns/examples/" class="md-nav__link">
         
   
   
@@ -1940,7 +2053,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/performance/" class="md-nav__link">
+      <a href="../../performance/" class="md-nav__link">
         
   
   
@@ -1968,7 +2081,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/statistics/" class="md-nav__link">
+      <a href="../../statistics/" class="md-nav__link">
         
   
   
@@ -1996,7 +2109,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/hyperlinks/" class="md-nav__link">
+      <a href="../../hyperlinks/" class="md-nav__link">
         
   
   
@@ -2078,7 +2191,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/troubleshooting/" class="md-nav__link">
+      <a href="../../troubleshooting/" class="md-nav__link">
         
   
   
@@ -2106,7 +2219,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/troubleshooting/debug-flags/" class="md-nav__link">
+      <a href="../../troubleshooting/debug-flags/" class="md-nav__link">
         
   
   
@@ -2134,7 +2247,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/troubleshooting/no-results/" class="md-nav__link">
+      <a href="../../troubleshooting/no-results/" class="md-nav__link">
         
   
   
@@ -2162,7 +2275,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/troubleshooting/performance/" class="md-nav__link">
+      <a href="../../troubleshooting/performance/" class="md-nav__link">
         
   
   
@@ -2190,7 +2303,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/troubleshooting/errors/" class="md-nav__link">
+      <a href="../../troubleshooting/errors/" class="md-nav__link">
         
   
   
@@ -2218,7 +2331,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/troubleshooting/binary-encoding/" class="md-nav__link">
+      <a href="../../troubleshooting/binary-encoding/" class="md-nav__link">
         
   
   
@@ -2246,7 +2359,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/troubleshooting/bug-reports/" class="md-nav__link">
+      <a href="../../troubleshooting/bug-reports/" class="md-nav__link">
         
   
   
@@ -2299,6 +2412,55 @@
   
   
   
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#fixed-string-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed String Mode
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Fixed String Mode">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#literal-vs-escaped-regex" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Literal vs Escaped Regex
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#combining-with-other-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Combining with Other Options
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -2311,8 +2473,115 @@
               
               <article class="md-content__inner md-typeset">
                 
-  <h1>404 - Not found</h1>
+                  
 
+
+  
+  
+
+
+<h1 id="literal-string-search">Literal String Search<a class="headerlink" href="#literal-string-search" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p>Part of the <a href="../">Basics</a> page</p>
+</blockquote>
+<p>By default, ripgrep interprets patterns as regular expressions. Sometimes you want to search for literal strings that contain regex metacharacters like <code>.</code>, <code>*</code>, <code>(</code>, <code>)</code>, etc.</p>
+<h2 id="fixed-string-mode">Fixed String Mode<a class="headerlink" href="#fixed-string-mode" title="Permanent link">&para;</a></h2>
+<p>Use <code>-F</code> or <code>--fixed-strings</code> to search for literal strings:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Without -F, you&#39;d need to escape the parentheses</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>rg<span class="w"> </span><span class="s2">&quot;function\(\)&quot;</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># With -F, search for the exact string</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>rg<span class="w"> </span>-F<span class="w"> </span><span class="s2">&quot;function()&quot;</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="c1"># Search for literal dots, asterisks, brackets, etc.</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>rg<span class="w"> </span>-F<span class="w"> </span><span class="s2">&quot;192.168.1.1&quot;</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>rg<span class="w"> </span>-F<span class="w"> </span><span class="s2">&quot;file*.txt&quot;</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>rg<span class="w"> </span>-F<span class="w"> </span><span class="s2">&quot;[debug]&quot;</span>
+</span></code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">Performance Benefit</p>
+<p>Using <code>-F</code> enables SIMD acceleration and avoids regex compilation overhead, making literal searches significantly faster than equivalent escaped regex patterns. Ripgrep can use fast literal matching algorithms that are optimized for finding exact byte sequences.</p>
+</div>
+<h3 id="literal-vs-escaped-regex">Literal vs Escaped Regex<a class="headerlink" href="#literal-vs-escaped-regex" title="Permanent link">&para;</a></h3>
+<p>When searching for strings with special characters, you have two options:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Literal Search (-F)</label><label for="__tabbed_1_2">Escaped Regex</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p><div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Source: tests/misc.rs:176</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>rg<span class="w"> </span>-F<span class="w"> </span><span class="s2">&quot;file*.txt&quot;</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>rg<span class="w"> </span>-F<span class="w"> </span><span class="s2">&quot;192.168.1.1&quot;</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>rg<span class="w"> </span>-F<span class="w"> </span><span class="s2">&quot;function()&quot;</span>
+</span></code></pre></div>
+<strong>Advantages:</strong> Simpler, faster, no escaping needed</p>
+</div>
+<div class="tabbed-block">
+<p><div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>rg<span class="w"> </span><span class="s2">&quot;file\*\.txt&quot;</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>rg<span class="w"> </span><span class="s2">&quot;192\.168\.1\.1&quot;</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>rg<span class="w"> </span><span class="s2">&quot;function\(\)&quot;</span>
+</span></code></pre></div>
+<strong>Advantages:</strong> Can combine with regex features if needed</p>
+</div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">When to Use -F</p>
+<ul>
+<li>Searching for code snippets with special characters</li>
+<li>Looking for URLs, IP addresses, or file paths</li>
+<li>Maximum search performance when regex features aren't needed</li>
+<li>Avoiding regex metacharacter interpretation issues</li>
+</ul>
+</div>
+<h2 id="combining-with-other-options">Combining with Other Options<a class="headerlink" href="#combining-with-other-options" title="Permanent link">&para;</a></h2>
+<p>Literal search works with other ripgrep flags:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># Case-insensitive literal search</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>rg<span class="w"> </span>-F<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;TODO&quot;</span><span class="w">                    </span><span class="c1"># (1)!</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># Literal search with word boundaries</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>rg<span class="w"> </span>-F<span class="w"> </span>-w<span class="w"> </span><span class="s2">&quot;log&quot;</span><span class="w">                     </span><span class="c1"># (2)!</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="c1"># Literal search in specific file types</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>rg<span class="w"> </span>-F<span class="w"> </span><span class="s2">&quot;api_key&quot;</span><span class="w"> </span>--type<span class="w"> </span>python<span class="w">      </span><span class="c1"># (3)!</span>
+</span></code></pre></div>
+<ol>
+<li>Combines literal search with case-insensitive matching</li>
+<li>Matches "log" as a complete word, not as part of "login" or "catalog"</li>
+<li>Restricts search to Python files while treating pattern as literal string</li>
+</ol>
+<div class="admonition example">
+<p class="admonition-title">Common Use Cases</p>
+<p>Literal search is ideal for:</p>
+<ul>
+<li><strong>Log analysis:</strong> <code>rg -F "[ERROR]" logs/</code></li>
+<li><strong>Configuration values:</strong> <code>rg -F "database.url" --type yaml</code></li>
+<li><strong>Code patterns:</strong> <code>rg -F "TODO(username)" --type rust</code></li>
+<li><strong>IP addresses:</strong> <code>rg -F "192.168.1.1" access.log</code></li>
+</ul>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Limitations</p>
+<p>When using <code>-F</code>, you cannot use regex features like:</p>
+<ul>
+<li>Wildcards (<code>.*</code>, <code>.+</code>)</li>
+<li>Character classes (<code>[a-z]</code>, <code>\d</code>)</li>
+<li>Anchors (<code>^</code>, <code>$</code>)</li>
+<li>Alternation (<code>foo|bar</code>)</li>
+</ul>
+<p>If you need regex features, use escaped patterns instead of <code>-F</code>.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
               </article>
             </div>
           
@@ -2355,10 +2624,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "/BurntSushi/ripgrep/", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.highlight", "search.share", "search.suggest", "content.code.copy", "content.code.annotate"], "search": "/BurntSushi/ripgrep/assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.highlight", "search.share", "search.suggest", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="/BurntSushi/ripgrep/assets/javascripts/bundle.e71a0d61.min.js"></script>
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
       
     
   </body>

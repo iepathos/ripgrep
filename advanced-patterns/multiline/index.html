@@ -12,25 +12,31 @@
         <meta name="author" content="Andrew Gallant">
       
       
+        <link rel="canonical" href="https://github.com/BurntSushi/ripgrep/advanced-patterns/multiline/">
       
+      
+        <link rel="prev" href="../">
+      
+      
+        <link rel="next" href="../pcre2/">
       
       
         
       
       
-      <link rel="icon" href="/BurntSushi/ripgrep/assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
     
     
       
-        <title>ripgrep User Guide</title>
+        <title>Multiline Search - ripgrep User Guide</title>
       
     
     
-      <link rel="stylesheet" href="/BurntSushi/ripgrep/assets/stylesheets/main.618322db.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
       
         
-        <link rel="stylesheet" href="/BurntSushi/ripgrep/assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -49,7 +55,7 @@
       
     
     
-    <script>__md_scope=new URL("/BurntSushi/ripgrep/",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -73,6 +79,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#multiline-search" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -83,7 +94,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="/BurntSushi/ripgrep/." title="ripgrep User Guide" class="md-header__button md-logo" aria-label="ripgrep User Guide" data-md-component="logo">
+    <a href="../.." title="ripgrep User Guide" class="md-header__button md-logo" aria-label="ripgrep User Guide" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -103,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              
+              Multiline Search
             
           </span>
         </div>
@@ -221,7 +232,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="/BurntSushi/ripgrep/introduction/" class="md-tabs__link">
+      <a href="../../introduction/" class="md-tabs__link">
         
   
   
@@ -249,7 +260,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="/BurntSushi/ripgrep/basics/" class="md-tabs__link">
+        <a href="../../basics/" class="md-tabs__link">
           
   
   
@@ -268,6 +279,8 @@
   
   
   
+    
+  
   
     
     
@@ -275,11 +288,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="/BurntSushi/ripgrep/advanced-patterns/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
           
   
   
@@ -316,7 +331,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="/BurntSushi/ripgrep/." title="ripgrep User Guide" class="md-nav__button md-logo" aria-label="ripgrep User Guide" data-md-component="logo">
+    <a href="../.." title="ripgrep User Guide" class="md-nav__button md-logo" aria-label="ripgrep User Guide" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -346,7 +361,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/introduction/" class="md-nav__link">
+      <a href="../../introduction/" class="md-nav__link">
         
   
   
@@ -481,7 +496,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/basics/" class="md-nav__link">
+      <a href="../../basics/" class="md-nav__link">
         
   
   
@@ -509,7 +524,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/basics/pattern-matching/" class="md-nav__link">
+      <a href="../../basics/pattern-matching/" class="md-nav__link">
         
   
   
@@ -537,7 +552,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/basics/literal-search/" class="md-nav__link">
+      <a href="../../basics/literal-search/" class="md-nav__link">
         
   
   
@@ -565,7 +580,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/basics/regex-basics/" class="md-nav__link">
+      <a href="../../basics/regex-basics/" class="md-nav__link">
         
   
   
@@ -593,7 +608,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/basics/case-sensitivity/" class="md-nav__link">
+      <a href="../../basics/case-sensitivity/" class="md-nav__link">
         
   
   
@@ -621,7 +636,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/basics/boundaries/" class="md-nav__link">
+      <a href="../../basics/boundaries/" class="md-nav__link">
         
   
   
@@ -649,7 +664,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/basics/output/" class="md-nav__link">
+      <a href="../../basics/output/" class="md-nav__link">
         
   
   
@@ -677,7 +692,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/basics/count-list/" class="md-nav__link">
+      <a href="../../basics/count-list/" class="md-nav__link">
         
   
   
@@ -705,7 +720,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/basics/practice/" class="md-nav__link">
+      <a href="../../basics/practice/" class="md-nav__link">
         
   
   
@@ -741,7 +756,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/recursive-search/" class="md-nav__link">
+      <a href="../../recursive-search/" class="md-nav__link">
         
   
   
@@ -769,7 +784,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/automatic-filtering/" class="md-nav__link">
+      <a href="../../automatic-filtering/" class="md-nav__link">
         
   
   
@@ -797,7 +812,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/manual-filtering-globs/" class="md-nav__link">
+      <a href="../../manual-filtering-globs/" class="md-nav__link">
         
   
   
@@ -825,7 +840,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/manual-filtering-types/" class="md-nav__link">
+      <a href="../../manual-filtering-types/" class="md-nav__link">
         
   
   
@@ -853,7 +868,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/replacements/" class="md-nav__link">
+      <a href="../../replacements/" class="md-nav__link">
         
   
   
@@ -881,7 +896,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/configuration-file/" class="md-nav__link">
+      <a href="../../configuration-file/" class="md-nav__link">
         
   
   
@@ -909,7 +924,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/file-encoding/" class="md-nav__link">
+      <a href="../../file-encoding/" class="md-nav__link">
         
   
   
@@ -991,7 +1006,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/binary-data/" class="md-nav__link">
+      <a href="../../binary-data/" class="md-nav__link">
         
   
   
@@ -1019,7 +1034,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/binary-data/detection/" class="md-nav__link">
+      <a href="../../binary-data/detection/" class="md-nav__link">
         
   
   
@@ -1047,7 +1062,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/binary-data/modes/" class="md-nav__link">
+      <a href="../../binary-data/modes/" class="md-nav__link">
         
   
   
@@ -1075,7 +1090,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/binary-data/explicit-implicit/" class="md-nav__link">
+      <a href="../../binary-data/explicit-implicit/" class="md-nav__link">
         
   
   
@@ -1103,7 +1118,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/binary-data/flags/" class="md-nav__link">
+      <a href="../../binary-data/flags/" class="md-nav__link">
         
   
   
@@ -1131,7 +1146,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/binary-data/examples/" class="md-nav__link">
+      <a href="../../binary-data/examples/" class="md-nav__link">
         
   
   
@@ -1167,7 +1182,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/compressed-files/" class="md-nav__link">
+      <a href="../../compressed-files/" class="md-nav__link">
         
   
   
@@ -1195,7 +1210,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/preprocessor/" class="md-nav__link">
+      <a href="../../preprocessor/" class="md-nav__link">
         
   
   
@@ -1277,7 +1292,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/common-options/" class="md-nav__link">
+      <a href="../../common-options/" class="md-nav__link">
         
   
   
@@ -1305,7 +1320,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/common-options/search-basics/" class="md-nav__link">
+      <a href="../../common-options/search-basics/" class="md-nav__link">
         
   
   
@@ -1333,7 +1348,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/common-options/output-formatting/" class="md-nav__link">
+      <a href="../../common-options/output-formatting/" class="md-nav__link">
         
   
   
@@ -1361,7 +1376,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/common-options/file-filtering/" class="md-nav__link">
+      <a href="../../common-options/file-filtering/" class="md-nav__link">
         
   
   
@@ -1389,7 +1404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/common-options/output-modes/" class="md-nav__link">
+      <a href="../../common-options/output-modes/" class="md-nav__link">
         
   
   
@@ -1417,7 +1432,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/common-options/reference/" class="md-nav__link">
+      <a href="../../common-options/reference/" class="md-nav__link">
         
   
   
@@ -1453,7 +1468,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/context-lines/" class="md-nav__link">
+      <a href="../../context-lines/" class="md-nav__link">
         
   
   
@@ -1481,7 +1496,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/output-formats/" class="md-nav__link">
+      <a href="../../output-formats/" class="md-nav__link">
         
   
   
@@ -1509,7 +1524,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/sorting-results/" class="md-nav__link">
+      <a href="../../sorting-results/" class="md-nav__link">
         
   
   
@@ -1537,7 +1552,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/utility-modes/" class="md-nav__link">
+      <a href="../../utility-modes/" class="md-nav__link">
         
   
   
@@ -1569,28 +1584,31 @@
       
   
   
+    
   
   
+  
     
     
     
     
+      
+        
+        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
-        
-          
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
             
   
   
@@ -1608,7 +1626,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1623,28 +1641,31 @@
                 
   
   
+    
   
   
+  
     
     
     
     
       
       
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
         
           
+          
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_1" >
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" checked>
         
           
-          <label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="">
             
   
   
@@ -1662,7 +1683,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3_1">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1680,7 +1701,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/advanced-patterns/" class="md-nav__link">
+      <a href="../" class="md-nav__link">
         
   
   
@@ -1705,10 +1726,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/advanced-patterns/multiline/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multiline Search
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -1724,6 +1772,120 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#basic-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Usage
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-multiline-mode-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Multiline Mode Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#memory-implications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Memory Implications
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-to-use-multiline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to Use Multiline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#multiline-dotall-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multiline Dotall Mode
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Multiline Dotall Mode">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#using-multiline-dotall" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using Multiline Dotall
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alternative-inline-syntax" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alternative: Inline Syntax
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-pany" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using \p{any}
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1736,7 +1898,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/advanced-patterns/pcre2/" class="md-nav__link">
+      <a href="../pcre2/" class="md-nav__link">
         
   
   
@@ -1764,7 +1926,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/advanced-patterns/lookaround/" class="md-nav__link">
+      <a href="../lookaround/" class="md-nav__link">
         
   
   
@@ -1792,7 +1954,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/advanced-patterns/backreferences/" class="md-nav__link">
+      <a href="../backreferences/" class="md-nav__link">
         
   
   
@@ -1820,7 +1982,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/advanced-patterns/unicode/" class="md-nav__link">
+      <a href="../unicode/" class="md-nav__link">
         
   
   
@@ -1848,7 +2010,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/advanced-patterns/inline-flags/" class="md-nav__link">
+      <a href="../inline-flags/" class="md-nav__link">
         
   
   
@@ -1876,7 +2038,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/advanced-patterns/performance/" class="md-nav__link">
+      <a href="../performance/" class="md-nav__link">
         
   
   
@@ -1904,7 +2066,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/advanced-patterns/examples/" class="md-nav__link">
+      <a href="../examples/" class="md-nav__link">
         
   
   
@@ -1940,7 +2102,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/performance/" class="md-nav__link">
+      <a href="../../performance/" class="md-nav__link">
         
   
   
@@ -1968,7 +2130,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/statistics/" class="md-nav__link">
+      <a href="../../statistics/" class="md-nav__link">
         
   
   
@@ -1996,7 +2158,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/hyperlinks/" class="md-nav__link">
+      <a href="../../hyperlinks/" class="md-nav__link">
         
   
   
@@ -2030,10 +2192,13 @@
       
       
         
+          
+          
+        
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
@@ -2042,7 +2207,7 @@
         <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_5" >
         
           
-          <label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="">
             
   
   
@@ -2078,7 +2243,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/troubleshooting/" class="md-nav__link">
+      <a href="../../troubleshooting/" class="md-nav__link">
         
   
   
@@ -2106,7 +2271,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/troubleshooting/debug-flags/" class="md-nav__link">
+      <a href="../../troubleshooting/debug-flags/" class="md-nav__link">
         
   
   
@@ -2134,7 +2299,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/troubleshooting/no-results/" class="md-nav__link">
+      <a href="../../troubleshooting/no-results/" class="md-nav__link">
         
   
   
@@ -2162,7 +2327,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/troubleshooting/performance/" class="md-nav__link">
+      <a href="../../troubleshooting/performance/" class="md-nav__link">
         
   
   
@@ -2190,7 +2355,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/troubleshooting/errors/" class="md-nav__link">
+      <a href="../../troubleshooting/errors/" class="md-nav__link">
         
   
   
@@ -2218,7 +2383,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/troubleshooting/binary-encoding/" class="md-nav__link">
+      <a href="../../troubleshooting/binary-encoding/" class="md-nav__link">
         
   
   
@@ -2246,7 +2411,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/BurntSushi/ripgrep/troubleshooting/bug-reports/" class="md-nav__link">
+      <a href="../../troubleshooting/bug-reports/" class="md-nav__link">
         
   
   
@@ -2299,6 +2464,110 @@
   
   
   
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#basic-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Usage
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-multiline-mode-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Multiline Mode Works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#memory-implications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Memory Implications
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-to-use-multiline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to Use Multiline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#multiline-dotall-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multiline Dotall Mode
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Multiline Dotall Mode">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#using-multiline-dotall" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using Multiline Dotall
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alternative-inline-syntax" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alternative: Inline Syntax
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-pany" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using \p{any}
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -2311,8 +2580,86 @@
               
               <article class="md-content__inner md-typeset">
                 
-  <h1>404 - Not found</h1>
+                  
 
+
+  
+  
+
+
+<h1 id="multiline-search">Multiline Search<a class="headerlink" href="#multiline-search" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p>Part of the <a href="../">Advanced Patterns</a> page</p>
+</blockquote>
+<p>By default, ripgrep searches line-by-line, and patterns cannot match across line boundaries. The <code>-U</code> or <code>--multiline</code> flag enables multiline mode, allowing patterns to match text that spans multiple lines.</p>
+<h2 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h2>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Search for &quot;foo&quot; followed by &quot;bar&quot; on the next line</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>rg<span class="w"> </span>-U<span class="w"> </span><span class="s1">&#39;foo\nbar&#39;</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Match patterns spanning multiple lines</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>rg<span class="w"> </span>-U<span class="w"> </span><span class="s1">&#39;struct.*\{.*field&#39;</span>
+</span></code></pre></div>
+<h2 id="how-multiline-mode-works">How Multiline Mode Works<a class="headerlink" href="#how-multiline-mode-works" title="Permanent link">&para;</a></h2>
+<p>When multiline mode is enabled:</p>
+<ol>
+<li>Ripgrep reads entire files into memory instead of processing line-by-line</li>
+<li>The pattern can include <code>\n</code> to match newlines</li>
+<li>The <code>.</code> metacharacter still does <strong>not</strong> match newlines by default (see <a href="#multiline-dotall-mode">Multiline Dotall Mode</a>)</li>
+<li>Use <code>\p{any}</code> to match any character including newlines</li>
+</ol>
+<h2 id="memory-implications">Memory Implications<a class="headerlink" href="#memory-implications" title="Permanent link">&para;</a></h2>
+<p><strong>Important</strong>: Multiline mode requires reading entire files into memory, which has performance implications:</p>
+<ul>
+<li>Cannot use memory mapping for stdin</li>
+<li>Large files consume more memory</li>
+<li>Slower than line-by-line search for most cases</li>
+</ul>
+<p>However, ripgrep automatically optimizes when possible. If your pattern contains <code>\n</code> but doesn't actually need to match across lines, the memory penalty is avoided.</p>
+<h2 id="when-to-use-multiline">When to Use Multiline<a class="headerlink" href="#when-to-use-multiline" title="Permanent link">&para;</a></h2>
+<p>Use multiline mode when:</p>
+<ul>
+<li>Searching for patterns that span lines (e.g., multi-line log entries)</li>
+<li>Matching code blocks with specific structure</li>
+<li>Finding XML/JSON elements spanning multiple lines</li>
+</ul>
+<p><strong>Example</strong>: Finding multi-line function definitions</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>rg<span class="w"> </span>-U<span class="w"> </span><span class="s1">&#39;fn \w+\(.*\).*\{.*\}&#39;</span>
+</span></code></pre></div>
+<h2 id="multiline-dotall-mode">Multiline Dotall Mode<a class="headerlink" href="#multiline-dotall-mode" title="Permanent link">&para;</a></h2>
+<p>Even in multiline mode, the <code>.</code> metacharacter does <strong>not</strong> match newlines by default. To make <code>.</code> match newlines, use the <code>--multiline-dotall</code> flag.</p>
+<h3 id="using-multiline-dotall">Using Multiline Dotall<a class="headerlink" href="#using-multiline-dotall" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># This FAILS - . doesn&#39;t match \n</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>rg<span class="w"> </span>-U<span class="w"> </span><span class="s1">&#39;world.+detective&#39;</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1"># This SUCCEEDS - . now matches \n</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>rg<span class="w"> </span>-U<span class="w"> </span>--multiline-dotall<span class="w"> </span><span class="s1">&#39;world.+detective&#39;</span>
+</span></code></pre></div>
+<h3 id="alternative-inline-syntax">Alternative: Inline Syntax<a class="headerlink" href="#alternative-inline-syntax" title="Permanent link">&para;</a></h3>
+<p>You can enable dotall mode inline using the <code>(?s)</code> flag:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># Enable dotall for the entire pattern</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>rg<span class="w"> </span>-U<span class="w"> </span><span class="s1">&#39;(?s)world.+detective&#39;</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># Enable dotall for specific part only</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>rg<span class="w"> </span>-U<span class="w"> </span><span class="s1">&#39;world(?s:.+)detective&#39;</span>
+</span></code></pre></div>
+<h3 id="using-pany">Using \p{any}<a class="headerlink" href="#using-pany" title="Permanent link">&para;</a></h3>
+<p>The <code>\p{any}</code> Unicode character class always matches any character including newlines, regardless of dotall mode:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># This always works, with or without --multiline-dotall</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>rg<span class="w"> </span>-U<span class="w"> </span><span class="s1">&#39;world\p{any}+detective&#39;</span>
+</span></code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
               </article>
             </div>
           
@@ -2355,10 +2702,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "/BurntSushi/ripgrep/", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.highlight", "search.share", "search.suggest", "content.code.copy", "content.code.annotate"], "search": "/BurntSushi/ripgrep/assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.highlight", "search.share", "search.suggest", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="/BurntSushi/ripgrep/assets/javascripts/bundle.e71a0d61.min.js"></script>
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
       
     
   </body>

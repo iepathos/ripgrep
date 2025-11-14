@@ -1,0 +1,1908 @@
+
+<!DOCTYPE html>
+
+<html class="no-js" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="A comprehensive guide to using ripgrep, a line-oriented search tool" name="description"/>
+<meta content="Andrew Gallant" name="author"/>
+<link href="https://github.com/BurntSushi/ripgrep/basics/output/" rel="canonical"/>
+<link href="../boundaries/" rel="prev"/>
+<link href="../count-list/" rel="next"/>
+<link href="../../assets/images/favicon.png" rel="icon"/>
+<meta content="mkdocs-1.6.1, mkdocs-material-9.7.0" name="generator"/>
+<title>Output Format - ripgrep User Guide</title>
+<link href="../../assets/stylesheets/main.618322db.min.css" rel="stylesheet"/>
+<link href="../../assets/stylesheets/palette.ab4e12ef.min.css" rel="stylesheet"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback" rel="stylesheet"/>
+<style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+<script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+</head>
+<body data-md-color-accent="indigo" data-md-color-primary="indigo" data-md-color-scheme="slate" dir="ltr">
+<input autocomplete="off" class="md-toggle" data-md-toggle="drawer" id="__drawer" type="checkbox"/>
+<input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
+<label class="md-overlay" for="__drawer"></label>
+<div data-md-component="skip">
+<a class="md-skip" href="#output-format">
+          Skip to content
+        </a>
+</div>
+<div data-md-component="announce">
+</div>
+<header class="md-header" data-md-component="header">
+<nav aria-label="Header" class="md-header__inner md-grid">
+<a aria-label="ripgrep User Guide" class="md-header__button md-logo" data-md-component="logo" href="../.." title="ripgrep User Guide">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+</a>
+<label class="md-header__button md-icon" for="__drawer">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+</label>
+<div class="md-header__title" data-md-component="header-title">
+<div class="md-header__ellipsis">
+<div class="md-header__topic">
+<span class="md-ellipsis">
+            ripgrep User Guide
+          </span>
+</div>
+<div class="md-header__topic" data-md-component="header-topic">
+<span class="md-ellipsis">
+            
+              Output Format
+            
+          </span>
+</div>
+</div>
+</div>
+<form class="md-header__option" data-md-component="palette">
+<input aria-label="Switch to light mode" class="md-option" data-md-color-accent="indigo" data-md-color-media="" data-md-color-primary="indigo" data-md-color-scheme="slate" id="__palette_0" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_1" hidden="" title="Switch to light mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"></path></svg>
+</label>
+<input aria-label="Switch to dark mode" class="md-option" data-md-color-accent="indigo" data-md-color-media="" data-md-color-primary="indigo" data-md-color-scheme="default" id="__palette_1" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_0" hidden="" title="Switch to dark mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"></path></svg>
+</label>
+</form>
+<script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+<label class="md-header__button md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+</label>
+<div class="md-search" data-md-component="search" role="dialog">
+<label class="md-search__overlay" for="__search"></label>
+<div class="md-search__inner" role="search">
+<form class="md-search__form" name="search">
+<input aria-label="Search" autocapitalize="off" autocomplete="off" autocorrect="off" class="md-search__input" data-md-component="search-query" name="query" placeholder="Search" required="" spellcheck="false" type="text"/>
+<label class="md-search__icon md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+</label>
+<nav aria-label="Search" class="md-search__options">
+<a aria-label="Share" class="md-search__icon md-icon" data-clipboard="" data-clipboard-text="" data-md-component="search-share" href="javascript:void(0)" tabindex="-1" title="Share">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"></path></svg>
+</a>
+<button aria-label="Clear" class="md-search__icon md-icon" tabindex="-1" title="Clear" type="reset">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+</button>
+</nav>
+<div class="md-search__suggest" data-md-component="search-suggest"></div>
+</form>
+<div class="md-search__output">
+<div class="md-search__scrollwrap" data-md-scrollfix="" tabindex="0">
+<div class="md-search-result" data-md-component="search-result">
+<div class="md-search-result__meta">
+            Initializing search
+          </div>
+<ol class="md-search-result__list" role="presentation"></ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="md-header__source">
+<a class="md-source" data-md-component="source" href="https://github.com/BurntSushi/ripgrep" title="Go to repository">
+<div class="md-source__icon md-icon">
+<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"></path></svg>
+</div>
+<div class="md-source__repository">
+    BurntSushi/ripgrep
+  </div>
+</a>
+</div>
+</nav>
+</header>
+<div class="md-container" data-md-component="container">
+<nav aria-label="Tabs" class="md-tabs" data-md-component="tabs">
+<div class="md-grid">
+<ul class="md-tabs__list">
+<li class="md-tabs__item">
+<a class="md-tabs__link" href="../../introduction/">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+</li>
+<li class="md-tabs__item md-tabs__item--active">
+<a class="md-tabs__link" href="../">
+          
+  
+  
+  User Guide
+
+        </a>
+</li>
+<li class="md-tabs__item">
+<a class="md-tabs__link" href="../../advanced-patterns/">
+          
+  
+  
+  Advanced Topics
+
+        </a>
+</li>
+</ul>
+</div>
+</nav>
+<main class="md-main" data-md-component="main">
+<div class="md-main__inner md-grid">
+<div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Navigation" class="md-nav md-nav--primary md-nav--lifted" data-md-level="0">
+<label class="md-nav__title" for="__drawer">
+<a aria-label="ripgrep User Guide" class="md-nav__button md-logo" data-md-component="logo" href="../.." title="ripgrep User Guide">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+</a>
+    ripgrep User Guide
+  </label>
+<div class="md-nav__source">
+<a class="md-source" data-md-component="source" href="https://github.com/BurntSushi/ripgrep" title="Go to repository">
+<div class="md-source__icon md-icon">
+<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"></path></svg>
+</div>
+<div class="md-source__repository">
+    BurntSushi/ripgrep
+  </div>
+</a>
+</div>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../introduction/">
+<span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+<input checked="" class="md-nav__toggle md-toggle" id="__nav_2" type="checkbox"/>
+<label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+<span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="true" aria-labelledby="__nav_2_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_2">
+<span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+<input checked="" class="md-nav__toggle md-toggle" id="__nav_2_1" type="checkbox"/>
+<label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="">
+<span class="md-ellipsis">
+    
+  
+    Basics
+  
+
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="true" aria-labelledby="__nav_2_1_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_2_1">
+<span class="md-nav__icon md-icon"></span>
+            
+  
+    Basics
+  
+
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../">
+<span class="md-ellipsis">
+    
+  
+    Basics
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../pattern-matching/">
+<span class="md-ellipsis">
+    
+  
+    Pattern Matching
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../literal-search/">
+<span class="md-ellipsis">
+    
+  
+    Literal String Search
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../regex-basics/">
+<span class="md-ellipsis">
+    
+  
+    Regular Expressions
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../case-sensitivity/">
+<span class="md-ellipsis">
+    
+  
+    Case Sensitivity
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../boundaries/">
+<span class="md-ellipsis">
+    
+  
+    Word and Line Boundaries
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--active">
+<input class="md-nav__toggle md-toggle" id="__toc" type="checkbox"/>
+<label class="md-nav__link md-nav__link--active" for="__toc">
+<span class="md-ellipsis">
+    
+  
+    Output Format
+  
+
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<a class="md-nav__link md-nav__link--active" href="./">
+<span class="md-ellipsis">
+    
+  
+    Output Format
+  
+
+    
+  </span>
+</a>
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#default-output">
+<span class="md-ellipsis">
+      
+        Default Output
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#standard-output-options">
+<span class="md-ellipsis">
+      
+        Standard Output Options
+      
+    </span>
+</a>
+<nav aria-label="Standard Output Options" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#line-numbers">
+<span class="md-ellipsis">
+      
+        Line Numbers
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#column-numbers">
+<span class="md-ellipsis">
+      
+        Column Numbers
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#byte-offset">
+<span class="md-ellipsis">
+      
+        Byte Offset
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#only-matching-parts">
+<span class="md-ellipsis">
+      
+        Only Matching Parts
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#file-path-display">
+<span class="md-ellipsis">
+      
+        File Path Display
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#heading-vs-non-heading-mode">
+<span class="md-ellipsis">
+      
+        Heading vs Non-Heading Mode
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#color-output">
+<span class="md-ellipsis">
+      
+        Color Output
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#count-modes">
+<span class="md-ellipsis">
+      
+        Count Modes
+      
+    </span>
+</a>
+<nav aria-label="Count Modes" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#count-matches-per-file">
+<span class="md-ellipsis">
+      
+        Count Matches Per File
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#count-total-matches">
+<span class="md-ellipsis">
+      
+        Count Total Matches
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#alternative-output-formats">
+<span class="md-ellipsis">
+      
+        Alternative Output Formats
+      
+    </span>
+</a>
+<nav aria-label="Alternative Output Formats" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#vim-quickfix-format">
+<span class="md-ellipsis">
+      
+        Vim Quickfix Format
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#files-only-modes">
+<span class="md-ellipsis">
+      
+        Files-Only Modes
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#json-output">
+<span class="md-ellipsis">
+      
+        JSON Output
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#output-sorting">
+<span class="md-ellipsis">
+      
+        Output Sorting
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#context-lines">
+<span class="md-ellipsis">
+      
+        Context Lines
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#quick-reference">
+<span class="md-ellipsis">
+      
+        Quick Reference
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#combining-flags">
+<span class="md-ellipsis">
+      
+        Combining Flags
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../count-list/">
+<span class="md-ellipsis">
+    
+  
+    Count and List Modes
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../practice/">
+<span class="md-ellipsis">
+    
+  
+    Practice Examples
+  
+
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../recursive-search/">
+<span class="md-ellipsis">
+    
+  
+    Recursive Search
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../automatic-filtering/">
+<span class="md-ellipsis">
+    
+  
+    Automatic Filtering
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../manual-filtering-globs/">
+<span class="md-ellipsis">
+    
+  
+    Manual Filtering (Globs)
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../manual-filtering-types/">
+<span class="md-ellipsis">
+    
+  
+    Manual Filtering (File Types)
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../replacements/">
+<span class="md-ellipsis">
+    
+  
+    Replacements
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../configuration-file/">
+<span class="md-ellipsis">
+    
+  
+    Configuration File
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../file-encoding/">
+<span class="md-ellipsis">
+    
+  
+    File Encoding
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--section md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_2_9" type="checkbox"/>
+<label class="md-nav__link" for="__nav_2_9" id="__nav_2_9_label" tabindex="">
+<span class="md-ellipsis">
+    
+  
+    Binary Data
+  
+
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_2_9_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_2_9">
+<span class="md-nav__icon md-icon"></span>
+            
+  
+    Binary Data
+  
+
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../binary-data/">
+<span class="md-ellipsis">
+    
+  
+    Binary Data
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../binary-data/detection/">
+<span class="md-ellipsis">
+    
+  
+    Binary Detection
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../binary-data/modes/">
+<span class="md-ellipsis">
+    
+  
+    Binary Modes
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../binary-data/explicit-implicit/">
+<span class="md-ellipsis">
+    
+  
+    Explicit vs Implicit Files
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../binary-data/flags/">
+<span class="md-ellipsis">
+    
+  
+    Binary Flags Reference
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../binary-data/examples/">
+<span class="md-ellipsis">
+    
+  
+    Examples and Troubleshooting
+  
+
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../compressed-files/">
+<span class="md-ellipsis">
+    
+  
+    Compressed Files
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../preprocessor/">
+<span class="md-ellipsis">
+    
+  
+    Preprocessor
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--section md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_2_12" type="checkbox"/>
+<label class="md-nav__link" for="__nav_2_12" id="__nav_2_12_label" tabindex="">
+<span class="md-ellipsis">
+    
+  
+    Common Options
+  
+
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_2_12_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_2_12">
+<span class="md-nav__icon md-icon"></span>
+            
+  
+    Common Options
+  
+
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../common-options/">
+<span class="md-ellipsis">
+    
+  
+    Common Options
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../common-options/search-basics/">
+<span class="md-ellipsis">
+    
+  
+    Search Basics
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../common-options/output-formatting/">
+<span class="md-ellipsis">
+    
+  
+    Output Formatting
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../common-options/file-filtering/">
+<span class="md-ellipsis">
+    
+  
+    File Filtering
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../common-options/output-modes/">
+<span class="md-ellipsis">
+    
+  
+    Output Modes
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../common-options/reference/">
+<span class="md-ellipsis">
+    
+  
+    Quick Reference
+  
+
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../context-lines/">
+<span class="md-ellipsis">
+    
+  
+    Context Lines
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../output-formats/">
+<span class="md-ellipsis">
+    
+  
+    Output Formats
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../sorting-results/">
+<span class="md-ellipsis">
+    
+  
+    Sorting Results
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../utility-modes/">
+<span class="md-ellipsis">
+    
+  
+    Utility Modes
+  
+
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_3" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+<span class="md-ellipsis">
+    
+  
+    Advanced Topics
+  
+
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_3_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_3">
+<span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced Topics
+  
+
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_3_1" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
+<span class="md-ellipsis">
+    
+  
+    Advanced Patterns
+  
+
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_3_1_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_3_1">
+<span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced Patterns
+  
+
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../advanced-patterns/">
+<span class="md-ellipsis">
+    
+  
+    Advanced Patterns
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../advanced-patterns/multiline/">
+<span class="md-ellipsis">
+    
+  
+    Multiline Search
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../advanced-patterns/pcre2/">
+<span class="md-ellipsis">
+    
+  
+    PCRE2 Engine
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../advanced-patterns/lookaround/">
+<span class="md-ellipsis">
+    
+  
+    Lookaround Assertions
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../advanced-patterns/backreferences/">
+<span class="md-ellipsis">
+    
+  
+    Backreferences
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../advanced-patterns/unicode/">
+<span class="md-ellipsis">
+    
+  
+    Unicode Patterns
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../advanced-patterns/inline-flags/">
+<span class="md-ellipsis">
+    
+  
+    Inline Regex Flags
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../advanced-patterns/performance/">
+<span class="md-ellipsis">
+    
+  
+    Performance Considerations
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../advanced-patterns/examples/">
+<span class="md-ellipsis">
+    
+  
+    Practical Examples
+  
+
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../performance/">
+<span class="md-ellipsis">
+    
+  
+    Performance
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../statistics/">
+<span class="md-ellipsis">
+    
+  
+    Statistics and Metrics
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../hyperlinks/">
+<span class="md-ellipsis">
+    
+  
+    Hyperlinks
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_3_5" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="0">
+<span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_3_5_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_3_5">
+<span class="md-nav__icon md-icon"></span>
+            
+  
+    Troubleshooting
+  
+
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../troubleshooting/">
+<span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../troubleshooting/debug-flags/">
+<span class="md-ellipsis">
+    
+  
+    Debug Flags
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../troubleshooting/no-results/">
+<span class="md-ellipsis">
+    
+  
+    No Results Found
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../troubleshooting/performance/">
+<span class="md-ellipsis">
+    
+  
+    Performance Issues
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../troubleshooting/errors/">
+<span class="md-ellipsis">
+    
+  
+    Common Error Messages
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../troubleshooting/binary-encoding/">
+<span class="md-ellipsis">
+    
+  
+    Binary and Encoding Problems
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../troubleshooting/bug-reports/">
+<span class="md-ellipsis">
+    
+  
+    When to File a Bug
+  
+
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#default-output">
+<span class="md-ellipsis">
+      
+        Default Output
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#standard-output-options">
+<span class="md-ellipsis">
+      
+        Standard Output Options
+      
+    </span>
+</a>
+<nav aria-label="Standard Output Options" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#line-numbers">
+<span class="md-ellipsis">
+      
+        Line Numbers
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#column-numbers">
+<span class="md-ellipsis">
+      
+        Column Numbers
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#byte-offset">
+<span class="md-ellipsis">
+      
+        Byte Offset
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#only-matching-parts">
+<span class="md-ellipsis">
+      
+        Only Matching Parts
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#file-path-display">
+<span class="md-ellipsis">
+      
+        File Path Display
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#heading-vs-non-heading-mode">
+<span class="md-ellipsis">
+      
+        Heading vs Non-Heading Mode
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#color-output">
+<span class="md-ellipsis">
+      
+        Color Output
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#count-modes">
+<span class="md-ellipsis">
+      
+        Count Modes
+      
+    </span>
+</a>
+<nav aria-label="Count Modes" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#count-matches-per-file">
+<span class="md-ellipsis">
+      
+        Count Matches Per File
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#count-total-matches">
+<span class="md-ellipsis">
+      
+        Count Total Matches
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#alternative-output-formats">
+<span class="md-ellipsis">
+      
+        Alternative Output Formats
+      
+    </span>
+</a>
+<nav aria-label="Alternative Output Formats" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#vim-quickfix-format">
+<span class="md-ellipsis">
+      
+        Vim Quickfix Format
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#files-only-modes">
+<span class="md-ellipsis">
+      
+        Files-Only Modes
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#json-output">
+<span class="md-ellipsis">
+      
+        JSON Output
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#output-sorting">
+<span class="md-ellipsis">
+      
+        Output Sorting
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#context-lines">
+<span class="md-ellipsis">
+      
+        Context Lines
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#quick-reference">
+<span class="md-ellipsis">
+      
+        Quick Reference
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#combining-flags">
+<span class="md-ellipsis">
+      
+        Combining Flags
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-content" data-md-component="content">
+<article class="md-content__inner md-typeset">
+<h1 id="output-format">Output Format<a class="headerlink" href="#output-format" title="Permanent link">¶</a></h1>
+<blockquote>
+<p>Part of the <a href="../">Basics</a> page</p>
+</blockquote>
+<h2 id="default-output">Default Output<a class="headerlink" href="#default-output" title="Permanent link">¶</a></h2>
+<p>By default, ripgrep shows:
+- File path (in heading mode)
+- Line number (when enabled with <code>-n</code>)
+- Matching line with colored highlights</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a href="#__codelineno-0-1" id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="c1"># Basic output</span>
+</span><span id="__span-0-2"><a href="#__codelineno-0-2" id="__codelineno-0-2" name="__codelineno-0-2"></a>rg<span class="w"> </span>pattern
+</span><span id="__span-0-3"><a href="#__codelineno-0-3" id="__codelineno-0-3" name="__codelineno-0-3"></a>
+</span><span id="__span-0-4"><a href="#__codelineno-0-4" id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="c1"># Output with line numbers (very common)</span>
+</span><span id="__span-0-5"><a href="#__codelineno-0-5" id="__codelineno-0-5" name="__codelineno-0-5"></a>rg<span class="w"> </span>-n<span class="w"> </span>pattern
+</span></code></pre></div>
+<p><strong>Example output:</strong>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a href="#__codelineno-1-1" id="__codelineno-1-1" name="__codelineno-1-1"></a>src/main.rs
+</span><span id="__span-1-2"><a href="#__codelineno-1-2" id="__codelineno-1-2" name="__codelineno-1-2"></a>42:    let pattern = "TODO";
+</span><span id="__span-1-3"><a href="#__codelineno-1-3" id="__codelineno-1-3" name="__codelineno-1-3"></a>107:    // TODO: implement error handling
+</span><span id="__span-1-4"><a href="#__codelineno-1-4" id="__codelineno-1-4" name="__codelineno-1-4"></a>
+</span><span id="__span-1-5"><a href="#__codelineno-1-5" id="__codelineno-1-5" name="__codelineno-1-5"></a>tests/test.rs
+</span><span id="__span-1-6"><a href="#__codelineno-1-6" id="__codelineno-1-6" name="__codelineno-1-6"></a>23:    // TODO: add more test cases
+</span></code></pre></div></p>
+<div class="admonition tip">
+<p class="admonition-title">Common Usage</p>
+<p>Most users add <code>-n</code> to their shell aliases or ripgrep config file, as line numbers are helpful for navigation and editor integration.</p>
+</div>
+<h2 id="standard-output-options">Standard Output Options<a class="headerlink" href="#standard-output-options" title="Permanent link">¶</a></h2>
+<h3 id="line-numbers">Line Numbers<a class="headerlink" href="#line-numbers" title="Permanent link">¶</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a href="#__codelineno-2-1" id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="c1"># Show line numbers (very common, often in config)</span>
+</span><span id="__span-2-2"><a href="#__codelineno-2-2" id="__codelineno-2-2" name="__codelineno-2-2"></a>rg<span class="w"> </span>-n<span class="w"> </span>pattern
+</span><span id="__span-2-3"><a href="#__codelineno-2-3" id="__codelineno-2-3" name="__codelineno-2-3"></a>
+</span><span id="__span-2-4"><a href="#__codelineno-2-4" id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="c1"># Suppress line numbers</span>
+</span><span id="__span-2-5"><a href="#__codelineno-2-5" id="__codelineno-2-5" name="__codelineno-2-5"></a>rg<span class="w"> </span>-N<span class="w"> </span>pattern
+</span></code></pre></div>
+<h3 id="column-numbers">Column Numbers<a class="headerlink" href="#column-numbers" title="Permanent link">¶</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a href="#__codelineno-3-1" id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="c1"># Show column numbers (byte offset within line)</span>
+</span><span id="__span-3-2"><a href="#__codelineno-3-2" id="__codelineno-3-2" name="__codelineno-3-2"></a>rg<span class="w"> </span>--column<span class="w"> </span>pattern
+</span><span id="__span-3-3"><a href="#__codelineno-3-3" id="__codelineno-3-3" name="__codelineno-3-3"></a>
+</span><span id="__span-3-4"><a href="#__codelineno-3-4" id="__codelineno-3-4" name="__codelineno-3-4"></a><span class="c1"># Combined with line numbers</span>
+</span><span id="__span-3-5"><a href="#__codelineno-3-5" id="__codelineno-3-5" name="__codelineno-3-5"></a>rg<span class="w"> </span>-n<span class="w"> </span>--column<span class="w"> </span>pattern
+</span></code></pre></div>
+<p><strong>Example output:</strong>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a href="#__codelineno-4-1" id="__codelineno-4-1" name="__codelineno-4-1"></a>src/main.rs
+</span><span id="__span-4-2"><a href="#__codelineno-4-2" id="__codelineno-4-2" name="__codelineno-4-2"></a>42:15:    let pattern = "TODO";
+</span></code></pre></div>
+(line 42, column 15)</p>
+<h3 id="byte-offset">Byte Offset<a class="headerlink" href="#byte-offset" title="Permanent link">¶</a></h3>
+<p>Print the 0-based byte offset within the input file before each matching line:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a href="#__codelineno-5-1" id="__codelineno-5-1" name="__codelineno-5-1"></a><span class="c1"># Source: crates/core/flags/defs.rs:576-609</span>
+</span><span id="__span-5-2"><a href="#__codelineno-5-2" id="__codelineno-5-2" name="__codelineno-5-2"></a>rg<span class="w"> </span>-b<span class="w"> </span>pattern
+</span><span id="__span-5-3"><a href="#__codelineno-5-3" id="__codelineno-5-3" name="__codelineno-5-3"></a>rg<span class="w"> </span>--byte-offset<span class="w"> </span>pattern
+</span><span id="__span-5-4"><a href="#__codelineno-5-4" id="__codelineno-5-4" name="__codelineno-5-4"></a>
+</span><span id="__span-5-5"><a href="#__codelineno-5-5" id="__codelineno-5-5" name="__codelineno-5-5"></a><span class="c1"># Combined with line numbers</span>
+</span><span id="__span-5-6"><a href="#__codelineno-5-6" id="__codelineno-5-6" name="__codelineno-5-6"></a>rg<span class="w"> </span>-n<span class="w"> </span>-b<span class="w"> </span>pattern
+</span></code></pre></div>
+<p><strong>Example output:</strong>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a href="#__codelineno-6-1" id="__codelineno-6-1" name="__codelineno-6-1"></a>src/main.rs
+</span><span id="__span-6-2"><a href="#__codelineno-6-2" id="__codelineno-6-2" name="__codelineno-6-2"></a>1847:42:    let pattern = "TODO";
+</span></code></pre></div>
+(byte offset 1847, line 42)</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Byte offset is useful for large files or binary analysis where exact file position matters.</p>
+</div>
+<h3 id="only-matching-parts">Only Matching Parts<a class="headerlink" href="#only-matching-parts" title="Permanent link">¶</a></h3>
+<p>Print only the matched parts of a line, each on a separate line:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a href="#__codelineno-7-1" id="__codelineno-7-1" name="__codelineno-7-1"></a><span class="c1"># Source: crates/core/flags/defs.rs:4180-4219</span>
+</span><span id="__span-7-2"><a href="#__codelineno-7-2" id="__codelineno-7-2" name="__codelineno-7-2"></a>rg<span class="w"> </span>-o<span class="w"> </span>pattern
+</span><span id="__span-7-3"><a href="#__codelineno-7-3" id="__codelineno-7-3" name="__codelineno-7-3"></a>rg<span class="w"> </span>--only-matching<span class="w"> </span>pattern
+</span></code></pre></div>
+<p><strong>Example:</strong>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a href="#__codelineno-8-1" id="__codelineno-8-1" name="__codelineno-8-1"></a>rg<span class="w"> </span>-o<span class="w"> </span><span class="s1">'\b\w+@\w+\.\w+\b'</span><span class="w"> </span>emails.txt
+</span></code></pre></div></p>
+<p><strong>Output:</strong>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a href="#__codelineno-9-1" id="__codelineno-9-1" name="__codelineno-9-1"></a>user@example.com
+</span><span id="__span-9-2"><a href="#__codelineno-9-2" id="__codelineno-9-2" name="__codelineno-9-2"></a>admin@test.org
+</span><span id="__span-9-3"><a href="#__codelineno-9-3" id="__codelineno-9-3" name="__codelineno-9-3"></a>contact@domain.net
+</span></code></pre></div></p>
+<div class="admonition tip">
+<p class="admonition-title">Use Case</p>
+<p><code>-o</code> is excellent for extracting specific data patterns like emails, URLs, or structured tokens from text files.</p>
+</div>
+<h2 id="file-path-display">File Path Display<a class="headerlink" href="#file-path-display" title="Permanent link">¶</a></h2>
+<p>Control when and how file paths are shown in output:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a href="#__codelineno-10-1" id="__codelineno-10-1" name="__codelineno-10-1"></a><span class="c1"># Source: crates/core/flags/defs.rs:5516-5579</span>
+</span><span id="__span-10-2"><a href="#__codelineno-10-2" id="__codelineno-10-2" name="__codelineno-10-2"></a>
+</span><span id="__span-10-3"><a href="#__codelineno-10-3" id="__codelineno-10-3" name="__codelineno-10-3"></a><span class="c1"># Always show filename (overrides default heuristic)</span>
+</span><span id="__span-10-4"><a href="#__codelineno-10-4" id="__codelineno-10-4" name="__codelineno-10-4"></a>rg<span class="w"> </span>--with-filename<span class="w"> </span>pattern
+</span><span id="__span-10-5"><a href="#__codelineno-10-5" id="__codelineno-10-5" name="__codelineno-10-5"></a>rg<span class="w"> </span>-H<span class="w"> </span>pattern
+</span><span id="__span-10-6"><a href="#__codelineno-10-6" id="__codelineno-10-6" name="__codelineno-10-6"></a>
+</span><span id="__span-10-7"><a href="#__codelineno-10-7" id="__codelineno-10-7" name="__codelineno-10-7"></a><span class="c1"># Never show filename</span>
+</span><span id="__span-10-8"><a href="#__codelineno-10-8" id="__codelineno-10-8" name="__codelineno-10-8"></a>rg<span class="w"> </span>--no-filename<span class="w"> </span>pattern
+</span><span id="__span-10-9"><a href="#__codelineno-10-9" id="__codelineno-10-9" name="__codelineno-10-9"></a>rg<span class="w"> </span>-I<span class="w"> </span>pattern
+</span></code></pre></div>
+<p><strong>Default behavior:</strong>
+- Single file searched: no filename shown
+- Multiple files searched: filenames shown
+- Use <code>-H</code> or <code>-I</code> to override</p>
+<h2 id="heading-vs-non-heading-mode">Heading vs Non-Heading Mode<a class="headerlink" href="#heading-vs-non-heading-mode" title="Permanent link">¶</a></h2>
+<p>Ripgrep offers two distinct output grouping modes optimized for different use cases:</p>
+<pre class="mermaid"><code>graph LR
+    Input[Search Results] --&gt; Decision{Output Mode?}
+    Decision --&gt;|Default| Heading[Heading Mode<br/>Grouped by file]
+    Decision --&gt;|--no-heading| NoHeading[Non-Heading Mode<br/>File on each line]
+    Decision --&gt;|--vimgrep| Vim[Vimgrep Mode<br/>file:line:col:text]
+
+    Heading --&gt; Human[Human Reading<br/>Terminal display]
+    NoHeading --&gt; Parse[Machine Parsing<br/>Line-by-line processing]
+    Vim --&gt; IDE[IDE Integration<br/>Quickfix lists]
+
+    style Heading fill:#e1f5ff
+    style NoHeading fill:#fff3e0
+    style Vim fill:#f3e5f5
+</code></pre>
+<p><strong>Figure</strong>: Output mode selection based on use case.</p>
+<p><strong>Heading mode</strong> (default): Group matches by file with file path as heading:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a href="#__codelineno-11-1" id="__codelineno-11-1" name="__codelineno-11-1"></a>src/main.rs
+</span><span id="__span-11-2"><a href="#__codelineno-11-2" id="__codelineno-11-2" name="__codelineno-11-2"></a>42:    let pattern = "TODO";
+</span><span id="__span-11-3"><a href="#__codelineno-11-3" id="__codelineno-11-3" name="__codelineno-11-3"></a>107:    // TODO: implement error handling
+</span><span id="__span-11-4"><a href="#__codelineno-11-4" id="__codelineno-11-4" name="__codelineno-11-4"></a>
+</span><span id="__span-11-5"><a href="#__codelineno-11-5" id="__codelineno-11-5" name="__codelineno-11-5"></a>tests/test.rs
+</span><span id="__span-11-6"><a href="#__codelineno-11-6" id="__codelineno-11-6" name="__codelineno-11-6"></a>23:    // TODO: add more test cases
+</span></code></pre></div></p>
+<p><strong>Non-heading mode</strong> (<code>--no-heading</code>): Show file path on each line:
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a href="#__codelineno-12-1" id="__codelineno-12-1" name="__codelineno-12-1"></a>rg<span class="w"> </span>--no-heading<span class="w"> </span>pattern
+</span></code></pre></div></p>
+<p>Output:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a href="#__codelineno-13-1" id="__codelineno-13-1" name="__codelineno-13-1"></a>src/main.rs:42:    let pattern = "TODO";
+</span><span id="__span-13-2"><a href="#__codelineno-13-2" id="__codelineno-13-2" name="__codelineno-13-2"></a>src/main.rs:107:    // TODO: implement error handling
+</span><span id="__span-13-3"><a href="#__codelineno-13-3" id="__codelineno-13-3" name="__codelineno-13-3"></a>tests/test.rs:23:    // TODO: add more test cases
+</span></code></pre></div></p>
+<div class="admonition tip">
+<p class="admonition-title">Editor Integration</p>
+<p>Many editors and IDE integrations prefer <code>--no-heading</code> format as it's easier to parse programmatically.</p>
+</div>
+<h2 id="color-output">Color Output<a class="headerlink" href="#color-output" title="Permanent link">¶</a></h2>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a href="#__codelineno-14-1" id="__codelineno-14-1" name="__codelineno-14-1"></a><span class="c1"># Source: crates/core/flags/defs.rs:691-791</span>
+</span><span id="__span-14-2"><a href="#__codelineno-14-2" id="__codelineno-14-2" name="__codelineno-14-2"></a>
+</span><span id="__span-14-3"><a href="#__codelineno-14-3" id="__codelineno-14-3" name="__codelineno-14-3"></a><span class="c1"># Auto color (default): colors when outputting to terminal</span>
+</span><span id="__span-14-4"><a href="#__codelineno-14-4" id="__codelineno-14-4" name="__codelineno-14-4"></a>rg<span class="w"> </span>--color<span class="w"> </span>auto<span class="w"> </span>pattern
+</span><span id="__span-14-5"><a href="#__codelineno-14-5" id="__codelineno-14-5" name="__codelineno-14-5"></a>
+</span><span id="__span-14-6"><a href="#__codelineno-14-6" id="__codelineno-14-6" name="__codelineno-14-6"></a><span class="c1"># Always use colors (useful when piping to less -R)</span>
+</span><span id="__span-14-7"><a href="#__codelineno-14-7" id="__codelineno-14-7" name="__codelineno-14-7"></a>rg<span class="w"> </span>--color<span class="w"> </span>always<span class="w"> </span>pattern<span class="w"> </span><span class="p">|</span><span class="w"> </span>less<span class="w"> </span>-R
+</span><span id="__span-14-8"><a href="#__codelineno-14-8" id="__codelineno-14-8" name="__codelineno-14-8"></a>
+</span><span id="__span-14-9"><a href="#__codelineno-14-9" id="__codelineno-14-9" name="__codelineno-14-9"></a><span class="c1"># Never use colors (useful for machine processing)</span>
+</span><span id="__span-14-10"><a href="#__codelineno-14-10" id="__codelineno-14-10" name="__codelineno-14-10"></a>rg<span class="w"> </span>--color<span class="w"> </span>never<span class="w"> </span>pattern
+</span><span id="__span-14-11"><a href="#__codelineno-14-11" id="__codelineno-14-11" name="__codelineno-14-11"></a>
+</span><span id="__span-14-12"><a href="#__codelineno-14-12" id="__codelineno-14-12" name="__codelineno-14-12"></a><span class="c1"># ANSI mode (escape sequences only, no Windows console)</span>
+</span><span id="__span-14-13"><a href="#__codelineno-14-13" id="__codelineno-14-13" name="__codelineno-14-13"></a>rg<span class="w"> </span>--color<span class="w"> </span>ansi<span class="w"> </span>pattern
+</span></code></pre></div>
+<p><strong>Color modes explained:</strong></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:4"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio"><input id="__tabbed_1_2" name="__tabbed_1" type="radio"><input id="__tabbed_1_3" name="__tabbed_1" type="radio"><input id="__tabbed_1_4" name="__tabbed_1" type="radio"><div class="tabbed-labels"><label for="__tabbed_1_1">auto (default)</label><label for="__tabbed_1_2">always</label><label for="__tabbed_1_3">never</label><label for="__tabbed_1_4">ansi</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>Automatically detects if output is a TTY (terminal). Colors are shown in terminals but stripped when piping to files or other commands.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a href="#__codelineno-15-1" id="__codelineno-15-1" name="__codelineno-15-1"></a>rg<span class="w"> </span>pattern<span class="w">              </span><span class="c1"># Colors shown in terminal</span>
+</span><span id="__span-15-2"><a href="#__codelineno-15-2" id="__codelineno-15-2" name="__codelineno-15-2"></a>rg<span class="w"> </span>pattern<span class="w"> </span>&gt;<span class="w"> </span>out.txt<span class="w">    </span><span class="c1"># No colors in file</span>
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>Always include color codes, even when piping. Use with <code>less -R</code> for colored paging.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a href="#__codelineno-16-1" id="__codelineno-16-1" name="__codelineno-16-1"></a>rg<span class="w"> </span>--color<span class="w"> </span>always<span class="w"> </span>pattern<span class="w"> </span><span class="p">|</span><span class="w"> </span>less<span class="w"> </span>-R
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>Never use colors. Useful for machine processing or when colors cause issues.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a href="#__codelineno-17-1" id="__codelineno-17-1" name="__codelineno-17-1"></a>rg<span class="w"> </span>--color<span class="w"> </span>never<span class="w"> </span>pattern<span class="w"> </span><span class="p">|</span><span class="w"> </span>process-output.sh
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>Use ANSI escape sequences only (no Windows console API). Rarely needed.</p>
+</div>
+</div>
+</input></input></input></input></div>
+<div class="admonition warning">
+<p class="admonition-title">Common Pitfall</p>
+<p>If you pipe to <code>less</code> without <code>-R</code>, you'll see raw ANSI escape codes. Use <code>rg --color always pattern | less -R</code> or configure <code>less</code> with <code>export LESS="-R"</code>.</p>
+</div>
+<h2 id="count-modes">Count Modes<a class="headerlink" href="#count-modes" title="Permanent link">¶</a></h2>
+<h3 id="count-matches-per-file">Count Matches Per File<a class="headerlink" href="#count-matches-per-file" title="Permanent link">¶</a></h3>
+<p>Show the count of matches per file instead of the matches themselves:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-18-1"><a href="#__codelineno-18-1" id="__codelineno-18-1" name="__codelineno-18-1"></a><span class="c1"># Source: crates/core/flags/defs.rs:1171-1242</span>
+</span><span id="__span-18-2"><a href="#__codelineno-18-2" id="__codelineno-18-2" name="__codelineno-18-2"></a>rg<span class="w"> </span>-c<span class="w"> </span>pattern
+</span><span id="__span-18-3"><a href="#__codelineno-18-3" id="__codelineno-18-3" name="__codelineno-18-3"></a>rg<span class="w"> </span>--count<span class="w"> </span>pattern
+</span></code></pre></div>
+<p><strong>Example output:</strong>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-19-1"><a href="#__codelineno-19-1" id="__codelineno-19-1" name="__codelineno-19-1"></a>src/main.rs:12
+</span><span id="__span-19-2"><a href="#__codelineno-19-2" id="__codelineno-19-2" name="__codelineno-19-2"></a>tests/test.rs:5
+</span><span id="__span-19-3"><a href="#__codelineno-19-3" id="__codelineno-19-3" name="__codelineno-19-3"></a>lib/utils.rs:3
+</span></code></pre></div></p>
+<h3 id="count-total-matches">Count Total Matches<a class="headerlink" href="#count-total-matches" title="Permanent link">¶</a></h3>
+<p>Show the total count of matches across all files:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-20-1"><a href="#__codelineno-20-1" id="__codelineno-20-1" name="__codelineno-20-1"></a>rg<span class="w"> </span>--count-matches<span class="w"> </span>pattern
+</span></code></pre></div>
+<p><strong>Example output:</strong>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-21-1"><a href="#__codelineno-21-1" id="__codelineno-21-1" name="__codelineno-21-1"></a>src/main.rs:15
+</span><span id="__span-21-2"><a href="#__codelineno-21-2" id="__codelineno-21-2" name="__codelineno-21-2"></a>tests/test.rs:7
+</span><span id="__span-21-3"><a href="#__codelineno-21-3" id="__codelineno-21-3" name="__codelineno-21-3"></a>lib/utils.rs:3
+</span></code></pre></div></p>
+<p><strong>Understanding the difference:</strong></p>
+<pre class="mermaid"><code>graph TD
+    Line[Line: "error: failed, error: timeout, error: crash"]
+    Line --&gt; CountLine["-c counts lines"]
+    Line --&gt; CountMatch["--count-matches counts"]
+
+    CountLine --&gt; Result1["Result: 1<br/>(one matching line)"]
+    CountMatch --&gt; Result2["Result: 3<br/>(three 'error' matches)"]
+
+    style Line fill:#f5f5f5
+    style CountLine fill:#e1f5ff
+    style CountMatch fill:#fff3e0
+    style Result1 fill:#e1f5ff
+    style Result2 fill:#fff3e0
+</code></pre>
+<p><strong>Figure</strong>: Difference between <code>-c</code> (counts lines) and <code>--count-matches</code> (counts individual matches).</p>
+<div class="admonition note">
+<p class="admonition-title">Difference</p>
+<p><code>-c</code> counts matching lines (a line with multiple matches counts as 1), while <code>--count-matches</code> counts each individual match (a line with 3 matches counts as 3).</p>
+</div>
+<h2 id="alternative-output-formats">Alternative Output Formats<a class="headerlink" href="#alternative-output-formats" title="Permanent link">¶</a></h2>
+<h3 id="vim-quickfix-format">Vim Quickfix Format<a class="headerlink" href="#vim-quickfix-format" title="Permanent link">¶</a></h3>
+<p>Output in Vim's quickfix format for easy integration:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-22-1"><a href="#__codelineno-22-1" id="__codelineno-22-1" name="__codelineno-22-1"></a><span class="c1"># Source: crates/core/flags/defs.rs:5360-5396</span>
+</span><span id="__span-22-2"><a href="#__codelineno-22-2" id="__codelineno-22-2" name="__codelineno-22-2"></a>rg<span class="w"> </span>--vimgrep<span class="w"> </span>pattern
+</span></code></pre></div>
+<p><strong>Example output:</strong>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-23-1"><a href="#__codelineno-23-1" id="__codelineno-23-1" name="__codelineno-23-1"></a>src/main.rs:42:15:    let pattern = "TODO";
+</span><span id="__span-23-2"><a href="#__codelineno-23-2" id="__codelineno-23-2" name="__codelineno-23-2"></a>src/main.rs:107:9:    // TODO: implement error handling
+</span><span id="__span-23-3"><a href="#__codelineno-23-3" id="__codelineno-23-3" name="__codelineno-23-3"></a>tests/test.rs:23:9:    // TODO: add more test cases
+</span></code></pre></div></p>
+<p>Format: <code>filename:line:column:text</code></p>
+<div class="admonition tip">
+<p class="admonition-title">Vim Integration</p>
+<p>Use <code>:cgetexpr system('rg --vimgrep pattern')</code> in Vim to populate the quickfix list.</p>
+</div>
+<h3 id="files-only-modes">Files-Only Modes<a class="headerlink" href="#files-only-modes" title="Permanent link">¶</a></h3>
+<p>List only filenames without showing matches:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-24-1"><a href="#__codelineno-24-1" id="__codelineno-24-1" name="__codelineno-24-1"></a><span class="c1"># Source: crates/core/flags/defs.rs:2258-2286</span>
+</span><span id="__span-24-2"><a href="#__codelineno-24-2" id="__codelineno-24-2" name="__codelineno-24-2"></a>
+</span><span id="__span-24-3"><a href="#__codelineno-24-3" id="__codelineno-24-3" name="__codelineno-24-3"></a><span class="c1"># Files WITH matches</span>
+</span><span id="__span-24-4"><a href="#__codelineno-24-4" id="__codelineno-24-4" name="__codelineno-24-4"></a>rg<span class="w"> </span>-l<span class="w"> </span>pattern
+</span><span id="__span-24-5"><a href="#__codelineno-24-5" id="__codelineno-24-5" name="__codelineno-24-5"></a>rg<span class="w"> </span>--files-with-matches<span class="w"> </span>pattern
+</span><span id="__span-24-6"><a href="#__codelineno-24-6" id="__codelineno-24-6" name="__codelineno-24-6"></a>
+</span><span id="__span-24-7"><a href="#__codelineno-24-7" id="__codelineno-24-7" name="__codelineno-24-7"></a><span class="c1"># Files WITHOUT matches</span>
+</span><span id="__span-24-8"><a href="#__codelineno-24-8" id="__codelineno-24-8" name="__codelineno-24-8"></a>rg<span class="w"> </span>--files-without-match<span class="w"> </span>pattern
+</span></code></pre></div>
+<p><strong>Example:</strong>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-25-1"><a href="#__codelineno-25-1" id="__codelineno-25-1" name="__codelineno-25-1"></a>rg<span class="w"> </span>-l<span class="w"> </span><span class="s2">"TODO"</span>
+</span></code></pre></div></p>
+<p><strong>Output:</strong>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-26-1"><a href="#__codelineno-26-1" id="__codelineno-26-1" name="__codelineno-26-1"></a>src/main.rs
+</span><span id="__span-26-2"><a href="#__codelineno-26-2" id="__codelineno-26-2" name="__codelineno-26-2"></a>tests/test.rs
+</span><span id="__span-26-3"><a href="#__codelineno-26-3" id="__codelineno-26-3" name="__codelineno-26-3"></a>lib/utils.rs
+</span></code></pre></div></p>
+<div class="admonition tip">
+<p class="admonition-title">Use Case</p>
+<p>Useful for batch operations: <code>rg -l "old_api" | xargs sed -i 's/old_api/new_api/g'</code></p>
+</div>
+<h2 id="json-output">JSON Output<a class="headerlink" href="#json-output" title="Permanent link">¶</a></h2>
+<p>Output matches in JSON Lines format for machine processing:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-27-1"><a href="#__codelineno-27-1" id="__codelineno-27-1" name="__codelineno-27-1"></a><span class="c1"># Source: crates/core/flags/defs.rs:2987-3041</span>
+</span><span id="__span-27-2"><a href="#__codelineno-27-2" id="__codelineno-27-2" name="__codelineno-27-2"></a>rg<span class="w"> </span>--json<span class="w"> </span>pattern
+</span></code></pre></div>
+<p><strong>Example output:</strong>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-28-1"><a href="#__codelineno-28-1" id="__codelineno-28-1" name="__codelineno-28-1"></a><span class="p">{</span><span class="nt">"type"</span><span class="p">:</span><span class="s2">"begin"</span><span class="p">,</span><span class="nt">"data"</span><span class="p">:{</span><span class="nt">"path"</span><span class="p">:{</span><span class="nt">"text"</span><span class="p">:</span><span class="s2">"src/main.rs"</span><span class="p">}}}</span><span class="w">  </span><span class="c1">// (1)!</span>
+</span><span id="__span-28-2"><a href="#__codelineno-28-2" id="__codelineno-28-2" name="__codelineno-28-2"></a><span class="p">{</span><span class="nt">"type"</span><span class="p">:</span><span class="s2">"match"</span><span class="p">,</span><span class="nt">"data"</span><span class="p">:{</span><span class="nt">"path"</span><span class="p">:{</span><span class="nt">"text"</span><span class="p">:</span><span class="s2">"src/main.rs"</span><span class="p">},</span><span class="nt">"lines"</span><span class="p">:{</span><span class="nt">"text"</span><span class="p">:</span><span class="s2">"    let pattern = \"TODO\";\n"</span><span class="p">},</span><span class="nt">"line_number"</span><span class="p">:</span><span class="mi">42</span><span class="p">,</span><span class="nt">"absolute_offset"</span><span class="p">:</span><span class="mi">1847</span><span class="p">,</span><span class="nt">"submatches"</span><span class="p">:[{</span><span class="nt">"match"</span><span class="p">:{</span><span class="nt">"text"</span><span class="p">:</span><span class="s2">"TODO"</span><span class="p">},</span><span class="nt">"start"</span><span class="p">:</span><span class="mi">20</span><span class="p">,</span><span class="nt">"end"</span><span class="p">:</span><span class="mi">24</span><span class="p">}]}}</span><span class="w">  </span><span class="c1">// (2)!</span>
+</span><span id="__span-28-3"><a href="#__codelineno-28-3" id="__codelineno-28-3" name="__codelineno-28-3"></a><span class="p">{</span><span class="nt">"type"</span><span class="p">:</span><span class="s2">"end"</span><span class="p">,</span><span class="nt">"data"</span><span class="p">:{</span><span class="nt">"path"</span><span class="p">:{</span><span class="nt">"text"</span><span class="p">:</span><span class="s2">"src/main.rs"</span><span class="p">},</span><span class="nt">"binary_offset"</span><span class="p">:</span><span class="kc">null</span><span class="p">,</span><span class="nt">"stats"</span><span class="p">:{</span><span class="nt">"elapsed"</span><span class="p">:{</span><span class="nt">"secs"</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span><span class="nt">"nanos"</span><span class="p">:</span><span class="mi">123456</span><span class="p">},</span><span class="nt">"searches"</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="nt">"searches_with_match"</span><span class="p">:</span><span class="mi">1</span><span class="p">}}}</span><span class="w">  </span><span class="c1">// (3)!</span>
+</span></code></pre></div></p>
+<ol>
+<li><strong>Begin message</strong>: Signals the start of results for a file</li>
+<li><strong>Match message</strong>: Contains the actual match with line number, byte offset, and submatch positions (start/end columns)</li>
+<li><strong>End message</strong>: Signals completion with statistics (elapsed time, search counts)</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">JSON Lines Format</p>
+<p>Each line is a separate JSON object. Use <code>jq</code> for processing: <code>rg --json pattern | jq -r '.data.path.text'</code></p>
+</div>
+<h2 id="output-sorting">Output Sorting<a class="headerlink" href="#output-sorting" title="Permanent link">¶</a></h2>
+<p>Sort results by various criteria:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-29-1"><a href="#__codelineno-29-1" id="__codelineno-29-1" name="__codelineno-29-1"></a><span class="c1"># Source: crates/core/flags/defs.rs:4668-4754</span>
+</span><span id="__span-29-2"><a href="#__codelineno-29-2" id="__codelineno-29-2" name="__codelineno-29-2"></a>
+</span><span id="__span-29-3"><a href="#__codelineno-29-3" id="__codelineno-29-3" name="__codelineno-29-3"></a><span class="c1"># Sort by path (default: ascending)</span>
+</span><span id="__span-29-4"><a href="#__codelineno-29-4" id="__codelineno-29-4" name="__codelineno-29-4"></a>rg<span class="w"> </span>--sort<span class="w"> </span>path<span class="w"> </span>pattern
+</span><span id="__span-29-5"><a href="#__codelineno-29-5" id="__codelineno-29-5" name="__codelineno-29-5"></a>
+</span><span id="__span-29-6"><a href="#__codelineno-29-6" id="__codelineno-29-6" name="__codelineno-29-6"></a><span class="c1"># Sort by modification time</span>
+</span><span id="__span-29-7"><a href="#__codelineno-29-7" id="__codelineno-29-7" name="__codelineno-29-7"></a>rg<span class="w"> </span>--sort<span class="w"> </span>modified<span class="w"> </span>pattern
+</span><span id="__span-29-8"><a href="#__codelineno-29-8" id="__codelineno-29-8" name="__codelineno-29-8"></a>
+</span><span id="__span-29-9"><a href="#__codelineno-29-9" id="__codelineno-29-9" name="__codelineno-29-9"></a><span class="c1"># Sort by access time</span>
+</span><span id="__span-29-10"><a href="#__codelineno-29-10" id="__codelineno-29-10" name="__codelineno-29-10"></a>rg<span class="w"> </span>--sort<span class="w"> </span>accessed<span class="w"> </span>pattern
+</span><span id="__span-29-11"><a href="#__codelineno-29-11" id="__codelineno-29-11" name="__codelineno-29-11"></a>
+</span><span id="__span-29-12"><a href="#__codelineno-29-12" id="__codelineno-29-12" name="__codelineno-29-12"></a><span class="c1"># Sort by creation time</span>
+</span><span id="__span-29-13"><a href="#__codelineno-29-13" id="__codelineno-29-13" name="__codelineno-29-13"></a>rg<span class="w"> </span>--sort<span class="w"> </span>created<span class="w"> </span>pattern
+</span><span id="__span-29-14"><a href="#__codelineno-29-14" id="__codelineno-29-14" name="__codelineno-29-14"></a>
+</span><span id="__span-29-15"><a href="#__codelineno-29-15" id="__codelineno-29-15" name="__codelineno-29-15"></a><span class="c1"># Reverse sort</span>
+</span><span id="__span-29-16"><a href="#__codelineno-29-16" id="__codelineno-29-16" name="__codelineno-29-16"></a>rg<span class="w"> </span>--sortr<span class="w"> </span>path<span class="w"> </span>pattern
+</span></code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Performance Impact</p>
+<p>Sorting requires collecting all results before output, which <strong>disables parallelism</strong>. Use only when needed, especially on large codebases.</p>
+</div>
+<h2 id="context-lines">Context Lines<a class="headerlink" href="#context-lines" title="Permanent link">¶</a></h2>
+<p>Show lines before and after each match:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-30-1"><a href="#__codelineno-30-1" id="__codelineno-30-1" name="__codelineno-30-1"></a><span class="c1"># Show 2 lines after each match</span>
+</span><span id="__span-30-2"><a href="#__codelineno-30-2" id="__codelineno-30-2" name="__codelineno-30-2"></a>rg<span class="w"> </span>-A<span class="w"> </span><span class="m">2</span><span class="w"> </span>pattern
+</span><span id="__span-30-3"><a href="#__codelineno-30-3" id="__codelineno-30-3" name="__codelineno-30-3"></a>
+</span><span id="__span-30-4"><a href="#__codelineno-30-4" id="__codelineno-30-4" name="__codelineno-30-4"></a><span class="c1"># Show 2 lines before each match</span>
+</span><span id="__span-30-5"><a href="#__codelineno-30-5" id="__codelineno-30-5" name="__codelineno-30-5"></a>rg<span class="w"> </span>-B<span class="w"> </span><span class="m">2</span><span class="w"> </span>pattern
+</span><span id="__span-30-6"><a href="#__codelineno-30-6" id="__codelineno-30-6" name="__codelineno-30-6"></a>
+</span><span id="__span-30-7"><a href="#__codelineno-30-7" id="__codelineno-30-7" name="__codelineno-30-7"></a><span class="c1"># Show 2 lines before and after (context)</span>
+</span><span id="__span-30-8"><a href="#__codelineno-30-8" id="__codelineno-30-8" name="__codelineno-30-8"></a>rg<span class="w"> </span>-C<span class="w"> </span><span class="m">2</span><span class="w"> </span>pattern
+</span><span id="__span-30-9"><a href="#__codelineno-30-9" id="__codelineno-30-9" name="__codelineno-30-9"></a>
+</span><span id="__span-30-10"><a href="#__codelineno-30-10" id="__codelineno-30-10" name="__codelineno-30-10"></a><span class="c1"># Asymmetric context</span>
+</span><span id="__span-30-11"><a href="#__codelineno-30-11" id="__codelineno-30-11" name="__codelineno-30-11"></a>rg<span class="w"> </span>-B<span class="w"> </span><span class="m">3</span><span class="w"> </span>-A<span class="w"> </span><span class="m">1</span><span class="w"> </span>pattern
+</span></code></pre></div>
+<pre class="mermaid"><code>graph TD
+    L38[Line 38: context] -.-&gt;|"-B 2"| L40
+    L39[Line 39: context] -.-&gt;|"-B 2"| L40
+    L40[Line 40: context] -.-&gt;|"-B 2"| L42
+    L41[Line 41: context] -.-&gt;|"-B 2"| L42
+    L42[Line 42: MATCH] --&gt;|"-A 2"| L43
+    L42 --&gt;|"-A 2"| L44
+    L43[Line 43: context]
+    L44[Line 44: context]
+    L45[Line 45: context]
+
+    L42 -.-&gt;|excluded| L45
+
+    style L42 fill:#ffebee,stroke:#c62828,stroke-width:3px
+    style L40 fill:#e1f5ff
+    style L41 fill:#e1f5ff
+    style L43 fill:#fff3e0
+    style L44 fill:#fff3e0
+    style L45 fill:#f5f5f5,stroke-dasharray: 5 5
+</code></pre>
+<p><strong>Figure</strong>: Context line inclusion with <code>-C 2</code> (2 lines before and after match). Blue = before context, red = match, orange = after context.</p>
+<p><strong>Example:</strong>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-31-1"><a href="#__codelineno-31-1" id="__codelineno-31-1" name="__codelineno-31-1"></a>rg<span class="w"> </span>-C<span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="s2">"TODO"</span>
+</span></code></pre></div></p>
+<p>Output:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-32-1"><a href="#__codelineno-32-1" id="__codelineno-32-1" name="__codelineno-32-1"></a>src/main.rs
+</span><span id="__span-32-2"><a href="#__codelineno-32-2" id="__codelineno-32-2" name="__codelineno-32-2"></a>40-    fn process_data() {
+</span><span id="__span-32-3"><a href="#__codelineno-32-3" id="__codelineno-32-3" name="__codelineno-32-3"></a>41-        // Initialize
+</span><span id="__span-32-4"><a href="#__codelineno-32-4" id="__codelineno-32-4" name="__codelineno-32-4"></a>42:        // TODO: implement error handling
+</span><span id="__span-32-5"><a href="#__codelineno-32-5" id="__codelineno-32-5" name="__codelineno-32-5"></a>43-        let data = vec![];
+</span><span id="__span-32-6"><a href="#__codelineno-32-6" id="__codelineno-32-6" name="__codelineno-32-6"></a>44-        process(&amp;data);
+</span></code></pre></div></p>
+<div class="admonition note">
+<p class="admonition-title">Context Line Markers</p>
+<p>Lines with <code>:</code> are matches, lines with <code>-</code> are context. Groups are separated by <code>--</code> when matches are far apart.</p>
+</div>
+<h2 id="quick-reference">Quick Reference<a class="headerlink" href="#quick-reference" title="Permanent link">¶</a></h2>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Description</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-n</code></td>
+<td>Line numbers</td>
+<td>Editor integration, navigation</td>
+</tr>
+<tr>
+<td><code>--column</code></td>
+<td>Column numbers</td>
+<td>Precise location, IDE integration</td>
+</tr>
+<tr>
+<td><code>-b</code></td>
+<td>Byte offset</td>
+<td>Binary analysis, large files</td>
+</tr>
+<tr>
+<td><code>-o</code></td>
+<td>Only matching parts</td>
+<td>Extract specific patterns</td>
+</tr>
+<tr>
+<td><code>-c</code></td>
+<td>Count matches per file</td>
+<td>Statistics, overview</td>
+</tr>
+<tr>
+<td><code>--count-matches</code></td>
+<td>Total match count</td>
+<td>Detailed statistics</td>
+</tr>
+<tr>
+<td><code>-l</code></td>
+<td>Files with matches</td>
+<td>Batch operations</td>
+</tr>
+<tr>
+<td><code>--vimgrep</code></td>
+<td>Vim quickfix format</td>
+<td>Vim/IDE integration</td>
+</tr>
+<tr>
+<td><code>--json</code></td>
+<td>JSON output</td>
+<td>Machine processing, tools</td>
+</tr>
+<tr>
+<td><code>-A/-B/-C</code></td>
+<td>Context lines</td>
+<td>Understanding context</td>
+</tr>
+<tr>
+<td><code>--sort</code></td>
+<td>Sort results</td>
+<td>Organized output</td>
+</tr>
+<tr>
+<td><code>--color</code></td>
+<td>Color control</td>
+<td>Readability, piping</td>
+</tr>
+</tbody>
+</table>
+<h2 id="combining-flags">Combining Flags<a class="headerlink" href="#combining-flags" title="Permanent link">¶</a></h2>
+<p>Flags can be combined for powerful output control:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-33-1"><a href="#__codelineno-33-1" id="__codelineno-33-1" name="__codelineno-33-1"></a><span class="c1"># Line numbers + column + context</span>
+</span><span id="__span-33-2"><a href="#__codelineno-33-2" id="__codelineno-33-2" name="__codelineno-33-2"></a>rg<span class="w"> </span>-n<span class="w"> </span>--column<span class="w"> </span>-C<span class="w"> </span><span class="m">2</span><span class="w"> </span>pattern
+</span><span id="__span-33-3"><a href="#__codelineno-33-3" id="__codelineno-33-3" name="__codelineno-33-3"></a>
+</span><span id="__span-33-4"><a href="#__codelineno-33-4" id="__codelineno-33-4" name="__codelineno-33-4"></a><span class="c1"># Only matching parts + line numbers</span>
+</span><span id="__span-33-5"><a href="#__codelineno-33-5" id="__codelineno-33-5" name="__codelineno-33-5"></a>rg<span class="w"> </span>-o<span class="w"> </span>-n<span class="w"> </span><span class="s1">'error:\s+\w+'</span><span class="w"> </span>logs.txt
+</span><span id="__span-33-6"><a href="#__codelineno-33-6" id="__codelineno-33-6" name="__codelineno-33-6"></a>
+</span><span id="__span-33-7"><a href="#__codelineno-33-7" id="__codelineno-33-7" name="__codelineno-33-7"></a><span class="c1"># Count + sort by modification time</span>
+</span><span id="__span-33-8"><a href="#__codelineno-33-8" id="__codelineno-33-8" name="__codelineno-33-8"></a>rg<span class="w"> </span>-c<span class="w"> </span>--sort<span class="w"> </span>modified<span class="w"> </span><span class="s2">"import"</span><span class="w"> </span>src/
+</span><span id="__span-33-9"><a href="#__codelineno-33-9" id="__codelineno-33-9" name="__codelineno-33-9"></a>
+</span><span id="__span-33-10"><a href="#__codelineno-33-10" id="__codelineno-33-10" name="__codelineno-33-10"></a><span class="c1"># JSON + only files with matches (implicit in JSON)</span>
+</span><span id="__span-33-11"><a href="#__codelineno-33-11" id="__codelineno-33-11" name="__codelineno-33-11"></a>rg<span class="w"> </span>--json<span class="w"> </span>--files-with-matches<span class="w"> </span>pattern
+</span></code></pre></div>
+<div class="admonition example">
+<p class="admonition-title">Common Combinations</p>
+<ul>
+<li><strong>IDE integration:</strong> <code>rg -n --column --no-heading pattern</code></li>
+<li><strong>Debugging logs:</strong> <code>rg -C 5 --color always "ERROR" | less -R</code></li>
+<li><strong>Data extraction:</strong> <code>rg -o -I '\b\d{3}-\d{3}-\d{4}\b' files/</code></li>
+<li><strong>Quick overview:</strong> <code>rg -c --sort path "TODO"</code></li>
+</ul>
+</div>
+</article>
+</div>
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+</div>
+<button class="md-top md-icon" data-md-component="top" hidden="" type="button">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"></path></svg>
+  Back to top
+</button>
+</main>
+<footer class="md-footer">
+<div class="md-footer-meta md-typeset">
+<div class="md-footer-meta__inner md-grid">
+<div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" rel="noopener" target="_blank">
+      Material for MkDocs
+    </a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<div class="md-dialog" data-md-component="dialog">
+<div class="md-dialog__inner md-typeset"></div>
+</div>
+<script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.highlight", "search.share", "search.suggest", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+<script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+<script type="module">import mermaid from "https://unpkg.com/mermaid@10.4.0/dist/mermaid.esm.min.mjs";
+window.mermaidConfig = {default: {
+    startOnLoad: false
+}};</script></body>
+</html>
