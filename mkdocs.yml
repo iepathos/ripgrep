@@ -43,14 +43,20 @@ theme:
     - content.code.copy
     - content.code.annotate
 
+
 plugins:
   - search:
       lang: en
+  - mermaid2
 
 markdown_extensions:
   - admonition
   - pymdownx.details
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:mermaid2.fence_mermaid_custom
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span

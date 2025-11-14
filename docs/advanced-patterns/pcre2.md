@@ -39,7 +39,7 @@ If PCRE2 is not compiled in, this command exits with an error.
 graph LR
     subgraph Default["Default Engine (Rust Regex)"]
         DFA[Deterministic Finite Automata]
-        DFA --> DFeat1[O(n) linear time]
+        DFA --> DFeat1["O(n) linear time"]
         DFA --> DFeat2[Predictable performance]
         DFA --> DFeat3[Better error messages]
         DFA --> DLimit[No lookaround/backrefs]
@@ -50,7 +50,7 @@ graph LR
         Back --> PFeat1[Advanced features]
         Back --> PFeat2[Lookaround support]
         Back --> PFeat3[Backreferences]
-        Back --> PLimit[O(2^n) worst case]
+        Back --> PLimit["O(2^n) worst case"]
     end
 
     Pattern[Your Pattern] --> Choose{Choose Engine}
@@ -124,7 +124,7 @@ flowchart TD
     Performance -->|No| Auto
 
     PCRE2 --> PCRENote[Slower but feature-rich<br/>Backtracking algorithm]
-    Default --> DefaultNote[Fastest<br/>Finite automata: O(n)]
+    Default --> DefaultNote["Fastest<br/>Finite automata: O(n)"]
     Auto --> AutoNote[Analyzes pattern<br/>Selects best engine]
 
     AutoNote --> AutoCheck{Pattern has<br/>PCRE2 features?}

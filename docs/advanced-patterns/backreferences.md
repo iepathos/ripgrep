@@ -26,8 +26,8 @@ flowchart TD
     ManualFlag -->|No| Error[Error: backreferences<br/>not supported]
 
     AutoSelect --> PCRE2
-    DefaultOK --> Fast[Fast: O(n) linear time]
-    PCRE2 --> Slower[Slower: Potential O(2^n)<br/>with backtracking]
+    DefaultOK --> Fast["Fast: O(n) linear time"]
+    PCRE2 --> Slower["Slower: Potential O(2^n) with backtracking"]
 
     Error --> Fix[Add -P flag]
     Fix --> PCRE2
