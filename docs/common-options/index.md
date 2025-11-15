@@ -8,7 +8,7 @@ This chapter covers the most frequently used ripgrep flags that you'll need on a
 The common options are organized by use case to help you quickly find the right flag for your task:
 
 ```mermaid
-graph TD
+graph LR
     CommonOpts[Common Options] --> SearchBehavior[Search Basics]
     CommonOpts --> OutputFormat[Output Formatting]
     CommonOpts --> FileFilter[File Filtering]

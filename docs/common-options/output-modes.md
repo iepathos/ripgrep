@@ -7,7 +7,7 @@ Instead of showing matching lines, these flags produce alternative output format
 ## Choosing an Output Mode
 
 ```mermaid
-flowchart TD
+flowchart LR
     Start{"What's your
 use case?"} --> Tool{"Tool/Script
 Integration?"}
