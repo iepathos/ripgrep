@@ -66,6 +66,19 @@ For each invalid diagram found:
          C --> D[End]
    ```
 
+   **Subgraph Cycles:**
+   ```
+   Bad:  subgraph Combined
+           Combined[Node]
+         end
+         # Creates cycle: Combined as parent of Combined!
+
+   Good: subgraph CombinedGroup
+           Combined[Node]
+         end
+         # Or just don't put single nodes in their own subgraph
+   ```
+
    **Unmatched Brackets:**
    ```
    Bad:  A["Text with quote] --> B

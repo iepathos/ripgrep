@@ -95,6 +95,15 @@ def validate_diagram(diagram: str) -> List[str]:
                 if count > 4:
                     warnings.append(f"Node '{node}' has {count} outgoing connections - consider using subgraphs for clarity")
 
+        # Check for potential subgraph cycles
+        # If a node is defined inside a subgraph and also referenced outside,
+        # and that subgraph is named the same as the node, it creates a cycle
+        subgraph_names = re.findall(r'subgraph\s+(\w+)', diagram)
+        node_ids = re.findall(r'(\w+)\[', diagram)
+        for sg_name in subgraph_names:
+            if sg_name in node_ids:
+                warnings.append(f"Subgraph '{sg_name}' has same name as a node - this may cause cycles. Use different names.")
+
     # Return errors (warnings are just informational for now)
     return errors
 

@@ -21,7 +21,7 @@ The advanced features in ripgrep are organized into layers that can be combined:
 
 ```mermaid
 graph TB
-    subgraph "Search Modes"
+    subgraph Modes["Search Modes"]
         Line["Line-by-line Mode
         Default behavior"]
         Multi["Multiline Mode
@@ -33,7 +33,7 @@ graph TB
         Multi --> Dotall
     end
 
-    subgraph "Regex Engines"
+    subgraph Engines["Regex Engines"]
         Default["Default Engine
         Fast, limited features"]
         PCRE["PCRE2 Engine
@@ -50,15 +50,13 @@ graph TB
         \\1, \\2, etc."]
     end
 
-    subgraph "Combined"
-        Combined["PCRE2 + Multiline
-        -PU flag
-        Full feature set"]
-    end
+    Combined["PCRE2 + Multiline
+    -PU flag
+    Full feature set"]
 
-    Multi -.->|"Can combine"| PCRE
-    Multi -.->|"Produces"| Combined
-    PCRE -.->|"Produces"| Combined
+    Multi -.->|"Can combine with"| PCRE
+    Multi -.->|"Together create"| Combined
+    PCRE -.->|"Together create"| Combined
 
     style Line fill:#e8f5e9
     style Default fill:#e1f5ff
