@@ -138,29 +138,35 @@ Backreferences have significant performance implications compared to ripgrep's d
     ```
 
 ```mermaid
-graph TD
-    subgraph "Default Engine: O(n) Linear Time"
-        D1[Input: 'test test'] --> D2[Finite Automata]
-        D2 --> D3[Single Pass]
-        D3 --> D4[Result in ~n steps]
+graph LR
+    subgraph Default["Default Engine: O(n) Linear Time"]
+        direction LR
+        D1["Input:
+        'test test'"] --> D2[Finite Automata] --> D3[Single Pass] --> D4["Result in
+        ~n steps"]
     end
 
-    subgraph "PCRE2 with Backreferences: O(n)"
-        P1[Input: 'test test'] --> P2["Pattern: (\w+)\s+\1"]
-        P2 --> P3[Capture 'test']
-        P3 --> P4[Match space]
-        P4 --> P5[Compare with \1]
-        P5 --> P6[Result in ~n steps]
+    subgraph PCRE2Good["PCRE2 with Backreferences: O(n)"]
+        direction LR
+        P1["Input:
+        'test test'"] --> P2["Pattern:
+        (\w+)\s+\1"] --> P3["Capture
+        'test'"] --> P4[Match space] --> P5["Compare
+        with \1"] --> P6["Result in
+        ~n steps"]
     end
 
-    subgraph "PCRE2 Pathological: O(2^n)"
-        B1[Input: 'aaaa...'] --> B2["Pattern: (a+)+b"]
-        B2 --> B3[Try: a,a,a,a...]
-        B3 --> B4[Backtrack: aa,a,a...]
-        B4 --> B5[Backtrack: a,aa,a...]
-        B5 --> B6[Backtrack: aaa,a...]
-        B6 --> B7[... 2^n combinations]
-        B7 --> B8[No match found]
+    subgraph PCRE2Bad["PCRE2 Pathological: O(2^n)"]
+        direction LR
+        B1["Input:
+        'aaaa...'"] --> B2["Pattern:
+        (a+)+b"] --> B3["Try:
+        a,a,a,a..."] --> B4["Backtrack:
+        aa,a,a..."] --> B5["Backtrack:
+        a,aa,a..."] --> B6["Backtrack:
+        aaa,a..."] --> B7["... 2^n
+        combinations"] --> B8["No match
+        found"]
     end
 
     style D2 fill:#e8f5e9
