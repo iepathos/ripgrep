@@ -114,27 +114,20 @@ The `--engine` flag allows you to explicitly choose which regex engine to use, o
 
 ```mermaid
 flowchart TD
-    Start[Choose Regex Engine] --> Need{"Need PCRE2
-features?"}
+    Start[Choose Regex Engine] --> Need{Need PCRE2<br/>features?}
 
-    Need -->|"Yes: lookaround
-or backrefs"| PCRE2[--engine=pcre2]
-    Need -->|No| Performance{"Performance
-critical?"}
+    Need -->|Yes: lookaround<br/>or backrefs| PCRE2[--engine=pcre2]
+    Need -->|No| Performance{Performance<br/>critical?}
     Need -->|Unsure| Auto[--engine=auto]
 
     Performance -->|Yes| Default[--engine=default]
     Performance -->|No| Auto
 
-    PCRE2 --> PCRENote["Slower but feature-rich
-Backtracking algorithm"]
-    Default --> DefaultNote[""Fastest
-Finite automata: O(n")"]
-    Auto --> AutoNote["Analyzes pattern
-Selects best engine"]
+    PCRE2 --> PCRENote[Slower but feature-rich<br/>Backtracking algorithm]
+    Default --> DefaultNote[Fastest<br/>Finite automata: O&#40;n&#41;]
+    Auto --> AutoNote[Analyzes pattern<br/>Selects best engine]
 
-    AutoNote --> AutoCheck{"Pattern has
-PCRE2 features?"}
+    AutoNote --> AutoCheck{Pattern has<br/>PCRE2 features?}
     AutoCheck -->|Yes| AutoPCRE[Uses PCRE2]
     AutoCheck -->|No| AutoDefault[Uses default]
 

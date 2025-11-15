@@ -125,20 +125,20 @@ flowchart TD
     Start["$1a"] --> Parse{Has Braces?}
     Parse -->|No| Longest["Parse Longest
 Valid Name"]
-    Parse -->|Yes "${1}a"| Extract["Extract Group
+    Parse -->|Yes $&#123;1&#125;a| Extract["Extract Group
 Reference"]
 
-    Longest --> Check{"Group "1a"
+    Longest --> Check{"Group 1a
 Exists?"}
-    Extract --> Check2{"Group "1"
+    Extract --> Check2{"Group 1
 Exists?"}
 
-    Check -->|Yes| Output1["Value of group '1a'"]
+    Check -->|Yes| Output1["Value of group 1a"]
     Check -->|No| Output2[Empty String]
 
     Check2 -->|Yes| Output3["Value of group 1
-+ literal 'a'"]
-    Check2 -->|No| Output4["Empty + literal 'a'"]
++ literal a"]
+    Check2 -->|No| Output4["Empty + literal a"]
 
     style Parse fill:#e1f5ff
     style Longest fill:#fff3e0

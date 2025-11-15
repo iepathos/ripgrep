@@ -202,26 +202,18 @@ enabled?"}
     SortCheck -->|No| Parallel[Parallel Execution]
     SortCheck -->|Yes| SortType{Sort type?}
 
-    SortType -->|"--sort path
-ascending"| Stream[Streaming Mode]
+    SortType -->|--sort path<br/>ascending| Stream[Streaming Mode]
     SortType -->|Other| Collect[Collect All Results]
 
-    Parallel --> Stream1["Stream results
-as found"]
-    Stream --> Stream2["Stream in
-path order"]
-    Collect --> Buffer["Buffer in
-memory"]
+    Parallel --> Stream1[Stream results<br/>as found]
+    Stream --> Stream2[Stream in<br/>path order]
+    Collect --> Buffer[Buffer in<br/>memory]
 
-    Stream1 --> Fast["Fastest
-Low memory"]
-    Stream2 --> Medium["Medium speed
-Low memory"]
+    Stream1 --> Fast[Fastest<br/>Low memory]
+    Stream2 --> Medium[Medium speed<br/>Low memory]
     Buffer --> Sort[Sort results]
-    Sort --> Output["Output all
-at once"]
-    Output --> Slow["Slower
-High memory"]
+    Sort --> Output[Output all<br/>at once]
+    Output --> Slow[Slower<br/>High memory]
 
     style Parallel fill:#c8e6c9
     style Stream fill:#e1f5ff

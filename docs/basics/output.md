@@ -410,12 +410,12 @@ rg -B 3 -A 1 pattern
 
 ```mermaid
 graph TD
-    L38[Line 38: context] -.->|"-B 2"| L40
-    L39[Line 39: context] -.->|"-B 2"| L40
-    L40[Line 40: context] -.->|"-B 2"| L42
-    L41[Line 41: context] -.->|"-B 2"| L42
-    L42[Line 42: MATCH] -->|"-A 2"| L43
-    L42 -->|"-A 2"| L44
+    L38[Line 38: context] -.->|-B 2| L40
+    L39[Line 39: context] -.->|-B 2| L40
+    L40[Line 40: context] -.->|-B 2| L42
+    L41[Line 41: context] -.->|-B 2| L42
+    L42[Line 42: MATCH] -->|-A 2| L43
+    L42 -->|-A 2| L44
     L43[Line 43: context]
     L44[Line 44: context]
     L45[Line 45: context]

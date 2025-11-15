@@ -6,35 +6,19 @@ ripgrep provides several flags to help you understand what it's doing and diagno
 
 ```mermaid
 flowchart TD
-    Start[Having Search Issues?] --> Question{"What's the
-problem?"}
+    Start[Having Search Issues?] --> Question{What is the<br/>problem?}
 
-    Question -->|"Missing files
-in results"| Debug[Use --debug]
-    Question -->|"Performance
-issues"| Stats[Use --stats]
-    Question -->|"Need detailed
-internals"| Trace[Use --trace]
+    Question -->|Missing files<br/>in results| Debug[Use --debug]
+    Question -->|Performance<br/>issues| Stats[Use --stats]
+    Question -->|Need detailed<br/>internals| Trace[Use --trace]
 
-    Debug --> DebugInfo["Shows:
-- Files searched/skipped
-- Ignore files loaded
-- Binary detection
-- Regex engine"]
+    Debug --> DebugInfo[Shows:<br/>- Files searched/skipped<br/>- Ignore files loaded<br/>- Binary detection<br/>- Regex engine]
 
-    Stats --> StatsInfo["Shows:
-- Match counts
-- Files searched
-- Bytes processed
-- Time taken"]
+    Stats --> StatsInfo[Shows:<br/>- Match counts<br/>- Files searched<br/>- Bytes processed<br/>- Time taken]
 
-    Trace --> TraceInfo["Shows:
-- Low-level decisions
-- Filter processing
-- Algorithm internals"]
+    Trace --> TraceInfo[Shows:<br/>- Low-level decisions<br/>- Filter processing<br/>- Algorithm internals]
 
-    DebugInfo --> DebugEnough{"Got enough
-info?"}
+    DebugInfo --> DebugEnough{Got enough<br/>info?}
     DebugEnough -->|No| Trace
     DebugEnough -->|Yes| End[Problem Solved]
 

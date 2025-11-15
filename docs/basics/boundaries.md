@@ -101,8 +101,8 @@ flowchart TD
     HasX -->|Yes| CheckOrder{Which comes last?}
     HasX -->|No| HasW
 
-    CheckOrder -->|"-x last"| UseX["Use -x: Line matching"]
-    CheckOrder -->|"-w last"| UseW["Use -w: Word matching"]
+    CheckOrder -->|-x last| UseX[Use -x: Line matching]
+    CheckOrder -->|-w last| UseW[Use -w: Word matching]
 
     HasW -->|Yes| UseW
     HasW -->|No| Normal[Normal pattern matching]

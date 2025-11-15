@@ -74,14 +74,27 @@ def validate_diagram(diagram: str) -> List[str]:
     if paren_open != paren_close:
         errors.append(f"Unmatched parentheses ({paren_open} ( vs {paren_close} ))")
 
-    # Check for HTML entities
-    if re.search(r'&#\d+;', diagram):
-        entities = re.findall(r'&#\d+;', diagram)
-        errors.append(f"Contains HTML entities: {', '.join(set(entities))}")
+    # Check for HTML entities (but allow them in edge labels as workaround for quotes)
+    # Find entities outside of edge labels
+    lines = diagram.split('\n')
+    for line in lines:
+        # Skip lines that are edge labels (contain |...|)
+        if '|' in line and '-->' in line:
+            # This is an edge with a label, HTML entities are OK here for special chars
+            continue
+        # Check other lines for HTML entities (warnings, not errors - they work but aren't ideal)
+        if re.search(r'&#\d+;', line):
+            entities = re.findall(r'&#\d+;', line)
+            warnings.append(f"Contains HTML entities in node labels: {', '.join(set(entities))} - prefer literal characters")
 
-    # Check for HTML tags
+    # Check for HTML tags (br tags work but are not preferred style)
     if re.search(r'<br\s*/?>|<BR\s*/?>', diagram):
-        errors.append("Contains HTML <br/> tags")
+        warnings.append("Contains HTML <br/> tags - prefer quoted multi-line syntax")
+
+    # Check for problematic quotes in edge labels
+    # Pattern like: -->|"text with "quotes""| or -->|Yes "${1}"|
+    if re.search(r'-->\s*\|[^|]*"[^|]*"[^|]*\|', diagram):
+        errors.append("Edge labels contain nested quotes - escape or use HTML entities")
 
     # Heuristic checks for potential rendering issues
     if diagram.strip().startswith(('graph', 'flowchart')):

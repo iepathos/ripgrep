@@ -18,47 +18,31 @@ One of the most important concepts in ripgrep's binary handling is the distincti
 flowchart TD
     Start[Start Search] --> Type{File Type}
 
-    Type -->|"Explicit
-rg pattern file.txt"| ExplicitSearch[Search File]
-    Type -->|"Implicit
-rg pattern recursive"| ImplicitSearch[Search File]
+    Type -->|Explicit<br/>rg pattern file.txt| ExplicitSearch[Search File]
+    Type -->|Implicit<br/>rg pattern recursive| ImplicitSearch[Search File]
 
-    ExplicitSearch --> ExplicitMatch{"Match
-Found?"}
-    ImplicitSearch --> ImplicitMatch{"Match
-Found?"}
+    ExplicitSearch --> ExplicitMatch{Match<br/>Found?}
+    ImplicitSearch --> ImplicitMatch{Match<br/>Found?}
 
-    ExplicitMatch -->|Yes| ExplicitBinary{"Binary
-Data?"}
-    ImplicitMatch -->|Yes| ImplicitBinary{"Binary
-Data?"}
+    ExplicitMatch -->|Yes| ExplicitBinary{Binary<br/>Data?}
+    ImplicitMatch -->|Yes| ImplicitBinary{Binary<br/>Data?}
 
-    ExplicitBinary -->|Yes| ExplicitWarn["Show Match
-+ Warning
-Continue Search"]
-    ExplicitBinary -->|No| ExplicitShow["Show Match
-Continue Search"]
+    ExplicitBinary -->|Yes| ExplicitWarn[Show Match<br/>+ Warning<br/>Continue Search]
+    ExplicitBinary -->|No| ExplicitShow[Show Match<br/>Continue Search]
 
-    ImplicitBinary -->|Yes| ImplicitWarn["Show Match
-+ WARNING
-STOP Search"]
-    ImplicitBinary -->|No| ImplicitShow["Show Match
-Continue Search"]
+    ImplicitBinary -->|Yes| ImplicitWarn[Show Match<br/>+ WARNING<br/>STOP Search]
+    ImplicitBinary -->|No| ImplicitShow[Show Match<br/>Continue Search]
 
-    ExplicitMatch -->|No| ExplicitContinue["Continue
-Search"]
-    ImplicitMatch -->|No| ImplicitContinue["Continue
-Search"]
+    ExplicitMatch -->|No| ExplicitContinue[Continue<br/>Search]
+    ImplicitMatch -->|No| ImplicitContinue[Continue<br/>Search]
 
     ExplicitWarn --> ExplicitContinue
     ExplicitShow --> ExplicitContinue
     ImplicitWarn --> End[Done]
     ImplicitShow --> ImplicitContinue
 
-    ExplicitContinue --> ExplicitEOF{"End of
-File?"}
-    ImplicitContinue --> ImplicitEOF{"End of
-File?"}
+    ExplicitContinue --> ExplicitEOF{End of<br/>File?}
+    ImplicitContinue --> ImplicitEOF{End of<br/>File?}
 
     ExplicitEOF -->|No| ExplicitSearch
     ExplicitEOF -->|Yes| End

@@ -75,12 +75,11 @@ ripgrep detects the compression format based on file extension:
 
 ```mermaid
 flowchart TD
-    Start[File Encountered] --> CheckExt{"Check File
-Extension"}
-    CheckExt -->|".gz, .tgz"| Gzip[Select gzip -d -c]
-    CheckExt -->|".xz, .txz"| XZ[Select xz -d -c]
-    CheckExt -->|".zst, .zstd"| Zstd[Select zstd -q -d -c]
-    CheckExt -->|".bz2, .tbz2"| Bzip[Select bzip2 -d -c]
+    Start[File Encountered] --> CheckExt{Check File<br/>Extension}
+    CheckExt -->|.gz, .tgz| Gzip[Select gzip -d -c]
+    CheckExt -->|.xz, .txz| XZ[Select xz -d -c]
+    CheckExt -->|.zst, .zstd| Zstd[Select zstd -q -d -c]
+    CheckExt -->|.bz2, .tbz2| Bzip[Select bzip2 -d -c]
     CheckExt -->|Other formats| Other[Select appropriate tool]
     CheckExt -->|No match| Skip[Skip decompression]
 
@@ -90,14 +89,12 @@ Extension"}
     Bzip --> Spawn
     Other --> Spawn
 
-    Spawn --> ToolCheck{"Tool in
-PATH?"}
+    Spawn --> ToolCheck{Tool in<br/>PATH?}
     ToolCheck -->|No| Fallback[Treat as Binary]
     ToolCheck -->|Yes| Decompress[Read from stdout]
 
     Decompress --> Search[Search Stream]
-    Search --> Match{"Match
-Found?"}
+    Search --> Match{Match<br/>Found?}
     Match -->|Yes| Report[Report with Original Filename]
     Match -->|No| Next[Continue]
 
