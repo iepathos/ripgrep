@@ -74,28 +74,45 @@ line boundaries?"}
     C --> E{"Does . need to
 match newlines?"}
     E -->|Yes| F["Add --multiline-dotall
-or use (?s")]
+or use (?s)"]
     E -->|No| G[Just -U is sufficient]
 
-    A --> H{"Need lookaround or
+    D --> H{"Need lookaround or
 backreferences?"}
     H -->|Yes| I[Use -P --pcre2]
     H -->|No| J[Default engine faster]
 
+    F --> H
+    G --> H
+
     I --> K{Matching across lines?}
     K -->|Yes| L[Use -PU together]
-
-    A --> M{"Need Unicode
+    K -->|No| M{"Need Unicode
 character classes?"}
+
+    J --> M
+    L --> M
+
     M -->|Yes| N["Default behavior
 Unicode enabled"]
     M -->|No| O["Use --no-unicode
 ASCII-only faster"]
 
-    A --> P{"Complex pattern with
-multiple features?"}
+    N --> P{Complex pattern?}
+    O --> P
+
     P -->|Yes| Q["Use --engine=auto
 for automatic selection"]
+    P -->|No| R[Ready to search]
+
+    Q --> R
+
+    style A fill:#e8f5e9
+    style R fill:#c8e6c9
+    style C fill:#fff3e0
+    style F fill:#ffcc80
+    style I fill:#f3e5f5
+    style L fill:#ce93d8
 ```
 
 !!! note "About --engine=auto"
