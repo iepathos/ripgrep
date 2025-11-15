@@ -6,12 +6,21 @@ set -e
 
 DOCS_DIR="${1:-docs}"
 
-# Check if Python is available
-if ! command -v python3 &> /dev/null; then
-    echo "Error: python3 is required but not installed"
+# Check if Node.js is available
+if ! command -v node &> /dev/null; then
+    echo "Error: node is required but not installed"
     exit 1
 fi
 
-# Run the Python validation script
+# Get script directory and install dependencies
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-python3 "$SCRIPT_DIR/validate-mermaid.py" "$DOCS_DIR"
+cd "$SCRIPT_DIR"
+
+# Install dependencies if needed
+if [ ! -d "node_modules" ]; then
+    echo "Installing dependencies..."
+    npm install --silent
+fi
+
+# Run the Node.js validation script
+node validate-mermaid.js "$DOCS_DIR"

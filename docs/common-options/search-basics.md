@@ -142,7 +142,7 @@ Fast & Efficient"]
 -P flag"]
 
     Default --> D1["Basic regex:
-., *, +, ?, ["], etc.]
+., *, +, ?, [], etc."]
     PCRE2 --> P1["Lookahead/Lookbehind
 Backreferences
 Conditional patterns"]

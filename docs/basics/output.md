@@ -267,14 +267,14 @@ lib/utils.rs:3
 
 ```mermaid
 graph TD
-    Line[Line: "error: failed, error: timeout, error: crash"]
+    Line["Line: error: failed, error: timeout, error: crash"]
     Line --> CountLine["-c counts lines"]
     Line --> CountMatch["--count-matches counts"]
 
     CountLine --> Result1["Result: 1
 (one matching line)"]
     CountMatch --> Result2["Result: 3
-(three 'error' matches)"]
+(three error matches)"]
 
     style Line fill:#f5f5f5
     style CountLine fill:#e1f5ff

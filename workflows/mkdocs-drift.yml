@@ -112,10 +112,11 @@ reduce:
   - claude: "/prodigy-validate-feature-consistency --project $PROJECT_NAME --docs-dir $DOCS_DIR --output $ANALYSIS_DIR/feature-consistency.json"
 
   # Mermaid diagram validation - ensure all diagrams have valid syntax
-  - shell: "python3 .prodigy/scripts/validate-mermaid.py $DOCS_DIR"
+  - shell: "cd .prodigy/scripts && npm install --silent && node validate-mermaid.js ../../$DOCS_DIR"
     on_failure:
       # Fix any invalid Mermaid diagrams found
-      claude: "/prodigy-fix-mermaid-diagrams"
+      # Pass validation output (JSON on stderr) to Claude for context
+      claude: "/prodigy-fix-mermaid-diagrams --validation-output '${shell.stderr}'"
       commit_required: true
 
   # Clean up temporary analysis files (keep structure-report.json and validation reports for review)
