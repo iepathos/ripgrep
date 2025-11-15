@@ -42,16 +42,19 @@ The default mode automatically determines the binary handling strategy based on 
 ```mermaid
 flowchart TD
     Start[Search File] --> Check{File specification?}
-    Check -->|Explicit<br/>rg pattern file.bin| Explicit[Search and Suppress mode]
-    Check -->|Implicit<br/>rg pattern -g *.bin| Implicit[Auto skip mode]
+    Check -->|Explicit - rg pattern file.bin| Explicit[Search and Suppress mode]
+    Check -->|Implicit - rg pattern -g *.bin| Implicit[Auto skip mode]
 
     Explicit --> SearchE[Search file]
-    SearchE --> NulE{"NUL byte<br/>detected?"}
-    NulE -->|Yes| WarnE["Show warning<br/>Suppress matches"]
+    SearchE --> NulE{"NUL byte
+detected?"}
+    NulE -->|Yes| WarnE["Show warning
+Suppress matches"]
     NulE -->|No| MatchesE[Show matches]
 
     Implicit --> SearchI[Search file]
-    SearchI --> NulI{"NUL byte<br/>detected?"}
+    SearchI --> NulI{"NUL byte
+detected?"}
     NulI -->|Yes| SkipI[Skip file silently]
     NulI -->|No| MatchesI[Show matches]
 

@@ -8,10 +8,13 @@ ripgrep is a command line tool that searches your files for patterns that you gi
 
 ```mermaid
 flowchart LR
-    Start([Start Search]) --> Filter{"File should<br/>be searched?"}
-    Filter -->|No<br/>gitignore, hidden, binary| Skip[Skip File]
-    Filter -->|Yes| Read["Read File<br/>Line by Line"]
-    Read --> Match{"Line matches<br/>pattern?"}
+    Start([Start Search]) --> Filter{"File should
+be searched?"}
+    Filter -->|No - gitignore, hidden, binary| Skip[Skip File]
+    Filter -->|Yes| Read["Read File
+Line by Line"]
+    Read --> Match{"Line matches
+pattern?"}
     Match -->|Yes| Print[Print Line]
     Match -->|No| Next{More lines?}
     Print --> Next

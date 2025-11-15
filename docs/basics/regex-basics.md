@@ -193,8 +193,10 @@ flowchart TD
     Start[Need Regex Pattern] --> Check{"Pattern
 Requirements?"}
 
-    Check -->|Basic matching<br/>Character classes<br/>Quantifiers| Default["Use Default Engine<br/>Fast &amp; Efficient"]
-    Check -->|Backreferences<br/>Lookahead/behind<br/>Advanced features| PCRE["Use PCRE2 Engine<br/>-P flag"]
+    Check -->|Basic matching, Character classes, Quantifiers| Default["Use Default Engine
+Fast &amp; Efficient"]
+    Check -->|Backreferences, Lookahead/behind, Advanced features| PCRE["Use PCRE2 Engine
+-P flag"]
     Check -->|Not sure| Auto["Use Auto Mode
 --auto-hybrid-regex"]
 
