@@ -1475,18 +1475,24 @@
 <p>Sorting disables parallelism, which impacts performance on large searches.</p>
 </div>
 <pre class="mermaid"><code>flowchart TD
-    Start{Need to<br/>sort results?} --&gt; NeedConsistent{Need consistent<br/>output?}
+    Start{"Need to
+sort results?"} --&gt; NeedConsistent{"Need consistent
+output?"}
 
     NeedConsistent --&gt;|Yes| UsePath[Use --sort path]
-    NeedConsistent --&gt;|No| NeedRecent{Focus on<br/>recent changes?}
+    NeedConsistent --&gt;|No| NeedRecent{"Focus on
+recent changes?"}
 
     NeedRecent --&gt;|Yes| UseModified[Use --sort modified]
-    NeedRecent --&gt;|No| NeedNew{Find newest<br/>files?}
+    NeedRecent --&gt;|No| NeedNew{"Find newest
+files?"}
 
     NeedNew --&gt;|Yes| UseCreated[Use --sort created]
-    NeedNew --&gt;|No| NoSort[Use default<br/>no sorting]
+    NeedNew --&gt;|No| NoSort["Use default
+no sorting"]
 
-    UsePath --&gt; Reverse{Need reverse<br/>order?}
+    UsePath --&gt; Reverse{"Need reverse
+order?"}
     UseModified --&gt; Reverse
     UseCreated --&gt; Reverse
 
@@ -1494,7 +1500,8 @@
     Reverse --&gt;|No| Done[Execute search]
     AddR --&gt; Done
 
-    NoSort --&gt; Fast[Fastest performance<br/>Parallel execution]
+    NoSort --&gt; Fast["Fastest performance
+Parallel execution"]
 
     style UsePath fill:#e1f5ff
     style UseModified fill:#fff3e0
@@ -1614,23 +1621,32 @@
 <li><strong>Startup Delay</strong>: No results appear until the entire search completes</li>
 </ol>
 <pre class="mermaid"><code>graph TD
-    Search[Search Operation] --&gt; SortCheck{Sorting<br/>enabled?}
+    Search[Search Operation] --&gt; SortCheck{"Sorting
+enabled?"}
 
     SortCheck --&gt;|No| Parallel[Parallel Execution]
     SortCheck --&gt;|Yes| SortType{Sort type?}
 
-    SortType --&gt;|--sort path<br/>ascending| Stream[Streaming Mode]
+    SortType --&gt;|"--sort path
+ascending"| Stream[Streaming Mode]
     SortType --&gt;|Other| Collect[Collect All Results]
 
-    Parallel --&gt; Stream1[Stream results<br/>as found]
-    Stream --&gt; Stream2[Stream in<br/>path order]
-    Collect --&gt; Buffer[Buffer in<br/>memory]
+    Parallel --&gt; Stream1["Stream results
+as found"]
+    Stream --&gt; Stream2["Stream in
+path order"]
+    Collect --&gt; Buffer["Buffer in
+memory"]
 
-    Stream1 --&gt; Fast[Fastest<br/>Low memory]
-    Stream2 --&gt; Medium[Medium speed<br/>Low memory]
+    Stream1 --&gt; Fast["Fastest
+Low memory"]
+    Stream2 --&gt; Medium["Medium speed
+Low memory"]
     Buffer --&gt; Sort[Sort results]
-    Sort --&gt; Output[Output all<br/>at once]
-    Output --&gt; Slow[Slower<br/>High memory]
+    Sort --&gt; Output["Output all
+at once"]
+    Output --&gt; Slow["Slower
+High memory"]
 
     style Parallel fill:#c8e6c9
     style Stream fill:#e1f5ff

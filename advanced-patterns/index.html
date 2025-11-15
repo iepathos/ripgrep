@@ -1219,21 +1219,31 @@
 <h3 id="feature-architecture">Feature Architecture<a class="headerlink" href="#feature-architecture" title="Permanent link">¶</a></h3>
 <p>The advanced features in ripgrep are organized into layers that can be combined:</p>
 <pre class="mermaid"><code>graph TD
-    Base[ripgrep Base Engine] --&gt; Line[Line-by-line Mode<br/>Default]
-    Base --&gt; Multi[Multiline Mode<br/>-U flag]
+    Base[ripgrep Base Engine] --&gt; Line["Line-by-line Mode
+Default"]
+    Base --&gt; Multi["Multiline Mode
+-U flag"]
 
-    Base --&gt; Default[Default Regex Engine<br/>Fast, limited features]
-    Base --&gt; PCRE[PCRE2 Engine<br/>-P flag]
+    Base --&gt; Default["Default Regex Engine
+Fast, limited features"]
+    Base --&gt; PCRE["PCRE2 Engine
+-P flag"]
 
-    Default --&gt; Unicode1[Unicode Support<br/>\\p Properties]
-    PCRE --&gt; Unicode2[Unicode Support<br/>\\p Properties]
+    Default --&gt; Unicode1["Unicode Support
+\\p Properties"]
+    PCRE --&gt; Unicode2["Unicode Support
+\\p Properties"]
 
-    Multi --&gt; Dotall[Dotall Mode<br/>--multiline-dotall]
+    Multi --&gt; Dotall["Dotall Mode
+--multiline-dotall"]
 
-    PCRE --&gt; Look[Lookaround<br/>Assertions]
-    PCRE --&gt; Back[Backreferences<br/>\\1, \\2, etc.]
+    PCRE --&gt; Look["Lookaround
+Assertions"]
+    PCRE --&gt; Back["Backreferences
+\\1, \\2, etc."]
 
-    Multi --&gt; Combined[Combined Modes<br/>-PU for PCRE2 + Multiline]
+    Multi --&gt; Combined["Combined Modes
+-PU for PCRE2 + Multiline"]
     PCRE --&gt; Combined
 
     style Base fill:#e8f5e9
@@ -1250,27 +1260,36 @@
 <h3 id="decision-tree-choosing-the-right-features">Decision Tree: Choosing the Right Features<a class="headerlink" href="#decision-tree-choosing-the-right-features" title="Permanent link">¶</a></h3>
 <p>Use this guide to select appropriate flags for your search:</p>
 <pre class="mermaid"><code>graph TD
-    A[Start: Choose ripgrep features] --&gt; B{Match across<br/>line boundaries?}
+    A[Start: Choose ripgrep features] --&gt; B{"Match across
+line boundaries?"}
     B --&gt;|Yes| C[Use -U --multiline]
     B --&gt;|No| D[Default line-by-line]
 
-    C --&gt; E{Does . need to<br/>match newlines?}
-    E --&gt;|Yes| F[Add --multiline-dotall<br/>or use (?s)]
+    C --&gt; E{"Does . need to
+match newlines?"}
+    E --&gt;|Yes| F["Add --multiline-dotall
+or use (?s")]
     E --&gt;|No| G[Just -U is sufficient]
 
-    A --&gt; H{Need lookaround or<br/>backreferences?}
+    A --&gt; H{"Need lookaround or
+backreferences?"}
     H --&gt;|Yes| I[Use -P --pcre2]
     H --&gt;|No| J[Default engine faster]
 
     I --&gt; K{Matching across lines?}
     K --&gt;|Yes| L[Use -PU together]
 
-    A --&gt; M{Need Unicode<br/>character classes?}
-    M --&gt;|Yes| N[Default behavior<br/>Unicode enabled]
-    M --&gt;|No| O[Use --no-unicode<br/>ASCII-only faster]
+    A --&gt; M{"Need Unicode
+character classes?"}
+    M --&gt;|Yes| N["Default behavior
+Unicode enabled"]
+    M --&gt;|No| O["Use --no-unicode
+ASCII-only faster"]
 
-    A --&gt; P{Complex pattern with<br/>multiple features?}
-    P --&gt;|Yes| Q[Use --engine=auto<br/>for automatic selection]
+    A --&gt; P{"Complex pattern with
+multiple features?"}
+    P --&gt;|Yes| Q["Use --engine=auto
+for automatic selection"]
 </code></pre>
 <div class="admonition note">
 <p class="admonition-title">About --engine=auto</p>

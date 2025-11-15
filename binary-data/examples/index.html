@@ -1407,20 +1407,26 @@
 </ol>
 <h2 id="binary-detection-decision-flow">Binary Detection Decision Flow<a class="headerlink" href="#binary-detection-decision-flow" title="Permanent link">¶</a></h2>
 <pre class="mermaid"><code>flowchart TD
-    A[File to search] --&gt; B{Explicit file<br/>or stdin?}
+    A[File to search] --&gt; B{"Explicit file
+or stdin?"}
     B --&gt;|Yes| C{--text flag?}
-    B --&gt;|No<br/>Implicit| D{--binary flag?}
+    B --&gt;|"No
+Implicit"| D{--binary flag?}
 
-    C --&gt;|Yes| E[Search as text<br/>Show all content]
+    C --&gt;|Yes| E["Search as text
+Show all content"]
     C --&gt;|No| F{Contains NUL byte?}
 
     D --&gt;|Yes| F
     D --&gt;|No| G{Contains NUL byte?}
 
-    F --&gt;|Yes| H[Show 'binary file matches'<br/>or 'WARNING: stopped searching']
-    F --&gt;|No| I[Search normally<br/>Show matches]
+    F --&gt;|Yes| H["Show 'binary file matches'
+or 'WARNING: stopped searching'"]
+    F --&gt;|No| I["Search normally
+Show matches"]
 
-    G --&gt;|Yes| J[Silent skip<br/>No output]
+    G --&gt;|Yes| J["Silent skip
+No output"]
     G --&gt;|No| I
 
     style E fill:#ffe6e6
@@ -1433,7 +1439,8 @@
 <pre class="mermaid"><code>graph LR
     subgraph Implicit["Implicit Files (Recursive Search)"]
         I1[rg pattern] --&gt; I2{Binary?}
-        I2 --&gt;|Yes| I3[Silent skip<br/>no output]
+        I2 --&gt;|Yes| I3["Silent skip
+no output"]
         I2 --&gt;|No| I4[Show matches]
     end
 
@@ -1445,7 +1452,8 @@
 
     subgraph Explicit["Explicit Files"]
         E1[rg pattern file.bin] --&gt; E2{Binary?}
-        E2 --&gt;|Yes| E3[Show warning<br/>binary file matches]
+        E2 --&gt;|Yes| E3["Show warning
+binary file matches"]
         E2 --&gt;|No| E4[Show matches]
     end
 

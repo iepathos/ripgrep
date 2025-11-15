@@ -1110,20 +1110,27 @@
 
     SmartCase --&gt; FileType
 
-    FileType --&gt;|Yes| UseType[Use -t flag<br/>e.g., -tpy, -trust]
-    FileType --&gt;|No| Pattern{What kind<br/>of pattern?}
+    FileType --&gt;|Yes| UseType["Use -t flag
+e.g., -tpy, -trust"]
+    FileType --&gt;|No| Pattern{"What kind
+of pattern?"}
 
     UseType --&gt; Pattern
 
-    Pattern --&gt;|Exact string| Literal[Use -F for literal<br/>no regex]
-    Pattern --&gt;|Word boundaries| Word[Use -w for<br/>whole words]
-    Pattern --&gt;|Complex regex| Regex[Use default<br/>regex mode]
+    Pattern --&gt;|Exact string| Literal["Use -F for literal
+no regex"]
+    Pattern --&gt;|Word boundaries| Word["Use -w for
+whole words"]
+    Pattern --&gt;|Complex regex| Regex["Use default
+regex mode"]
 
-    Literal --&gt; Context{Need context<br/>lines?}
+    Literal --&gt; Context{"Need context
+lines?"}
     Word --&gt; Context
     Regex --&gt; Context
 
-    Context --&gt;|Yes| AddContext[Use -A/-B/-C<br/>for context]
+    Context --&gt;|Yes| AddContext["Use -A/-B/-C
+for context"]
     Context --&gt;|No| Special{Special needs?}
 
     AddContext --&gt; Special

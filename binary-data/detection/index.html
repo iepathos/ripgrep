@@ -1169,22 +1169,27 @@
 <pre class="mermaid"><code>flowchart TD
     Start[Start File Search] --&gt; Mode{Search Mode?}
 
-    Mode --&gt;|Buffered<br/>--no-mmap| Buffered[Buffered Search]
-    Mode --&gt;|Memory-Mapped<br/>--mmap| Mmap[Memory-Mapped Search]
+    Mode --&gt;|"Buffered
+--no-mmap"| Buffered[Buffered Search]
+    Mode --&gt;|"Memory-Mapped
+--mmap"| Mmap[Memory-Mapped Search]
 
     Buffered --&gt; ReadBuf[Read 64KB Buffer]
-    ReadBuf --&gt; ScanBuf{NUL byte<br/>in buffer?}
+    ReadBuf --&gt; ScanBuf{"NUL byte
+in buffer?"}
     ScanBuf --&gt;|Yes| BinaryBuf[Mark as Binary]
     ScanBuf --&gt;|No| MoreBuf{More data?}
     MoreBuf --&gt;|Yes| ReadBuf
     MoreBuf --&gt;|No| TextBuf[Process as Text]
 
     Mmap --&gt; ScanFirst[Scan First 64KB]
-    ScanFirst --&gt; NulFirst{NUL byte<br/>found?}
+    ScanFirst --&gt; NulFirst{"NUL byte
+found?"}
     NulFirst --&gt;|Yes| BinaryMmap[Mark as Binary]
     NulFirst --&gt;|No| Search[Search for Matches]
     Search --&gt; ScanMatch[Scan Match Lines]
-    ScanMatch --&gt; NulMatch{NUL in<br/>matches?}
+    ScanMatch --&gt; NulMatch{"NUL in
+matches?"}
     NulMatch --&gt;|Yes| BinaryMmap
     NulMatch --&gt;|No| TextMmap[Process as Text]
 

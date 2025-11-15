@@ -1317,14 +1317,22 @@
 <p>Instead of showing matching lines, these flags produce alternative output formats.</p>
 <h2 id="choosing-an-output-mode">Choosing an Output Mode<a class="headerlink" href="#choosing-an-output-mode" title="Permanent link">¶</a></h2>
 <pre class="mermaid"><code>flowchart TD
-    Start{What's your<br/>use case?} --&gt; Tool{Tool/Script<br/>Integration?}
-    Start --&gt; Count{Just need<br/>counts?}
-    Start --&gt; Files{Just need<br/>file lists?}
-    Start --&gt; Debug{Performance<br/>analysis?}
+    Start{"What's your
+use case?"} --&gt; Tool{"Tool/Script
+Integration?"}
+    Start --&gt; Count{"Just need
+counts?"}
+    Start --&gt; Files{"Just need
+file lists?"}
+    Start --&gt; Debug{"Performance
+analysis?"}
 
-    Tool --&gt;|Yes| Format{Format<br/>needed?}
-    Format --&gt;|Machine-readable| JSON[--json<br/>JSON Lines]
-    Format --&gt;|Editor integration| Vim[--vimgrep<br/>Quickfix format]
+    Tool --&gt;|Yes| Format{"Format
+needed?"}
+    Format --&gt;|Machine-readable| JSON["--json
+JSON Lines"]
+    Format --&gt;|Editor integration| Vim["--vimgrep
+Quickfix format"]
 
     Count --&gt;|Per line| CountFlag[-c, --count]
     Count --&gt;|Total matches| CountMatches[--count-matches]

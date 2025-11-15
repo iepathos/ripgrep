@@ -1192,17 +1192,22 @@
 </blockquote>
 <p>If ripgrep returns zero results when you expect matches, try these troubleshooting steps:</p>
 <pre class="mermaid"><code>flowchart TD
-    Start[No Results Found] --&gt; Files{Are expected files<br/>being searched?}
-    Files --&gt;|Check with --files| Listed{Files in<br/>--files output?}
+    Start[No Results Found] --&gt; Files{"Are expected files
+being searched?"}
+    Files --&gt;|Check with --files| Listed{"Files in
+--files output?"}
 
-    Listed --&gt;|No| Gitignore{Filtered by<br/>.gitignore?}
-    Gitignore --&gt;|Yes| UseU[Use -u/-uu/-uuu<br/>to bypass ignores]
+    Listed --&gt;|No| Gitignore{"Filtered by
+.gitignore?"}
+    Gitignore --&gt;|Yes| UseU["Use -u/-uu/-uuu
+to bypass ignores"]
     Gitignore --&gt;|No| Hidden{Hidden files?}
 
     Hidden --&gt;|Yes| UseHidden[Use --hidden flag]
     Hidden --&gt;|No| Type{Wrong type filter?}
 
-    Type --&gt;|Yes| FixType[Use -g glob or<br/>check --type-list]
+    Type --&gt;|Yes| FixType["Use -g glob or
+check --type-list"]
 
     Listed --&gt;|Yes| Binary{Binary files?}
     Binary --&gt;|Yes| UseText[Use -a/--text flag]
@@ -1261,18 +1266,23 @@
 <li>This line shows that <code>node_modules/</code> is being ignored due to a <code>.gitignore</code> match. The path and reason are shown for each filtered file/directory.</li>
 </ol>
 <pre class="mermaid"><code>graph TD
-    All[All Files in Directory] --&gt; VCS{.gitignore<br/>.git/info/exclude}
+    All[All Files in Directory] --&gt; VCS{".gitignore
+.git/info/exclude"}
     VCS --&gt;|Filtered| Ignored1[Ignored Files]
-    VCS --&gt;|Pass| Custom{.ignore<br/>.rgignore}
+    VCS --&gt;|Pass| Custom{".ignore
+.rgignore"}
 
     Custom --&gt;|Filtered| Ignored2[Ignored Files]
-    Custom --&gt;|Pass| Hidden{Hidden Files<br/>starting with .}
+    Custom --&gt;|Pass| Hidden{"Hidden Files
+starting with ."}
 
     Hidden --&gt;|Filtered| Ignored3[Hidden Files]
-    Hidden --&gt;|Pass| Binary{Binary Files<br/>with NUL bytes}
+    Hidden --&gt;|Pass| Binary{"Binary Files
+with NUL bytes"}
 
     Binary --&gt;|Filtered| Ignored4[Binary Files]
-    Binary --&gt;|Pass| Type{File Type<br/>-t filter}
+    Binary --&gt;|Pass| Type{"File Type
+-t filter"}
 
     Type --&gt;|Filtered| Ignored5[Non-matching Types]
     Type --&gt;|Pass| Searched[Files Searched]

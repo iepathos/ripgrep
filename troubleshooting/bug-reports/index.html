@@ -1102,17 +1102,25 @@
 <h2 id="before-filing-a-bug-report">Before Filing a Bug Report<a class="headerlink" href="#before-filing-a-bug-report" title="Permanent link">¶</a></h2>
 <p>Before filing a bug report, please check:</p>
 <pre class="mermaid"><code>flowchart TD
-    Start[Encountered Issue] --&gt; FAQ{Check FAQ<br/>&amp; GUIDE?}
+    Start[Encountered Issue] --&gt; FAQ{"Check FAQ
+&amp; GUIDE?"}
     FAQ --&gt;|Found Solution| Resolved[Issue Resolved]
     FAQ --&gt;|Not Found| Debug[Run with --debug]
 
-    Debug --&gt; Common{Matches Common<br/>Non-Bug?}
+    Debug --&gt; Common{"Matches Common
+Non-Bug?"}
     Common --&gt;|Yes| Solution[Apply Known Fix]
-    Common --&gt;|No| Minimal[Create Minimal<br/>Reproduction]
+    Common --&gt;|No| Minimal["Create Minimal
+Reproduction"]
 
-    Minimal --&gt; Test{Issue Still<br/>Occurs?}
+    Minimal --&gt; Test{"Issue Still
+Occurs?"}
     Test --&gt;|No| Resolved
-    Test --&gt;|Yes| Gather[Gather Information:<br/>- rg --version<br/>- Installation method<br/>- OS version<br/>- Debug output]
+    Test --&gt;|Yes| Gather["Gather Information:
+- rg --version
+- Installation method
+- OS version
+- Debug output"]
 
     Gather --&gt; File[File Bug Report]
     File --&gt; End[Submit to GitHub]

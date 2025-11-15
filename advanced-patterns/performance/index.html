@@ -1388,22 +1388,31 @@
 - You've tested the pattern on representative data and performance is acceptable</p>
 <p><strong>Recommendation</strong>: Use default engine unless you need PCRE2-specific features. When using PCRE2, test patterns on representative data to ensure acceptable performance, especially before using in production scripts or on large codebases.</p>
 <pre class="mermaid"><code>flowchart TD
-    Start[Writing Regex Pattern] --&gt; NeedFeature{Need lookaround<br/>or backreferences?}
+    Start[Writing Regex Pattern] --&gt; NeedFeature{"Need lookaround
+or backreferences?"}
 
     NeedFeature --&gt;|No| Default[Use Default Engine]
-    NeedFeature --&gt;|Yes| TestSize{Limited<br/>search space?}
+    NeedFeature --&gt;|Yes| TestSize{"Limited
+search space?"}
 
-    TestSize --&gt;|Yes| TestPattern[Test Pattern<br/>on Real Data]
+    TestSize --&gt;|Yes| TestPattern["Test Pattern
+on Real Data"]
     TestSize --&gt;|No| Rethink[Reconsider Approach]
 
-    TestPattern --&gt; Acceptable{Performance<br/>acceptable?}
-    Acceptable --&gt;|Yes| UsePCRE2[Use PCRE2 Engine<br/>with -P flag]
-    Acceptable --&gt;|No| Simplify[Simplify Pattern<br/>or Split Search]
+    TestPattern --&gt; Acceptable{"Performance
+acceptable?"}
+    Acceptable --&gt;|Yes| UsePCRE2["Use PCRE2 Engine
+with -P flag"]
+    Acceptable --&gt;|No| Simplify["Simplify Pattern
+or Split Search"]
 
-    Rethink --&gt; Alternative[Find Alternative<br/>Approach]
+    Rethink --&gt; Alternative["Find Alternative
+Approach"]
 
-    Default --&gt; Fast[Fast Linear Time<br/>SIMD Optimized]
-    UsePCRE2 --&gt; Slower[Slower Backtracking<br/>Test Thoroughly]
+    Default --&gt; Fast["Fast Linear Time
+SIMD Optimized"]
+    UsePCRE2 --&gt; Slower["Slower Backtracking
+Test Thoroughly"]
 
     style Default fill:#e8f5e9
     style UsePCRE2 fill:#fff3e0
@@ -1471,14 +1480,20 @@
     Type --&gt;|Single File| Large{Large File?}
     Type --&gt;|Directory| ManyFiles[Many Files to Scan]
 
-    Large --&gt;|Yes| MMap[Memory Mapping<br/>mmap]
+    Large --&gt;|Yes| MMap["Memory Mapping
+mmap"]
     Large --&gt;|No| MMap
 
-    ManyFiles --&gt; Buffered[Buffered Reading<br/>Incremental]
+    ManyFiles --&gt; Buffered["Buffered Reading
+Incremental"]
 
-    MMap --&gt; MMAPBenefits[✓ Maps file to memory<br/>✓ Faster for large files<br/>✓ Lower memory overhead]
+    MMap --&gt; MMAPBenefits["✓ Maps file to memory
+✓ Faster for large files
+✓ Lower memory overhead"]
 
-    Buffered --&gt; BufferedBenefits[✓ Reads incrementally<br/>✓ Better for many small files<br/>✓ Predictable memory]
+    Buffered --&gt; BufferedBenefits["✓ Reads incrementally
+✓ Better for many small files
+✓ Predictable memory"]
 
     MMAPBenefits --&gt; Result[Search Results]
     BufferedBenefits --&gt; Result

@@ -1684,18 +1684,21 @@
 <p>The statistics output includes several categories of information. Statistics are printed to stdout after all search results.</p>
 <pre class="mermaid"><code>flowchart LR
     Input[Search Input] --&gt; Search[ripgrep Search]
-    Search --&gt; Track[Track Metrics<br/>Internally]
+    Search --&gt; Track["Track Metrics
+Internally"]
     Track --&gt; M1[Matches Count]
     Track --&gt; M2[Bytes Searched]
     Track --&gt; M3[Files Processed]
     Track --&gt; M4[Elapsed Time]
 
-    Search --&gt; Results[Search Results<br/>to stdout]
+    Search --&gt; Results["Search Results
+to stdout"]
     M1 --&gt; Stats[Statistics Summary]
     M2 --&gt; Stats
     M3 --&gt; Stats
     M4 --&gt; Stats
-    Stats --&gt; Output[Statistics Output<br/>to stdout]
+    Stats --&gt; Output["Statistics Output
+to stdout"]
 
     style Track fill:#e1f5ff
     style Stats fill:#fff3e0
@@ -1776,7 +1779,9 @@
     Line --&gt; Match1["Match 1: 'the' at position 0"]
     Line --&gt; Match2["Match 2: 'the' at position 31"]
 
-    Match1 --&gt; Result["Result:<br/>2 matches<br/>1 matched line"]
+    Match1 --&gt; Result["Result:
+2 matches
+1 matched line"]
     Match2 --&gt; Result
 
     style Line fill:#e1f5ff
@@ -1928,21 +1933,34 @@
 </span></code></pre></div>
 <h2 id="interpreting-results">Interpreting Results<a class="headerlink" href="#interpreting-results" title="Permanent link">¶</a></h2>
 <pre class="mermaid"><code>flowchart TD
-    Start[Review Statistics] --&gt; Check1{High matches,<br/>few files?}
-    Check1 --&gt;|Yes| Common[Pattern is common<br/>or concentrated]
-    Check1 --&gt;|No| Check2{Many files,<br/>few matches?}
+    Start[Review Statistics] --&gt; Check1{"High matches,
+few files?"}
+    Check1 --&gt;|Yes| Common["Pattern is common
+or concentrated"]
+    Check1 --&gt;|No| Check2{"Many files,
+few matches?"}
 
-    Common --&gt; Action1[Consider:<br/>- More specific pattern<br/>- Add context filters]
+    Common --&gt; Action1["Consider:
+- More specific pattern
+- Add context filters"]
 
-    Check2 --&gt;|Yes| Rare[Pattern is rare<br/>or too specific]
-    Check2 --&gt;|No| Check3{Long search<br/>time?}
+    Check2 --&gt;|Yes| Rare["Pattern is rare
+or too specific"]
+    Check2 --&gt;|No| Check3{"Long search
+time?"}
 
-    Rare --&gt; Action2[Consider:<br/>- File type filters -t<br/>- Broader pattern]
+    Rare --&gt; Action2["Consider:
+- File type filters -t
+- Broader pattern"]
 
     Check3 --&gt;|Yes| Slow[Performance issue]
     Check3 --&gt;|No| Good[Statistics look normal]
 
-    Slow --&gt; Action3[Check:<br/>- File count<br/>- Regex complexity<br/>- Binary files<br/>- Ignore patterns]
+    Slow --&gt; Action3["Check:
+- File count
+- Regex complexity
+- Binary files
+- Ignore patterns"]
 
     style Start fill:#e1f5ff
     style Common fill:#fff3e0

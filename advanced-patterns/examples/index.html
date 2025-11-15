@@ -1328,16 +1328,21 @@
 <h2 id="choosing-the-right-flags">Choosing the Right Flags<a class="headerlink" href="#choosing-the-right-flags" title="Permanent link">¶</a></h2>
 <p>Understanding which flags to use for different search scenarios:</p>
 <pre class="mermaid"><code>flowchart TD
-    Start[Pattern Type] --&gt; Multi{Spans multiple<br/>lines?}
+    Start[Pattern Type] --&gt; Multi{"Spans multiple
+lines?"}
 
-    Multi --&gt;|Yes| Dotall{Need . to<br/>match newlines?}
-    Multi --&gt;|No| Features{Need lookaround<br/>or backrefs?}
+    Multi --&gt;|Yes| Dotall{"Need . to
+match newlines?"}
+    Multi --&gt;|No| Features{"Need lookaround
+or backrefs?"}
 
-    Dotall --&gt;|Yes| UseDotall["Use: -U --multiline-dotall<br/>or -U '(?s)pattern'"]
+    Dotall --&gt;|Yes| UseDotall[""Use: -U --multiline-dotall
+or -U '(?s")pattern'"]
     Dotall --&gt;|No| UseMulti["Use: -U pattern"]
 
     Features --&gt;|Yes| UsePCRE["Use: -P pattern"]
-    Features --&gt;|No| UseDefault["Use: pattern<br/>(default engine)"]
+    Features --&gt;|No| UseDefault[""Use: pattern
+(default engine")"]
 
     UsePCRE --&gt; PCREMulti{Also multiline?}
     PCREMulti --&gt;|Yes| UsePU["Use: -PU pattern"]

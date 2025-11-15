@@ -1224,26 +1224,27 @@
 <tr>
 <td><strong>Auto</strong> (default)</td>
 <td>Automatically determines binary handling</td>
-<td>Explicit files: SearchAndSuppress<br/>Implicit files: Skip binary files</td>
+<td>Explicit files: SearchAndSuppress; Implicit files: Skip binary files</td>
 <td>Default behavior</td>
 </tr>
 <tr>
 <td><strong>SearchAndSuppress</strong></td>
 <td>Search binary files but suppress matches</td>
-<td>Shows warning when binary match found<br/>NUL bytes replaced with line terminators</td>
+<td>Shows warning when binary match found; NUL bytes replaced with line terminators</td>
 <td>Explicit files, or <code>--binary</code> flag</td>
 </tr>
 <tr>
 <td><strong>AsText</strong></td>
 <td>Treat everything as text</td>
-<td>No binary detection<br/>No NUL byte replacement</td>
+<td>No binary detection; No NUL byte replacement</td>
 <td><code>--text</code> / <code>-a</code> flag</td>
 </tr>
 </tbody>
 </table>
 <pre class="mermaid"><code>stateDiagram-v2
     [*] --&gt; Auto: Default
-    Auto --&gt; SearchAndSuppress: --binary flag<br>or explicit file
+    Auto --&gt; SearchAndSuppress: "--binary flag
+or explicit file"
     Auto --&gt; AsText: --text/-a flag
     SearchAndSuppress --&gt; Auto: --no-binary flag
     AsText --&gt; Auto: --no-text flag
@@ -1265,7 +1266,7 @@
         No binary detection
         Terminal corruption risk
     end note
-</br></code></pre>
+</code></pre>
 <p><strong>Figure</strong>: Binary mode state transitions showing how flags switch between modes.</p>
 <div class="admonition info">
 <p class="admonition-title">Binary Detection Mechanism</p>
@@ -1405,16 +1406,21 @@ Shows only warnings instead of binary content.</p>
 <pre class="mermaid"><code>flowchart TD
     Start[File to search] --&gt; TextFlag{--text flag set?}
 
-    TextFlag --&gt;|Yes| AsText[Treat as text<br>AsText mode<br>No detection]
+    TextFlag --&gt;|Yes| AsText["Treat as text
+AsText mode
+No detection"]
     TextFlag --&gt;|No| BinaryDetect[Binary detection enabled]
 
     BinaryDetect --&gt; FileType{File explicit or implicit?}
 
-    FileType --&gt;|Explicit| Suppress1[SearchAndSuppress<br/>Show warning]
+    FileType --&gt;|Explicit| Suppress1["Search and Suppress
+Show warning"]
     FileType --&gt;|Implicit| BinaryFlag{--binary flag set?}
 
-    BinaryFlag --&gt;|Yes| Suppress2[SearchAndSuppress<br/>Show warning]
-    BinaryFlag --&gt;|No| Skip[Quit early<br/>Silent skip]
+    BinaryFlag --&gt;|Yes| Suppress2["Search and Suppress
+Show warning"]
+    BinaryFlag --&gt;|No| Skip["Quit early
+Silent skip"]
 
     style AsText fill:#e1f5ff
     style Suppress1 fill:#fff3e0
@@ -1423,7 +1429,7 @@ Shows only warnings instead of binary content.</p>
     style TextFlag fill:#f3e5f5
     style FileType fill:#f3e5f5
     style BinaryFlag fill:#f3e5f5
-</br></br></code></pre>
+</code></pre>
 <p><strong>Figure</strong>: Binary file handling decision tree showing how flags and file type affect behavior.</p>
 <h2 id="implementation-details">Implementation Details<a class="headerlink" href="#implementation-details" title="Permanent link">¶</a></h2>
 <p>The binary handling logic is implemented across several key components:</p>

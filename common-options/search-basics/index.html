@@ -1158,12 +1158,15 @@
 <h2 id="case-sensitivity">Case Sensitivity<a class="headerlink" href="#case-sensitivity" title="Permanent link">¶</a></h2>
 <p>By default, ripgrep uses <strong>smart case</strong>: if your pattern is all lowercase, the search is case-insensitive; if it contains any uppercase letters, the search becomes case-sensitive.</p>
 <pre class="mermaid"><code>flowchart TD
-    Start[Enter Pattern] --&gt; HasUpper{Contains<br/>uppercase?}
+    Start[Enter Pattern] --&gt; HasUpper{"Contains
+uppercase?"}
     HasUpper --&gt;|Yes| CaseSens[Case-Sensitive Search]
     HasUpper --&gt;|No| CaseInsens[Case-Insensitive Search]
 
-    CaseSens --&gt; Ex1["Matches: 'Error'<br/>Skips: 'error', 'ERROR'"]
-    CaseInsens --&gt; Ex2["Matches: 'error',<br/>'Error', 'ERROR'"]
+    CaseSens --&gt; Ex1["Matches: 'Error'
+Skips: 'error', 'ERROR'"]
+    CaseInsens --&gt; Ex2["Matches: 'error',
+'Error', 'ERROR'"]
 
     style HasUpper fill:#e1f5ff
     style CaseSens fill:#ffebee
@@ -1206,10 +1209,16 @@
     Type --&gt;|-w| Word[Word Boundary]
     Type --&gt;|-x| Line[Complete Line]
 
-    Regex --&gt; R1["'test.*' matches<br/>'test', 'testing', etc."]
-    Literal --&gt; L1["'test.*' matches<br/>literal 'test.*'"]
-    Word --&gt; W1["'test' matches<br/>'test' only,<br/>not 'testing'"]
-    Line --&gt; X1["'test' matches<br/>only if entire line<br/>is 'test'"]
+    Regex --&gt; R1["'test.*' matches
+'test', 'testing', etc."]
+    Literal --&gt; L1["'test.*' matches
+literal 'test.*'"]
+    Word --&gt; W1["'test' matches
+'test' only,
+not 'testing'"]
+    Line --&gt; X1["'test' matches
+only if entire line
+is 'test'"]
 
     style Type fill:#e1f5ff
     style Regex fill:#fff3e0
@@ -1265,13 +1274,19 @@
 <h2 id="regex-engine-selection">Regex Engine Selection<a class="headerlink" href="#regex-engine-selection" title="Permanent link">¶</a></h2>
 <p>Ripgrep uses Rust's regex engine by default, which is very fast. For advanced regex features, you can switch to the PCRE2 engine:</p>
 <pre class="mermaid"><code>flowchart LR
-    Pattern[Regex Pattern] --&gt; Need{Need advanced<br/>features?}
+    Pattern[Regex Pattern] --&gt; Need{"Need advanced
+features?"}
 
-    Need --&gt;|No| Default[Default Engine<br/>Fast &amp; Efficient]
-    Need --&gt;|Yes| PCRE2[PCRE2 Engine<br/>-P flag]
+    Need --&gt;|No| Default["Default Engine
+Fast &amp; Efficient"]
+    Need --&gt;|Yes| PCRE2["PCRE2 Engine
+-P flag"]
 
-    Default --&gt; D1[Basic regex:<br/>., *, +, ?, [], etc.]
-    PCRE2 --&gt; P1[Lookahead/Lookbehind<br/>Backreferences<br/>Conditional patterns]
+    Default --&gt; D1["Basic regex:
+., *, +, ?, ["], etc.]
+    PCRE2 --&gt; P1["Lookahead/Lookbehind
+Backreferences
+Conditional patterns"]
 
     style Default fill:#e8f5e9
     style PCRE2 fill:#fff3e0

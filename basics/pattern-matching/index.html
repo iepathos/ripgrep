@@ -1378,13 +1378,20 @@
 <h2 id="pattern-types">Pattern Types<a class="headerlink" href="#pattern-types" title="Permanent link">¶</a></h2>
 <p>Ripgrep supports two main types of pattern matching:</p>
 <pre class="mermaid"><code>flowchart TD
-    Start[Need to Search?] --&gt; HasSpecial{Pattern has<br/>special chars<br/>like *, ., (, )?}
+    Start[Need to Search?] --&gt; HasSpecial{"Pattern has
+special chars
+like *, ., (, )?"}
 
-    HasSpecial --&gt;|Yes| WantLiteral{Want to match<br/>those chars<br/>literally?}
-    HasSpecial --&gt;|No| NeedFlex{Need flexible<br/>matching?}
+    HasSpecial --&gt;|Yes| WantLiteral{"Want to match
+those chars
+literally?"}
+    HasSpecial --&gt;|No| NeedFlex{"Need flexible
+matching?"}
 
-    WantLiteral --&gt;|Yes| UseLiteral[Use -F flag<br/>Literal String]
-    WantLiteral --&gt;|No| UseRegex[Use Regex<br/>Default]
+    WantLiteral --&gt;|Yes| UseLiteral["Use -F flag
+Literal String"]
+    WantLiteral --&gt;|No| UseRegex["Use Regex
+Default"]
 
     NeedFlex --&gt;|Yes| UseRegex
     NeedFlex --&gt;|No| UseLiteral
@@ -1442,15 +1449,22 @@
 <h2 id="case-sensitivity">Case Sensitivity<a class="headerlink" href="#case-sensitivity" title="Permanent link">¶</a></h2>
 <p>Ripgrep provides flexible case sensitivity options:</p>
 <pre class="mermaid"><code>flowchart TD
-    Start[Search Pattern] --&gt; Choice{What behavior<br/>do you need?}
+    Start[Search Pattern] --&gt; Choice{"What behavior
+do you need?"}
 
-    Choice --&gt;|Always case-insensitive| UseI[Use -i flag<br/>--ignore-case]
-    Choice --&gt;|Automatic/Smart| UseS[Use -S flag<br/>--smart-case]
-    Choice --&gt;|Always case-sensitive| UseDefault[Default behavior<br/>No flags]
+    Choice --&gt;|Always case-insensitive| UseI["Use -i flag
+--ignore-case"]
+    Choice --&gt;|Automatic/Smart| UseS["Use -S flag
+--smart-case"]
+    Choice --&gt;|Always case-sensitive| UseDefault["Default behavior
+No flags"]
 
-    UseS --&gt; HasUpper{Pattern has<br/>uppercase?}
-    HasUpper --&gt;|Yes| Sensitive[Case-sensitive<br/>search]
-    HasUpper --&gt;|No| Insensitive[Case-insensitive<br/>search]
+    UseS --&gt; HasUpper{"Pattern has
+uppercase?"}
+    HasUpper --&gt;|Yes| Sensitive["Case-sensitive
+search"]
+    HasUpper --&gt;|No| Insensitive["Case-insensitive
+search"]
 
     UseI --&gt; Insensitive
     UseDefault --&gt; Sensitive
@@ -1487,9 +1501,12 @@
 <h2 id="multiple-patterns">Multiple Patterns<a class="headerlink" href="#multiple-patterns" title="Permanent link">¶</a></h2>
 <p>You can search for multiple patterns in a single command. Ripgrep uses <strong>OR logic</strong> - a line matches if it contains any of the specified patterns.</p>
 <pre class="mermaid"><code>graph LR
-    Input[Line of text] --&gt; Check1{Contains<br/>pattern 1?}
-    Input --&gt; Check2{Contains<br/>pattern 2?}
-    Input --&gt; Check3{Contains<br/>pattern N?}
+    Input[Line of text] --&gt; Check1{"Contains
+pattern 1?"}
+    Input --&gt; Check2{"Contains
+pattern 2?"}
+    Input --&gt; Check3{"Contains
+pattern N?"}
 
     Check1 --&gt;|Yes| Match[Line matches]
     Check2 --&gt;|Yes| Match

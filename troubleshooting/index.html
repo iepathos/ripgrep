@@ -1140,8 +1140,10 @@
     Type --&gt;|Binary/encoding| Binary[Binary/Encoding]
 
     NoResults --&gt; Debug1{Run --files}
-    Debug1 --&gt;|Files shown| Debug2[Run --debug<br/>Check filtering]
-    Debug1 --&gt;|No files| Filter[Check ignore rules<br/>.gitignore, .ignore]
+    Debug1 --&gt;|Files shown| Debug2["Run --debug
+Check filtering"]
+    Debug1 --&gt;|No files| Filter["Check ignore rules
+.gitignore, .ignore"]
 
     Debug2 --&gt; Pattern{Pattern issue?}
     Pattern --&gt;|Maybe regex| TryLiteral[Try -F for literal]
@@ -1150,7 +1152,8 @@
 
     Perf --&gt; Stats[Run --stats]
     Stats --&gt; Many{Too many files?}
-    Many --&gt;|Yes| TypeFilter[Use -t for file types<br/>or -g for globs]
+    Many --&gt;|Yes| TypeFilter["Use -t for file types
+or -g for globs"]
     Many --&gt;|No| PerfGuide[See Performance Guide]
 
     Error --&gt; ErrorGuide[Check Error Messages page]

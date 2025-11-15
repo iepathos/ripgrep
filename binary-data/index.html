@@ -1136,17 +1136,21 @@
 <p>Binary data handling is one of ripgrep's most important and nuanced features. Understanding how ripgrep detects and processes binary files is crucial for getting the results you expect, whether you're searching source code or working with mixed file types.</p>
 <h2 id="binary-detection-flow">Binary Detection Flow<a class="headerlink" href="#binary-detection-flow" title="Permanent link">¶</a></h2>
 <pre class="mermaid"><code>flowchart TD
-    Start[File to search] --&gt; Explicit{Explicitly<br/>named?}
-    Explicit --&gt;|Yes| SearchSuppress[SearchAndSuppress mode]
+    Start[File to search] --&gt; Explicit{"Explicitly
+named?"}
+    Explicit --&gt;|Yes| SearchSuppress["Search and Suppress mode"]
     Explicit --&gt;|No| AutoMode[Auto mode]
 
-    AutoMode --&gt; CheckNUL{Contains<br/>NUL byte?}
+    AutoMode --&gt; CheckNUL{"Contains
+NUL byte?"}
     CheckNUL --&gt;|Yes| Skip[Skip file silently]
     CheckNUL --&gt;|No| Search[Search as text]
 
     SearchSuppress --&gt; SearchFile[Search file]
-    SearchFile --&gt; HasMatch{Match found<br/>with NUL?}
-    HasMatch --&gt;|Yes| Warn[Show warning,<br/>suppress output]
+    SearchFile --&gt; HasMatch{"Match found
+with NUL?"}
+    HasMatch --&gt;|Yes| Warn["Show warning,
+suppress output"]
     HasMatch --&gt;|No| Show[Show matches]
 
     style Skip fill:#ffcccc

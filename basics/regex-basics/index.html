@@ -1415,15 +1415,24 @@
 <li><strong>Auto</strong>: Lets ripgrep choose the best engine for your pattern.</li>
 </ul>
 <pre class="mermaid"><code>flowchart TD
-    Start[Need Regex Pattern] --&gt; Check{Pattern<br/>Requirements?}
+    Start[Need Regex Pattern] --&gt; Check{"Pattern
+Requirements?"}
 
-    Check --&gt;|Basic matching<br/>Character classes<br/>Quantifiers| Default[Use Default Engine<br/>Fast &amp; Efficient]
-    Check --&gt;|Backreferences<br/>Lookahead/behind<br/>Advanced features| PCRE[Use PCRE2 Engine<br/>-P flag]
-    Check --&gt;|Not sure| Auto[Use Auto Mode<br/>--auto-hybrid-regex]
+    Check --&gt;|"Basic matching
+Character classes
+Quantifiers"| Default["Use Default Engine
+Fast &amp; Efficient"]
+    Check --&gt;|"Backreferences
+Lookahead/behind
+Advanced features"| PCRE["Use PCRE2 Engine
+-P flag"]
+    Check --&gt;|Not sure| Auto["Use Auto Mode
+--auto-hybrid-regex"]
 
     Default --&gt; Search[Execute Search]
     PCRE --&gt; Search
-    Auto --&gt; Detect{Auto-detect<br/>Pattern Type}
+    Auto --&gt; Detect{"Auto-detect
+Pattern Type"}
     Detect --&gt;|Simple| UseDefault[Select Default]
     Detect --&gt;|Complex| UsePCRE[Select PCRE2]
     UseDefault --&gt; Search

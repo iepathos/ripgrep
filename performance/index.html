@@ -1939,7 +1939,8 @@
 <p>Ripgrep uses a work-stealing scheduler for parallel iteration. When one thread finishes its work early, it can "steal" work from other threads, ensuring all cores stay busy and maximizing throughput.</p>
 <p>This lock-free parallel iteration (using atomic operations for work distribution) means ripgrep scales well across many cores without contention overhead.</p>
 <pre class="mermaid"><code>graph TD
-    Start[Directory Traversal] --&gt; WorkQueue[Work Queue<br/>Files to Search]
+    Start[Directory Traversal] --&gt; WorkQueue["Work Queue
+Files to Search"]
     WorkQueue --&gt; T1[Thread 1]
     WorkQueue --&gt; T2[Thread 2]
     WorkQueue --&gt; T3[Thread 3]
@@ -1988,20 +1989,26 @@
 - Small files are faster with incremental buffered reads</p>
 <pre class="mermaid"><code>flowchart TD
     Start[File to Search] --&gt; Type{File Type}
-    Type --&gt;|Stdin| BufferStdin[Buffered Read<br/>Streaming Input]
+    Type --&gt;|Stdin| BufferStdin["Buffered Read
+Streaming Input"]
     Type --&gt;|Regular File| Size{File Size}
 
     Size --&gt;|Large File| Resources{RAM Available?}
-    Size --&gt;|Small File| BufferSmall[Buffered Read<br/>Better for Small Files]
+    Size --&gt;|Small File| BufferSmall["Buffered Read
+Better for Small Files"]
 
     Resources --&gt;|Yes + Sufficient| FS{File System}
-    Resources --&gt;|No/Limited| BufferMem[Buffered Read<br/>Memory Constrained]
+    Resources --&gt;|No/Limited| BufferMem["Buffered Read
+Memory Constrained"]
 
     FS --&gt;|Local Disk| Cache{In Page Cache?}
-    FS --&gt;|Network/NFS| BufferNet[Buffered Read<br/>Network Overhead]
+    FS --&gt;|Network/NFS| BufferNet["Buffered Read
+Network Overhead"]
 
-    Cache --&gt;|Yes| MmapCache[Memory Mapping<br/>Zero-Copy Access]
-    Cache --&gt;|No| MmapDisk[Memory Mapping<br/>OS Handles I/O]
+    Cache --&gt;|Yes| MmapCache["Memory Mapping
+Zero-Copy Access"]
+    Cache --&gt;|No| MmapDisk["Memory Mapping
+OS Handles I/O"]
 
     MmapCache --&gt; Search[Search File]
     MmapDisk --&gt; Search
@@ -2128,13 +2135,19 @@
 <pre class="mermaid"><code>graph LR
     Pattern[Regex Pattern] --&gt; Analysis{Pattern Analysis}
 
-    Analysis --&gt;|Simple Literal| Literal[SIMD Literal<br/>Matching]
-    Analysis --&gt;|Standard Regex| DFA[Rust Regex<br/>Finite Automata]
-    Analysis --&gt;|Look-around/Backrefs| PCRE[PCRE2<br/>Backtracking]
+    Analysis --&gt;|Simple Literal| Literal["SIMD Literal
+Matching"]
+    Analysis --&gt;|Standard Regex| DFA["Rust Regex
+Finite Automata"]
+    Analysis --&gt;|Look-around/Backrefs| PCRE["PCRE2
+Backtracking"]
 
-    Literal --&gt; Perf1[⚡ Fastest<br/>O(n) guaranteed]
-    DFA --&gt; Perf2[⚡⚡ Fast<br/>O(n) guaranteed]
-    PCRE --&gt; Perf3[⚠️ Variable<br/>Can be slow]
+    Literal --&gt; Perf1["⚡ Fastest
+    O(n) guaranteed"]
+    DFA --&gt; Perf2["⚡⚡ Fast
+    O(n) guaranteed"]
+    PCRE --&gt; Perf3["⚠️ Variable
+    Can be slow"]
 
     style Literal fill:#c8e6c9
     style DFA fill:#e1f5ff

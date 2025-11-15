@@ -2070,13 +2070,18 @@
 <h2 id="how-type-matching-works">How Type Matching Works<a class="headerlink" href="#how-type-matching-works" title="Permanent link">¶</a></h2>
 <p>Under the hood, file types are implemented as named collections of glob patterns. When you use <code>-t rust</code>, ripgrep internally applies the glob pattern <code>*.rs</code> to match files.</p>
 <pre class="mermaid"><code>flowchart TD
-    Start[File Encountered] --&gt; IgnoreCheck{In .gitignore<br/>or ignore file?}
+    Start[File Encountered] --&gt; IgnoreCheck{"In .gitignore
+or ignore file?"}
     IgnoreCheck --&gt;|Yes| Skip[Skip File]
-    IgnoreCheck --&gt;|No| TypeCheck{-t or -T<br/>specified?}
+    IgnoreCheck --&gt;|No| TypeCheck{"-t or -T
+specified?"}
 
-    TypeCheck --&gt;|No Type Flags| GlobCheck{-g glob<br/>specified?}
-    TypeCheck --&gt;|Has -t| MatchType{File matches<br/>-t types?}
-    TypeCheck --&gt;|Has -T| ExcludeType{File matches<br/>-T types?}
+    TypeCheck --&gt;|No Type Flags| GlobCheck{"-g glob
+specified?"}
+    TypeCheck --&gt;|Has -t| MatchType{"File matches
+-t types?"}
+    TypeCheck --&gt;|Has -T| ExcludeType{"File matches
+-T types?"}
 
     MatchType --&gt;|Yes| GlobCheck
     MatchType --&gt;|No| Skip
@@ -2085,7 +2090,8 @@
     ExcludeType --&gt;|No| GlobCheck
 
     GlobCheck --&gt;|No Glob| Search[Search File]
-    GlobCheck --&gt;|Has -g| MatchGlob{File matches<br/>glob pattern?}
+    GlobCheck --&gt;|Has -g| MatchGlob{"File matches
+glob pattern?"}
 
     MatchGlob --&gt;|Yes| Search
     MatchGlob --&gt;|No| Skip

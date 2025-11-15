@@ -1685,14 +1685,19 @@
 - Quickly navigating between files
 - Integrating with IDE-like terminal experiences</p>
 <pre class="mermaid"><code>flowchart LR
-    A[ripgrep Output] --&gt; B[OSC 8 Escape<br/>Sequence]
+    A[ripgrep Output] --&gt; B["OSC 8 Escape
+Sequence"]
     B --&gt; C[Terminal Emulator]
-    C --&gt; D{User Clicks<br/>Link?}
+    C --&gt; D{"User Clicks
+Link?"}
     D --&gt;|Yes| E[Extract URL]
     D --&gt;|No| End[Display Only]
-    E --&gt; F{URL Scheme<br/>Registered?}
-    F --&gt;|Yes| G[Open in Editor/<br/>Application]
-    F --&gt;|No| H[Error: No<br/>Handler]
+    E --&gt; F{"URL Scheme
+Registered?"}
+    F --&gt;|Yes| G["Open in Editor/
+Application"]
+    F --&gt;|No| H["Error: No
+Handler"]
     G --&gt; End
     H --&gt; End
 

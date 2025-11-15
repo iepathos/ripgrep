@@ -1450,11 +1450,16 @@
 </ul>
 </div>
 <pre class="mermaid"><code>graph TD
-    Root[dir/] --&gt; File1[file1.txt<br/>Depth 1]
-    Root --&gt; SubDir[subdir/<br/>Depth 1]
-    SubDir --&gt; File2[file2.txt<br/>Depth 2]
-    SubDir --&gt; Deeper[deeper/<br/>Depth 2]
-    Deeper --&gt; File3[file3.txt<br/>Depth 3]
+    Root[dir/] --&gt; File1["file1.txt
+Depth 1"]
+    Root --&gt; SubDir["subdir/
+Depth 1"]
+    SubDir --&gt; File2["file2.txt
+Depth 2"]
+    SubDir --&gt; Deeper["deeper/
+Depth 2"]
+    Deeper --&gt; File3["file3.txt
+Depth 3"]
 
     style File1 fill:#e8f5e9
     style File2 fill:#fff3e0
@@ -1533,22 +1538,28 @@
 <pre class="mermaid"><code>flowchart TD
     Start[Start Search] --&gt; PathType{Path Type?}
 
-    PathType --&gt;|File| SearchFile[Search File Directly<br/>Override ignore rules]
-    PathType --&gt;|Directory| CheckDepth{max-depth<br/>reached?}
+    PathType --&gt;|File| SearchFile["Search File Directly
+Override ignore rules"]
+    PathType --&gt;|Directory| CheckDepth{"max-depth
+reached?"}
 
     CheckDepth --&gt;|Yes| Skip[Skip Directory]
-    CheckDepth --&gt;|No| CheckIgnore{Ignored by<br/>.gitignore?}
+    CheckDepth --&gt;|No| CheckIgnore{"Ignored by
+.gitignore?"}
 
     CheckIgnore --&gt;|Yes| Skip
-    CheckIgnore --&gt;|No| CheckFS{File system<br/>boundary?}
+    CheckIgnore --&gt;|No| CheckFS{"File system
+boundary?"}
 
     CheckFS --&gt;|Yes + one-file-system| Skip
-    CheckFS --&gt;|No or unrestricted| CheckSymlink{Symbolic<br/>link?}
+    CheckFS --&gt;|No or unrestricted| CheckSymlink{"Symbolic
+link?"}
 
     CheckSymlink --&gt;|Yes + no --follow| Skip
     CheckSymlink --&gt;|No or --follow| Descend[Descend into Directory]
 
-    Descend --&gt; Parallel[Parallel Walker<br/>Process Entries]
+    Descend --&gt; Parallel["Parallel Walker
+Process Entries"]
     Parallel --&gt; PathType
 
     SearchFile --&gt; Complete[Complete]

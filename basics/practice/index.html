@@ -1295,23 +1295,28 @@
 <p>Try each exercise in order. The expected output is shown to help you verify your results.</p>
 </div>
 <pre class="mermaid"><code>graph TD
-    Start[Start Here] --&gt; Basic[Basic Search<br/>Exercise 1]
-    Basic --&gt; Flags[Search Flags<br/>Exercises 2-6]
+    Start[Start Here] --&gt; Basic["Basic Search
+Exercise 1"]
+    Basic --&gt; Flags["Search Flags
+Exercises 2-6"]
     Flags --&gt; Case[Case Insensitive -i]
     Flags --&gt; Literal[Literal Search -F]
     Flags --&gt; Word[Word Boundaries -w]
     Flags --&gt; Count[Count Matches -c]
     Flags --&gt; Context[Context Lines -C]
 
-    Flags --&gt; Advanced[Advanced Patterns<br/>Exercises 7-8]
+    Flags --&gt; Advanced["Advanced Patterns
+Exercises 7-8"]
     Advanced --&gt; Regex[Regex Patterns]
     Advanced --&gt; Invert[Inverted Match -v]
 
-    Advanced --&gt; Filter[Filtering<br/>Exercises 9-10]
+    Advanced --&gt; Filter["Filtering
+Exercises 9-10"]
     Filter --&gt; Type[File Types -t]
     Filter --&gt; Multi[Multiline -U]
 
-    Filter --&gt; Output[Output Format<br/>Exercise 11]
+    Filter --&gt; Output["Output Format
+Exercise 11"]
     Output --&gt; JSON[JSON --json]
 
     Output --&gt; Practice[Practice More]
@@ -1475,21 +1480,32 @@
 </div>
 <h2 id="common-mistakes">Common Mistakes<a class="headerlink" href="#common-mistakes" title="Permanent link">¶</a></h2>
 <pre class="mermaid"><code>flowchart TD
-    Start[Need to Search?] --&gt; Special{Contains<br/>special chars?<br/>. * + ? etc.}
+    Start[Need to Search?] --&gt; Special{"Contains
+special chars?
+. * + ? etc."}
 
-    Special --&gt;|Yes| Literal[Use -F flag<br/>for literal search]
-    Special --&gt;|No| Case{Case<br/>matters?}
+    Special --&gt;|Yes| Literal["Use -F flag
+for literal search"]
+    Special --&gt;|No| Case{"Case
+matters?"}
 
-    Case --&gt;|No| CaseFlag[Use -i flag<br/>case-insensitive]
-    Case --&gt;|Yes| Whole{Match whole<br/>words only?}
+    Case --&gt;|No| CaseFlag["Use -i flag
+case-insensitive"]
+    Case --&gt;|Yes| Whole{"Match whole
+words only?"}
 
-    Whole --&gt;|Yes| Word[Use -w flag<br/>word boundaries]
-    Whole --&gt;|No| Hidden{Search<br/>hidden files?}
+    Whole --&gt;|Yes| Word["Use -w flag
+word boundaries"]
+    Whole --&gt;|No| Hidden{"Search
+hidden files?"}
 
-    Hidden --&gt;|Yes| HiddenFlag[Use --hidden<br/>--no-ignore]
-    Hidden --&gt;|No| Type{Specific<br/>file types?}
+    Hidden --&gt;|Yes| HiddenFlag["Use --hidden
+--no-ignore"]
+    Hidden --&gt;|No| Type{"Specific
+file types?"}
 
-    Type --&gt;|Yes| TypeFlag[Use -t flag<br/>file type filter]
+    Type --&gt;|Yes| TypeFlag["Use -t flag
+file type filter"]
     Type --&gt;|No| Search[Run search]
 
     Literal --&gt; Search

@@ -1120,13 +1120,15 @@
 </blockquote>
 <p>These flags control what information is displayed with each match.</p>
 <pre class="mermaid"><code>flowchart TD
-    Start[Search Match Found] --&gt; Format{Output<br/>Format?}
+    Start[Search Match Found] --&gt; Format{"Output
+Format?"}
 
     Format --&gt;|Default| Auto[Auto-detect Context]
     Format --&gt;|--pretty| Pretty[Color + Heading + Line Numbers]
     Format --&gt;|Custom| Custom[Apply Custom Flags]
 
-    Auto --&gt; MultiFile{Multiple<br/>Files?}
+    Auto --&gt; MultiFile{"Multiple
+Files?"}
     MultiFile --&gt;|Yes| ShowFile[Show Filename]
     MultiFile --&gt;|No| HideFile[Hide Filename]
 

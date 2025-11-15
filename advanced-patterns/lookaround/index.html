@@ -1264,13 +1264,17 @@
 <h3 id="four-types-at-a-glance">Four Types at a Glance<a class="headerlink" href="#four-types-at-a-glance" title="Permanent link">¶</a></h3>
 <pre class="mermaid"><code>graph TD
     subgraph Direction
-        LA[Lookahead<br/>Check AFTER]
-        LB[Lookbehind<br/>Check BEFORE]
+        LA["Lookahead
+Check AFTER"]
+        LB["Lookbehind
+Check BEFORE"]
     end
 
     subgraph Condition
-        POS[Positive<br/>Must Match]
-        NEG[Negative<br/>Must NOT Match]
+        POS["Positive
+Must Match"]
+        NEG["Negative
+Must NOT Match"]
     end
 
     LA --- POS
@@ -1278,16 +1282,20 @@
     LB --- POS
     LB --- NEG
 
-    POS --&gt; P1["(?=...) Positive Lookahead<br/>Pattern must exist ahead"]
-    NEG --&gt; N1["(?!...) Negative Lookahead<br/>Pattern must NOT exist ahead"]
-    POS --&gt; P2["(?&lt;=...) Positive Lookbehind<br/>Pattern must exist behind"]
-    NEG --&gt; N2["(?<!--...) Negative Lookbehind<br/-->Pattern must NOT exist behind"]
+    POS --&gt; P1["(?=...) Positive Lookahead
+Pattern must exist ahead"]
+    NEG --&gt; N1["(?!...) Negative Lookahead
+Pattern must NOT exist ahead"]
+    POS --&gt; P2["(?&lt;=...) Positive Lookbehind
+Pattern must exist behind"]
+    NEG --&gt; N2["(?<!--...) Negative Lookbehind
+Pattern must NOT exist behind"]
 
     style LA fill:#e1f5ff
     style LB fill:#fff3e0
     style POS fill:#e8f5e9
     style NEG fill:#ffebee
-</code></pre>
+</code--></code></pre>
 <p><strong>Figure</strong>: The four lookaround types combine direction (ahead/behind) with condition (positive/negative).</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio"><input id="__tabbed_1_2" name="__tabbed_1" type="radio"><div class="tabbed-labels"><label for="__tabbed_1_1">Lookahead</label><label for="__tabbed_1_2">Lookbehind</label></div>
 <div class="tabbed-content">
@@ -1371,9 +1379,11 @@
 <pre class="mermaid"><code>graph TD
     A[Need to match pattern] --&gt; B{Need context?}
     B --&gt;|No| C[Use simple pattern]
-    B --&gt;|Yes| D{Include context<br/>in result?}
+    B --&gt;|Yes| D{"Include context
+in result?"}
     D --&gt;|Yes| E[Use capture groups]
-    D --&gt;|No| F{Context before<br/>or after?}
+    D --&gt;|No| F{"Context before
+or after?"}
     F --&gt;|Before| G[Use lookbehind]
     F --&gt;|After| H[Use lookahead]
     F --&gt;|Both| I[Combine both]

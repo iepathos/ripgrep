@@ -1247,10 +1247,14 @@
     A[Start reading file] --&gt; B{NUL byte found?}
     B --&gt;|No| C[Continue searching normally]
     B --&gt;|Yes, Auto mode| D{Explicit file path?}
-    B --&gt;|Yes, --binary mode| E[Replace NUL with newline<br/>Continue searching<br/>Suppress binary matches]
-    B --&gt;|Yes, -a/--text mode| F[Treat as text<br/>Print NUL bytes]
+    B --&gt;|Yes, --binary mode| E["Replace NUL with newline
+Continue searching
+Suppress binary matches"]
+    B --&gt;|Yes, -a/--text mode| F["Treat as text
+Print NUL bytes"]
     D --&gt;|Yes| E
-    D --&gt;|No| G[Stop searching<br/>Skip file]
+    D --&gt;|No| G["Stop searching
+Skip file"]
 </code></pre>
 <h2 id="searching-binary-files">Searching Binary Files<a class="headerlink" href="#searching-binary-files" title="Permanent link">¶</a></h2>
 <p>If you need to search binary files, ripgrep provides several options depending on your needs:</p>

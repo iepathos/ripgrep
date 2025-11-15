@@ -1557,15 +1557,23 @@
 <h3 id="choosing-an-output-format">Choosing an Output Format<a class="headerlink" href="#choosing-an-output-format" title="Permanent link">¶</a></h3>
 <p>Different output formats serve different purposes:</p>
 <pre class="mermaid"><code>flowchart TD
-    Start{What's your<br/>use case?}
+    Start{"What's your
+use case?"}
 
-    Start --&gt;|Interactive<br/>terminal use| Human[Standard Format]
+    Start --&gt;|"Interactive
+terminal use"| Human[Standard Format]
     Start --&gt;|Script/automation| Machine[JSON Format]
     Start --&gt;|Editor integration| Editor[Vimgrep Format]
 
-    Human --&gt; Features1[✓ Syntax highlighting<br/>✓ Color coding<br/>✓ Heading mode]
-    Machine --&gt; Features2[✓ Structured data<br/>✓ Easy parsing with jq<br/>✓ Complete metadata]
-    Editor --&gt; Features3[✓ Vim quickfix compatible<br/>✓ file:line:col format<br/>✓ Editor agnostic]
+    Human --&gt; Features1["✓ Syntax highlighting
+✓ Color coding
+✓ Heading mode"]
+    Machine --&gt; Features2["✓ Structured data
+✓ Easy parsing with jq
+✓ Complete metadata"]
+    Editor --&gt; Features3["✓ Vim quickfix compatible
+✓ file:line:col format
+✓ Editor agnostic"]
 
     Features1 --&gt; Cmd1["rg pattern"]
     Features2 --&gt; Cmd2["rg --json pattern"]

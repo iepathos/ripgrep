@@ -1356,17 +1356,21 @@
 <p><strong>Quick tip</strong>: Use <code>--engine auto</code> to let ripgrep automatically select PCRE2 when your pattern contains backreferences.</p>
 </div>
 <pre class="mermaid"><code>flowchart TD
-    Start[Write Regex Pattern] --&gt; HasBackref{Pattern uses<br/>backreferences?}
+    Start[Write Regex Pattern] --&gt; HasBackref{"Pattern uses
+backreferences?"}
 
     HasBackref --&gt;|Yes| NeedPCRE[PCRE2 Required]
     HasBackref --&gt;|No| DefaultOK[Default Engine OK]
 
-    NeedPCRE --&gt; AutoEngine{Using<br/>--engine auto?}
+    NeedPCRE --&gt; AutoEngine{"Using
+--engine auto?"}
     AutoEngine --&gt;|Yes| AutoSelect[Ripgrep selects PCRE2]
-    AutoEngine --&gt;|No| ManualFlag{Using -P<br/>or --pcre2?}
+    AutoEngine --&gt;|No| ManualFlag{"Using -P
+or --pcre2?"}
 
     ManualFlag --&gt;|Yes| PCRE2[PCRE2 Engine]
-    ManualFlag --&gt;|No| Error[Error: backreferences<br/>not supported]
+    ManualFlag --&gt;|No| Error["Error: backreferences
+not supported"]
 
     AutoSelect --&gt; PCRE2
     DefaultOK --&gt; Fast["Fast: O(n) linear time"]

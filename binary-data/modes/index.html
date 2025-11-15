@@ -1153,16 +1153,21 @@
 </div>
 <pre class="mermaid"><code>flowchart TD
     Start[Search File] --&gt; Check{File specification?}
-    Check --&gt;|Explicit<br/>rg pattern file.bin| Explicit[SearchAndSuppress mode]
-    Check --&gt;|Implicit<br/>rg pattern -g '*.bin'| Implicit[Auto skip mode]
+    Check --&gt;|"Explicit
+rg pattern file.bin"| Explicit["Search and Suppress mode"]
+    Check --&gt;|"Implicit
+rg pattern -g '*.bin'"| Implicit[Auto skip mode]
 
     Explicit --&gt; SearchE[Search file]
-    SearchE --&gt; NulE{NUL byte<br/>detected?}
-    NulE --&gt;|Yes| WarnE[Show warning<br/>Suppress matches]
+    SearchE --&gt; NulE{"NUL byte
+detected?"}
+    NulE --&gt;|Yes| WarnE["Show warning
+Suppress matches"]
     NulE --&gt;|No| MatchesE[Show matches]
 
     Implicit --&gt; SearchI[Search file]
-    SearchI --&gt; NulI{NUL byte<br/>detected?}
+    SearchI --&gt; NulI{"NUL byte
+detected?"}
     NulI --&gt;|Yes| SkipI[Skip file silently]
     NulI --&gt;|No| MatchesI[Show matches]
 

@@ -1208,7 +1208,8 @@
 
     Engine --&gt;|Yes| SimplifyRegex[Simplify Pattern]
     Engine --&gt;|Yes| TryDefault[Test without -P]
-    Engine --&gt;|No| ComplexPattern{Complex<br/>regex?}
+    Engine --&gt;|No| ComplexPattern{"Complex
+regex?"}
 
     ComplexPattern --&gt;|Yes| Literal[Try -F literal]
     ComplexPattern --&gt;|No| Threads[Adjust --threads]

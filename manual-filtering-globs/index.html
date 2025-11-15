@@ -1596,13 +1596,19 @@
 </span></code></pre></div>
 <p>This allows building complex filters by layering include and exclude patterns.</p>
 <pre class="mermaid"><code>flowchart TD
-    Start[File Encountered] --&gt; Check{Any -g<br/>patterns?}
-    Check --&gt;|No| Auto[Use Automatic Filtering<br/>.gitignore, .ignore]
-    Check --&gt;|Yes| Eval[Evaluate Glob Patterns<br/>in order]
+    Start[File Encountered] --&gt; Check{"Any -g
+patterns?"}
+    Check --&gt;|No| Auto["Use Automatic Filtering
+.gitignore, .ignore"]
+    Check --&gt;|Yes| Eval["Evaluate Glob Patterns
+in order"]
 
-    Eval --&gt; Include{Matches<br/>include<br/>pattern?}
+    Eval --&gt; Include{"Matches
+include
+pattern?"}
     Include --&gt;|No| Skip[Skip File]
-    Include --&gt;|Yes| Exclude{Later pattern<br/>excludes?}
+    Include --&gt;|Yes| Exclude{"Later pattern
+excludes?"}
 
     Exclude --&gt;|Yes !pattern| Skip
     Exclude --&gt;|No| Search[Search File]

@@ -1707,23 +1707,30 @@
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">¶</a></h2>
 <p>By default, ripgrep respects various ignore files, skips hidden files and directories, and avoids searching binary files. This behavior makes searches faster and reduces noise in results. Understanding these filters helps you search effectively and know when to disable them.</p>
 <pre class="mermaid"><code>flowchart TD
-    Start[File Encountered] --&gt; Explicit{Specified<br/>Explicitly?}
+    Start[File Encountered] --&gt; Explicit{"Specified
+Explicitly?"}
     Explicit --&gt;|Yes| Search[Search File]
-    Explicit --&gt;|No| Hidden{Hidden<br/>File?}
+    Explicit --&gt;|No| Hidden{"Hidden
+File?"}
 
-    Hidden --&gt;|Yes| HiddenFlag{--hidden<br/>enabled?}
+    Hidden --&gt;|Yes| HiddenFlag{"--hidden
+enabled?"}
     HiddenFlag --&gt;|No| Skip1[Skip File]
     HiddenFlag --&gt;|Yes| Ignore
 
-    Hidden --&gt;|No| Ignore{Matches<br/>Ignore Pattern?}
+    Hidden --&gt;|No| Ignore{"Matches
+Ignore Pattern?"}
 
-    Ignore --&gt;|Yes| IgnoreFlag{--no-ignore<br/>or -u?}
+    Ignore --&gt;|Yes| IgnoreFlag{"--no-ignore
+or -u?"}
     IgnoreFlag --&gt;|No| Skip2[Skip File]
     IgnoreFlag --&gt;|Yes| Binary
 
-    Ignore --&gt;|No| Binary{Binary<br/>Content?}
+    Ignore --&gt;|No| Binary{"Binary
+Content?"}
 
-    Binary --&gt;|Yes| BinaryFlag{--binary<br/>enabled?}
+    Binary --&gt;|Yes| BinaryFlag{"--binary
+enabled?"}
     BinaryFlag --&gt;|No| Skip3[Skip File]
     BinaryFlag --&gt;|Yes| Search
 
@@ -2001,12 +2008,19 @@
 <h3 id="progressive-unrestricted-flags">Progressive Unrestricted Flags<a class="headerlink" href="#progressive-unrestricted-flags" title="Permanent link">¶</a></h3>
 <p>The <code>-u/--unrestricted</code> flag can be used up to three times for progressive filtering removal:</p>
 <pre class="mermaid"><code>graph LR
-    Default[Default<br/>rg 'pattern'] --&gt; U1[-u<br/>--no-ignore]
-    U1 --&gt; U2[-uu<br/>+ --hidden]
-    U2 --&gt; U3[-uuu<br/>+ --binary]
+    Default["Default
+rg 'pattern'"] --&gt; U1["-u
+--no-ignore"]
+    U1 --&gt; U2["-uu
++ --hidden"]
+    U2 --&gt; U3["-uuu
++ --binary"]
 
-    Default -.-&gt;|Filters| F1[Ignore Files<br/>Hidden Files<br/>Binary Files]
-    U1 -.-&gt;|Filters| F2[Hidden Files<br/>Binary Files]
+    Default -.-&gt;|Filters| F1["Ignore Files
+Hidden Files
+Binary Files"]
+    U1 -.-&gt;|Filters| F2["Hidden Files
+Binary Files"]
     U2 -.-&gt;|Filters| F3[Binary Files]
     U3 -.-&gt;|Filters| F4[None]
 

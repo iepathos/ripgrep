@@ -1715,11 +1715,17 @@
 <p>The preprocessor outputs the transformed content to stdout, which ripgrep then searches.</p>
 <h3 id="how-it-works">How It Works<a class="headerlink" href="#how-it-works" title="Permanent link">¶</a></h3>
 <pre class="mermaid"><code>flowchart LR
-    File[Binary File<br/>PDF, .gz, .docx] --&gt; Check{--pre-glob<br/>match?}
-    Check --&gt;|No Match| Direct[Direct Search<br/>UTF-8 content]
-    Check --&gt;|Match| Pre[Preprocessor<br/>Transform to text]
-    Pre --&gt; Stdout[Text Output<br/>to stdout]
-    Stdout --&gt; Search[ripgrep<br/>Pattern Match]
+    File["Binary File
+PDF, .gz, .docx"] --&gt; Check{"--pre-glob
+match?"}
+    Check --&gt;|No Match| Direct["Direct Search
+UTF-8 content"]
+    Check --&gt;|Match| Pre["Preprocessor
+Transform to text"]
+    Pre --&gt; Stdout["Text Output
+to stdout"]
+    Stdout --&gt; Search["ripgrep
+Pattern Match"]
     Direct --&gt; Search
     Search --&gt; Results[Search Results]
 
@@ -1792,17 +1798,20 @@
 <h3 id="handling-multiple-file-types">Handling Multiple File Types<a class="headerlink" href="#handling-multiple-file-types" title="Permanent link">¶</a></h3>
 <p>Make the preprocessor conditional on file type using two approaches:</p>
 <pre class="mermaid"><code>flowchart TD
-    Start[File Input] --&gt; Approach{Detection<br/>Strategy}
+    Start[File Input] --&gt; Approach{"Detection
+Strategy"}
 
     Approach --&gt;|Extension-Based| Ext[Check File Extension]
     Ext --&gt; ExtMatch{*.pdf?}
-    ExtMatch --&gt;|Yes| NonEmpty{File<br/>Non-empty?}
+    ExtMatch --&gt;|Yes| NonEmpty{"File
+Non-empty?"}
     ExtMatch --&gt;|No| Cat1[cat - -]
     NonEmpty --&gt;|Yes| PDF1[pdftotext - -]
     NonEmpty --&gt;|No| Cat1
 
     Approach --&gt;|Content Sniffing| Sniff[Run 'file' Command]
-    Sniff --&gt; FileType{Content<br/>Type?}
+    Sniff --&gt; FileType{"Content
+Type?"}
     FileType --&gt;|PDF| PDF2[pdftotext - -]
     FileType --&gt;|Zstandard| Zstd[pzstd -cdq]
     FileType --&gt;|gzip| Gzip[gzip -cdq]

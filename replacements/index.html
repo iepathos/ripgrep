@@ -1647,10 +1647,13 @@
 <h2 id="how-replacements-work">How Replacements Work<a class="headerlink" href="#how-replacements-work" title="Permanent link">¶</a></h2>
 <p>When you use the <code>-r/--replace</code> flag, ripgrep processes text through several stages:</p>
 <pre class="mermaid"><code>flowchart LR
-    Input[Input Text] --&gt; Match{Pattern<br/>Matches?}
+    Input[Input Text] --&gt; Match{"Pattern
+Matches?"}
     Match --&gt;|No| Skip[Skip Line]
-    Match --&gt;|Yes| Extract[Extract Capture<br/>Groups]
-    Extract --&gt; Replace[Apply Replacement<br/>String]
+    Match --&gt;|Yes| Extract["Extract Capture
+Groups"]
+    Extract --&gt; Replace["Apply Replacement
+String"]
     Replace --&gt; Output[Modified Output]
     Skip --&gt; Output
 
@@ -1719,16 +1722,21 @@
 </div>
 <pre class="mermaid"><code>flowchart TD
     Start["$1a"] --&gt; Parse{Has Braces?}
-    Parse --&gt;|No| Longest[Parse Longest<br/>Valid Name]
-    Parse --&gt;|Yes "${1}a"| Extract[Extract Group<br/>Reference]
+    Parse --&gt;|No| Longest["Parse Longest
+Valid Name"]
+    Parse --&gt;|Yes "${1}a"| Extract["Extract Group
+Reference"]
 
-    Longest --&gt; Check{Group "1a"<br/>Exists?}
-    Extract --&gt; Check2{Group "1"<br/>Exists?}
+    Longest --&gt; Check{"Group "1a"
+Exists?"}
+    Extract --&gt; Check2{"Group "1"
+Exists?"}
 
     Check --&gt;|Yes| Output1["Value of group '1a'"]
     Check --&gt;|No| Output2[Empty String]
 
-    Check2 --&gt;|Yes| Output3["Value of group 1<br/>+ literal 'a'"]
+    Check2 --&gt;|Yes| Output3["Value of group 1
++ literal 'a'"]
     Check2 --&gt;|No| Output4["Empty + literal 'a'"]
 
     style Parse fill:#e1f5ff

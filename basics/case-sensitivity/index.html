@@ -1196,9 +1196,9 @@
 <tr>
 <td><strong>Smart Case</strong></td>
 <td><code>-S</code> / <code>--smart-case</code></td>
-<td>Lowercase → insensitive<br/>Uppercase → sensitive</td>
-<td><code>todo</code><br/><code>TODO</code></td>
-<td>TODO, todo, Todo<br/>TODO only</td>
+<td>Lowercase → insensitive; Uppercase → sensitive</td>
+<td><code>todo</code>; <code>TODO</code></td>
+<td>TODO, todo, Todo; TODO only</td>
 </tr>
 </tbody>
 </table>
@@ -1226,17 +1226,22 @@
 - If pattern is all lowercase → case-insensitive search
 - If pattern contains uppercase → case-sensitive search</p>
 <pre class="mermaid"><code>flowchart TD
-    Start[Search Pattern] --&gt; Check{Contains<br>uppercase?}
-    Check --&gt;|Yes| Sensitive[Case-Sensitive Search<br>Exact match only]
-    Check --&gt;|No| Insensitive[Case-Insensitive Search<br>Matches all variants]
+    Start[Search Pattern] --&gt; Check{"Contains
+uppercase?"}
+    Check --&gt;|Yes| Sensitive["Case-Sensitive Search
+Exact match only"]
+    Check --&gt;|No| Insensitive["Case-Insensitive Search
+Matches all variants"]
 
-    Sensitive --&gt; Ex1["Example: 'TODO'<br/>Matches: TODO only"]
-    Insensitive --&gt; Ex2["Example: 'todo'<br/>Matches: TODO, todo, Todo"]
+    Sensitive --&gt; Ex1["Example: 'TODO'
+Matches: TODO only"]
+    Insensitive --&gt; Ex2["Example: 'todo'
+Matches: TODO, todo, Todo"]
 
     style Sensitive fill:#ffebee
     style Insensitive fill:#e8f5e9
     style Check fill:#fff3e0
-</br></br></br></code></pre>
+</code></pre>
 <p><strong>Figure</strong>: Smart case decision logic based on pattern casing.</p>
 <div class="admonition tip">
 <p class="admonition-title">Smart case is very popular</p>

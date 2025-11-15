@@ -1706,7 +1706,8 @@
 <li><strong>Later flags override earlier flags</strong></li>
 </ul>
 <pre class="mermaid"><code>flowchart LR
-    Env[RIPGREP_CONFIG_PATH] --&gt; Load{File<br/>exists?}
+    Env[RIPGREP_CONFIG_PATH] --&gt; Load{"File
+exists?"}
     Load --&gt;|No| Error[Error: Config not found]
     Load --&gt;|Yes| Parse[Parse Config File]
 
@@ -1714,8 +1715,10 @@
     CLI[Command-Line Args] --&gt; Merge[Merge Arguments]
     ConfigArgs --&gt; Merge
 
-    Merge --&gt; Process[Process All Args<br/>Left to Right]
-    Process --&gt; Override{Duplicate<br/>flags?}
+    Merge --&gt; Process["Process All Args
+Left to Right"]
+    Process --&gt; Override{"Duplicate
+flags?"}
     Override --&gt;|Yes| Later[Later flag wins]
     Override --&gt;|No| Keep[Keep all flags]
 

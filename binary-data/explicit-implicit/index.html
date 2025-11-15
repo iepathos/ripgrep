@@ -1337,31 +1337,47 @@
 <pre class="mermaid"><code>flowchart TD
     Start[Start Search] --&gt; Type{File Type}
 
-    Type --&gt;|Explicit<br/>rg pattern file.txt| ExplicitSearch[Search File]
-    Type --&gt;|Implicit<br/>rg pattern recursive| ImplicitSearch[Search File]
+    Type --&gt;|"Explicit
+rg pattern file.txt"| ExplicitSearch[Search File]
+    Type --&gt;|"Implicit
+rg pattern recursive"| ImplicitSearch[Search File]
 
-    ExplicitSearch --&gt; ExplicitMatch{Match<br/>Found?}
-    ImplicitSearch --&gt; ImplicitMatch{Match<br/>Found?}
+    ExplicitSearch --&gt; ExplicitMatch{"Match
+Found?"}
+    ImplicitSearch --&gt; ImplicitMatch{"Match
+Found?"}
 
-    ExplicitMatch --&gt;|Yes| ExplicitBinary{Binary<br/>Data?}
-    ImplicitMatch --&gt;|Yes| ImplicitBinary{Binary<br/>Data?}
+    ExplicitMatch --&gt;|Yes| ExplicitBinary{"Binary
+Data?"}
+    ImplicitMatch --&gt;|Yes| ImplicitBinary{"Binary
+Data?"}
 
-    ExplicitBinary --&gt;|Yes| ExplicitWarn[Show Match<br/>+ Warning<br/>Continue Search]
-    ExplicitBinary --&gt;|No| ExplicitShow[Show Match<br/>Continue Search]
+    ExplicitBinary --&gt;|Yes| ExplicitWarn["Show Match
++ Warning
+Continue Search"]
+    ExplicitBinary --&gt;|No| ExplicitShow["Show Match
+Continue Search"]
 
-    ImplicitBinary --&gt;|Yes| ImplicitWarn[Show Match<br/>+ WARNING<br/>STOP Search]
-    ImplicitBinary --&gt;|No| ImplicitShow[Show Match<br/>Continue Search]
+    ImplicitBinary --&gt;|Yes| ImplicitWarn["Show Match
++ WARNING
+STOP Search"]
+    ImplicitBinary --&gt;|No| ImplicitShow["Show Match
+Continue Search"]
 
-    ExplicitMatch --&gt;|No| ExplicitContinue[Continue<br/>Search]
-    ImplicitMatch --&gt;|No| ImplicitContinue[Continue<br/>Search]
+    ExplicitMatch --&gt;|No| ExplicitContinue["Continue
+Search"]
+    ImplicitMatch --&gt;|No| ImplicitContinue["Continue
+Search"]
 
     ExplicitWarn --&gt; ExplicitContinue
     ExplicitShow --&gt; ExplicitContinue
     ImplicitWarn --&gt; End[Done]
     ImplicitShow --&gt; ImplicitContinue
 
-    ExplicitContinue --&gt; ExplicitEOF{End of<br/>File?}
-    ImplicitContinue --&gt; ImplicitEOF{End of<br/>File?}
+    ExplicitContinue --&gt; ExplicitEOF{"End of
+File?"}
+    ImplicitContinue --&gt; ImplicitEOF{"End of
+File?"}
 
     ExplicitEOF --&gt;|No| ExplicitSearch
     ExplicitEOF --&gt;|Yes| End

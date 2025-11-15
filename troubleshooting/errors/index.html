@@ -1441,18 +1441,23 @@
 <li>Parent directory ignore files</li>
 </ol>
 <pre class="mermaid"><code>graph TD
-    Start[File to Check] --&gt; L1{.ignore<br/>exists?}
+    Start[File to Check] --&gt; L1{".ignore
+exists?"}
     L1 --&gt;|Yes, matches| Ignore1[Ignored by .ignore]
-    L1 --&gt;|No match| L2{.rgignore<br/>exists?}
+    L1 --&gt;|No match| L2{".rgignore
+exists?"}
 
     L2 --&gt;|Yes, matches| Ignore2[Ignored by .rgignore]
-    L2 --&gt;|No match| L3{.gitignore<br/>matches?}
+    L2 --&gt;|No match| L3{".gitignore
+matches?"}
 
     L3 --&gt;|Yes| Ignore3[Ignored by .gitignore]
-    L3 --&gt;|No| L4{Global<br/>gitignore?}
+    L3 --&gt;|No| L4{"Global
+gitignore?"}
 
     L4 --&gt;|Yes| Ignore4[Ignored by global]
-    L4 --&gt;|No| L5{Parent<br/>ignore?}
+    L4 --&gt;|No| L5{"Parent
+ignore?"}
 
     L5 --&gt;|Yes| Ignore5[Ignored by parent]
     L5 --&gt;|No| Include[File Included]
@@ -1609,16 +1614,23 @@
 </ul>
 </div>
 <pre class="mermaid"><code>flowchart TD
-    Start[Run ripgrep command] --&gt; Exec{Execution<br/>result?}
+    Start[Run ripgrep command] --&gt; Exec{"Execution
+result?"}
 
-    Exec --&gt;|Error occurred| Exit2[Exit Code 2<br/>Error]
-    Exec --&gt;|Success| Matches{Matches<br/>found?}
+    Exec --&gt;|Error occurred| Exit2["Exit Code 2
+Error"]
+    Exec --&gt;|Success| Matches{"Matches
+found?"}
 
-    Matches --&gt;|Yes| Exit0[Exit Code 0<br/>Success]
-    Matches --&gt;|No| Exit1[Exit Code 1<br/>No matches]
+    Matches --&gt;|Yes| Exit0["Exit Code 0
+Success"]
+    Matches --&gt;|No| Exit1["Exit Code 1
+No matches"]
 
-    Exit0 --&gt; Script0[if rg ...; then<br/>Pattern found]
-    Exit1 --&gt; Script1[else<br/>No matches]
+    Exit0 --&gt; Script0["if rg ...; then
+Pattern found"]
+    Exit1 --&gt; Script1["else
+No matches"]
     Exit2 --&gt; Script1
 
     style Exit0 fill:#e8f5e9
