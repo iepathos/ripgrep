@@ -48,6 +48,7 @@ def validate_diagram(diagram: str) -> List[str]:
     Returns: List of error messages (empty if valid)
     """
     errors = []
+    warnings = []
 
     # Check for diagram type declaration
     diagram_types = [
@@ -82,6 +83,19 @@ def validate_diagram(diagram: str) -> List[str]:
     if re.search(r'<br\s*/?>|<BR\s*/?>', diagram):
         errors.append("Contains HTML <br/> tags")
 
+    # Heuristic checks for potential rendering issues
+    if diagram.strip().startswith(('graph', 'flowchart')):
+        # Check for nodes with too many outgoing edges (may render poorly)
+        # Find all node connections (e.g., "NodeA --> NodeB")
+        connections = re.findall(r'(\w+)\s*(?:-->|->|---|-\.->)', diagram)
+        if connections:
+            from collections import Counter
+            node_counts = Counter(connections)
+            for node, count in node_counts.items():
+                if count > 4:
+                    warnings.append(f"Node '{node}' has {count} outgoing connections - consider using subgraphs for clarity")
+
+    # Return errors (warnings are just informational for now)
     return errors
 
 def main():

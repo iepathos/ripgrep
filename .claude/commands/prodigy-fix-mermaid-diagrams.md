@@ -118,6 +118,33 @@ graph TD
     G --> H
 ```
 
+**Using Subgraphs for Complex Diagrams:**
+When a node has many branches (>4) or mixing orthogonal concepts, use subgraphs:
+
+```mermaid
+graph TB
+    subgraph "Search Modes"
+        Mode1[Line-by-line]
+        Mode2[Multiline -U]
+        Mode2 --> Mode3[Dotall]
+    end
+
+    subgraph "Regex Engines"
+        Engine1[Default Engine]
+        Engine2[PCRE2 -P]
+        Engine2 --> Feature1[Lookaround]
+        Engine2 --> Feature2[Backreferences]
+    end
+
+    subgraph "Combined"
+        Combo[PCRE2 + Multiline -PU]
+    end
+
+    Mode2 -.->|Can combine| Engine2
+    Mode2 -.->|Produces| Combo
+    Engine2 -.->|Produces| Combo
+```
+
 ### Phase 5: Validation
 
 After fixing all diagrams:
@@ -163,6 +190,8 @@ All diagrams now pass validation."
 - ❌ Unmatched brackets, braces, or quotes
 - ❌ Missing diagram type declaration
 - ❌ Spaces in node IDs (use underscores or camelCase)
+- ❌ Too many branches from one node (>4) - use subgraphs for clarity
+- ❌ Mixing orthogonal concepts in one flow - separate into subgraphs
 
 ## Error Handling
 

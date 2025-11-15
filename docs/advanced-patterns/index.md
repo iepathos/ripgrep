@@ -20,39 +20,52 @@ This chapter covers advanced regex pattern features in ripgrep, including multil
 The advanced features in ripgrep are organized into layers that can be combined:
 
 ```mermaid
-graph TD
-    Base[ripgrep Base Engine] --> Line["Line-by-line Mode
-Default"]
-    Base --> Multi["Multiline Mode
--U flag"]
+graph TB
+    subgraph "Search Modes"
+        Line["Line-by-line Mode
+        Default behavior"]
+        Multi["Multiline Mode
+        -U flag"]
+        Dotall["Dotall Mode
+        --multiline-dotall
+        (requires -U)"]
 
-    Base --> Default["Default Regex Engine
-Fast, limited features"]
-    Base --> PCRE["PCRE2 Engine
--P flag"]
+        Multi --> Dotall
+    end
 
-    Default --> Unicode1["Unicode Support
-\\p Properties"]
-    PCRE --> Unicode2["Unicode Support
-\\p Properties"]
+    subgraph "Regex Engines"
+        Default["Default Engine
+        Fast, limited features"]
+        PCRE["PCRE2 Engine
+        -P flag
+        Advanced features"]
 
-    Multi --> Dotall["Dotall Mode
---multiline-dotall"]
+        Default --> Unicode1["Unicode Support
+        \\p Properties"]
+        PCRE --> Unicode2["Unicode Support
+        \\p Properties"]
+        PCRE --> Look["Lookaround
+        Assertions"]
+        PCRE --> Back["Backreferences
+        \\1, \\2, etc."]
+    end
 
-    PCRE --> Look["Lookaround
-Assertions"]
-    PCRE --> Back["Backreferences
-\\1, \\2, etc."]
+    subgraph "Combined"
+        Combined["PCRE2 + Multiline
+        -PU flag
+        Full feature set"]
+    end
 
-    Multi --> Combined["Combined Modes
--PU for PCRE2 + Multiline"]
-    PCRE --> Combined
+    Multi -.->|"Can combine"| PCRE
+    Multi -.->|"Produces"| Combined
+    PCRE -.->|"Produces"| Combined
 
-    style Base fill:#e8f5e9
+    style Line fill:#e8f5e9
     style Default fill:#e1f5ff
     style PCRE fill:#fff3e0
     style Multi fill:#f3e5f5
     style Combined fill:#ffebee
+    style Dotall fill:#f3e5f5
 ```
 
 **Figure**: Ripgrep advanced feature layers showing how flags and modes combine.
