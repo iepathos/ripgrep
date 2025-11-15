@@ -21,28 +21,28 @@ flowchart TD
     Type -->|Explicit<br/>rg pattern file.txt| ExplicitSearch[Search File]
     Type -->|Implicit<br/>rg pattern recursive| ImplicitSearch[Search File]
 
-    ExplicitSearch --> ExplicitMatch{Match<br/>Found?}
-    ImplicitSearch --> ImplicitMatch{Match<br/>Found?}
+    ExplicitSearch --> ExplicitMatch{"Match<br/>Found?"}
+    ImplicitSearch --> ImplicitMatch{"Match<br/>Found?"}
 
-    ExplicitMatch -->|Yes| ExplicitBinary{Binary<br/>Data?}
-    ImplicitMatch -->|Yes| ImplicitBinary{Binary<br/>Data?}
+    ExplicitMatch -->|Yes| ExplicitBinary{"Binary<br/>Data?"}
+    ImplicitMatch -->|Yes| ImplicitBinary{"Binary<br/>Data?"}
 
-    ExplicitBinary -->|Yes| ExplicitWarn[Show Match<br/>+ Warning<br/>Continue Search]
-    ExplicitBinary -->|No| ExplicitShow[Show Match<br/>Continue Search]
+    ExplicitBinary -->|Yes| ExplicitWarn["Show Match<br/>+ Warning<br/>Continue Search"]
+    ExplicitBinary -->|No| ExplicitShow["Show Match<br/>Continue Search"]
 
-    ImplicitBinary -->|Yes| ImplicitWarn[Show Match<br/>+ WARNING<br/>STOP Search]
-    ImplicitBinary -->|No| ImplicitShow[Show Match<br/>Continue Search]
+    ImplicitBinary -->|Yes| ImplicitWarn["Show Match<br/>+ WARNING<br/>STOP Search"]
+    ImplicitBinary -->|No| ImplicitShow["Show Match<br/>Continue Search"]
 
-    ExplicitMatch -->|No| ExplicitContinue[Continue<br/>Search]
-    ImplicitMatch -->|No| ImplicitContinue[Continue<br/>Search]
+    ExplicitMatch -->|No| ExplicitContinue["Continue<br/>Search"]
+    ImplicitMatch -->|No| ImplicitContinue["Continue<br/>Search"]
 
     ExplicitWarn --> ExplicitContinue
     ExplicitShow --> ExplicitContinue
     ImplicitWarn --> End[Done]
     ImplicitShow --> ImplicitContinue
 
-    ExplicitContinue --> ExplicitEOF{End of<br/>File?}
-    ImplicitContinue --> ImplicitEOF{End of<br/>File?}
+    ExplicitContinue --> ExplicitEOF{"End of<br/>File?"}
+    ImplicitContinue --> ImplicitEOF{"End of<br/>File?"}
 
     ExplicitEOF -->|No| ExplicitSearch
     ExplicitEOF -->|Yes| End

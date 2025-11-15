@@ -46,12 +46,12 @@ flowchart TD
     Check -->|Implicit<br/>rg pattern -g *.bin| Implicit[Auto skip mode]
 
     Explicit --> SearchE[Search file]
-    SearchE --> NulE{NUL byte<br/>detected?}
-    NulE -->|Yes| WarnE[Show warning<br/>Suppress matches]
+    SearchE --> NulE{"NUL byte<br/>detected?"}
+    NulE -->|Yes| WarnE["Show warning<br/>Suppress matches"]
     NulE -->|No| MatchesE[Show matches]
 
     Implicit --> SearchI[Search file]
-    SearchI --> NulI{NUL byte<br/>detected?}
+    SearchI --> NulI{"NUL byte<br/>detected?"}
     NulI -->|Yes| SkipI[Skip file silently]
     NulI -->|No| MatchesI[Show matches]
 

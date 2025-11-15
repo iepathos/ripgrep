@@ -123,9 +123,9 @@ flowchart TD
     Performance -->|Yes| Default[--engine=default]
     Performance -->|No| Auto
 
-    PCRE2 --> PCRENote[Slower but feature-rich<br/>Backtracking algorithm]
-    Default --> DefaultNote[Fastest<br/>Finite automata: O&#40;n&#41;]
-    Auto --> AutoNote[Analyzes pattern<br/>Selects best engine]
+    PCRE2 --> PCRENote["Slower but feature-rich<br/>Backtracking algorithm"]
+    Default --> DefaultNote["Fastest<br/>Finite automata: O&#40;n&#41;"]
+    Auto --> AutoNote["Analyzes pattern<br/>Selects best engine"]
 
     AutoNote --> AutoCheck{Pattern has<br/>PCRE2 features?}
     AutoCheck -->|Yes| AutoPCRE[Uses PCRE2]

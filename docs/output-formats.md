@@ -19,9 +19,9 @@ use case?"}
     Start -->|Script/automation| Machine[JSON Format]
     Start -->|Editor integration| Editor[Vimgrep Format]
 
-    Human --> Features1[✓ Syntax highlighting<br/>✓ Color coding<br/>✓ Heading mode]
-    Machine --> Features2[✓ Structured data<br/>✓ Easy parsing with jq<br/>✓ Complete metadata]
-    Editor --> Features3[✓ Vim quickfix compatible<br/>✓ file:line:col format<br/>✓ Editor agnostic]
+    Human --> Features1["✓ Syntax highlighting<br/>✓ Color coding<br/>✓ Heading mode"]
+    Machine --> Features2["✓ Structured data<br/>✓ Easy parsing with jq<br/>✓ Complete metadata"]
+    Editor --> Features3["✓ Vim quickfix compatible<br/>✓ file:line:col format<br/>✓ Editor agnostic"]
 
     Features1 --> Cmd1["rg pattern"]
     Features2 --> Cmd2["rg --json pattern"]

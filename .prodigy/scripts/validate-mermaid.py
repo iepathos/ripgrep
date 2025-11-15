@@ -91,6 +91,12 @@ def validate_diagram(diagram: str) -> List[str]:
     if re.search(r'<br\s*/?>|<BR\s*/?>', diagram):
         warnings.append("Contains HTML <br/> tags - prefer quoted multi-line syntax")
 
+    # Check for unquoted node labels with br tags or HTML entities
+    # Pattern: NodeID[text with <br/> or &#123; but no quotes]
+    unquoted_html = re.findall(r'\w+\[([^"\]]*(?:<br\s*/?>|&#\d+;)[^\]]*)\]', diagram)
+    if unquoted_html:
+        errors.append(f"Node labels with <br/> or HTML entities must be quoted: {unquoted_html[:3]}")
+
     # Check for problematic quotes in edge labels
     # Pattern like: -->|"text with "quotes""| or -->|Yes "${1}"|
     if re.search(r'-->\s*\|[^|]*"[^|]*"[^|]*\|', diagram):

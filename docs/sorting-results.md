@@ -205,15 +205,15 @@ enabled?"}
     SortType -->|--sort path<br/>ascending| Stream[Streaming Mode]
     SortType -->|Other| Collect[Collect All Results]
 
-    Parallel --> Stream1[Stream results<br/>as found]
-    Stream --> Stream2[Stream in<br/>path order]
-    Collect --> Buffer[Buffer in<br/>memory]
+    Parallel --> Stream1["Stream results<br/>as found"]
+    Stream --> Stream2["Stream in<br/>path order"]
+    Collect --> Buffer["Buffer in<br/>memory"]
 
-    Stream1 --> Fast[Fastest<br/>Low memory]
-    Stream2 --> Medium[Medium speed<br/>Low memory]
+    Stream1 --> Fast["Fastest<br/>Low memory"]
+    Stream2 --> Medium["Medium speed<br/>Low memory"]
     Buffer --> Sort[Sort results]
-    Sort --> Output[Output all<br/>at once]
-    Output --> Slow[Slower<br/>High memory]
+    Sort --> Output["Output all<br/>at once"]
+    Output --> Slow["Slower<br/>High memory"]
 
     style Parallel fill:#c8e6c9
     style Stream fill:#e1f5ff
