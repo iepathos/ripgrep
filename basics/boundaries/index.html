@@ -1271,8 +1271,8 @@
     HasX --&gt;|Yes| CheckOrder{Which comes last?}
     HasX --&gt;|No| HasW
 
-    CheckOrder --&gt;|"-x last"| UseX["Use -x: Line matching"]
-    CheckOrder --&gt;|"-w last"| UseW["Use -w: Word matching"]
+    CheckOrder --&gt;|-x last| UseX[Use -x: Line matching]
+    CheckOrder --&gt;|-w last| UseW[Use -w: Word matching]
 
     HasW --&gt;|Yes| UseW
     HasW --&gt;|No| Normal[Normal pattern matching]

@@ -1048,19 +1048,6 @@
       
     </span>
 </a>
-<nav aria-label="Installation" class="md-nav">
-<ul class="md-nav__list">
-<li class="md-nav__item">
-<a class="md-nav__link" href="#quick-installation">
-<span class="md-ellipsis">
-      
-        Quick Installation
-      
-    </span>
-</a>
-</li>
-</ul>
-</nav>
 </li>
 <li class="md-nav__item">
 <a class="md-nav__link" href="#quick-start">
@@ -1114,14 +1101,10 @@
 <h2 id="what-is-ripgrep">What is ripgrep?<a class="headerlink" href="#what-is-ripgrep" title="Permanent link">¶</a></h2>
 <p>ripgrep is a command line tool that searches your files for patterns that you give it. ripgrep behaves as if reading each file line by line. If a line matches the pattern provided to ripgrep, then that line will be printed. If a line does not match the pattern, then the line is not printed.</p>
 <pre class="mermaid"><code>flowchart LR
-    Start([Start Search]) --&gt; Filter{"File should
-be searched?"}
-    Filter --&gt;|"No
-gitignore, hidden, binary"| Skip[Skip File]
-    Filter --&gt;|Yes| Read["Read File
-Line by Line"]
-    Read --&gt; Match{"Line matches
-pattern?"}
+    Start([Start Search]) --&gt; Filter{File should<br/>be searched?}
+    Filter --&gt;|No<br/>gitignore, hidden, binary| Skip[Skip File]
+    Filter --&gt;|Yes| Read[Read File<br/>Line by Line]
+    Read --&gt; Match{Line matches<br/>pattern?}
     Match --&gt;|Yes| Print[Print Line]
     Match --&gt;|No| Next{More lines?}
     Print --&gt; Next
@@ -1169,7 +1152,6 @@ pattern?"}
 <li><strong>Performance statistics</strong>: Track and display search metrics with <code>--stats</code> for understanding search performance.</li>
 </ul>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">¶</a></h2>
-<h3 id="quick-installation">Quick Installation<a class="headerlink" href="#quick-installation" title="Permanent link">¶</a></h3>
 <p><strong>Precompiled binaries</strong> are available for most platforms:</p>
 <p>Download the latest release from <a href="https://github.com/BurntSushi/ripgrep/releases">GitHub Releases</a> and extract the archive.</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:6"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio"><input id="__tabbed_1_2" name="__tabbed_1" type="radio"><input id="__tabbed_1_3" name="__tabbed_1" type="radio"><input id="__tabbed_1_4" name="__tabbed_1" type="radio"><input id="__tabbed_1_5" name="__tabbed_1" type="radio"><input id="__tabbed_1_6" name="__tabbed_1" type="radio"><div class="tabbed-labels"><label for="__tabbed_1_1">macOS</label><label for="__tabbed_1_2">Windows</label><label for="__tabbed_1_3">Debian/Ubuntu</label><label for="__tabbed_1_4">Fedora/Red Hat</label><label for="__tabbed_1_5">Arch Linux</label><label for="__tabbed_1_6">From Source</label></div>

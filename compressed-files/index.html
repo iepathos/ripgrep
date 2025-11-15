@@ -1820,12 +1820,11 @@
 <li>Reports matches with the original compressed filename</li>
 </ol>
 <pre class="mermaid"><code>flowchart TD
-    Start[File Encountered] --&gt; CheckExt{"Check File
-Extension"}
-    CheckExt --&gt;|".gz, .tgz"| Gzip[Select gzip -d -c]
-    CheckExt --&gt;|".xz, .txz"| XZ[Select xz -d -c]
-    CheckExt --&gt;|".zst, .zstd"| Zstd[Select zstd -q -d -c]
-    CheckExt --&gt;|".bz2, .tbz2"| Bzip[Select bzip2 -d -c]
+    Start[File Encountered] --&gt; CheckExt{Check File<br/>Extension}
+    CheckExt --&gt;|.gz, .tgz| Gzip[Select gzip -d -c]
+    CheckExt --&gt;|.xz, .txz| XZ[Select xz -d -c]
+    CheckExt --&gt;|.zst, .zstd| Zstd[Select zstd -q -d -c]
+    CheckExt --&gt;|.bz2, .tbz2| Bzip[Select bzip2 -d -c]
     CheckExt --&gt;|Other formats| Other[Select appropriate tool]
     CheckExt --&gt;|No match| Skip[Skip decompression]
 
@@ -1835,14 +1834,12 @@ Extension"}
     Bzip --&gt; Spawn
     Other --&gt; Spawn
 
-    Spawn --&gt; ToolCheck{"Tool in
-PATH?"}
+    Spawn --&gt; ToolCheck{Tool in<br/>PATH?}
     ToolCheck --&gt;|No| Fallback[Treat as Binary]
     ToolCheck --&gt;|Yes| Decompress[Read from stdout]
 
     Decompress --&gt; Search[Search Stream]
-    Search --&gt; Match{"Match
-Found?"}
+    Search --&gt; Match{Match<br/>Found?}
     Match --&gt;|Yes| Report[Report with Original Filename]
     Match --&gt;|No| Next[Continue]
 

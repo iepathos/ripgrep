@@ -1724,20 +1724,20 @@ String"]
     Start["$1a"] --&gt; Parse{Has Braces?}
     Parse --&gt;|No| Longest["Parse Longest
 Valid Name"]
-    Parse --&gt;|Yes "${1}a"| Extract["Extract Group
+    Parse --&gt;|Yes ${1}a| Extract["Extract Group
 Reference"]
 
-    Longest --&gt; Check{"Group "1a"
+    Longest --&gt; Check{"Group 1a
 Exists?"}
-    Extract --&gt; Check2{"Group "1"
+    Extract --&gt; Check2{"Group 1
 Exists?"}
 
-    Check --&gt;|Yes| Output1["Value of group '1a'"]
+    Check --&gt;|Yes| Output1["Value of group 1a"]
     Check --&gt;|No| Output2[Empty String]
 
     Check2 --&gt;|Yes| Output3["Value of group 1
-+ literal 'a'"]
-    Check2 --&gt;|No| Output4["Empty + literal 'a'"]
++ literal a"]
+    Check2 --&gt;|No| Output4["Empty + literal a"]
 
     style Parse fill:#e1f5ff
     style Longest fill:#fff3e0
