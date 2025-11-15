@@ -1,123 +1,210 @@
 
-<!DOCTYPE html>
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A comprehensive guide to using ripgrep, a line-oriented search tool">
+      
+      
+        <meta name="author" content="Andrew Gallant">
+      
+      
+        <link rel="canonical" href="https://github.com/BurntSushi/ripgrep/manual-filtering-globs/">
+      
+      
+        <link rel="prev" href="../automatic-filtering/">
+      
+      
+        <link rel="next" href="../manual-filtering-types/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Manual Filtering (Globs) - ripgrep User Guide</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
 
-<html class="no-js" lang="en">
-<head>
-<meta charset="utf-8"/>
-<meta content="width=device-width,initial-scale=1" name="viewport"/>
-<meta content="A comprehensive guide to using ripgrep, a line-oriented search tool" name="description"/>
-<meta content="Andrew Gallant" name="author"/>
-<link href="https://github.com/BurntSushi/ripgrep/manual-filtering-globs/" rel="canonical"/>
-<link href="../automatic-filtering/" rel="prev"/>
-<link href="../manual-filtering-types/" rel="next"/>
-<link href="../assets/images/favicon.png" rel="icon"/>
-<meta content="mkdocs-1.6.1, mkdocs-material-9.7.0" name="generator"/>
-<title>Manual Filtering (Globs) - ripgrep User Guide</title>
-<link href="../assets/stylesheets/main.618322db.min.css" rel="stylesheet"/>
-<link href="../assets/stylesheets/palette.ab4e12ef.min.css" rel="stylesheet"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback" rel="stylesheet"/>
-<style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
-<script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
-</head>
-<body data-md-color-accent="indigo" data-md-color-primary="indigo" data-md-color-scheme="slate" dir="ltr">
-<input autocomplete="off" class="md-toggle" data-md-toggle="drawer" id="__drawer" type="checkbox"/>
-<input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
-<label class="md-overlay" for="__drawer"></label>
-<div data-md-component="skip">
-<a class="md-skip" href="#manual-filtering-globs">
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#manual-filtering-globs" class="md-skip">
           Skip to content
         </a>
-</div>
-<div data-md-component="announce">
-</div>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
 <header class="md-header" data-md-component="header">
-<nav aria-label="Header" class="md-header__inner md-grid">
-<a aria-label="ripgrep User Guide" class="md-header__button md-logo" data-md-component="logo" href=".." title="ripgrep User Guide">
-<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
-</a>
-<label class="md-header__button md-icon" for="__drawer">
-<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
-</label>
-<div class="md-header__title" data-md-component="header-title">
-<div class="md-header__ellipsis">
-<div class="md-header__topic">
-<span class="md-ellipsis">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="ripgrep User Guide" class="md-header__button md-logo" aria-label="ripgrep User Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
             ripgrep User Guide
           </span>
-</div>
-<div class="md-header__topic" data-md-component="header-topic">
-<span class="md-ellipsis">
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
             
               Manual Filtering (Globs)
             
           </span>
-</div>
-</div>
-</div>
-<form class="md-header__option" data-md-component="palette">
-<input aria-label="Switch to light mode" class="md-option" data-md-color-accent="indigo" data-md-color-media="" data-md-color-primary="indigo" data-md-color-scheme="slate" id="__palette_0" name="__palette" type="radio"/>
-<label class="md-header__button md-icon" for="__palette_1" hidden="" title="Switch to light mode">
-<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"></path></svg>
-</label>
-<input aria-label="Switch to dark mode" class="md-option" data-md-color-accent="indigo" data-md-color-media="" data-md-color-primary="indigo" data-md-color-scheme="default" id="__palette_1" name="__palette" type="radio"/>
-<label class="md-header__button md-icon" for="__palette_0" hidden="" title="Switch to dark mode">
-<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"></path></svg>
-</label>
-</form>
-<script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
-<label class="md-header__button md-icon" for="__search">
-<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
-</label>
-<div class="md-search" data-md-component="search" role="dialog">
-<label class="md-search__overlay" for="__search"></label>
-<div class="md-search__inner" role="search">
-<form class="md-search__form" name="search">
-<input aria-label="Search" autocapitalize="off" autocomplete="off" autocorrect="off" class="md-search__input" data-md-component="search-query" name="query" placeholder="Search" required="" spellcheck="false" type="text"/>
-<label class="md-search__icon md-icon" for="__search">
-<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
-<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
-</label>
-<nav aria-label="Search" class="md-search__options">
-<a aria-label="Share" class="md-search__icon md-icon" data-clipboard="" data-clipboard-text="" data-md-component="search-share" href="javascript:void(0)" tabindex="-1" title="Share">
-<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"></path></svg>
-</a>
-<button aria-label="Clear" class="md-search__icon md-icon" tabindex="-1" title="Clear" type="reset">
-<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
-</button>
-</nav>
-<div class="md-search__suggest" data-md-component="search-suggest"></div>
-</form>
-<div class="md-search__output">
-<div class="md-search__scrollwrap" data-md-scrollfix="" tabindex="0">
-<div class="md-search-result" data-md-component="search-result">
-<div class="md-search-result__meta">
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
             Initializing search
           </div>
-<ol class="md-search-result__list" role="presentation"></ol>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-</div>
-</div>
-</div>
-</div>
-<div class="md-header__source">
-<a class="md-source" data-md-component="source" href="https://github.com/BurntSushi/ripgrep" title="Go to repository">
-<div class="md-source__icon md-icon">
-<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"></path></svg>
-</div>
-<div class="md-source__repository">
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/BurntSushi/ripgrep" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
     BurntSushi/ripgrep
   </div>
 </a>
-</div>
-</nav>
+      </div>
+    
+  </nav>
+  
 </header>
-<div class="md-container" data-md-component="container">
-<nav aria-label="Tabs" class="md-tabs" data-md-component="tabs">
-<div class="md-grid">
-<ul class="md-tabs__list">
-<li class="md-tabs__item">
-<a class="md-tabs__link" href="../introduction/">
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../introduction/" class="md-tabs__link">
         
   
   
@@ -126,54 +213,131 @@
   Home
 
       </a>
-</li>
-<li class="md-tabs__item md-tabs__item--active">
-<a class="md-tabs__link" href="../basics/">
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../basics/" class="md-tabs__link">
           
   
   
   User Guide
 
         </a>
-</li>
-<li class="md-tabs__item">
-<a class="md-tabs__link" href="../advanced-patterns/">
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../advanced-patterns/" class="md-tabs__link">
           
   
   
   Advanced Topics
 
         </a>
-</li>
-</ul>
-</div>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
 </nav>
-<main class="md-main" data-md-component="main">
-<div class="md-main__inner md-grid">
-<div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
-<div class="md-sidebar__scrollwrap">
-<div class="md-sidebar__inner">
-<nav aria-label="Navigation" class="md-nav md-nav--primary md-nav--lifted" data-md-level="0">
-<label class="md-nav__title" for="__drawer">
-<a aria-label="ripgrep User Guide" class="md-nav__button md-logo" data-md-component="logo" href=".." title="ripgrep User Guide">
-<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
-</a>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="ripgrep User Guide" class="md-nav__button md-logo" aria-label="ripgrep User Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
     ripgrep User Guide
   </label>
-<div class="md-nav__source">
-<a class="md-source" data-md-component="source" href="https://github.com/BurntSushi/ripgrep" title="Go to repository">
-<div class="md-source__icon md-icon">
-<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"></path></svg>
-</div>
-<div class="md-source__repository">
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/BurntSushi/ripgrep" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
     BurntSushi/ripgrep
   </div>
 </a>
-</div>
-<ul class="md-nav__list" data-md-scrollfix="">
-<li class="md-nav__item">
-<a class="md-nav__link" href="../introduction/">
-<span class="md-ellipsis">
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Home
@@ -181,12 +345,47 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
-<input checked="" class="md-nav__toggle md-toggle" id="__nav_2" type="checkbox"/>
-<label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
     
   
     User Guide
@@ -194,22 +393,56 @@
 
     
   </span>
-<span class="md-nav__icon md-icon"></span>
-</label>
-<nav aria-expanded="true" aria-labelledby="__nav_2_label" class="md-nav" data-md-level="1">
-<label class="md-nav__title" for="__nav_2">
-<span class="md-nav__icon md-icon"></span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
             
   
     User Guide
   
 
           </label>
-<ul class="md-nav__list" data-md-scrollfix="">
-<li class="md-nav__item md-nav__item--section md-nav__item--nested">
-<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_2_1" type="checkbox"/>
-<label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="">
-<span class="md-ellipsis">
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
     
   
     Basics
@@ -217,21 +450,35 @@
 
     
   </span>
-<span class="md-nav__icon md-icon"></span>
-</label>
-<nav aria-expanded="false" aria-labelledby="__nav_2_1_label" class="md-nav" data-md-level="2">
-<label class="md-nav__title" for="__nav_2_1">
-<span class="md-nav__icon md-icon"></span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
             
   
     Basics
   
 
           </label>
-<ul class="md-nav__list" data-md-scrollfix="">
-<li class="md-nav__item">
-<a class="md-nav__link" href="../basics/">
-<span class="md-ellipsis">
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Basics
@@ -239,11 +486,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../basics/pattern-matching/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/pattern-matching/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Pattern Matching
@@ -251,11 +514,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../basics/literal-search/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/literal-search/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Literal String Search
@@ -263,11 +542,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../basics/regex-basics/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/regex-basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Regular Expressions
@@ -275,11 +570,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../basics/case-sensitivity/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/case-sensitivity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Case Sensitivity
@@ -287,11 +598,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../basics/boundaries/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/boundaries/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Word and Line Boundaries
@@ -299,11 +626,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../basics/output/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Output Format
@@ -311,11 +654,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../basics/count-list/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/count-list/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Count and List Modes
@@ -323,11 +682,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../basics/practice/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics/practice/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Practice Examples
@@ -335,14 +710,35 @@
 
     
   </span>
-</a>
-</li>
-</ul>
-</nav>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../recursive-search/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../recursive-search/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Recursive Search
@@ -350,11 +746,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../automatic-filtering/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../automatic-filtering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Automatic Filtering
@@ -362,12 +774,36 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item md-nav__item--active">
-<input class="md-nav__toggle md-toggle" id="__toc" type="checkbox"/>
-<label class="md-nav__link md-nav__link--active" for="__toc">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
     
   
     Manual Filtering (Globs)
@@ -375,10 +811,17 @@
 
     
   </span>
-<span class="md-nav__icon md-icon"></span>
-</label>
-<a class="md-nav__link md-nav__link--active" href="./">
-<span class="md-ellipsis">
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Manual Filtering (Globs)
@@ -386,228 +829,308 @@
 
     
   </span>
-</a>
-<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
-<label class="md-nav__title" for="__toc">
-<span class="md-nav__icon md-icon"></span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
       Table of contents
     </label>
-<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
-<li class="md-nav__item">
-<a class="md-nav__link" href="#quick-reference">
-<span class="md-ellipsis">
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quick-reference" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Quick Reference
       
     </span>
-</a>
+  </a>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#basic-glob-syntax">
-<span class="md-ellipsis">
+      
+        <li class="md-nav__item">
+  <a href="#basic-glob-syntax" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Basic Glob Syntax
       
     </span>
-</a>
-<nav aria-label="Basic Glob Syntax" class="md-nav">
-<ul class="md-nav__list">
-<li class="md-nav__item">
-<a class="md-nav__link" href="#wildcard-examples">
-<span class="md-ellipsis">
+  </a>
+  
+    <nav class="md-nav" aria-label="Basic Glob Syntax">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#wildcard-examples" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Wildcard Examples
       
     </span>
-</a>
+  </a>
+  
 </li>
-</ul>
-</nav>
+        
+      </ul>
+    </nav>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#character-classes">
-<span class="md-ellipsis">
+      
+        <li class="md-nav__item">
+  <a href="#character-classes" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Character Classes
       
     </span>
-</a>
+  </a>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#recursive-matching-with">
-<span class="md-ellipsis">
+      
+        <li class="md-nav__item">
+  <a href="#recursive-matching-with" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Recursive Matching with **
       
     </span>
-</a>
-<nav aria-label="Recursive Matching with **" class="md-nav">
-<ul class="md-nav__list">
-<li class="md-nav__item">
-<a class="md-nav__link" href="#common-pitfall-directory-matching">
-<span class="md-ellipsis">
+  </a>
+  
+    <nav class="md-nav" aria-label="Recursive Matching with **">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common-pitfall-directory-matching" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Common Pitfall: Directory Matching
       
     </span>
-</a>
+  </a>
+  
 </li>
-</ul>
-</nav>
+        
+      </ul>
+    </nav>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#including-and-excluding-files">
-<span class="md-ellipsis">
+      
+        <li class="md-nav__item">
+  <a href="#including-and-excluding-files" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Including and Excluding Files
       
     </span>
-</a>
-<nav aria-label="Including and Excluding Files" class="md-nav">
-<ul class="md-nav__list">
-<li class="md-nav__item">
-<a class="md-nav__link" href="#precedence-rules">
-<span class="md-ellipsis">
+  </a>
+  
+    <nav class="md-nav" aria-label="Including and Excluding Files">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#precedence-rules" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Precedence Rules
       
     </span>
-</a>
+  </a>
+  
 </li>
-</ul>
-</nav>
+        
+      </ul>
+    </nav>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#multiple-glob-patterns">
-<span class="md-ellipsis">
+      
+        <li class="md-nav__item">
+  <a href="#multiple-glob-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Multiple Glob Patterns
       
     </span>
-</a>
+  </a>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#brace-expansion">
-<span class="md-ellipsis">
+      
+        <li class="md-nav__item">
+  <a href="#brace-expansion" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Brace Expansion
       
     </span>
-</a>
+  </a>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#case-insensitive-globs">
-<span class="md-ellipsis">
+      
+        <li class="md-nav__item">
+  <a href="#case-insensitive-globs" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Case-Insensitive Globs
       
     </span>
-</a>
+  </a>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#gitignore-compatibility">
-<span class="md-ellipsis">
+      
+        <li class="md-nav__item">
+  <a href="#gitignore-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Gitignore Compatibility
       
     </span>
-</a>
+  </a>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#escaping-metacharacters">
-<span class="md-ellipsis">
+      
+        <li class="md-nav__item">
+  <a href="#escaping-metacharacters" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Escaping Metacharacters
       
     </span>
-</a>
+  </a>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#glob-override-behavior">
-<span class="md-ellipsis">
+      
+        <li class="md-nav__item">
+  <a href="#glob-override-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Glob Override Behavior
       
     </span>
-</a>
-<nav aria-label="Glob Override Behavior" class="md-nav">
-<ul class="md-nav__list">
-<li class="md-nav__item">
-<a class="md-nav__link" href="#ignore-hierarchy-and-precedence">
-<span class="md-ellipsis">
+  </a>
+  
+    <nav class="md-nav" aria-label="Glob Override Behavior">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ignore-hierarchy-and-precedence" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Ignore Hierarchy and Precedence
       
     </span>
-</a>
+  </a>
+  
 </li>
-</ul>
-</nav>
+        
+      </ul>
+    </nav>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#practical-examples">
-<span class="md-ellipsis">
+      
+        <li class="md-nav__item">
+  <a href="#practical-examples" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Practical Examples
       
     </span>
-</a>
+  </a>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#comparison-globs-vs-type-filters">
-<span class="md-ellipsis">
+      
+        <li class="md-nav__item">
+  <a href="#comparison-globs-vs-type-filters" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Comparison: Globs vs Type Filters
       
     </span>
-</a>
+  </a>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#preview-files-with-files">
-<span class="md-ellipsis">
+      
+        <li class="md-nav__item">
+  <a href="#preview-files-with-files" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Preview Files with --files
       
     </span>
-</a>
+  </a>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#performance-considerations">
-<span class="md-ellipsis">
+      
+        <li class="md-nav__item">
+  <a href="#performance-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Performance Considerations
       
     </span>
-</a>
-<nav aria-label="Performance Considerations" class="md-nav">
-<ul class="md-nav__list">
-<li class="md-nav__item">
-<a class="md-nav__link" href="#advanced-glob-optimization">
-<span class="md-ellipsis">
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#advanced-glob-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Advanced: Glob Optimization
       
     </span>
-</a>
+  </a>
+  
 </li>
-</ul>
-</nav>
+        
+      </ul>
+    </nav>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#summary">
-<span class="md-ellipsis">
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Summary
       
     </span>
-</a>
+  </a>
+  
 </li>
-</ul>
+      
+    </ul>
+  
 </nav>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../manual-filtering-types/">
-<span class="md-ellipsis">
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../manual-filtering-types/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Manual Filtering (File Types)
@@ -615,11 +1138,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../replacements/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../replacements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Replacements
@@ -627,11 +1166,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../configuration-file/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration-file/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Configuration File
@@ -639,11 +1194,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../file-encoding/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../file-encoding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     File Encoding
@@ -651,12 +1222,48 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item md-nav__item--section md-nav__item--nested">
-<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_2_9" type="checkbox"/>
-<label class="md-nav__link" for="__nav_2_9" id="__nav_2_9_label" tabindex="">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_9" id="__nav_2_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
     
   
     Binary Data
@@ -664,21 +1271,35 @@
 
     
   </span>
-<span class="md-nav__icon md-icon"></span>
-</label>
-<nav aria-expanded="false" aria-labelledby="__nav_2_9_label" class="md-nav" data-md-level="2">
-<label class="md-nav__title" for="__nav_2_9">
-<span class="md-nav__icon md-icon"></span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_9">
+            <span class="md-nav__icon md-icon"></span>
             
   
     Binary Data
   
 
           </label>
-<ul class="md-nav__list" data-md-scrollfix="">
-<li class="md-nav__item">
-<a class="md-nav__link" href="../binary-data/">
-<span class="md-ellipsis">
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../binary-data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Binary Data
@@ -686,11 +1307,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../binary-data/detection/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../binary-data/detection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Binary Detection
@@ -698,11 +1335,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../binary-data/modes/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../binary-data/modes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Binary Modes
@@ -710,11 +1363,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../binary-data/explicit-implicit/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../binary-data/explicit-implicit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Explicit vs Implicit Files
@@ -722,11 +1391,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../binary-data/flags/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../binary-data/flags/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Binary Flags Reference
@@ -734,11 +1419,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../binary-data/examples/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../binary-data/examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Examples and Troubleshooting
@@ -746,14 +1447,35 @@
 
     
   </span>
-</a>
-</li>
-</ul>
-</nav>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../compressed-files/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../compressed-files/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Compressed Files
@@ -761,11 +1483,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../preprocessor/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../preprocessor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Preprocessor
@@ -773,12 +1511,48 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item md-nav__item--section md-nav__item--nested">
-<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_2_12" type="checkbox"/>
-<label class="md-nav__link" for="__nav_2_12" id="__nav_2_12_label" tabindex="">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_12" id="__nav_2_12_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
     
   
     Common Options
@@ -786,21 +1560,35 @@
 
     
   </span>
-<span class="md-nav__icon md-icon"></span>
-</label>
-<nav aria-expanded="false" aria-labelledby="__nav_2_12_label" class="md-nav" data-md-level="2">
-<label class="md-nav__title" for="__nav_2_12">
-<span class="md-nav__icon md-icon"></span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_12">
+            <span class="md-nav__icon md-icon"></span>
             
   
     Common Options
   
 
           </label>
-<ul class="md-nav__list" data-md-scrollfix="">
-<li class="md-nav__item">
-<a class="md-nav__link" href="../common-options/">
-<span class="md-ellipsis">
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../common-options/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Common Options
@@ -808,11 +1596,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../common-options/search-basics/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../common-options/search-basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Search Basics
@@ -820,11 +1624,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../common-options/output-formatting/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../common-options/output-formatting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Output Formatting
@@ -832,11 +1652,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../common-options/file-filtering/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../common-options/file-filtering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     File Filtering
@@ -844,11 +1680,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../common-options/output-modes/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../common-options/output-modes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Output Modes
@@ -856,11 +1708,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../common-options/reference/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../common-options/reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Quick Reference
@@ -868,14 +1736,35 @@
 
     
   </span>
-</a>
-</li>
-</ul>
-</nav>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../context-lines/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../context-lines/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Context Lines
@@ -883,11 +1772,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../output-formats/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../output-formats/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Output Formats
@@ -895,11 +1800,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../sorting-results/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sorting-results/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Sorting Results
@@ -907,11 +1828,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../utility-modes/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../utility-modes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Utility Modes
@@ -919,15 +1856,52 @@
 
     
   </span>
-</a>
-</li>
-</ul>
-</nav>
-</li>
-<li class="md-nav__item md-nav__item--nested">
-<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_3" type="checkbox"/>
-<label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
     
   
     Advanced Topics
@@ -935,22 +1909,53 @@
 
     
   </span>
-<span class="md-nav__icon md-icon"></span>
-</label>
-<nav aria-expanded="false" aria-labelledby="__nav_3_label" class="md-nav" data-md-level="1">
-<label class="md-nav__title" for="__nav_3">
-<span class="md-nav__icon md-icon"></span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
             
   
     Advanced Topics
   
 
           </label>
-<ul class="md-nav__list" data-md-scrollfix="">
-<li class="md-nav__item md-nav__item--nested">
-<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_3_1" type="checkbox"/>
-<label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
-<span class="md-ellipsis">
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
     
   
     Advanced Patterns
@@ -958,21 +1963,35 @@
 
     
   </span>
-<span class="md-nav__icon md-icon"></span>
-</label>
-<nav aria-expanded="false" aria-labelledby="__nav_3_1_label" class="md-nav" data-md-level="2">
-<label class="md-nav__title" for="__nav_3_1">
-<span class="md-nav__icon md-icon"></span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_1">
+            <span class="md-nav__icon md-icon"></span>
             
   
     Advanced Patterns
   
 
           </label>
-<ul class="md-nav__list" data-md-scrollfix="">
-<li class="md-nav__item">
-<a class="md-nav__link" href="../advanced-patterns/">
-<span class="md-ellipsis">
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../advanced-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Advanced Patterns
@@ -980,11 +1999,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../advanced-patterns/multiline/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../advanced-patterns/multiline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Multiline Search
@@ -992,11 +2027,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../advanced-patterns/pcre2/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../advanced-patterns/pcre2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     PCRE2 Engine
@@ -1004,11 +2055,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../advanced-patterns/lookaround/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../advanced-patterns/lookaround/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Lookaround Assertions
@@ -1016,11 +2083,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../advanced-patterns/backreferences/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../advanced-patterns/backreferences/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Backreferences
@@ -1028,11 +2111,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../advanced-patterns/unicode/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../advanced-patterns/unicode/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Unicode Patterns
@@ -1040,11 +2139,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../advanced-patterns/inline-flags/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../advanced-patterns/inline-flags/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Inline Regex Flags
@@ -1052,11 +2167,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../advanced-patterns/performance/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../advanced-patterns/performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Performance Considerations
@@ -1064,11 +2195,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../advanced-patterns/examples/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../advanced-patterns/examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Practical Examples
@@ -1076,14 +2223,35 @@
 
     
   </span>
-</a>
-</li>
-</ul>
-</nav>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../performance/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Performance
@@ -1091,11 +2259,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../statistics/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../statistics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Statistics and Metrics
@@ -1103,11 +2287,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../hyperlinks/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hyperlinks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Hyperlinks
@@ -1115,12 +2315,45 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item md-nav__item--nested">
-<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_3_5" type="checkbox"/>
-<label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="0">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
     
   
     Troubleshooting
@@ -1128,21 +2361,35 @@
 
     
   </span>
-<span class="md-nav__icon md-icon"></span>
-</label>
-<nav aria-expanded="false" aria-labelledby="__nav_3_5_label" class="md-nav" data-md-level="2">
-<label class="md-nav__title" for="__nav_3_5">
-<span class="md-nav__icon md-icon"></span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_5">
+            <span class="md-nav__icon md-icon"></span>
             
   
     Troubleshooting
   
 
           </label>
-<ul class="md-nav__list" data-md-scrollfix="">
-<li class="md-nav__item">
-<a class="md-nav__link" href="../troubleshooting/">
-<span class="md-ellipsis">
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Troubleshooting
@@ -1150,11 +2397,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../troubleshooting/debug-flags/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../troubleshooting/debug-flags/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Debug Flags
@@ -1162,11 +2425,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../troubleshooting/no-results/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../troubleshooting/no-results/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     No Results Found
@@ -1174,11 +2453,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../troubleshooting/performance/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../troubleshooting/performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Performance Issues
@@ -1186,11 +2481,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../troubleshooting/errors/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../troubleshooting/errors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Common Error Messages
@@ -1198,11 +2509,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../troubleshooting/binary-encoding/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../troubleshooting/binary-encoding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     Binary and Encoding Problems
@@ -1210,11 +2537,27 @@
 
     
   </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../troubleshooting/bug-reports/">
-<span class="md-ellipsis">
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../troubleshooting/bug-reports/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
     
   
     When to File a Bug
@@ -1222,248 +2565,341 @@
 
     
   </span>
-</a>
-</li>
-</ul>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
 </nav>
-</li>
-</ul>
-</nav>
-</li>
-</ul>
-</nav>
-</div>
-</div>
-</div>
-<div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
-<div class="md-sidebar__scrollwrap">
-<div class="md-sidebar__inner">
-<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
-<label class="md-nav__title" for="__toc">
-<span class="md-nav__icon md-icon"></span>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
       Table of contents
     </label>
-<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
-<li class="md-nav__item">
-<a class="md-nav__link" href="#quick-reference">
-<span class="md-ellipsis">
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quick-reference" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Quick Reference
       
     </span>
-</a>
+  </a>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#basic-glob-syntax">
-<span class="md-ellipsis">
+      
+        <li class="md-nav__item">
+  <a href="#basic-glob-syntax" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Basic Glob Syntax
       
     </span>
-</a>
-<nav aria-label="Basic Glob Syntax" class="md-nav">
-<ul class="md-nav__list">
-<li class="md-nav__item">
-<a class="md-nav__link" href="#wildcard-examples">
-<span class="md-ellipsis">
+  </a>
+  
+    <nav class="md-nav" aria-label="Basic Glob Syntax">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#wildcard-examples" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Wildcard Examples
       
     </span>
-</a>
+  </a>
+  
 </li>
-</ul>
-</nav>
+        
+      </ul>
+    </nav>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#character-classes">
-<span class="md-ellipsis">
+      
+        <li class="md-nav__item">
+  <a href="#character-classes" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Character Classes
       
     </span>
-</a>
+  </a>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#recursive-matching-with">
-<span class="md-ellipsis">
+      
+        <li class="md-nav__item">
+  <a href="#recursive-matching-with" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Recursive Matching with **
       
     </span>
-</a>
-<nav aria-label="Recursive Matching with **" class="md-nav">
-<ul class="md-nav__list">
-<li class="md-nav__item">
-<a class="md-nav__link" href="#common-pitfall-directory-matching">
-<span class="md-ellipsis">
+  </a>
+  
+    <nav class="md-nav" aria-label="Recursive Matching with **">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common-pitfall-directory-matching" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Common Pitfall: Directory Matching
       
     </span>
-</a>
+  </a>
+  
 </li>
-</ul>
-</nav>
+        
+      </ul>
+    </nav>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#including-and-excluding-files">
-<span class="md-ellipsis">
+      
+        <li class="md-nav__item">
+  <a href="#including-and-excluding-files" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Including and Excluding Files
       
     </span>
-</a>
-<nav aria-label="Including and Excluding Files" class="md-nav">
-<ul class="md-nav__list">
-<li class="md-nav__item">
-<a class="md-nav__link" href="#precedence-rules">
-<span class="md-ellipsis">
+  </a>
+  
+    <nav class="md-nav" aria-label="Including and Excluding Files">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#precedence-rules" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Precedence Rules
       
     </span>
-</a>
+  </a>
+  
 </li>
-</ul>
-</nav>
+        
+      </ul>
+    </nav>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#multiple-glob-patterns">
-<span class="md-ellipsis">
+      
+        <li class="md-nav__item">
+  <a href="#multiple-glob-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Multiple Glob Patterns
       
     </span>
-</a>
+  </a>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#brace-expansion">
-<span class="md-ellipsis">
+      
+        <li class="md-nav__item">
+  <a href="#brace-expansion" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Brace Expansion
       
     </span>
-</a>
+  </a>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#case-insensitive-globs">
-<span class="md-ellipsis">
+      
+        <li class="md-nav__item">
+  <a href="#case-insensitive-globs" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Case-Insensitive Globs
       
     </span>
-</a>
+  </a>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#gitignore-compatibility">
-<span class="md-ellipsis">
+      
+        <li class="md-nav__item">
+  <a href="#gitignore-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Gitignore Compatibility
       
     </span>
-</a>
+  </a>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#escaping-metacharacters">
-<span class="md-ellipsis">
+      
+        <li class="md-nav__item">
+  <a href="#escaping-metacharacters" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Escaping Metacharacters
       
     </span>
-</a>
+  </a>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#glob-override-behavior">
-<span class="md-ellipsis">
+      
+        <li class="md-nav__item">
+  <a href="#glob-override-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Glob Override Behavior
       
     </span>
-</a>
-<nav aria-label="Glob Override Behavior" class="md-nav">
-<ul class="md-nav__list">
-<li class="md-nav__item">
-<a class="md-nav__link" href="#ignore-hierarchy-and-precedence">
-<span class="md-ellipsis">
+  </a>
+  
+    <nav class="md-nav" aria-label="Glob Override Behavior">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ignore-hierarchy-and-precedence" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Ignore Hierarchy and Precedence
       
     </span>
-</a>
+  </a>
+  
 </li>
-</ul>
-</nav>
+        
+      </ul>
+    </nav>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#practical-examples">
-<span class="md-ellipsis">
+      
+        <li class="md-nav__item">
+  <a href="#practical-examples" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Practical Examples
       
     </span>
-</a>
+  </a>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#comparison-globs-vs-type-filters">
-<span class="md-ellipsis">
+      
+        <li class="md-nav__item">
+  <a href="#comparison-globs-vs-type-filters" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Comparison: Globs vs Type Filters
       
     </span>
-</a>
+  </a>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#preview-files-with-files">
-<span class="md-ellipsis">
+      
+        <li class="md-nav__item">
+  <a href="#preview-files-with-files" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Preview Files with --files
       
     </span>
-</a>
+  </a>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#performance-considerations">
-<span class="md-ellipsis">
+      
+        <li class="md-nav__item">
+  <a href="#performance-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Performance Considerations
       
     </span>
-</a>
-<nav aria-label="Performance Considerations" class="md-nav">
-<ul class="md-nav__list">
-<li class="md-nav__item">
-<a class="md-nav__link" href="#advanced-glob-optimization">
-<span class="md-ellipsis">
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#advanced-glob-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Advanced: Glob Optimization
       
     </span>
-</a>
+  </a>
+  
 </li>
-</ul>
-</nav>
+        
+      </ul>
+    </nav>
+  
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#summary">
-<span class="md-ellipsis">
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
       
         Summary
       
     </span>
-</a>
+  </a>
+  
 </li>
-</ul>
+      
+    </ul>
+  
 </nav>
-</div>
-</div>
-</div>
-<div class="md-content" data-md-component="content">
-<article class="md-content__inner md-typeset">
-<h1 id="manual-filtering-globs">Manual Filtering: Globs<a class="headerlink" href="#manual-filtering-globs" title="Permanent link">¶</a></h1>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="manual-filtering-globs">Manual Filtering: Globs<a class="headerlink" href="#manual-filtering-globs" title="Permanent link">&para;</a></h1>
 <p>Glob patterns provide powerful manual control over which files ripgrep searches. The <code>-g/--glob</code> flag lets you include or exclude files using familiar wildcard syntax, always overriding automatic ignore logic from <code>.gitignore</code> and other sources.</p>
 <p>While <a href="../automatic-filtering/">automatic filtering</a> handles most common cases, glob patterns give you precise control when you need it. They're especially useful for one-off searches where you want to specify exactly which files to search or skip.</p>
-<h2 id="quick-reference">Quick Reference<a class="headerlink" href="#quick-reference" title="Permanent link">¶</a></h2>
+<h2 id="quick-reference">Quick Reference<a class="headerlink" href="#quick-reference" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
@@ -1516,7 +2952,7 @@
 <p class="admonition-title">Case-insensitive matching</p>
 <p>Use <code>--iglob</code> for single case-insensitive patterns, or <code>--glob-case-insensitive</code> to make all globs case-insensitive.</p>
 </div>
-<h2 id="basic-glob-syntax">Basic Glob Syntax<a class="headerlink" href="#basic-glob-syntax" title="Permanent link">¶</a></h2>
+<h2 id="basic-glob-syntax">Basic Glob Syntax<a class="headerlink" href="#basic-glob-syntax" title="Permanent link">&para;</a></h2>
 <p>Glob patterns use several standard wildcards:</p>
 <ul>
 <li><code>*</code> - Matches zero or more characters (except <code>/</code>)</li>
@@ -1524,20 +2960,20 @@
 <li><code>[ab]</code> - Matches one character from the set (a or b)</li>
 <li><code>{a,b}</code> - Matches either alternative (a or b)</li>
 </ul>
-<h3 id="wildcard-examples">Wildcard Examples<a class="headerlink" href="#wildcard-examples" title="Permanent link">¶</a></h3>
+<h3 id="wildcard-examples">Wildcard Examples<a class="headerlink" href="#wildcard-examples" title="Permanent link">&para;</a></h3>
 <p>Match all Rust files:
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a href="#__codelineno-0-1" id="__codelineno-0-1" name="__codelineno-0-1"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">'*.rs'</span><span class="w"> </span><span class="s1">'fn main'</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;*.rs&#39;</span><span class="w"> </span><span class="s1">&#39;fn main&#39;</span>
 </span></code></pre></div></p>
 <p>Match files with single character before extension:
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a href="#__codelineno-1-1" id="__codelineno-1-1" name="__codelineno-1-1"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">'file?.txt'</span><span class="w"> </span>pattern
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;file?.txt&#39;</span><span class="w"> </span>pattern
 </span></code></pre></div></p>
 <p>Match files starting with lowercase letters:
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a href="#__codelineno-2-1" id="__codelineno-2-1" name="__codelineno-2-1"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">'[a-z]*'</span><span class="w"> </span>pattern
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;[a-z]*&#39;</span><span class="w"> </span>pattern
 </span></code></pre></div></p>
 <p>Match either Rust or TOML files:
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a href="#__codelineno-3-1" id="__codelineno-3-1" name="__codelineno-3-1"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">'*.{rs,toml}'</span><span class="w"> </span>pattern
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;*.{rs,toml}&#39;</span><span class="w"> </span>pattern
 </span></code></pre></div></p>
-<h2 id="character-classes">Character Classes<a class="headerlink" href="#character-classes" title="Permanent link">¶</a></h2>
+<h2 id="character-classes">Character Classes<a class="headerlink" href="#character-classes" title="Permanent link">&para;</a></h2>
 <p>Character classes <code>[...]</code> provide flexible character matching:</p>
 <ul>
 <li><code>[ab]</code> - Matches <code>a</code> or <code>b</code></li>
@@ -1546,53 +2982,53 @@
 <li><code>[0-9]</code> - Matches any digit</li>
 </ul>
 <p>Examples:
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a href="#__codelineno-4-1" id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="c1"># Match files starting with digits</span>
-</span><span id="__span-4-2"><a href="#__codelineno-4-2" id="__codelineno-4-2" name="__codelineno-4-2"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">'[0-9]*'</span><span class="w"> </span>pattern
-</span><span id="__span-4-3"><a href="#__codelineno-4-3" id="__codelineno-4-3" name="__codelineno-4-3"></a>
-</span><span id="__span-4-4"><a href="#__codelineno-4-4" id="__codelineno-4-4" name="__codelineno-4-4"></a><span class="c1"># Match files NOT starting with dots (hidden files)</span>
-</span><span id="__span-4-5"><a href="#__codelineno-4-5" id="__codelineno-4-5" name="__codelineno-4-5"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">'[!.]*'</span><span class="w"> </span>pattern
-</span><span id="__span-4-6"><a href="#__codelineno-4-6" id="__codelineno-4-6" name="__codelineno-4-6"></a>
-</span><span id="__span-4-7"><a href="#__codelineno-4-7" id="__codelineno-4-7" name="__codelineno-4-7"></a><span class="c1"># Match files with alphanumeric names</span>
-</span><span id="__span-4-8"><a href="#__codelineno-4-8" id="__codelineno-4-8" name="__codelineno-4-8"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">'[a-zA-Z0-9]*'</span><span class="w"> </span>pattern
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Match files starting with digits</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;[0-9]*&#39;</span><span class="w"> </span>pattern
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># Match files NOT starting with dots (hidden files)</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;[!.]*&#39;</span><span class="w"> </span>pattern
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="c1"># Match files with alphanumeric names</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;[a-zA-Z0-9]*&#39;</span><span class="w"> </span>pattern
 </span></code></pre></div></p>
-<h2 id="recursive-matching-with">Recursive Matching with <code>**</code><a class="headerlink" href="#recursive-matching-with" title="Permanent link">¶</a></h2>
+<h2 id="recursive-matching-with">Recursive Matching with <code>**</code><a class="headerlink" href="#recursive-matching-with" title="Permanent link">&para;</a></h2>
 <p>The <code>**</code> wildcard matches zero or more directories, enabling recursive searches:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a href="#__codelineno-5-1" id="__codelineno-5-1" name="__codelineno-5-1"></a><span class="c1"># Match foo in any directory</span>
-</span><span id="__span-5-2"><a href="#__codelineno-5-2" id="__codelineno-5-2" name="__codelineno-5-2"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">'**/foo'</span><span class="w"> </span>pattern
-</span><span id="__span-5-3"><a href="#__codelineno-5-3" id="__codelineno-5-3" name="__codelineno-5-3"></a>
-</span><span id="__span-5-4"><a href="#__codelineno-5-4" id="__codelineno-5-4" name="__codelineno-5-4"></a><span class="c1"># Match all files under foo/</span>
-</span><span id="__span-5-5"><a href="#__codelineno-5-5" id="__codelineno-5-5" name="__codelineno-5-5"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">'foo/**'</span><span class="w"> </span>pattern
-</span><span id="__span-5-6"><a href="#__codelineno-5-6" id="__codelineno-5-6" name="__codelineno-5-6"></a>
-</span><span id="__span-5-7"><a href="#__codelineno-5-7" id="__codelineno-5-7" name="__codelineno-5-7"></a><span class="c1"># Match bar in any subdirectory of foo/</span>
-</span><span id="__span-5-8"><a href="#__codelineno-5-8" id="__codelineno-5-8" name="__codelineno-5-8"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">'foo/**/bar'</span><span class="w"> </span>pattern
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># Match foo in any directory</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;**/foo&#39;</span><span class="w"> </span>pattern
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="c1"># Match all files under foo/</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;foo/**&#39;</span><span class="w"> </span>pattern
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="c1"># Match bar in any subdirectory of foo/</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;foo/**/bar&#39;</span><span class="w"> </span>pattern
 </span></code></pre></div>
-<h3 id="common-pitfall-directory-matching">Common Pitfall: Directory Matching<a class="headerlink" href="#common-pitfall-directory-matching" title="Permanent link">¶</a></h3>
+<h3 id="common-pitfall-directory-matching">Common Pitfall: Directory Matching<a class="headerlink" href="#common-pitfall-directory-matching" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
 <p class="admonition-title">Common Mistake: Directory Matching</p>
 <p>A frequent mistake is using <code>-g foo</code> to search directory <code>foo</code>. This glob matches files named exactly <code>foo</code>, not files inside the directory:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a href="#__codelineno-6-1" id="__codelineno-6-1" name="__codelineno-6-1"></a><span class="c1"># ❌ Wrong: doesn't match foo/bar.rs</span>
-</span><span id="__span-6-2"><a href="#__codelineno-6-2" id="__codelineno-6-2" name="__codelineno-6-2"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">'foo'</span><span class="w"> </span>pattern
-</span><span id="__span-6-3"><a href="#__codelineno-6-3" id="__codelineno-6-3" name="__codelineno-6-3"></a>
-</span><span id="__span-6-4"><a href="#__codelineno-6-4" id="__codelineno-6-4" name="__codelineno-6-4"></a><span class="c1"># ✅ Correct: matches all files under foo/</span>
-</span><span id="__span-6-5"><a href="#__codelineno-6-5" id="__codelineno-6-5" name="__codelineno-6-5"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">'foo/**'</span><span class="w"> </span>pattern
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># ❌ Wrong: doesn&#39;t match foo/bar.rs</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;foo&#39;</span><span class="w"> </span>pattern
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="c1"># ✅ Correct: matches all files under foo/</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;foo/**&#39;</span><span class="w"> </span>pattern
 </span></code></pre></div>
 <p>Always use <code>foo/**</code> to match files within a directory.</p>
 </div>
-<h2 id="including-and-excluding-files">Including and Excluding Files<a class="headerlink" href="#including-and-excluding-files" title="Permanent link">¶</a></h2>
+<h2 id="including-and-excluding-files">Including and Excluding Files<a class="headerlink" href="#including-and-excluding-files" title="Permanent link">&para;</a></h2>
 <p>By default, glob patterns include files. Prefix a glob with <code>!</code> to exclude files that match:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a href="#__codelineno-7-1" id="__codelineno-7-1" name="__codelineno-7-1"></a><span class="c1"># Search all Rust files except tests</span>
-</span><span id="__span-7-2"><a href="#__codelineno-7-2" id="__codelineno-7-2" name="__codelineno-7-2"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">'*.rs'</span><span class="w"> </span>-g<span class="w"> </span><span class="s1">'!test*.rs'</span><span class="w"> </span>pattern
-</span><span id="__span-7-3"><a href="#__codelineno-7-3" id="__codelineno-7-3" name="__codelineno-7-3"></a>
-</span><span id="__span-7-4"><a href="#__codelineno-7-4" id="__codelineno-7-4" name="__codelineno-7-4"></a><span class="c1"># Search src/ but exclude generated code</span>
-</span><span id="__span-7-5"><a href="#__codelineno-7-5" id="__codelineno-7-5" name="__codelineno-7-5"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">'src/**'</span><span class="w"> </span>-g<span class="w"> </span><span class="s1">'!**/generated/**'</span><span class="w"> </span>pattern
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># Search all Rust files except tests</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;*.rs&#39;</span><span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;!test*.rs&#39;</span><span class="w"> </span>pattern
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="c1"># Search src/ but exclude generated code</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;src/**&#39;</span><span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;!**/generated/**&#39;</span><span class="w"> </span>pattern
 </span></code></pre></div>
-<h3 id="precedence-rules">Precedence Rules<a class="headerlink" href="#precedence-rules" title="Permanent link">¶</a></h3>
+<h3 id="precedence-rules">Precedence Rules<a class="headerlink" href="#precedence-rules" title="Permanent link">&para;</a></h3>
 <p>When multiple globs are specified, later patterns take precedence over earlier ones:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a href="#__codelineno-8-1" id="__codelineno-8-1" name="__codelineno-8-1"></a><span class="c1"># Include all .rs files, then exclude test files</span>
-</span><span id="__span-8-2"><a href="#__codelineno-8-2" id="__codelineno-8-2" name="__codelineno-8-2"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">'*.rs'</span><span class="w"> </span>-g<span class="w"> </span><span class="s1">'!**/tests/**'</span><span class="w"> </span>pattern
-</span><span id="__span-8-3"><a href="#__codelineno-8-3" id="__codelineno-8-3" name="__codelineno-8-3"></a>
-</span><span id="__span-8-4"><a href="#__codelineno-8-4" id="__codelineno-8-4" name="__codelineno-8-4"></a><span class="c1"># Exclude tests, but re-include integration tests</span>
-</span><span id="__span-8-5"><a href="#__codelineno-8-5" id="__codelineno-8-5" name="__codelineno-8-5"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">'!**/tests/**'</span><span class="w"> </span>-g<span class="w"> </span><span class="s1">'**/tests/integration/**'</span><span class="w"> </span>pattern
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Include all .rs files, then exclude test files</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;*.rs&#39;</span><span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;!**/tests/**&#39;</span><span class="w"> </span>pattern
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="c1"># Exclude tests, but re-include integration tests</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;!**/tests/**&#39;</span><span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;**/tests/integration/**&#39;</span><span class="w"> </span>pattern
 </span></code></pre></div>
 <p>This allows building complex filters by layering include and exclude patterns.</p>
 <pre class="mermaid"><code>flowchart TD
@@ -1620,31 +3056,30 @@ excludes?"}
     style Check fill:#e1f5ff
     style Eval fill:#fff3e0
     style Search fill:#e8f5e9
-    style Skip fill:#ffebee
-</code></pre>
+    style Skip fill:#ffebee</code></pre>
 <p><strong>Figure</strong>: Glob pattern evaluation flow showing precedence and override behavior.</p>
-<h2 id="multiple-glob-patterns">Multiple Glob Patterns<a class="headerlink" href="#multiple-glob-patterns" title="Permanent link">¶</a></h2>
+<h2 id="multiple-glob-patterns">Multiple Glob Patterns<a class="headerlink" href="#multiple-glob-patterns" title="Permanent link">&para;</a></h2>
 <p>The <code>-g/--glob</code> flag can be used multiple times. Each pattern applies independently, and a file is searched if any include pattern matches and no exclude pattern matches:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a href="#__codelineno-9-1" id="__codelineno-9-1" name="__codelineno-9-1"></a><span class="c1"># Search both Rust and Python files</span>
-</span><span id="__span-9-2"><a href="#__codelineno-9-2" id="__codelineno-9-2" name="__codelineno-9-2"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">'*.rs'</span><span class="w"> </span>-g<span class="w"> </span><span class="s1">'*.py'</span><span class="w"> </span>pattern
-</span><span id="__span-9-3"><a href="#__codelineno-9-3" id="__codelineno-9-3" name="__codelineno-9-3"></a>
-</span><span id="__span-9-4"><a href="#__codelineno-9-4" id="__codelineno-9-4" name="__codelineno-9-4"></a><span class="c1"># Search source files but exclude tests and examples</span>
-</span><span id="__span-9-5"><a href="#__codelineno-9-5" id="__codelineno-9-5" name="__codelineno-9-5"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">'src/**'</span><span class="w"> </span>-g<span class="w"> </span><span class="s1">'!**/tests/**'</span><span class="w"> </span>-g<span class="w"> </span><span class="s1">'!**/examples/**'</span><span class="w"> </span>pattern
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1"># Search both Rust and Python files</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;*.rs&#39;</span><span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;*.py&#39;</span><span class="w"> </span>pattern
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="c1"># Search source files but exclude tests and examples</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;src/**&#39;</span><span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;!**/tests/**&#39;</span><span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;!**/examples/**&#39;</span><span class="w"> </span>pattern
 </span></code></pre></div>
 <p>Think of multiple <code>-g</code> flags as building up a filter set that refines which files to search.</p>
-<h2 id="brace-expansion">Brace Expansion<a class="headerlink" href="#brace-expansion" title="Permanent link">¶</a></h2>
+<h2 id="brace-expansion">Brace Expansion<a class="headerlink" href="#brace-expansion" title="Permanent link">&para;</a></h2>
 <p>Ripgrep extends standard glob syntax with brace expansion for alternatives:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a href="#__codelineno-10-1" id="__codelineno-10-1" name="__codelineno-10-1"></a><span class="c1"># Match either Rust or TOML files</span>
-</span><span id="__span-10-2"><a href="#__codelineno-10-2" id="__codelineno-10-2" name="__codelineno-10-2"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">'*.{rs,toml}'</span><span class="w"> </span>pattern
-</span><span id="__span-10-3"><a href="#__codelineno-10-3" id="__codelineno-10-3" name="__codelineno-10-3"></a>
-</span><span id="__span-10-4"><a href="#__codelineno-10-4" id="__codelineno-10-4" name="__codelineno-10-4"></a><span class="c1"># Match multiple source directories</span>
-</span><span id="__span-10-5"><a href="#__codelineno-10-5" id="__codelineno-10-5" name="__codelineno-10-5"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">'{src,lib,bin}/**/*.rs'</span><span class="w"> </span>pattern
-</span><span id="__span-10-6"><a href="#__codelineno-10-6" id="__codelineno-10-6" name="__codelineno-10-6"></a>
-</span><span id="__span-10-7"><a href="#__codelineno-10-7" id="__codelineno-10-7" name="__codelineno-10-7"></a><span class="c1"># Match multiple file patterns</span>
-</span><span id="__span-10-8"><a href="#__codelineno-10-8" id="__codelineno-10-8" name="__codelineno-10-8"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">'{Cargo.toml,Cargo.lock,*.rs}'</span><span class="w"> </span>pattern
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># Match either Rust or TOML files</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;*.{rs,toml}&#39;</span><span class="w"> </span>pattern
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="c1"># Match multiple source directories</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;{src,lib,bin}/**/*.rs&#39;</span><span class="w"> </span>pattern
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="c1"># Match multiple file patterns</span>
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;{Cargo.toml,Cargo.lock,*.rs}&#39;</span><span class="w"> </span>pattern
 </span></code></pre></div>
 <p><strong>Note:</strong> Empty alternatives like <code>{,c}</code> are not currently supported (as of ripgrep 14.1+). Brace expansion is a ripgrep extension beyond standard <code>.gitignore</code> syntax.</p>
-<h2 id="case-insensitive-globs">Case-Insensitive Globs<a class="headerlink" href="#case-insensitive-globs" title="Permanent link">¶</a></h2>
+<h2 id="case-insensitive-globs">Case-Insensitive Globs<a class="headerlink" href="#case-insensitive-globs" title="Permanent link">&para;</a></h2>
 <p>Two flags control case sensitivity for glob matching:</p>
 <ul>
 <li><code>--iglob GLOB</code> - Single case-insensitive glob pattern</li>
@@ -1652,17 +3087,17 @@ excludes?"}
 <li><code>--no-glob-case-insensitive</code> - Restores case-sensitive matching (negates <code>--glob-case-insensitive</code>)</li>
 </ul>
 <p>Examples:
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a href="#__codelineno-11-1" id="__codelineno-11-1" name="__codelineno-11-1"></a><span class="c1"># Match .html, .HTML, .Html, etc.</span>
-</span><span id="__span-11-2"><a href="#__codelineno-11-2" id="__codelineno-11-2" name="__codelineno-11-2"></a>rg<span class="w"> </span>--iglob<span class="w"> </span><span class="s1">'*.html'</span><span class="w"> </span>pattern
-</span><span id="__span-11-3"><a href="#__codelineno-11-3" id="__codelineno-11-3" name="__codelineno-11-3"></a>
-</span><span id="__span-11-4"><a href="#__codelineno-11-4" id="__codelineno-11-4" name="__codelineno-11-4"></a><span class="c1"># Make all globs case-insensitive</span>
-</span><span id="__span-11-5"><a href="#__codelineno-11-5" id="__codelineno-11-5" name="__codelineno-11-5"></a>rg<span class="w"> </span>--glob-case-insensitive<span class="w"> </span>-g<span class="w"> </span><span class="s1">'*.rs'</span><span class="w"> </span>-g<span class="w"> </span><span class="s1">'*.toml'</span><span class="w"> </span>pattern
-</span><span id="__span-11-6"><a href="#__codelineno-11-6" id="__codelineno-11-6" name="__codelineno-11-6"></a>
-</span><span id="__span-11-7"><a href="#__codelineno-11-7" id="__codelineno-11-7" name="__codelineno-11-7"></a><span class="c1"># Restore case-sensitive matching after earlier use of --glob-case-insensitive</span>
-</span><span id="__span-11-8"><a href="#__codelineno-11-8" id="__codelineno-11-8" name="__codelineno-11-8"></a>rg<span class="w"> </span>--glob-case-insensitive<span class="w"> </span>-g<span class="w"> </span><span class="s1">'*.html'</span><span class="w"> </span>--no-glob-case-insensitive<span class="w"> </span>-g<span class="w"> </span><span class="s1">'*.RS'</span><span class="w"> </span>pattern
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1"># Match .html, .HTML, .Html, etc.</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>rg<span class="w"> </span>--iglob<span class="w"> </span><span class="s1">&#39;*.html&#39;</span><span class="w"> </span>pattern
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="c1"># Make all globs case-insensitive</span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>rg<span class="w"> </span>--glob-case-insensitive<span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;*.rs&#39;</span><span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;*.toml&#39;</span><span class="w"> </span>pattern
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="c1"># Restore case-sensitive matching after earlier use of --glob-case-insensitive</span>
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>rg<span class="w"> </span>--glob-case-insensitive<span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;*.html&#39;</span><span class="w"> </span>--no-glob-case-insensitive<span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;*.RS&#39;</span><span class="w"> </span>pattern
 </span></code></pre></div></p>
 <p>Use <code>--iglob</code> when you need one case-insensitive pattern, or <code>--glob-case-insensitive</code> when all your patterns should ignore case. Use <code>--no-glob-case-insensitive</code> to selectively restore case-sensitive matching.</p>
-<h2 id="gitignore-compatibility">Gitignore Compatibility<a class="headerlink" href="#gitignore-compatibility" title="Permanent link">¶</a></h2>
+<h2 id="gitignore-compatibility">Gitignore Compatibility<a class="headerlink" href="#gitignore-compatibility" title="Permanent link">&para;</a></h2>
 <p>Glob patterns use the same syntax as <code>.gitignore</code> files, making them familiar if you already use Git:</p>
 <ul>
 <li>Patterns match file paths relative to the search root</li>
@@ -1671,25 +3106,25 @@ excludes?"}
 <li><code>!</code> prefix for negation</li>
 </ul>
 <p>This compatibility means you can often copy patterns from <code>.gitignore</code> files directly into <code>-g</code> flags.</p>
-<h2 id="escaping-metacharacters">Escaping Metacharacters<a class="headerlink" href="#escaping-metacharacters" title="Permanent link">¶</a></h2>
+<h2 id="escaping-metacharacters">Escaping Metacharacters<a class="headerlink" href="#escaping-metacharacters" title="Permanent link">&para;</a></h2>
 <p>To match special characters literally, use character class notation:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a href="#__codelineno-12-1" id="__codelineno-12-1" name="__codelineno-12-1"></a><span class="c1"># Match files with literal asterisk in name</span>
-</span><span id="__span-12-2"><a href="#__codelineno-12-2" id="__codelineno-12-2" name="__codelineno-12-2"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">'*[*]*'</span><span class="w"> </span>pattern
-</span><span id="__span-12-3"><a href="#__codelineno-12-3" id="__codelineno-12-3" name="__codelineno-12-3"></a>
-</span><span id="__span-12-4"><a href="#__codelineno-12-4" id="__codelineno-12-4" name="__codelineno-12-4"></a><span class="c1"># Match files with literal question mark</span>
-</span><span id="__span-12-5"><a href="#__codelineno-12-5" id="__codelineno-12-5" name="__codelineno-12-5"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">'*[?]*'</span><span class="w"> </span>pattern
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="c1"># Match files with literal asterisk in name</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;*[*]*&#39;</span><span class="w"> </span>pattern
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="c1"># Match files with literal question mark</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;*[?]*&#39;</span><span class="w"> </span>pattern
 </span></code></pre></div>
 <p><strong>Note:</strong> Backslash escaping behavior is platform-dependent. Character classes provide reliable cross-platform escaping.</p>
-<h2 id="glob-override-behavior">Glob Override Behavior<a class="headerlink" href="#glob-override-behavior" title="Permanent link">¶</a></h2>
+<h2 id="glob-override-behavior">Glob Override Behavior<a class="headerlink" href="#glob-override-behavior" title="Permanent link">&para;</a></h2>
 <p><strong>Important:</strong> Glob patterns always override automatic filtering from <code>.gitignore</code>, <code>.ignore</code>, and other sources. When you use <code>-g</code>, you're taking explicit control:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a href="#__codelineno-13-1" id="__codelineno-13-1" name="__codelineno-13-1"></a><span class="c1"># Search all .rs files, even if .gitignore excludes them</span>
-</span><span id="__span-13-2"><a href="#__codelineno-13-2" id="__codelineno-13-2" name="__codelineno-13-2"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">'*.rs'</span><span class="w"> </span>pattern
-</span><span id="__span-13-3"><a href="#__codelineno-13-3" id="__codelineno-13-3" name="__codelineno-13-3"></a>
-</span><span id="__span-13-4"><a href="#__codelineno-13-4" id="__codelineno-13-4" name="__codelineno-13-4"></a><span class="c1"># Search ignored directories</span>
-</span><span id="__span-13-5"><a href="#__codelineno-13-5" id="__codelineno-13-5" name="__codelineno-13-5"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">'target/**/*.rs'</span><span class="w"> </span>pattern
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1"># Search all .rs files, even if .gitignore excludes them</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;*.rs&#39;</span><span class="w"> </span>pattern
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="c1"># Search ignored directories</span>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;target/**/*.rs&#39;</span><span class="w"> </span>pattern
 </span></code></pre></div>
 <p>This override behavior gives you ultimate control when automatic filtering is too restrictive.</p>
-<h3 id="ignore-hierarchy-and-precedence">Ignore Hierarchy and Precedence<a class="headerlink" href="#ignore-hierarchy-and-precedence" title="Permanent link">¶</a></h3>
+<h3 id="ignore-hierarchy-and-precedence">Ignore Hierarchy and Precedence<a class="headerlink" href="#ignore-hierarchy-and-precedence" title="Permanent link">&para;</a></h3>
 <p>Glob patterns with <code>-g/--glob</code> are "override patterns" that sit at the top of ripgrep's ignore hierarchy. The complete precedence order (highest to lowest priority) is:</p>
 <ol>
 <li><strong>Override patterns</strong> - <code>--include</code>/<code>--exclude</code> (not currently implemented) and <code>-g/--glob</code> patterns</li>
@@ -1702,35 +3137,35 @@ excludes?"}
 <li><strong>Hidden file detection</strong> - Automatic filtering of dotfiles</li>
 </ol>
 <p>When you use <code>-g</code>, your patterns take precedence over all automatic ignore sources, which is why globs can force ripgrep to search files that would normally be excluded.</p>
-<h2 id="practical-examples">Practical Examples<a class="headerlink" href="#practical-examples" title="Permanent link">¶</a></h2>
+<h2 id="practical-examples">Practical Examples<a class="headerlink" href="#practical-examples" title="Permanent link">&para;</a></h2>
 <div class="admonition example">
 <p class="admonition-title">Common Glob Patterns</p>
 <p>Here are practical patterns for common search scenarios:</p>
 <p><strong>Search only Rust files:</strong>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a href="#__codelineno-14-1" id="__codelineno-14-1" name="__codelineno-14-1"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">'*.rs'</span><span class="w"> </span><span class="s1">'use std'</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;*.rs&#39;</span><span class="w"> </span><span class="s1">&#39;use std&#39;</span>
 </span></code></pre></div></p>
 <p><strong>Search all files in src/:</strong>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a href="#__codelineno-15-1" id="__codelineno-15-1" name="__codelineno-15-1"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">'src/**'</span><span class="w"> </span><span class="s1">'TODO'</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;src/**&#39;</span><span class="w"> </span><span class="s1">&#39;TODO&#39;</span>
 </span></code></pre></div></p>
 <p><strong>Exclude test directories:</strong>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a href="#__codelineno-16-1" id="__codelineno-16-1" name="__codelineno-16-1"></a><span class="c1"># Exclude both common test directory naming conventions</span>
-</span><span id="__span-16-2"><a href="#__codelineno-16-2" id="__codelineno-16-2" name="__codelineno-16-2"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">'!**/test/**'</span><span class="w"> </span>-g<span class="w"> </span><span class="s1">'!**/tests/**'</span><span class="w"> </span>pattern
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="c1"># Exclude both common test directory naming conventions</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;!**/test/**&#39;</span><span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;!**/tests/**&#39;</span><span class="w"> </span>pattern
 </span></code></pre></div></p>
 <p><strong>Combine multiple patterns:</strong>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a href="#__codelineno-17-1" id="__codelineno-17-1" name="__codelineno-17-1"></a><span class="c1"># Search Rust and TOML in src/, excluding tests</span>
-</span><span id="__span-17-2"><a href="#__codelineno-17-2" id="__codelineno-17-2" name="__codelineno-17-2"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">'src/**/*.{rs,toml}'</span><span class="w"> </span>-g<span class="w"> </span><span class="s1">'!**/tests/**'</span><span class="w"> </span>pattern<span class="w">  </span><span class="c1"># (1)!</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="c1"># Search Rust and TOML in src/, excluding tests</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;src/**/*.{rs,toml}&#39;</span><span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;!**/tests/**&#39;</span><span class="w"> </span>pattern<span class="w">  </span><span class="c1"># (1)!</span>
 </span></code></pre></div></p>
 <ol>
 <li>Combines directory filtering (<code>src/**</code>), extension matching (<code>.{rs,toml}</code>), and exclusion (<code>!**/tests/**</code>)</li>
 </ol>
 <p><strong>Search configuration files:</strong>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-18-1"><a href="#__codelineno-18-1" id="__codelineno-18-1" name="__codelineno-18-1"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">'*.{toml,json,yaml,yml}'</span><span class="w"> </span><span class="s1">'database'</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;*.{toml,json,yaml,yml}&#39;</span><span class="w"> </span><span class="s1">&#39;database&#39;</span>
 </span></code></pre></div></p>
 <p><strong>Search only migration files:</strong>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-19-1"><a href="#__codelineno-19-1" id="__codelineno-19-1" name="__codelineno-19-1"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">'**/migrations/**/*.sql'</span><span class="w"> </span><span class="s1">'CREATE TABLE'</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;**/migrations/**/*.sql&#39;</span><span class="w"> </span><span class="s1">&#39;CREATE TABLE&#39;</span>
 </span></code></pre></div></p>
 </div>
-<h2 id="comparison-globs-vs-type-filters">Comparison: Globs vs Type Filters<a class="headerlink" href="#comparison-globs-vs-type-filters" title="Permanent link">¶</a></h2>
+<h2 id="comparison-globs-vs-type-filters">Comparison: Globs vs Type Filters<a class="headerlink" href="#comparison-globs-vs-type-filters" title="Permanent link">&para;</a></h2>
 <p>Globs provide more flexibility than type filters (<code>-t</code>), but type filters are more concise for common cases:</p>
 <table>
 <thead>
@@ -1769,22 +3204,22 @@ excludes?"}
 </tbody>
 </table>
 <p>Use type filters when searching by file type. Use globs when you need path-based filtering or complex include/exclude logic.</p>
-<h2 id="preview-files-with-files">Preview Files with --files<a class="headerlink" href="#preview-files-with-files" title="Permanent link">¶</a></h2>
+<h2 id="preview-files-with-files">Preview Files with --files<a class="headerlink" href="#preview-files-with-files" title="Permanent link">&para;</a></h2>
 <p>Before running a search, preview which files match your globs using <code>--files</code>:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-20-1"><a href="#__codelineno-20-1" id="__codelineno-20-1" name="__codelineno-20-1"></a><span class="c1"># See which files would be searched</span>
-</span><span id="__span-20-2"><a href="#__codelineno-20-2" id="__codelineno-20-2" name="__codelineno-20-2"></a>rg<span class="w"> </span>--files<span class="w"> </span>-g<span class="w"> </span><span class="s1">'*.rs'</span><span class="w"> </span>-g<span class="w"> </span><span class="s1">'!**/tests/**'</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="c1"># See which files would be searched</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>rg<span class="w"> </span>--files<span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;*.rs&#39;</span><span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;!**/tests/**&#39;</span>
 </span></code></pre></div>
 <div class="admonition tip">
 <p class="admonition-title">Verify Your Patterns</p>
 <p>Always preview with <code>rg --files -g 'pattern'</code> before running complex searches. This helps verify your glob patterns match the files you expect and avoids surprises from incorrect patterns.</p>
 </div>
-<h2 id="performance-considerations">Performance Considerations<a class="headerlink" href="#performance-considerations" title="Permanent link">¶</a></h2>
+<h2 id="performance-considerations">Performance Considerations<a class="headerlink" href="#performance-considerations" title="Permanent link">&para;</a></h2>
 <p>Glob patterns are evaluated for every file in the search tree. More specific patterns perform better than broad ones:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-21-1"><a href="#__codelineno-21-1" id="__codelineno-21-1" name="__codelineno-21-1"></a><span class="c1"># ✅ Specific pattern (faster)</span>
-</span><span id="__span-21-2"><a href="#__codelineno-21-2" id="__codelineno-21-2" name="__codelineno-21-2"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">'src/**/*.rs'</span><span class="w"> </span>pattern<span class="w">        </span><span class="c1"># (1)!</span>
-</span><span id="__span-21-3"><a href="#__codelineno-21-3" id="__codelineno-21-3" name="__codelineno-21-3"></a>
-</span><span id="__span-21-4"><a href="#__codelineno-21-4" id="__codelineno-21-4" name="__codelineno-21-4"></a><span class="c1"># ❌ Broad pattern requiring more exclusions (slower)</span>
-</span><span id="__span-21-5"><a href="#__codelineno-21-5" id="__codelineno-21-5" name="__codelineno-21-5"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">'**/*.rs'</span><span class="w"> </span>-g<span class="w"> </span><span class="s1">'!target/**'</span><span class="w"> </span>-g<span class="w"> </span><span class="s1">'!.git/**'</span><span class="w"> </span>-g<span class="w"> </span><span class="s1">'!vendor/**'</span><span class="w"> </span>pattern<span class="w">  </span><span class="c1"># (2)!</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="c1"># ✅ Specific pattern (faster)</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;src/**/*.rs&#39;</span><span class="w"> </span>pattern<span class="w">        </span><span class="c1"># (1)!</span>
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="c1"># ❌ Broad pattern requiring more exclusions (slower)</span>
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;**/*.rs&#39;</span><span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;!target/**&#39;</span><span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;!.git/**&#39;</span><span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;!vendor/**&#39;</span><span class="w"> </span>pattern<span class="w">  </span><span class="c1"># (2)!</span>
 </span></code></pre></div>
 <ol>
 <li>Targets specific directory, reducing files to evaluate</li>
@@ -1794,25 +3229,25 @@ excludes?"}
 <p class="admonition-title">Performance Best Practice</p>
 <p>Use include patterns that target specific directories rather than exclude patterns that filter out large portions of the file tree. This reduces the number of files ripgrep needs to evaluate.</p>
 </div>
-<h3 id="advanced-glob-optimization">Advanced: Glob Optimization<a class="headerlink" href="#advanced-glob-optimization" title="Permanent link">¶</a></h3>
+<h3 id="advanced-glob-optimization">Advanced: Glob Optimization<a class="headerlink" href="#advanced-glob-optimization" title="Permanent link">&para;</a></h3>
 <p>Ripgrep automatically optimizes glob patterns into specialized matching strategies for better performance. The optimizer analyzes each pattern and selects the most efficient matching approach from these strategies:</p>
-<div class="language-rust highlight"><pre><span></span><code><span id="__span-22-1"><a href="#__codelineno-22-1" id="__codelineno-22-1" name="__codelineno-22-1"></a><span class="c1">// Source: crates/globset/src/glob.rs:16-47</span>
-</span><span id="__span-22-2"><a href="#__codelineno-22-2" id="__codelineno-22-2" name="__codelineno-22-2"></a><span class="k">enum</span><span class="w"> </span><span class="nc">MatchStrategy</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-22-3"><a href="#__codelineno-22-3" id="__codelineno-22-3" name="__codelineno-22-3"></a><span class="w">    </span><span class="n">Literal</span><span class="p">(</span><span class="nb">String</span><span class="p">),</span><span class="w">           </span><span class="c1">// Exact path match</span>
-</span><span id="__span-22-4"><a href="#__codelineno-22-4" id="__codelineno-22-4" name="__codelineno-22-4"></a><span class="w">    </span><span class="n">BasenameLiteral</span><span class="p">(</span><span class="nb">String</span><span class="p">),</span><span class="w">   </span><span class="c1">// Exact filename match</span>
-</span><span id="__span-22-5"><a href="#__codelineno-22-5" id="__codelineno-22-5" name="__codelineno-22-5"></a><span class="w">    </span><span class="n">Extension</span><span class="p">(</span><span class="nb">String</span><span class="p">),</span><span class="w">         </span><span class="c1">// Extension-only match</span>
-</span><span id="__span-22-6"><a href="#__codelineno-22-6" id="__codelineno-22-6" name="__codelineno-22-6"></a><span class="w">    </span><span class="n">Prefix</span><span class="p">(</span><span class="nb">String</span><span class="p">),</span><span class="w">            </span><span class="c1">// Path prefix match</span>
-</span><span id="__span-22-7"><a href="#__codelineno-22-7" id="__codelineno-22-7" name="__codelineno-22-7"></a><span class="w">    </span><span class="n">Suffix</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">suffix</span><span class="p">,</span><span class="w"> </span><span class="n">component</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="c1">// Path suffix match</span>
-</span><span id="__span-22-8"><a href="#__codelineno-22-8" id="__codelineno-22-8" name="__codelineno-22-8"></a><span class="w">    </span><span class="n">RequiredExtension</span><span class="p">(</span><span class="nb">String</span><span class="p">),</span><span class="w"> </span><span class="c1">// Extension + regex</span>
-</span><span id="__span-22-9"><a href="#__codelineno-22-9" id="__codelineno-22-9" name="__codelineno-22-9"></a><span class="w">    </span><span class="n">Regex</span><span class="p">,</span><span class="w">                     </span><span class="c1">// Full regex evaluation</span>
-</span><span id="__span-22-10"><a href="#__codelineno-22-10" id="__codelineno-22-10" name="__codelineno-22-10"></a><span class="p">}</span>
+<div class="language-rust highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="c1">// Source: crates/globset/src/glob.rs:16-47</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="k">enum</span><span class="w"> </span><span class="nc">MatchStrategy</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a><span class="w">    </span><span class="n">Literal</span><span class="p">(</span><span class="nb">String</span><span class="p">),</span><span class="w">           </span><span class="c1">// Exact path match</span>
+</span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a><span class="w">    </span><span class="n">BasenameLiteral</span><span class="p">(</span><span class="nb">String</span><span class="p">),</span><span class="w">   </span><span class="c1">// Exact filename match</span>
+</span><span id="__span-22-5"><a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a><span class="w">    </span><span class="n">Extension</span><span class="p">(</span><span class="nb">String</span><span class="p">),</span><span class="w">         </span><span class="c1">// Extension-only match</span>
+</span><span id="__span-22-6"><a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a><span class="w">    </span><span class="n">Prefix</span><span class="p">(</span><span class="nb">String</span><span class="p">),</span><span class="w">            </span><span class="c1">// Path prefix match</span>
+</span><span id="__span-22-7"><a id="__codelineno-22-7" name="__codelineno-22-7" href="#__codelineno-22-7"></a><span class="w">    </span><span class="n">Suffix</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">suffix</span><span class="p">,</span><span class="w"> </span><span class="n">component</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="c1">// Path suffix match</span>
+</span><span id="__span-22-8"><a id="__codelineno-22-8" name="__codelineno-22-8" href="#__codelineno-22-8"></a><span class="w">    </span><span class="n">RequiredExtension</span><span class="p">(</span><span class="nb">String</span><span class="p">),</span><span class="w"> </span><span class="c1">// Extension + regex</span>
+</span><span id="__span-22-9"><a id="__codelineno-22-9" name="__codelineno-22-9" href="#__codelineno-22-9"></a><span class="w">    </span><span class="n">Regex</span><span class="p">,</span><span class="w">                     </span><span class="c1">// Full regex evaluation</span>
+</span><span id="__span-22-10"><a id="__codelineno-22-10" name="__codelineno-22-10" href="#__codelineno-22-10"></a><span class="p">}</span>
 </span></code></pre></div>
 <p>Simple patterns like <code>*.rs</code> are converted to faster <code>Extension</code> matching rather than full regex evaluation. Complex patterns with <code>**</code>, <code>?</code>, or <code>[...]</code> require <code>Regex</code> matching, which is more expensive.</p>
 <div class="admonition tip">
 <p class="admonition-title">Performance optimization</p>
 <p>Prefer simple extension-based patterns (<code>*.rs</code>) over complex path patterns when possible. The optimizer handles this automatically, but understanding these strategies can help you write more efficient globs.</p>
 </div>
-<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">¶</a></h2>
+<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
 <p>Glob patterns give you precise control over which files ripgrep searches:</p>
 <ul>
 <li>Use <code>-g/--glob</code> for manual file filtering</li>
@@ -1824,37 +3259,66 @@ excludes?"}
 <li>Compatible with <code>.gitignore</code> syntax</li>
 </ul>
 <p>For most searches, <a href="../automatic-filtering/">automatic filtering</a> handles file selection. Use globs when you need explicit control over which files to search or skip.</p>
-</article>
-</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
 <script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
-</div>
-<button class="md-top md-icon" data-md-component="top" hidden="" type="button">
-<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"></path></svg>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
   Back to top
 </button>
-</main>
-<footer class="md-footer">
-<div class="md-footer-meta md-typeset">
-<div class="md-footer-meta__inner md-grid">
-<div class="md-copyright">
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
   
   
     Made with
-    <a href="https://squidfunk.github.io/mkdocs-material/" rel="noopener" target="_blank">
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
       Material for MkDocs
     </a>
+  
 </div>
-</div>
-</div>
+      
+    </div>
+  </div>
 </footer>
-</div>
-<div class="md-dialog" data-md-component="dialog">
-<div class="md-dialog__inner md-typeset"></div>
-</div>
-<script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.highlight", "search.share", "search.suggest", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
-<script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
-<script type="module">import mermaid from "https://unpkg.com/mermaid@10.4.0/dist/mermaid.esm.min.mjs";
-window.mermaidConfig = {default: {
-    startOnLoad: false
-}};</script></body>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.highlight", "search.share", "search.suggest", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+    
+  </body>
 </html>
