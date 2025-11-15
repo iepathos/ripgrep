@@ -123,6 +123,26 @@ def validate_diagram(diagram: str) -> List[str]:
             if sg_name in node_ids:
                 warnings.append(f"Subgraph '{sg_name}' has same name as a node - this may cause cycles. Use different names.")
 
+        # Check for vertical layout with multiple sequential subgraphs (renders too small)
+        # Pattern: graph TD with 3+ subgraphs containing linear sequences
+        if diagram.strip().startswith(('graph TD', 'flowchart TD')):
+            subgraphs = re.findall(r'subgraph\s+\w+.*?end', diagram, re.DOTALL)
+            if len(subgraphs) >= 3:
+                # Check if subgraphs contain primarily sequential content (A --> B --> C pattern)
+                sequential_count = 0
+                for subgraph in subgraphs:
+                    # Count simple sequential connections (no branches)
+                    sequential_arrows = re.findall(r'\w+\s*-->', subgraph)
+                    branch_points = re.findall(r'-->\s*\|', subgraph)  # Edge labels often indicate branches
+                    decision_nodes = re.findall(r'\{\s*[^}]+\s*\}', subgraph)  # Diamond decision nodes
+
+                    # If mostly sequential (few branches/decisions), it's a linear sequence
+                    if len(sequential_arrows) >= 3 and len(branch_points) + len(decision_nodes) < 2:
+                        sequential_count += 1
+
+                if sequential_count >= 3:
+                    warnings.append(f"Vertical layout (TD) with {sequential_count} sequential subgraphs - consider horizontal layout (LR) for better readability")
+
     # Return errors (warnings are just informational for now)
     return errors
 
