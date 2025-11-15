@@ -17,19 +17,9 @@ exclude_docs: |
 theme:
   name: material
   palette:
-    # Dark mode by default (matching mdbook config)
-    - scheme: slate
-      primary: indigo
-      accent: indigo
-      toggle:
-        icon: material/brightness-4
-        name: Switch to light mode
-    - scheme: default
-      primary: indigo
-      accent: indigo
-      toggle:
-        icon: material/brightness-7
-        name: Switch to dark mode
+    scheme: default
+    primary: indigo
+    accent: indigo
   features:
     - navigation.instant
     - navigation.tracking
@@ -47,7 +37,6 @@ theme:
 plugins:
   - search:
       lang: en
-  - mermaid2
 
 markdown_extensions:
   - admonition
@@ -56,7 +45,7 @@ markdown_extensions:
       custom_fences:
         - name: mermaid
           class: mermaid
-          format: !!python/name:mermaid2.fence_mermaid_custom
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
