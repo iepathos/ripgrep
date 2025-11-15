@@ -1336,13 +1336,13 @@ match newlines?"}
     Multi --&gt;|No| Features{"Need lookaround
 or backrefs?"}
 
-    Dotall --&gt;|Yes| UseDotall[""Use: -U --multiline-dotall
-or -U '(?s")pattern'"]
+    Dotall --&gt;|Yes| UseDotall["Use: -U --multiline-dotall
+or -U '(?s)pattern'"]
     Dotall --&gt;|No| UseMulti["Use: -U pattern"]
 
     Features --&gt;|Yes| UsePCRE["Use: -P pattern"]
-    Features --&gt;|No| UseDefault[""Use: pattern
-(default engine")"]
+    Features --&gt;|No| UseDefault["Use: pattern
+(default engine)"]
 
     UsePCRE --&gt; PCREMulti{Also multiline?}
     PCREMulti --&gt;|Yes| UsePU["Use: -PU pattern"]

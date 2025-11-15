@@ -1634,14 +1634,14 @@ Quickfix lists"]
 </span></code></pre></div></p>
 <p><strong>Understanding the difference:</strong></p>
 <pre class="mermaid"><code>graph TD
-    Line[Line: "error: failed, error: timeout, error: crash"]
+    Line["Line: error: failed, error: timeout, error: crash"]
     Line --&gt; CountLine["-c counts lines"]
     Line --&gt; CountMatch["--count-matches counts"]
 
     CountLine --&gt; Result1["Result: 1
 (one matching line)"]
     CountMatch --&gt; Result2["Result: 3
-(three 'error' matches)"]
+(three error matches)"]
 
     style Line fill:#f5f5f5
     style CountLine fill:#e1f5ff
