@@ -64,8 +64,6 @@ For comprehensive performance benchmarks and feature comparisons with grep, ag, 
 
 ## Installation
 
-### Quick Installation
-
 **Precompiled binaries** are available for most platforms:
 
 Download the latest release from [GitHub Releases](https://github.com/BurntSushi/ripgrep/releases) and extract the archive.
