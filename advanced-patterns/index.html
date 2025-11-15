@@ -1268,28 +1268,45 @@ line boundaries?"}
     C --&gt; E{"Does . need to
 match newlines?"}
     E --&gt;|Yes| F["Add --multiline-dotall
-or use (?s")]
+or use (?s)"]
     E --&gt;|No| G[Just -U is sufficient]
 
-    A --&gt; H{"Need lookaround or
+    D --&gt; H{"Need lookaround or
 backreferences?"}
     H --&gt;|Yes| I[Use -P --pcre2]
     H --&gt;|No| J[Default engine faster]
 
+    F --&gt; H
+    G --&gt; H
+
     I --&gt; K{Matching across lines?}
     K --&gt;|Yes| L[Use -PU together]
-
-    A --&gt; M{"Need Unicode
+    K --&gt;|No| M{"Need Unicode
 character classes?"}
+
+    J --&gt; M
+    L --&gt; M
+
     M --&gt;|Yes| N["Default behavior
 Unicode enabled"]
     M --&gt;|No| O["Use --no-unicode
 ASCII-only faster"]
 
-    A --&gt; P{"Complex pattern with
-multiple features?"}
+    N --&gt; P{Complex pattern?}
+    O --&gt; P
+
     P --&gt;|Yes| Q["Use --engine=auto
 for automatic selection"]
+    P --&gt;|No| R[Ready to search]
+
+    Q --&gt; R
+
+    style A fill:#e8f5e9
+    style R fill:#c8e6c9
+    style C fill:#fff3e0
+    style F fill:#ffcc80
+    style I fill:#f3e5f5
+    style L fill:#ce93d8
 </code></pre>
 <div class="admonition note">
 <p class="admonition-title">About --engine=auto</p>
