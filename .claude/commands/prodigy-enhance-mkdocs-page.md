@@ -257,6 +257,67 @@ flowchart TD
 **Figure**: Error handling flow showing retry logic and failure propagation.
 ```
 
+**Diagram Layout Best Practices:**
+
+Choose the appropriate layout direction based on content structure:
+
+**Use Horizontal Layout (`graph LR` or `flowchart LR`) when:**
+- Showing sequential/linear processes (Step 1 → Step 2 → Step 3)
+- Displaying algorithm execution steps
+- Showing before/after transformations
+- Content is primarily sequential with few branches
+
+```mermaid
+graph LR
+    Input[Input Data] --> Process[Process] --> Transform[Transform] --> Output[Output]
+```
+
+**Use Vertical Layout (`graph TD` or `flowchart TD`) when:**
+- Showing hierarchical structures (parent → children)
+- Decision trees with multiple branches
+- Workflows with conditional logic
+- Component hierarchies
+
+```mermaid
+flowchart TD
+    Start[Start] --> Decision{Condition?}
+    Decision -->|Yes| Path1[Action A]
+    Decision -->|No| Path2[Action B]
+    Path1 --> End[Complete]
+    Path2 --> End
+```
+
+**Avoid These Layout Mistakes:**
+
+❌ **Multiple vertical subgraphs with linear content** - renders too small:
+```mermaid
+graph TD
+    subgraph "Process 1"
+        A1[Step 1] --> A2[Step 2] --> A3[Step 3]
+    end
+    subgraph "Process 2"
+        B1[Step 1] --> B2[Step 2] --> B3[Step 3]
+    end
+    subgraph "Process 3"
+        C1[Step 1] --> C2[Step 2] --> C3[Step 3]
+    end
+```
+This stacks narrow sequences vertically, making them unreadable.
+
+✅ **Instead, use horizontal subgraphs:**
+```mermaid
+graph LR
+    subgraph Process1["Process 1"]
+        direction LR
+        A1[Step 1] --> A2[Step 2] --> A3[Step 3]
+    end
+    subgraph Process2["Process 2"]
+        direction LR
+        B1[Step 1] --> B2[Step 2] --> B3[Step 3]
+    end
+```
+This makes better use of screen width and improves readability.
+
 #### B. Admonition Placement (strategic locations)
 
 Read the page content and add admonitions where they genuinely help:
@@ -515,6 +576,8 @@ fi
 - ✅ Tabs used for genuine alternatives or platform differences
 - ✅ Diagram labels use proper spacing (e.g., "Search and Suppress" not "SearchAndSuppress")
 - ✅ Multi-line labels use quoted syntax with actual newlines, not HTML `<br/>` tags
+- ✅ Horizontal layout (`graph LR` or `flowchart LR`) for sequential/linear processes
+- ✅ Vertical layout (`graph TD` or `flowchart TD`) for hierarchical/branching flows
 
 **Bad Enhancements:**
 - ❌ Generic diagram that doesn't match page content
@@ -523,6 +586,8 @@ fi
 - ❌ Tabs for single-variant content
 - ❌ Compound words without spaces in diagram labels (e.g., "SearchAndSuppress")
 - ❌ HTML tags like `<br/>` or HTML entities like `&#40;` in Mermaid diagrams
+- ❌ Vertical layout for linear sequences (renders too small and narrow)
+- ❌ Multiple subgraphs stacked vertically with sequential content (unreadable)
 
 ### Examples of Context-Aware Enhancement
 
