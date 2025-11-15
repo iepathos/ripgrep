@@ -1218,39 +1218,50 @@
 <h2 id="quick-reference">Quick Reference<a class="headerlink" href="#quick-reference" title="Permanent link">¶</a></h2>
 <h3 id="feature-architecture">Feature Architecture<a class="headerlink" href="#feature-architecture" title="Permanent link">¶</a></h3>
 <p>The advanced features in ripgrep are organized into layers that can be combined:</p>
-<pre class="mermaid"><code>graph TD
-    Base[ripgrep Base Engine] --&gt; Line["Line-by-line Mode
-Default"]
-    Base --&gt; Multi["Multiline Mode
--U flag"]
+<pre class="mermaid"><code>graph TB
+    subgraph Modes["Search Modes"]
+        Line["Line-by-line Mode
+        Default behavior"]
+        Multi["Multiline Mode
+        -U flag"]
+        Dotall["Dotall Mode
+        --multiline-dotall
+        (requires -U)"]
 
-    Base --&gt; Default["Default Regex Engine
-Fast, limited features"]
-    Base --&gt; PCRE["PCRE2 Engine
--P flag"]
+        Multi --&gt; Dotall
+    end
 
-    Default --&gt; Unicode1["Unicode Support
-\\p Properties"]
-    PCRE --&gt; Unicode2["Unicode Support
-\\p Properties"]
+    subgraph Engines["Regex Engines"]
+        Default["Default Engine
+        Fast, limited features"]
+        PCRE["PCRE2 Engine
+        -P flag
+        Advanced features"]
 
-    Multi --&gt; Dotall["Dotall Mode
---multiline-dotall"]
+        Default --&gt; Unicode1["Unicode Support
+        \\p Properties"]
+        PCRE --&gt; Unicode2["Unicode Support
+        \\p Properties"]
+        PCRE --&gt; Look["Lookaround
+        Assertions"]
+        PCRE --&gt; Back["Backreferences
+        \\1, \\2, etc."]
+    end
 
-    PCRE --&gt; Look["Lookaround
-Assertions"]
-    PCRE --&gt; Back["Backreferences
-\\1, \\2, etc."]
+    Combined["PCRE2 + Multiline
+    -PU flag
+    Full feature set"]
 
-    Multi --&gt; Combined["Combined Modes
--PU for PCRE2 + Multiline"]
-    PCRE --&gt; Combined
+    Multi -.-&gt;|"Can combine with"| PCRE
+    Multi -.-&gt;|"Together create"| Combined
+    PCRE -.-&gt;|"Together create"| Combined
 
-    style Base fill:#e8f5e9
+    style Line fill:#e8f5e9
     style Default fill:#e1f5ff
     style PCRE fill:#fff3e0
     style Multi fill:#f3e5f5
     style Combined fill:#ffebee
+    style Dotall fill:#f3e5f5
 </code></pre>
 <p><strong>Figure</strong>: Ripgrep advanced feature layers showing how flags and modes combine.</p>
 <div class="admonition tip">
