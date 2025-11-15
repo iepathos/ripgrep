@@ -1390,20 +1390,26 @@
 <h2 id="engine-selection">Engine Selection<a class="headerlink" href="#engine-selection" title="Permanent link">¶</a></h2>
 <p>The <code>--engine</code> flag allows you to explicitly choose which regex engine to use, or let ripgrep choose automatically.</p>
 <pre class="mermaid"><code>flowchart TD
-    Start[Choose Regex Engine] --&gt; Need{Need PCRE2<br/>features?}
+    Start[Choose Regex Engine] --&gt; Need{"Need PCRE2
+features?"}
 
-    Need --&gt;|Yes: lookaround<br/>or backrefs| PCRE2[--engine=pcre2]
-    Need --&gt;|No| Performance{Performance<br/>critical?}
+    Need --&gt;|Yes - lookaround or backrefs| PCRE2[--engine=pcre2]
+    Need --&gt;|No| Performance{"Performance
+critical?"}
     Need --&gt;|Unsure| Auto[--engine=auto]
 
     Performance --&gt;|Yes| Default[--engine=default]
     Performance --&gt;|No| Auto
 
-    PCRE2 --&gt; PCRENote[Slower but feature-rich<br/>Backtracking algorithm]
-    Default --&gt; DefaultNote[Fastest<br/>Finite automata: O(n)]
-    Auto --&gt; AutoNote[Analyzes pattern<br/>Selects best engine]
+    PCRE2 --&gt; PCRENote["Slower but feature-rich
+    Backtracking algorithm"]
+    Default --&gt; DefaultNote["Fastest
+    Finite automata: O(n)"]
+    Auto --&gt; AutoNote["Analyzes pattern
+    Selects best engine"]
 
-    AutoNote --&gt; AutoCheck{Pattern has<br/>PCRE2 features?}
+    AutoNote --&gt; AutoCheck{"Pattern has
+PCRE2 features?"}
     AutoCheck --&gt;|Yes| AutoPCRE[Uses PCRE2]
     AutoCheck --&gt;|No| AutoDefault[Uses default]
 

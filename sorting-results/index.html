@@ -1627,18 +1627,25 @@ enabled?"}
     SortCheck --&gt;|No| Parallel[Parallel Execution]
     SortCheck --&gt;|Yes| SortType{Sort type?}
 
-    SortType --&gt;|--sort path<br/>ascending| Stream[Streaming Mode]
+    SortType --&gt;|--sort path ascending| Stream[Streaming Mode]
     SortType --&gt;|Other| Collect[Collect All Results]
 
-    Parallel --&gt; Stream1[Stream results<br/>as found]
-    Stream --&gt; Stream2[Stream in<br/>path order]
-    Collect --&gt; Buffer[Buffer in<br/>memory]
+    Parallel --&gt; Stream1["Stream results
+as found"]
+    Stream --&gt; Stream2["Stream in
+path order"]
+    Collect --&gt; Buffer["Buffer in
+memory"]
 
-    Stream1 --&gt; Fast[Fastest<br/>Low memory]
-    Stream2 --&gt; Medium[Medium speed<br/>Low memory]
+    Stream1 --&gt; Fast["Fastest
+Low memory"]
+    Stream2 --&gt; Medium["Medium speed
+Low memory"]
     Buffer --&gt; Sort[Sort results]
-    Sort --&gt; Output[Output all<br/>at once]
-    Output --&gt; Slow[Slower<br/>High memory]
+    Sort --&gt; Output["Output all
+at once"]
+    Output --&gt; Slow["Slower
+High memory"]
 
     style Parallel fill:#c8e6c9
     style Stream fill:#e1f5ff

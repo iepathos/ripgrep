@@ -1101,10 +1101,13 @@
 <h2 id="what-is-ripgrep">What is ripgrep?<a class="headerlink" href="#what-is-ripgrep" title="Permanent link">¶</a></h2>
 <p>ripgrep is a command line tool that searches your files for patterns that you give it. ripgrep behaves as if reading each file line by line. If a line matches the pattern provided to ripgrep, then that line will be printed. If a line does not match the pattern, then the line is not printed.</p>
 <pre class="mermaid"><code>flowchart LR
-    Start([Start Search]) --&gt; Filter{File should<br/>be searched?}
-    Filter --&gt;|No<br/>gitignore, hidden, binary| Skip[Skip File]
-    Filter --&gt;|Yes| Read[Read File<br/>Line by Line]
-    Read --&gt; Match{Line matches<br/>pattern?}
+    Start([Start Search]) --&gt; Filter{"File should
+be searched?"}
+    Filter --&gt;|No - gitignore, hidden, binary| Skip[Skip File]
+    Filter --&gt;|Yes| Read["Read File
+Line by Line"]
+    Read --&gt; Match{"Line matches
+pattern?"}
     Match --&gt;|Yes| Print[Print Line]
     Match --&gt;|No| Next{More lines?}
     Print --&gt; Next

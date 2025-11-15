@@ -1820,7 +1820,8 @@
 <li>Reports matches with the original compressed filename</li>
 </ol>
 <pre class="mermaid"><code>flowchart TD
-    Start[File Encountered] --&gt; CheckExt{Check File<br/>Extension}
+    Start[File Encountered] --&gt; CheckExt{"Check File
+Extension"}
     CheckExt --&gt;|.gz, .tgz| Gzip[Select gzip -d -c]
     CheckExt --&gt;|.xz, .txz| XZ[Select xz -d -c]
     CheckExt --&gt;|.zst, .zstd| Zstd[Select zstd -q -d -c]
@@ -1834,12 +1835,14 @@
     Bzip --&gt; Spawn
     Other --&gt; Spawn
 
-    Spawn --&gt; ToolCheck{Tool in<br/>PATH?}
+    Spawn --&gt; ToolCheck{"Tool in
+PATH?"}
     ToolCheck --&gt;|No| Fallback[Treat as Binary]
     ToolCheck --&gt;|Yes| Decompress[Read from stdout]
 
     Decompress --&gt; Search[Search Stream]
-    Search --&gt; Match{Match<br/>Found?}
+    Search --&gt; Match{"Match
+Found?"}
     Match --&gt;|Yes| Report[Report with Original Filename]
     Match --&gt;|No| Next[Continue]
 

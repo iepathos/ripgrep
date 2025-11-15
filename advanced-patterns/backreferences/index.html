@@ -1464,29 +1464,35 @@ not supported"]
 </span><span id="__span-4-6"><a href="#__codelineno-4-6" id="__codelineno-4-6" name="__codelineno-4-6"></a><span class="c1"># exponentially many ways to split the a's between groups</span>
 </span></code></pre></div>
 </div>
-<pre class="mermaid"><code>graph TD
-    subgraph "Default Engine: O(n) Linear Time"
-        D1[Input: 'test test'] --&gt; D2[Finite Automata]
-        D2 --&gt; D3[Single Pass]
-        D3 --&gt; D4[Result in ~n steps]
+<pre class="mermaid"><code>graph LR
+    subgraph Default["Default Engine: O(n) Linear Time"]
+        direction LR
+        D1["Input:
+        'test test'"] --&gt; D2[Finite Automata] --&gt; D3[Single Pass] --&gt; D4["Result in
+        ~n steps"]
     end
 
-    subgraph "PCRE2 with Backreferences: O(n)"
-        P1[Input: 'test test'] --&gt; P2["Pattern: (\w+)\s+\1"]
-        P2 --&gt; P3[Capture 'test']
-        P3 --&gt; P4[Match space]
-        P4 --&gt; P5[Compare with \1]
-        P5 --&gt; P6[Result in ~n steps]
+    subgraph PCRE2Good["PCRE2 with Backreferences: O(n)"]
+        direction LR
+        P1["Input:
+        'test test'"] --&gt; P2["Pattern:
+        (\w+)\s+\1"] --&gt; P3["Capture
+        'test'"] --&gt; P4[Match space] --&gt; P5["Compare
+        with \1"] --&gt; P6["Result in
+        ~n steps"]
     end
 
-    subgraph "PCRE2 Pathological: O(2^n)"
-        B1[Input: 'aaaa...'] --&gt; B2["Pattern: (a+)+b"]
-        B2 --&gt; B3[Try: a,a,a,a...]
-        B3 --&gt; B4[Backtrack: aa,a,a...]
-        B4 --&gt; B5[Backtrack: a,aa,a...]
-        B5 --&gt; B6[Backtrack: aaa,a...]
-        B6 --&gt; B7[... 2^n combinations]
-        B7 --&gt; B8[No match found]
+    subgraph PCRE2Bad["PCRE2 Pathological: O(2^n)"]
+        direction LR
+        B1["Input:
+        'aaaa...'"] --&gt; B2["Pattern:
+        (a+)+b"] --&gt; B3["Try:
+        a,a,a,a..."] --&gt; B4["Backtrack:
+        aa,a,a..."] --&gt; B5["Backtrack:
+        a,aa,a..."] --&gt; B6["Backtrack:
+        aaa,a..."] --&gt; B7["... 2^n
+        combinations"] --&gt; B8["No match
+        found"]
     end
 
     style D2 fill:#e8f5e9

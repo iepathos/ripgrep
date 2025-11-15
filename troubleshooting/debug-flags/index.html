@@ -1102,19 +1102,32 @@
 </blockquote>
 <p>ripgrep provides several flags to help you understand what it's doing and diagnose search issues:</p>
 <pre class="mermaid"><code>flowchart TD
-    Start[Having Search Issues?] --&gt; Question{What is the<br/>problem?}
+    Start[Having Search Issues?] --&gt; Question{"What is the
+problem?"}
 
-    Question --&gt;|Missing files<br/>in results| Debug[Use --debug]
-    Question --&gt;|Performance<br/>issues| Stats[Use --stats]
-    Question --&gt;|Need detailed<br/>internals| Trace[Use --trace]
+    Question --&gt;|Missing files in results| Debug[Use --debug]
+    Question --&gt;|Performance issues| Stats[Use --stats]
+    Question --&gt;|Need detailed internals| Trace[Use --trace]
 
-    Debug --&gt; DebugInfo[Shows:<br/>- Files searched/skipped<br/>- Ignore files loaded<br/>- Binary detection<br/>- Regex engine]
+    Debug --&gt; DebugInfo["Shows:
+- Files searched/skipped
+- Ignore files loaded
+- Binary detection
+- Regex engine"]
 
-    Stats --&gt; StatsInfo[Shows:<br/>- Match counts<br/>- Files searched<br/>- Bytes processed<br/>- Time taken]
+    Stats --&gt; StatsInfo["Shows:
+- Match counts
+- Files searched
+- Bytes processed
+- Time taken"]
 
-    Trace --&gt; TraceInfo[Shows:<br/>- Low-level decisions<br/>- Filter processing<br/>- Algorithm internals]
+    Trace --&gt; TraceInfo["Shows:
+- Low-level decisions
+- Filter processing
+- Algorithm internals"]
 
-    DebugInfo --&gt; DebugEnough{Got enough<br/>info?}
+    DebugInfo --&gt; DebugEnough{"Got enough
+info?"}
     DebugEnough --&gt;|No| Trace
     DebugEnough --&gt;|Yes| End[Problem Solved]
 
