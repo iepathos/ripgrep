@@ -54,6 +54,58 @@ function extractMermaidDiagrams(filePath) {
 }
 
 /**
+ * Analyze diagram structure to identify patterns.
+ * @param {string} diagram - Diagram content
+ * @param {string[]} lines - Diagram lines (trimmed)
+ * @returns {{isLinearProgression: boolean, isWideTree: boolean, maxBranchWidth: number, spineLength: number}}
+ */
+function analyzeGraphStructure(diagram, lines) {
+  // Build adjacency map
+  const adjacency = new Map(); // node -> [children]
+  const inDegree = new Map(); // node -> count of incoming edges
+
+  for (const line of lines) {
+    // Match arrows: A --> B or A -->|label| B
+    const arrowMatch = line.match(/(\w+)\s*--+>(?:\|[^|]+\|)?\s*(\w+)/);
+    if (arrowMatch) {
+      const source = arrowMatch[1];
+      const target = arrowMatch[2];
+
+      if (!adjacency.has(source)) adjacency.set(source, []);
+      adjacency.get(source).push(target);
+
+      inDegree.set(target, (inDegree.get(target) || 0) + 1);
+      if (!inDegree.has(source)) inDegree.set(source, 0);
+    }
+  }
+
+  // Find max branch width (max children from any single node)
+  let maxBranchWidth = 0;
+  for (const children of adjacency.values()) {
+    maxBranchWidth = Math.max(maxBranchWidth, children.length);
+  }
+
+  // Find spine length (longest path with low branching)
+  let spineLength = 0;
+  for (const [node, children] of adjacency.entries()) {
+    if (children.length <= 2) { // Part of spine if ≤2 children
+      spineLength++;
+    }
+  }
+
+  // Detect reconvergence (nodes with multiple incoming edges)
+  const hasReconvergence = Array.from(inDegree.values()).some(deg => deg > 1);
+
+  // Linear progression: long spine, modest branching, some reconvergence
+  const isLinearProgression = spineLength >= 5 && maxBranchWidth <= 5 && hasReconvergence;
+
+  // Wide tree: high branch width, no reconvergence
+  const isWideTree = maxBranchWidth > 8 && !hasReconvergence;
+
+  return { isLinearProgression, isWideTree, maxBranchWidth, spineLength };
+}
+
+/**
  * Check diagram readability by analyzing complexity.
  * @param {string} diagram - Diagram content
  * @returns {{readable: boolean, warnings: string[]}}
@@ -77,43 +129,27 @@ function checkDiagramReadability(diagram) {
   const nodeMatches = diagram.match(/\w+[\[\{\(]/g) || [];
   const nodeCount = new Set(nodeMatches.map(m => m.replace(/[\[\{\(].*/, ''))).size;
 
-  // Count arrows to estimate branching
-  const arrowMatches = diagram.match(/--+>|==+>/g) || [];
-  const arrowCount = arrowMatches.length;
+  // Analyze graph structure for pattern detection
+  const structure = analyzeGraphStructure(diagram, lines);
 
-  // Estimate width: count unique nodes at deepest level
-  // This is approximate - just count leaf nodes (nodes with no outgoing arrows)
-  const nodesWithOutgoing = new Set();
-  for (const line of lines) {
-    const arrowMatch = line.match(/(\w+)\s*--+>|(\w+)\s*==+>/);
-    if (arrowMatch) {
-      const sourceNode = arrowMatch[1] || arrowMatch[2];
-      nodesWithOutgoing.add(sourceNode);
-    }
-  }
-
-  const leafNodes = nodeCount - nodesWithOutgoing.size;
-
-  // Check for wide vertical diagrams (the main readability issue)
-  if (isVertical) {
-    if (leafNodes > 8) {
-      warnings.push(
-        `Wide vertical diagram with ${leafNodes} leaf nodes (>8 max). ` +
-        `Consider using 'graph LR' for better readability or split into multiple diagrams.`
-      );
-    } else if (leafNodes > 4 && nodeCount > 10) {
-      warnings.push(
-        `Moderately wide vertical diagram (${leafNodes} leaf nodes, ${nodeCount} total). ` +
-        `Consider 'graph LR' if text appears too small.`
-      );
-    }
+  // Check for wide vertical diagrams
+  if (isVertical && structure.isWideTree) {
+    warnings.push(
+      `Wide tree diagram with ${structure.maxBranchWidth} parallel branches (>8 max). ` +
+      `Consider using 'graph LR' for better readability or split into multiple diagrams.`
+    );
+  } else if (isVertical && structure.isLinearProgression) {
+    warnings.push(
+      `Linear progression diagram with branches (spine: ${structure.spineLength} nodes, max branch: ${structure.maxBranchWidth}). ` +
+      `Consider simplifying by removing detail nodes or using subgraphs instead of converting to LR.`
+    );
   }
 
   // Check for excessive total nodes (any layout)
   if (nodeCount > 20) {
     warnings.push(
       `Complex diagram with ${nodeCount} nodes (>20). ` +
-      `Consider breaking into focused sub-diagrams for clarity.`
+      `Consider breaking into focused sub-diagrams or using subgraphs for organization.`
     );
   }
 

@@ -9,38 +9,29 @@ Try these exercises to solidify your understanding:
 
 ```mermaid
 graph LR
-    Start[Start Here] --> Basic["Basic Search
-Exercise 1"]
-    Basic --> Flags["Search Flags
-Exercises 2-6"]
-    Flags --> Case[Case Insensitive -i]
-    Flags --> Literal[Literal Search -F]
-    Flags --> Word[Word Boundaries -w]
-    Flags --> Count[Count Matches -c]
-    Flags --> Context[Context Lines -C]
+    Start[Start Here] --> Basic["Exercise 1
+    Basic Search"]
 
-    Flags --> Advanced["Advanced Patterns
-Exercises 7-8"]
-    Advanced --> Regex[Regex Patterns]
-    Advanced --> Invert[Inverted Match -v]
+    Basic --> FlagsBox["Exercises 2-6
+    Search Flags"]
 
-    Advanced --> Filter["Filtering
-Exercises 9-10"]
-    Filter --> Type[File Types -t]
-    Filter --> Multi[Multiline -U]
+    FlagsBox --> AdvBox["Exercises 7-8
+    Advanced Patterns"]
 
-    Filter --> Output["Output Format
-Exercise 11"]
-    Output --> JSON[JSON --json]
+    AdvBox --> FilterBox["Exercises 9-10
+    Filtering"]
 
-    Output --> Practice[Practice More]
+    FilterBox --> OutputBox["Exercise 11
+    Output Format"]
+
+    OutputBox --> Practice[Practice More]
 
     style Start fill:#e8f5e9
     style Basic fill:#e1f5ff
-    style Flags fill:#fff3e0
-    style Advanced fill:#f3e5f5
-    style Filter fill:#fce4ec
-    style Output fill:#e0f2f1
+    style FlagsBox fill:#fff3e0
+    style AdvBox fill:#f3e5f5
+    style FilterBox fill:#fce4ec
+    style OutputBox fill:#e0f2f1
     style Practice fill:#e8f5e9
 ```
 
