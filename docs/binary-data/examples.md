@@ -1,7 +1,5 @@
 # Examples and Troubleshooting
 
-> Part of the [Binary Data](./index.md) page
-
 ## Quick Reference
 
 This table summarizes when binary detection triggers and what output you'll see:

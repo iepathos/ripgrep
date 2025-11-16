@@ -1,7 +1,5 @@
 # Explicit vs Implicit Files
 
-> Part of the [Binary Data](./index.md) page
-
 One of the most important concepts in ripgrep's binary handling is the distinction between **implicit** and **explicit** files:
 
 | File Type | How Specified | Binary Behavior | Warning Message |

@@ -1,7 +1,5 @@
 # Binary Detection
 
-> Part of the [Binary Data](./index.md) page
-
 ## What is Binary Detection?
 
 Binary detection is a **heuristic process** that identifies whether a file contains binary (non-text) data and handles it differently from plain text files. The primary motivation is that binary files—like executables, images, or compressed archives—often produce nonsensical or disruptive output when searched with textual patterns.

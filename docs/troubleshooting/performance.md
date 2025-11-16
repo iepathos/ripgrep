@@ -1,7 +1,5 @@
 # Performance Issues
 
-> Part of the [Troubleshooting](./index.md) page
-
 If ripgrep is slower than expected, try these diagnostic and optimization steps:
 
 !!! tip "Quick Performance Wins"

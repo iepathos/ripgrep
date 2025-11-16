@@ -1,7 +1,5 @@
 # Output Modes
 
-> Part of the [Common Options](./index.md) page
-
 Instead of showing matching lines, these flags produce alternative output formats.
 
 ## Choosing an Output Mode

@@ -1,7 +1,5 @@
 # Common Error Messages
 
-> Part of the [Troubleshooting](./index.md) page
-
 ## "pattern starts with a dash/hyphen"
 
 !!! error "Error: unexpected argument found"

@@ -1,7 +1,5 @@
 # Binary Flags Reference
 
-> Part of the [Binary Data](./index.md) page
-
 Ripgrep provides several flags to control how binary files are handled during search operations. These flags determine whether binary files are skipped, searched with warnings, or treated as plain text.
 
 ## Binary Detection Modes

@@ -1,7 +1,5 @@
 # Practical Examples
 
-> Part of the [Advanced Patterns](./index.md) page
-
 Real-world examples demonstrating advanced pattern techniques.
 
 ## Choosing the Right Flags

@@ -1,7 +1,5 @@
 # Binary and Encoding Problems
 
-> Part of the [Troubleshooting](./index.md) page
-
 ## How ripgrep Detects Binary Files
 
 ripgrep uses a simple heuristic: if it encounters a NUL byte (`\0`) in the data it reads, it treats the file as binary and handles it according to the current binary mode.

@@ -1,7 +1,5 @@
 # Search Basics
 
-> Part of the [Common Options](./index.md) page
-
 These flags control how patterns are interpreted and matched against text.
 
 ## Case Sensitivity

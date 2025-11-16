@@ -1,7 +1,5 @@
 # Practice Examples
 
-> Part of the [Basics](./index.md) page
-
 Try these exercises to solidify your understanding:
 
 ## Practice Exercises

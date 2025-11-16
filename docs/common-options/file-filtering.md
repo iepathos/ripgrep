@@ -1,7 +1,5 @@
 # File Filtering
 
-> Part of the [Common Options](./index.md) page
-
 These flags control which files are searched.
 
 !!! tip "Quick reference: Common filtering patterns"

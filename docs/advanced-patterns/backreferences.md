@@ -1,7 +1,5 @@
 # Backreferences
 
-> Part of the [Advanced Patterns](./index.md) page
-
 Backreferences allow you to match previously captured groups within a regex pattern. **Requires PCRE2** (`-P` flag).
 
 !!! warning "PCRE2 Engine Required"

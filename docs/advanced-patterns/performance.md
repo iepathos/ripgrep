@@ -1,7 +1,5 @@
 # Performance Considerations
 
-> Part of the [Advanced Patterns](./index.md) page
-
 Advanced regex features can impact performance. Understanding these implications helps you write efficient searches.
 
 ## Multiline Mode Performance

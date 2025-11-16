@@ -1,7 +1,5 @@
 # When to File a Bug
 
-> Part of the [Troubleshooting](./index.md) page
-
 ## Before Filing a Bug Report
 
 Before filing a bug report, please check:

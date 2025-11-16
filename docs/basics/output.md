@@ -1,7 +1,5 @@
 # Output Format
 
-> Part of the [Basics](./index.md) page
-
 ## Default Output
 
 By default, ripgrep shows:

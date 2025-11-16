@@ -1,7 +1,5 @@
 # Output Formatting
 
-> Part of the [Common Options](./index.md) page
-
 These flags control what information is displayed with each match.
 
 ```mermaid

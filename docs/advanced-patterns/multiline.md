@@ -1,7 +1,5 @@
 # Multiline Search
 
-> Part of the [Advanced Patterns](./index.md) page
-
 By default, ripgrep searches line-by-line, and patterns cannot match across line boundaries. The `-U` or `--multiline` flag enables multiline mode, allowing patterns to match text that spans multiple lines.
 
 ## Basic Usage

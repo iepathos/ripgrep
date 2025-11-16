@@ -1,7 +1,5 @@
 # PCRE2 Engine
 
-> Part of the [Advanced Patterns](./index.md) page
-
 Ripgrep supports two regex engines:
 
 1. **Default engine**: Fast Rust regex with finite automata

@@ -1,7 +1,5 @@
 # Word and Line Boundaries
 
-> Part of the [Basics](./index.md) page
-
 Boundary matching ensures you match complete words or lines, preventing partial matches that can clutter search results.
 
 ## Whole Word Matching

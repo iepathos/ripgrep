@@ -1,7 +1,5 @@
 # Unicode Patterns
 
-> Part of the [Advanced Patterns](./index.md) page
-
 Ripgrep has excellent Unicode support enabled by default. All regex metacharacters are Unicode-aware.
 
 ## Unicode Character Classes

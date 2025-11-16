@@ -1,7 +1,5 @@
 # Inline Regex Flags
 
-> Part of the [Advanced Patterns](./index.md) page
-
 Inline flags allow you to control regex behavior within the pattern itself, without using command-line options. This gives you fine-grained control over different parts of your pattern.
 
 ## Common Inline Flags

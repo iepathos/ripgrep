@@ -1,7 +1,5 @@
 # Binary Modes
 
-> Part of the [Binary Data](./index.md) page
-
 Ripgrep supports three distinct binary handling modes, controlled by the `--binary` and `--text` flags:
 
 ```mermaid

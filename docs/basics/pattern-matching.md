@@ -1,7 +1,5 @@
 # Pattern Matching
 
-> Part of the [Basics](./index.md) page
-
 Pattern matching is the core functionality of ripgrep. By default, ripgrep uses regular expressions to search through files, but it also supports literal string matching for simpler searches. Understanding when to use each approach will help you search more effectively.
 
 ## Pattern Types

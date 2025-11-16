@@ -1,7 +1,5 @@
 # Regular Expressions
 
-> Part of the [Basics](./index.md) page
-
 Ripgrep uses Rust's regex-automata library (a DFA-based engine) by default, which provides excellent performance for most patterns while supporting a rich set of regex features.
 
 ## Basic Metacharacters

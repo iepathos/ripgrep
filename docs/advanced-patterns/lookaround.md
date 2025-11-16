@@ -1,7 +1,5 @@
 # Lookaround Assertions
 
-> Part of the [Advanced Patterns](./index.md) page
-
 Lookaround assertions match patterns based on surrounding context without including that context in the match. **Requires PCRE2** (`-P` flag).
 
 !!! warning "PCRE2 Required"

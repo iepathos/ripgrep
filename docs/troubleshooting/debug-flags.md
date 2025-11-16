@@ -1,7 +1,5 @@
 # Debug Flags
 
-> Part of the [Troubleshooting](./index.md) page
-
 ripgrep provides several flags to help you understand what it's doing and diagnose search issues:
 
 ```mermaid

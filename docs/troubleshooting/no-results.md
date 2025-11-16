@@ -1,7 +1,5 @@
 # No Results Found
 
-> Part of the [Troubleshooting](./index.md) page
-
 If ripgrep returns zero results when you expect matches, try these troubleshooting steps:
 
 ```mermaid

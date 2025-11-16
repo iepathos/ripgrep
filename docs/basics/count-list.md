@@ -1,7 +1,5 @@
 # Count and List Modes
 
-> Part of the [Basics](./index.md) page
-
 Ripgrep provides several modes for counting and listing files instead of showing matching content. This is useful for getting an overview of matches across your codebase.
 
 ```mermaid

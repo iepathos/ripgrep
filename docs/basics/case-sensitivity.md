@@ -1,7 +1,5 @@
 # Case Sensitivity
 
-> Part of the [Basics](./index.md) page
-
 By default, ripgrep performs case-sensitive searches.
 
 !!! warning "Default Behavior"

@@ -1,7 +1,5 @@
 # Literal String Search
 
-> Part of the [Basics](./index.md) page
-
 By default, ripgrep interprets patterns as regular expressions. Sometimes you want to search for literal strings that contain regex metacharacters like `.`, `*`, `(`, `)`, etc.
 
 ## Fixed String Mode

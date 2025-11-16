@@ -1,7 +1,5 @@
 # Quick Reference
 
-> Part of the [Common Options](./index.md) page
-
 ## Quick Reference
 
 Here are the most essential flags for daily use:
