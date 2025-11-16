@@ -2497,9 +2497,6 @@
 
 
 <h1 id="binary-detection">Binary Detection<a class="headerlink" href="#binary-detection" title="Permanent link">&para;</a></h1>
-<blockquote>
-<p>Part of the <a href="../">Binary Data</a> page</p>
-</blockquote>
 <h2 id="what-is-binary-detection">What is Binary Detection?<a class="headerlink" href="#what-is-binary-detection" title="Permanent link">&para;</a></h2>
 <p>Binary detection is a <strong>heuristic process</strong> that identifies whether a file contains binary (non-text) data and handles it differently from plain text files. The primary motivation is that binary files—like executables, images, or compressed archives—often produce nonsensical or disruptive output when searched with textual patterns.</p>
 <p>Ripgrep uses a simple but effective heuristic: <strong>the presence of NUL bytes</strong> (<code>\x00</code>). When a NUL byte is encountered, the file is considered binary. While not perfect (some text encodings may contain NUL bytes, and some binary formats may not), this heuristic works well in practice since:</p>
