@@ -2785,7 +2785,7 @@
 - Search space is limited (specific files/directories)
 - You've tested the pattern on representative data and performance is acceptable</p>
 <p><strong>Recommendation</strong>: Use default engine unless you need PCRE2-specific features. When using PCRE2, test patterns on representative data to ensure acceptable performance, especially before using in production scripts or on large codebases.</p>
-<pre class="mermaid"><code>flowchart TD
+<pre class="mermaid"><code>flowchart LR
     Start[Writing Regex Pattern] --&gt; NeedFeature{"Need lookaround
 or backreferences?"}
 

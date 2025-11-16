@@ -2510,7 +2510,7 @@
 
 <h1 id="count-and-list-modes">Count and List Modes<a class="headerlink" href="#count-and-list-modes" title="Permanent link">&para;</a></h1>
 <p>Ripgrep provides several modes for counting and listing files instead of showing matching content. This is useful for getting an overview of matches across your codebase.</p>
-<pre class="mermaid"><code>flowchart TD
+<pre class="mermaid"><code>flowchart LR
     Start[ripgrep search] --&gt; Mode{Output Mode?}
 
     Mode --&gt;|Default| Content[Show matching lines]

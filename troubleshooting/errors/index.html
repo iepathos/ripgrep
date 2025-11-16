@@ -2838,7 +2838,7 @@
 <li>Global gitignore (from Git configuration)</li>
 <li>Parent directory ignore files</li>
 </ol>
-<pre class="mermaid"><code>graph TD
+<pre class="mermaid"><code>graph LR
     Start[File to Check] --&gt; L1{".ignore
 exists?"}
     L1 --&gt;|Yes, matches| Ignore1[Ignored by .ignore]

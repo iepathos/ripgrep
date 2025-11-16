@@ -2779,7 +2779,7 @@
 <li><strong>For specific part</strong>: <code>(?flags:pattern)</code> - Apply flags only within the group</li>
 <li><strong>Set and clear flags</strong>: <code>(?flags-otherflags)</code> - Enable some flags while disabling others</li>
 </ol>
-<pre class="mermaid"><code>graph TD
+<pre class="mermaid"><code>graph LR
     Pattern[/"Pattern: foo(?i:bar)baz"/] --&gt; P1["foo"]
     Pattern --&gt; P2["(?i:bar)"]
     Pattern --&gt; P3["baz"]

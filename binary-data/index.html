@@ -2487,7 +2487,7 @@
 <h1 id="binary-data">Binary Data<a class="headerlink" href="#binary-data" title="Permanent link">&para;</a></h1>
 <p>Binary data handling is one of ripgrep's most important and nuanced features. Understanding how ripgrep detects and processes binary files is crucial for getting the results you expect, whether you're searching source code or working with mixed file types.</p>
 <h2 id="binary-detection-flow">Binary Detection Flow<a class="headerlink" href="#binary-detection-flow" title="Permanent link">&para;</a></h2>
-<pre class="mermaid"><code>flowchart TD
+<pre class="mermaid"><code>flowchart LR
     Start[File to search] --&gt; Explicit{"Explicitly
 named?"}
     Explicit --&gt;|Yes| SearchSuppress["Search and Suppress mode"]

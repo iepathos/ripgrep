@@ -2679,39 +2679,30 @@
 <p class="admonition-title">Learning by Doing</p>
 <p>Try each exercise in order. The expected output is shown to help you verify your results.</p>
 </div>
-<pre class="mermaid"><code>graph TD
-    Start[Start Here] --&gt; Basic["Basic Search
-Exercise 1"]
-    Basic --&gt; Flags["Search Flags
-Exercises 2-6"]
-    Flags --&gt; Case[Case Insensitive -i]
-    Flags --&gt; Literal[Literal Search -F]
-    Flags --&gt; Word[Word Boundaries -w]
-    Flags --&gt; Count[Count Matches -c]
-    Flags --&gt; Context[Context Lines -C]
+<pre class="mermaid"><code>graph LR
+    Start[Start Here] --&gt; Basic["Exercise 1
+    Basic Search"]
 
-    Flags --&gt; Advanced["Advanced Patterns
-Exercises 7-8"]
-    Advanced --&gt; Regex[Regex Patterns]
-    Advanced --&gt; Invert[Inverted Match -v]
+    Basic --&gt; FlagsBox["Exercises 2-6
+    Search Flags"]
 
-    Advanced --&gt; Filter["Filtering
-Exercises 9-10"]
-    Filter --&gt; Type[File Types -t]
-    Filter --&gt; Multi[Multiline -U]
+    FlagsBox --&gt; AdvBox["Exercises 7-8
+    Advanced Patterns"]
 
-    Filter --&gt; Output["Output Format
-Exercise 11"]
-    Output --&gt; JSON[JSON --json]
+    AdvBox --&gt; FilterBox["Exercises 9-10
+    Filtering"]
 
-    Output --&gt; Practice[Practice More]
+    FilterBox --&gt; OutputBox["Exercise 11
+    Output Format"]
+
+    OutputBox --&gt; Practice[Practice More]
 
     style Start fill:#e8f5e9
     style Basic fill:#e1f5ff
-    style Flags fill:#fff3e0
-    style Advanced fill:#f3e5f5
-    style Filter fill:#fce4ec
-    style Output fill:#e0f2f1
+    style FlagsBox fill:#fff3e0
+    style AdvBox fill:#f3e5f5
+    style FilterBox fill:#fce4ec
+    style OutputBox fill:#e0f2f1
     style Practice fill:#e8f5e9</code></pre>
 <p><strong>Figure</strong>: Learning progression showing how exercises build from basic to advanced techniques.</p>
 <h3 id="1-basic-search">1. Basic Search<a class="headerlink" href="#1-basic-search" title="Permanent link">&para;</a></h3>

@@ -2622,7 +2622,7 @@ check --type-list"]
 <ol>
 <li>This line shows that <code>node_modules/</code> is being ignored due to a <code>.gitignore</code> match. The path and reason are shown for each filtered file/directory.</li>
 </ol>
-<pre class="mermaid"><code>graph TD
+<pre class="mermaid"><code>graph LR
     All[All Files in Directory] --&gt; VCS{".gitignore
 .git/info/exclude"}
     VCS --&gt;|Filtered| Ignored1[Ignored Files]
