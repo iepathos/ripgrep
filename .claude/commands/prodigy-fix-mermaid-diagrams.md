@@ -9,7 +9,7 @@ Find and fix all invalid Mermaid diagrams in the documentation.
 Run the validation script to find invalid diagrams:
 
 ```bash
-bash .prodigy/scripts/validate-mermaid.sh ../../docs/
+bash .prodigy/scripts/validate-mermaid.sh docs/
 ```
 
 This will check all Mermaid diagrams in the docs directory for:
