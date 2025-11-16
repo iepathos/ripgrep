@@ -256,8 +256,11 @@ function findMarkdownFiles(dir) {
  * Main validation function
  */
 async function main() {
-  const docsDir = process.argv[2] || 'docs';
-  const baseDir = process.cwd();
+  // Docs dir from argument (expected to be absolute path from shell script)
+  const docsDir = process.argv[2] || join(process.cwd(), 'docs');
+  // Base dir for relative path calculation - use the directory containing 'docs'
+  // Extract parent directory from absolute docs path
+  const baseDir = join(docsDir, '..');
 
   console.log(`Validating Mermaid diagrams in ${docsDir}...\n`);
 
