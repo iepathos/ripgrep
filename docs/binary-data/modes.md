@@ -38,7 +38,7 @@ The default mode automatically determines the binary handling strategy based on 
     This dual behavior balances precision (don't waste time on binary files) with recall (if the user explicitly named a file, they probably want to search it). See [Explicit vs Implicit Files](./explicit-implicit.md) for more details on this distinction.
 
 ```mermaid
-flowchart TD
+flowchart LR
     Start[Search File] --> Check{File specification?}
     Check -->|Explicit - rg pattern file.bin| Explicit[Search and Suppress mode]
     Check -->|Implicit - rg pattern -g *.bin| Implicit[Auto skip mode]

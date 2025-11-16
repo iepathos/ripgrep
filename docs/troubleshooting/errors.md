@@ -103,7 +103,7 @@ ripgrep respects multiple types of ignore files, in order of precedence:
 5. Parent directory ignore files
 
 ```mermaid
-graph TD
+graph LR
     Start[File to Check] --> L1{".ignore
 exists?"}
     L1 -->|Yes, matches| Ignore1[Ignored by .ignore]

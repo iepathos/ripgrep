@@ -47,7 +47,7 @@ The default engine uses finite automata which guarantees linear time complexity 
 **Recommendation**: Use default engine unless you need PCRE2-specific features. When using PCRE2, test patterns on representative data to ensure acceptable performance, especially before using in production scripts or on large codebases.
 
 ```mermaid
-flowchart TD
+flowchart LR
     Start[Writing Regex Pattern] --> NeedFeature{"Need lookaround
 or backreferences?"}
 

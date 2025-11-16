@@ -337,7 +337,7 @@ rg --stats --debug 'pattern' 2>&1 | less
 ## Interpreting Results
 
 ```mermaid
-flowchart TD
+flowchart LR
     Start[Review Statistics] --> Check1{"High matches,
 few files?"}
     Check1 -->|Yes| Common["Pattern is common

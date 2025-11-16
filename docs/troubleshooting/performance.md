@@ -25,7 +25,7 @@ $ rg "pattern" --stats
 If you see an unexpectedly large number of files or bytes, you need to filter more aggressively.
 
 ```mermaid
-flowchart TD
+flowchart LR
     Start[Performance Issue] --> Stats[Run with --stats]
     Stats --> Check{What's high?}
 

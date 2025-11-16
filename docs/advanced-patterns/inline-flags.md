@@ -29,7 +29,7 @@ There are three ways to use inline flags:
 3. **Set and clear flags**: `(?flags-otherflags)` - Enable some flags while disabling others
 
 ```mermaid
-graph TD
+graph LR
     Pattern[/"Pattern: foo(?i:bar)baz"/] --> P1["foo"]
     Pattern --> P2["(?i:bar)"]
     Pattern --> P3["baz"]

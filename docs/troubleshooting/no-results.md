@@ -85,7 +85,7 @@ DEBUG|ignore::walk: ignoring ./node_modules: Ignore(IgnoreMatch(...))  # (1)!
 1. This line shows that `node_modules/` is being ignored due to a `.gitignore` match. The path and reason are shown for each filtered file/directory.
 
 ```mermaid
-graph TD
+graph LR
     All[All Files in Directory] --> VCS{".gitignore
 .git/info/exclude"}
     VCS -->|Filtered| Ignored1[Ignored Files]

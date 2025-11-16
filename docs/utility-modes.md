@@ -13,7 +13,7 @@ Utility modes are special operating modes where ripgrep doesn't search for patte
 - Checking version and feature availability
 
 ```mermaid
-flowchart TD
+flowchart LR
     Start[ripgrep command] --> Mode{Utility Mode?}
 
     Mode -->|--files| Files[List Files Mode]

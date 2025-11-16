@@ -8,7 +8,7 @@ Try these exercises to solidify your understanding:
     Try each exercise in order. The expected output is shown to help you verify your results.
 
 ```mermaid
-graph TD
+graph LR
     Start[Start Here] --> Basic["Basic Search
 Exercise 1"]
     Basic --> Flags["Search Flags

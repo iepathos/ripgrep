@@ -111,7 +111,7 @@ For most searches, the default engine is faster and sufficient.
 The `--engine` flag allows you to explicitly choose which regex engine to use, or let ripgrep choose automatically.
 
 ```mermaid
-flowchart TD
+flowchart LR
     Start[Choose Regex Engine] --> Need{"Need PCRE2
 features?"}
 

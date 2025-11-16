@@ -22,7 +22,7 @@ rg -C 2 pattern
 ```
 
 ```mermaid
-graph TD
+graph LR
     L1["Line 8"] --> L2["Line 9"]
     L2 --> L3["Line 10: MATCH"]
     L3 --> L4["Line 11"]

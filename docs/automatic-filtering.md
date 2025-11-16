@@ -7,7 +7,7 @@ When you run `rg` recursively, ripgrep automatically filters out many files and 
 By default, ripgrep respects various ignore files, skips hidden files and directories, and avoids searching binary files. This behavior makes searches faster and reduces noise in results. Understanding these filters helps you search effectively and know when to disable them.
 
 ```mermaid
-flowchart TD
+flowchart LR
     Start[File Encountered] --> Explicit{"Specified
 Explicitly?"}
     Explicit -->|Yes| Search[Search File]

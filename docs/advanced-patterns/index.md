@@ -20,7 +20,7 @@ This chapter covers advanced regex pattern features in ripgrep, including multil
 The advanced features in ripgrep are organized into layers that can be combined:
 
 ```mermaid
-graph TB
+graph LR
     subgraph Modes["Search Modes"]
         Line["Line-by-line Mode
         Default behavior"]

@@ -5,7 +5,7 @@
     The documentation is organized into three main sections: Introduction, User Guide, and Advanced Topics.
 
 ```mermaid
-graph TD
+graph LR
     Root[Documentation] --> Intro[Introduction]
     Root --> Guide[User Guide]
     Root --> Advanced[Advanced Topics]

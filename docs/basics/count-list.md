@@ -3,7 +3,7 @@
 Ripgrep provides several modes for counting and listing files instead of showing matching content. This is useful for getting an overview of matches across your codebase.
 
 ```mermaid
-flowchart TD
+flowchart LR
     Start[ripgrep search] --> Mode{Output Mode?}
 
     Mode -->|Default| Content[Show matching lines]

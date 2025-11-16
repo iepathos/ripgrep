@@ -18,7 +18,7 @@ This chapter helps you diagnose and solve common problems when using ripgrep. Mo
 ## Troubleshooting Decision Flow
 
 ```mermaid
-flowchart TD
+flowchart LR
     Start[Unexpected Behavior] --> Type{What's the issue?}
 
     Type -->|No results| NoResults[No Results Found]

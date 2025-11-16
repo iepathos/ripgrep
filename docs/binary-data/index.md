@@ -5,7 +5,7 @@ Binary data handling is one of ripgrep's most important and nuanced features. Un
 ## Binary Detection Flow
 
 ```mermaid
-flowchart TD
+flowchart LR
     Start[File to search] --> Explicit{"Explicitly
 named?"}
     Explicit -->|Yes| SearchSuppress["Search and Suppress mode"]
