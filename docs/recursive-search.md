@@ -58,7 +58,7 @@ rg -d 3 FIXME ./                         # (3)!
     - `--max-depth 2`: Searches children and grandchildren, etc.
 
 ```mermaid
-graph TD
+graph LR
     Root[dir/] --> File1["file1.txt
 Depth 1"]
     Root --> SubDir["subdir/
@@ -165,7 +165,7 @@ Under the hood, ripgrep uses an efficient parallel directory walker (`WalkBuilde
 This implementation allows ripgrep to efficiently search large directory trees while respecting ignore rules and user-specified filters.
 
 ```mermaid
-flowchart TD
+flowchart LR
     Start[Start Search] --> PathType{Path Type?}
 
     PathType -->|File| SearchFile["Search File Directly

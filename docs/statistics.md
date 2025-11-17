@@ -131,10 +131,10 @@ the quick brown fox jumps over the lazy dog
 ```
 
 ```mermaid
-graph TD
-    Line["Line: 'the quick brown fox jumps over the lazy dog'"]
-    Line --> Match1["Match 1: 'the' at position 0"]
-    Line --> Match2["Match 2: 'the' at position 31"]
+graph LR
+    Line["Input line with text"]
+    Line --> Match1["Match 1: 'the' (pos 0)"]
+    Line --> Match2["Match 2: 'the' (pos 31)"]
 
     Match1 --> Result["Result:
 2 matches

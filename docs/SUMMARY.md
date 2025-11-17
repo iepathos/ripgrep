@@ -6,37 +6,56 @@
 
 ```mermaid
 graph LR
-    Root[Documentation] --> Intro[Introduction]
-    Root --> Guide[User Guide]
-    Root --> Advanced[Advanced Topics]
+    Root["Documentation"]
+    Intro["Introduction"]
+    IntroPage["Introduction Page"]
+    Guide["User Guide"]
+    Search["Search Features"]
+    RecSearch["Recursive Search"]
+    Filter["Filtering"]
+    AutoFilter["Automatic Filtering"]
+    GlobFilter["Manual: Globs"]
+    TypeFilter["Manual: File Types"]
+    Config["Configuration"]
+    Replace["Replacements"]
+    ConfigFile["Configuration File"]
+    Encoding["File Encoding"]
+    Compressed["Compressed Files"]
+    Preproc["Preprocessor"]
+    Output["Output & Display"]
+    Context["Context Lines"]
+    Formats["Output Formats"]
+    Sort["Sorting Results"]
+    Utility["Utility Modes"]
+    Advanced["Advanced Topics"]
+    Perf["Performance"]
+    Stats["Statistics & Metrics"]
+    Links["Hyperlinks"]
 
-    Intro --> IntroPage[Introduction Page]
-
-    Guide --> Search[Search Features]
-    Guide --> Filter[Filtering]
-    Guide --> Config[Configuration]
-    Guide --> Output[Output & Display]
-
-    Search --> RecSearch[Recursive Search]
-
-    Filter --> AutoFilter[Automatic Filtering]
-    Filter --> GlobFilter[Manual: Globs]
-    Filter --> TypeFilter[Manual: File Types]
-
-    Config --> Replace[Replacements]
-    Config --> ConfigFile[Configuration File]
-    Config --> Encoding[File Encoding]
-    Config --> Compressed[Compressed Files]
-    Config --> Preproc[Preprocessor]
-
-    Output --> Context[Context Lines]
-    Output --> Formats[Output Formats]
-    Output --> Sort[Sorting Results]
-    Output --> Utility[Utility Modes]
-
-    Advanced --> Perf[Performance]
-    Advanced --> Stats[Statistics & Metrics]
-    Advanced --> Links[Hyperlinks]
+    Root --> Intro
+    Root --> Guide
+    Root --> Advanced
+    Intro --> IntroPage
+    Guide --> Search
+    Guide --> Filter
+    Guide --> Config
+    Guide --> Output
+    Search --> RecSearch
+    Filter --> AutoFilter
+    Filter --> GlobFilter
+    Filter --> TypeFilter
+    Config --> Replace
+    Config --> ConfigFile
+    Config --> Encoding
+    Config --> Compressed
+    Config --> Preproc
+    Output --> Context
+    Output --> Formats
+    Output --> Sort
+    Output --> Utility
+    Advanced --> Perf
+    Advanced --> Stats
+    Advanced --> Links
 
     style Root fill:#e8f5e9
     style Guide fill:#e1f5ff

@@ -127,7 +127,7 @@ rg -g '!**/tests/**' -g '**/tests/integration/**' pattern
 This allows building complex filters by layering include and exclude patterns.
 
 ```mermaid
-flowchart TD
+flowchart LR
     Start[File Encountered] --> Check{"Any -g
 patterns?"}
     Check -->|No| Auto["Use Automatic Filtering
