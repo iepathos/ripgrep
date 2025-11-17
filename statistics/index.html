@@ -3254,10 +3254,10 @@ to stdout"]
 </span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>2 matches
 </span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>1 matched lines
 </span></code></pre></div></p>
-<pre class="mermaid"><code>graph TD
-    Line["Line: 'the quick brown fox jumps over the lazy dog'"]
-    Line --&gt; Match1["Match 1: 'the' at position 0"]
-    Line --&gt; Match2["Match 2: 'the' at position 31"]
+<pre class="mermaid"><code>graph LR
+    Line["Input line with text"]
+    Line --&gt; Match1["Match 1: 'the' (pos 0)"]
+    Line --&gt; Match2["Match 2: 'the' (pos 31)"]
 
     Match1 --&gt; Result["Result:
 2 matches

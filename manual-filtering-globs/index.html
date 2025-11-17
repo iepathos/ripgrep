@@ -3031,7 +3031,7 @@
 </span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>rg<span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;!**/tests/**&#39;</span><span class="w"> </span>-g<span class="w"> </span><span class="s1">&#39;**/tests/integration/**&#39;</span><span class="w"> </span>pattern
 </span></code></pre></div>
 <p>This allows building complex filters by layering include and exclude patterns.</p>
-<pre class="mermaid"><code>flowchart TD
+<pre class="mermaid"><code>flowchart LR
     Start[File Encountered] --&gt; Check{"Any -g
 patterns?"}
     Check --&gt;|No| Auto["Use Automatic Filtering

@@ -3337,42 +3337,17 @@
 <h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
 <h3 id="overlapping-matches">Overlapping Matches<a class="headerlink" href="#overlapping-matches" title="Permanent link">&para;</a></h3>
 <p>When matches are close together and their context windows overlap, ripgrep merges them into a single contiguous block without duplicating lines or adding separators between them.</p>
-<pre class="mermaid"><code>graph TD
-    subgraph "Before Merge: Separate Context Windows"
-        M1["Line 10: MATCH 1"]
-        C1["Lines 11-12
-Context after"]
-        SEP1["--
-Separator"]
-        C2["Lines 13-14
-Context before"]
-        M2["Line 15: MATCH 2"]
-        C3["Lines 16-17
-Context after"]
-    end
-
-    subgraph "After Merge: Overlapping Regions Combined"
-        M1A["Line 10: MATCH 1"]
-        C1A["Lines 11-12
-Context"]
-        OVER["Lines 13-14
-Shared Context
-(No separator)"]
-        M2A["Line 15: MATCH 2"]
-        C3A["Lines 16-17
-Context"]
-    end
-
-    M1 --&gt; C1
-    C1 --&gt; SEP1
-    SEP1 --&gt; C2
-    C2 --&gt; M2
-    M2 --&gt; C3
-
-    M1A --&gt; C1A
-    C1A --&gt; OVER
-    OVER --&gt; M2A
-    M2A --&gt; C3A
+<pre class="mermaid"><code>graph LR
+    M1["Before: Line 10 MATCH 1"] --&gt; C1["Lines 11-12"]
+    C1 --&gt; SEP1["Separator"]
+    SEP1 --&gt; C2["Lines 13-14"]
+    C2 --&gt; M2["Line 15 MATCH 2"]
+    M2 --&gt; C3["Lines 16-17"]
+    C3 --&gt;|"Merging"| M1A["After: Line 10 MATCH 1"]
+    M1A --&gt; C1A["Lines 11-12"]
+    C1A --&gt; OVER["Lines 13-14 Shared"]
+    OVER --&gt; M2A["Line 15 MATCH 2"]
+    M2A --&gt; C3A["Lines 16-17"]
 
     style M1 fill:#fff3e0,stroke:#ff9800
     style M2 fill:#fff3e0,stroke:#ff9800
