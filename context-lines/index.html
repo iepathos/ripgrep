@@ -3337,24 +3337,28 @@
 <h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
 <h3 id="overlapping-matches">Overlapping Matches<a class="headerlink" href="#overlapping-matches" title="Permanent link">&para;</a></h3>
 <p>When matches are close together and their context windows overlap, ripgrep merges them into a single contiguous block without duplicating lines or adding separators between them.</p>
-<pre class="mermaid"><code>graph LR
-    M1["Before: Line 10 MATCH 1"] --&gt; C1["Lines 11-12"]
-    C1 --&gt; SEP1["Separator"]
-    SEP1 --&gt; C2["Lines 13-14"]
-    C2 --&gt; M2["Line 15 MATCH 2"]
-    M2 --&gt; C3["Lines 16-17"]
-    C3 --&gt;|"Merging"| M1A["After: Line 10 MATCH 1"]
-    M1A --&gt; C1A["Lines 11-12"]
-    C1A --&gt; OVER["Lines 13-14 Shared"]
-    OVER --&gt; M2A["Line 15 MATCH 2"]
-    M2A --&gt; C3A["Lines 16-17"]
+<pre class="mermaid"><code>flowchart TD
+    Start["Overlapping Matches Detected"] --&gt; Before["Before: Separate Blocks"]
+    Before --&gt; M1["Match 1 + Context"]
+    Before --&gt; Sep["Separator"]
+    Before --&gt; M2["Match 2 + Context"]
+
+    M1 --&gt; Merge{Merge Process}
+    Sep --&gt; Merge
+    M2 --&gt; Merge
+
+    Merge --&gt; After["After: Single Merged Block"]
+    After --&gt; R1["Match 1"]
+    After --&gt; Shared["Shared Context"]
+    After --&gt; R2["Match 2"]
 
     style M1 fill:#fff3e0,stroke:#ff9800
     style M2 fill:#fff3e0,stroke:#ff9800
-    style M1A fill:#fff3e0,stroke:#ff9800
-    style M2A fill:#fff3e0,stroke:#ff9800
-    style OVER fill:#e8f5e9
-    style SEP1 fill:#ffebee</code></pre>
+    style Sep fill:#ffebee,stroke:#d32f2f
+    style R1 fill:#fff3e0,stroke:#ff9800
+    style R2 fill:#fff3e0,stroke:#ff9800
+    style Shared fill:#e8f5e9,stroke:#4caf50
+    style Merge fill:#e3f2fd,stroke:#2196f3</code></pre>
 <p><strong>Figure</strong>: Context merging behavior when matches are close together (using <code>-C 2</code>).</p>
 <p>For example, with <code>-C 2</code> (2 lines of context):
 <div class="language-text highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>10: first match
