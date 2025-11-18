@@ -359,24 +359,28 @@ rg -C 3 --heading pattern
 When matches are close together and their context windows overlap, ripgrep merges them into a single contiguous block without duplicating lines or adding separators between them.
 
 ```mermaid
-graph LR
-    M1["Before: Line 10 MATCH 1"] --> C1["Lines 11-12"]
-    C1 --> SEP1["Separator"]
-    SEP1 --> C2["Lines 13-14"]
-    C2 --> M2["Line 15 MATCH 2"]
-    M2 --> C3["Lines 16-17"]
-    C3 -->|"Merging"| M1A["After: Line 10 MATCH 1"]
-    M1A --> C1A["Lines 11-12"]
-    C1A --> OVER["Lines 13-14 Shared"]
-    OVER --> M2A["Line 15 MATCH 2"]
-    M2A --> C3A["Lines 16-17"]
+flowchart TD
+    Start["Overlapping Matches Detected"] --> Before["Before: Separate Blocks"]
+    Before --> M1["Match 1 + Context"]
+    Before --> Sep["Separator"]
+    Before --> M2["Match 2 + Context"]
+
+    M1 --> Merge{Merge Process}
+    Sep --> Merge
+    M2 --> Merge
+
+    Merge --> After["After: Single Merged Block"]
+    After --> R1["Match 1"]
+    After --> Shared["Shared Context"]
+    After --> R2["Match 2"]
 
     style M1 fill:#fff3e0,stroke:#ff9800
     style M2 fill:#fff3e0,stroke:#ff9800
-    style M1A fill:#fff3e0,stroke:#ff9800
-    style M2A fill:#fff3e0,stroke:#ff9800
-    style OVER fill:#e8f5e9
-    style SEP1 fill:#ffebee
+    style Sep fill:#ffebee,stroke:#d32f2f
+    style R1 fill:#fff3e0,stroke:#ff9800
+    style R2 fill:#fff3e0,stroke:#ff9800
+    style Shared fill:#e8f5e9,stroke:#4caf50
+    style Merge fill:#e3f2fd,stroke:#2196f3
 ```
 
 **Figure**: Context merging behavior when matches are close together (using `-C 2`).
