@@ -92,15 +92,19 @@ This is equivalent to surrounding your pattern with `^` and `$` line anchors.
 flowchart TD
     Start[rg command with flags]
 
+    HasBoth{Has both -x and -w?}
     HasX{Has -x flag?}
     HasW{Has -w flag?}
 
-    Start --> HasX
-    HasX -->|Yes| CheckOrder{Which comes last?}
-    HasX -->|No| HasW
+    Start --> HasBoth
+    HasBoth -->|Yes| CheckOrder{Which comes last?}
+    HasBoth -->|No| HasX
 
     CheckOrder -->|-x last| UseX[Use -x: Line matching]
     CheckOrder -->|-w last| UseW[Use -w: Word matching]
+
+    HasX -->|Yes| UseX
+    HasX -->|No| HasW
 
     HasW -->|Yes| UseW
     HasW -->|No| Normal[Normal pattern matching]
@@ -117,15 +121,15 @@ flowchart TD
     style Result3 fill:#f5f5f5
 ```
 
-**Figure**: Flag precedence decision flow showing how `-x` and `-w` interact when both are specified.
+**Figure**: Flag precedence decision flow showing how `-x` and `-w` interact. When both are specified, the last flag wins.
 
-!!! warning "Flag precedence: -x overrides -w"
-    When both flags are specified, `-x` (line-regexp) takes precedence over `-w` (word-regexp). The last flag wins:
+!!! warning "Flag precedence: -w overrides -x"
+    When both flags are specified, `-w` (word-regexp) takes precedence over `-x` (line-regexp). The last flag wins:
     ```bash
-    rg -w -x "test"   # Uses -x (line matching)
-    rg -x -w "test"   # Uses -w (word matching)
+    rg -w -x "test"   # Uses -x (line matching) - last flag wins
+    rg -x -w "test"   # Uses -w (word matching) - last flag wins
     ```
-    Source: crates/core/flags/defs.rs:7541
+    Source: crates/core/flags/defs.rs:7541 (WordRegexp overrides LineRegexp)
 
 ## Word Boundaries in Regex
 
@@ -157,6 +161,8 @@ rg -w "naïve"        # Matches "naïve" but not "naive"
 
 !!! note "Unicode boundary behavior"
     Ripgrep uses `\b{start-half}` and `\b{end-half}` for word boundaries, which properly handle Unicode word characters, including accented letters, non-ASCII alphabets (Cyrillic, Arabic, etc.), and grapheme clusters.
+
+    For detailed information about Unicode support in ripgrep, see the [Unicode support](../advanced-patterns/unicode.md) page.
 
     Source: crates/core/flags/defs.rs:7538-7539
 
