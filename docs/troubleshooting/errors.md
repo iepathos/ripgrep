@@ -207,7 +207,7 @@ Remember that `.gitignore` files in parent directories also affect the search. U
     $ rg -P "(?<=@)\w+"  # Use PCRE2 for lookbehind
     ```
 
-See the FAQ in the project root (`FAQ.md`) for more information about regex engines.
+See the [FAQ](../../FAQ.md#fancy) for more information about regex engines.
 
 ### Pattern Too Complex
 
@@ -244,9 +244,9 @@ src/lib.rs
 
 **Understanding the output:**
 - **matches**: Total number of matches found
-- **matched lines**: Total number of lines containing at least one match (may be less than total matches if a line contains multiple matches)
-- **files contained matches**: How many files had at least one match
-- **files searched**: Total files ripgrep examined
+- **matched lines**: Number of lines containing at least one match (may be less than total matches if a line contains multiple matches)
+- **files contained matches**: Number of files that had at least one match
+- **files searched**: Total number of files ripgrep examined
 - **bytes searched**: Total bytes of content searched
 - **seconds spent searching**: Time spent in the actual search algorithm
 - **seconds**: Total wall clock time
