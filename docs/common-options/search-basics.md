@@ -13,6 +13,9 @@ echo -e "error\nError\nERROR" | rg error
 # Output: error
 ```
 
+!!! note "Default Behavior"
+    Remember that ripgrep is **case-sensitive by default**. If you're not finding matches you expect, check whether case sensitivity is the issue. Use `-i` for a quick case-insensitive search, or `-S` for smart case behavior.
+
 For more flexible matching, use these flags:
 
 - **`-S, --smart-case`**: Enable smart case matching (pattern case determines behavior)
@@ -109,6 +112,9 @@ is 'test'"]
   ```
   Uses word boundaries to ensure the pattern isn't part of a larger word.
 
+  !!! tip "Word Boundaries for Identifiers"
+      Use `-w` when searching for function names, variable names, or keywords to avoid partial matches. For example, `rg -w init` finds the function `init()` but not `initialize()` or `uninit()`.
+
 - **`-x, --line-regexp`**: Only match complete lines
   ```bash
   # Find lines that contain exactly "import sys"
@@ -123,11 +129,14 @@ By default, patterns match within single lines. For patterns that span multiple 
   ```bash
   # Source: tests/multiline.rs:8
   # Match patterns spanning multiple lines
-  rg -U 'abc\ndef'
+  rg -U 'abc\ndef'              # (1)!
 
   # Find multi-line comments
-  rg -U '/\*.*?\*/'
+  rg -U '/\*.*?\*/'             # (2)!
   ```
+
+  1. Explicit newline `\n` matches actual line breaks
+  2. `.*?` is non-greedy - stops at first `*/` found (but won't cross lines without `--multiline-dotall`)
 
 - **`--multiline-dotall`**: Make `.` match newlines in multiline mode
   ```bash
@@ -217,6 +226,27 @@ Conditional patterns"]
   Useful for filtering out noise or finding the absence of something.
 
 ## Multiple Patterns
+
+You can search for multiple patterns at once. Ripgrep will show lines matching **any** of the patterns (OR logic).
+
+```mermaid
+flowchart LR
+    Input[Input Line] --> Check{Matches any
+    pattern?}
+
+    Check -->|Yes| Show[Show Line]
+    Check -->|No| Skip[Skip Line]
+
+    Pattern1["-e error"] --> Check
+    Pattern2["-e warning"] --> Check
+    Pattern3["-e info"] --> Check
+
+    style Check fill:#e1f5ff
+    style Show fill:#e8f5e9
+    style Skip fill:#ffebee
+```
+
+**Figure**: Multiple patterns with `-e` use OR logic - a line is shown if it matches **any** pattern.
 
 - **`-e, --regexp PATTERN`**: Specify multiple patterns (match any)
   ```bash
