@@ -163,11 +163,14 @@ The `-g/--glob` flag can be used multiple times. Each pattern applies independen
 
 ```bash
 # Search both Rust and Python files
-rg -g '*.rs' -g '*.py' pattern
+rg -g '*.rs' -g '*.py' pattern  # (1)!
 
 # Search source files but exclude tests and examples
-rg -g 'src/**' -g '!**/tests/**' -g '!**/examples/**' pattern
+rg -g 'src/**' -g '!**/tests/**' -g '!**/examples/**' pattern  # (2)!
 ```
+
+1. File must match at least one include pattern - searches files ending in `.rs` OR `.py`
+2. Include pattern matched first, then exclude patterns filter out matches - searches `src/` except `tests/` and `examples/` subdirectories
 
 Think of multiple `-g` flags as building up a filter set that refines which files to search.
 
@@ -177,16 +180,31 @@ Ripgrep extends standard glob syntax with brace expansion for alternatives:
 
 ```bash
 # Match either Rust or TOML files
-rg -g '*.{rs,toml}' pattern
+rg -g '*.{rs,toml}' pattern  # (1)!
 
 # Match multiple source directories
-rg -g '{src,lib,bin}/**/*.rs' pattern
+rg -g '{src,lib,bin}/**/*.rs' pattern  # (2)!
 
 # Match multiple file patterns
-rg -g '{Cargo.toml,Cargo.lock,*.rs}' pattern
+rg -g '{Cargo.toml,Cargo.lock,*.rs}' pattern  # (3)!
 ```
 
-**Note:** Empty alternatives like `{,c}` are not currently supported (as of ripgrep 14.1+). Brace expansion is a ripgrep extension beyond standard `.gitignore` syntax.
+1. Expands to two patterns: `*.rs` and `*.toml` - matches files with either extension
+2. Expands to three directory patterns: `src/**/*.rs`, `lib/**/*.rs`, and `bin/**/*.rs`
+3. Combines literal filenames with wildcard pattern - matches specific files plus all Rust files
+
+```rust
+// Source: crates/globset/src/glob.rs:229-231,245
+// empty_alternates is set to false by default in GlobOptions
+// which means {,c} patterns won't match empty alternatives
+```
+
+!!! note "Empty Alternatives in Brace Expansion"
+    Empty alternatives like `{,c}` are supported by the underlying glob library but are **disabled by default** in ripgrep. The `empty_alternates` option in the globset crate controls this behavior and is set to `false` in the default configuration.
+
+    This means patterns like `test_{,suffix}` will only match `test_suffix`, not `test_`. This is intentional to avoid unexpected matches with empty strings.
+
+Brace expansion is a ripgrep extension beyond standard `.gitignore` syntax.
 
 ## Case-Insensitive Globs
 
@@ -253,7 +271,7 @@ This override behavior gives you ultimate control when automatic filtering is to
 
 Glob patterns with `-g/--glob` are "override patterns" that sit at the top of ripgrep's ignore hierarchy. The complete precedence order (highest to lowest priority) is:
 
-1. **Override patterns** - `--include`/`--exclude` (not currently implemented) and `-g/--glob` patterns
+1. **Override patterns** - `-g/--glob` and `--iglob` patterns
 2. **Custom ignore files** - Files specified with `--ignore-file`
 3. **`.ignore` files** - Repository-specific ignore rules
 4. **`.gitignore` files** - Git ignore rules
@@ -261,6 +279,49 @@ Glob patterns with `-g/--glob` are "override patterns" that sit at the top of ri
 6. **Global gitignore** - User's global Git ignore file
 7. **Explicit ignore files** - Other repository ignore configurations
 8. **Hidden file detection** - Automatic filtering of dotfiles
+
+```mermaid
+graph TD
+    File[File Encountered] --> L1["1. Override Patterns
+    -g/--glob, --iglob"]
+
+    L1 -->|Match| Include[Include File]
+    L1 -->|No Match| L2["2. Custom Ignore Files
+    --ignore-file"]
+
+    L2 -->|Excluded| Exclude[Exclude File]
+    L2 -->|No Rule| L3["3. .ignore Files
+    Repository-specific"]
+
+    L3 -->|Excluded| Exclude
+    L3 -->|No Rule| L4["4. .gitignore Files
+    Git ignore rules"]
+
+    L4 -->|Excluded| Exclude
+    L4 -->|No Rule| L5["5. .git/info/exclude
+    Git local excludes"]
+
+    L5 -->|Excluded| Exclude
+    L5 -->|No Rule| L6["6. Global Gitignore
+    User's global config"]
+
+    L6 -->|Excluded| Exclude
+    L6 -->|No Rule| L7["7. Explicit Ignore Files
+    Other repository configs"]
+
+    L7 -->|Excluded| Exclude
+    L7 -->|No Rule| L8["8. Hidden File Detection
+    Automatic dotfile filtering"]
+
+    L8 -->|Hidden| Exclude
+    L8 -->|Visible| Include
+
+    style L1 fill:#e8f5e9
+    style Include fill:#c8e6c9
+    style Exclude fill:#ffcdd2
+```
+
+**Figure**: Ignore precedence hierarchy showing how `-g/--glob` patterns override all automatic filtering.
 
 When you use `-g`, your patterns take precedence over all automatic ignore sources, which is why globs can force ripgrep to search files that would normally be excluded.
 

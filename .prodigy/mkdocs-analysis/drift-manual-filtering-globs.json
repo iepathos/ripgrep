@@ -3,53 +3,84 @@
   "page_id": "manual-filtering-globs",
   "page_title": "manual filtering globs",
   "page_file": "docs/manual-filtering-globs.md",
-  "drift_detected": false,
-  "severity": "none",
-  "quality_assessment": "Excellent technical documentation with comprehensive coverage of glob patterns. Well-structured with clear examples and practical guidance.",
-  "issues": [],
+  "drift_detected": true,
+  "severity": "medium",
+  "quality_assessment": "Page is comprehensive and accurate overall, but contains one significant inaccuracy about empty alternatives and one minor inaccuracy about --include/--exclude flags. The content is well-structured with excellent examples and visual aids.",
+  "issues": [
+    {
+      "type": "incorrect_information",
+      "severity": "high",
+      "section": "Brace Expansion",
+      "description": "Documentation incorrectly states that empty alternatives like {,c} are not supported",
+      "current_content": "**Note:** Empty alternatives like `{,c}` are not currently supported (as of ripgrep 14.1+). Brace expansion is a ripgrep extension beyond standard `.gitignore` syntax.",
+      "should_be": "Empty alternatives ARE supported and work correctly",
+      "fix_suggestion": "Remove or correct the note about empty alternatives. Testing confirms that patterns like 'test_ab{,c}' work correctly and match both 'test_ab' and 'test_abc'. The statement on line 189 is factually incorrect.",
+      "source_reference": "Manual testing: `rg -g 'test_ab{,c}' --files` successfully matches both test_ab and test_abc"
+    },
+    {
+      "type": "incorrect_information",
+      "severity": "medium",
+      "section": "Ignore Hierarchy and Precedence",
+      "description": "Documentation mentions --include/--exclude flags that do not exist in ripgrep",
+      "current_content": "1. **Override patterns** - `--include`/`--exclude` (not currently implemented) and `-g/--glob` patterns",
+      "should_be": "1. **Override patterns** - `-g/--glob` and `--iglob` patterns",
+      "fix_suggestion": "Remove reference to non-existent --include/--exclude flags. ripgrep only supports -g/--glob and --iglob for manual filtering. While the note says '(not currently implemented)', it's misleading to suggest these flags might exist in the future.",
+      "source_reference": "rg --help confirms --include/--exclude flags do not exist; testing `rg --include='*.rs'` returns 'unrecognized flag --include'"
+    }
+  ],
   "positive_aspects": [
-    "Comprehensive coverage of all glob pattern syntax: *, ?, [...], {...}, **",
-    "Clear explanation of include/exclude patterns with ! prefix",
-    "Excellent coverage of precedence rules and pattern ordering",
-    "Detailed explanation of case-insensitive globs (--iglob and --glob-case-insensitive)",
-    "Accurate documentation of gitignore compatibility",
-    "Good explanation of glob override behavior and ignore hierarchy",
+    "Excellent use of visual diagrams (Mermaid flowchart) to explain glob precedence",
+    "Comprehensive quick reference table at the beginning",
+    "Clear warning admonitions for common mistakes (directory matching pitfall)",
+    "Well-structured progression from basic to advanced concepts",
+    "Good use of code annotations for complex examples",
     "Practical examples section with real-world use cases",
-    "Helpful comparison table: Globs vs Type Filters",
-    "Performance considerations and optimization guidance",
-    "Common pitfall highlighted: directory matching with foo vs foo/**",
-    "Proper documentation of --files for previewing matches",
-    "Cross-platform escaping guidance using character classes",
-    "All internal links are valid (automatic-filtering.md exists)",
-    "Visual features already present: admonitions (✅/❌ checkmarks), code blocks with syntax highlighting, clear section structure"
+    "Performance considerations with comparative examples",
+    "Advanced section on glob optimization with source code reference",
+    "Accurate source code reference: crates/globset/src/glob.rs:16-47 for MatchStrategy enum (verified)",
+    "Good comparison table between globs and type filters",
+    "Helpful tip about using --files to preview patterns",
+    "All internal links are valid (automatic-filtering.md exists and is reachable)"
   ],
   "improvement_suggestions": [
-    "Consider adding a visual diagram showing glob pattern matching behavior (e.g., how ** matches directories recursively)",
-    "Could add a 'Quick Reference' table summarizing all wildcards at the top",
-    "Consider adding more examples of complex real-world filtering scenarios",
-    "Could mention the GlobMatcher optimization strategies (Literal, BasenameLiteral, Extension, Prefix, Suffix, RequiredExtension, Regex) for advanced users interested in performance",
-    "Could add a troubleshooting subsection for common glob mistakes beyond the directory matching pitfall"
+    "Consider adding a troubleshooting section for common glob pattern mistakes",
+    "Add cross-reference to manual-filtering-types.md in the comparison section",
+    "Consider adding examples of escaping special characters beyond just * and ?",
+    "Add note about shell globbing vs ripgrep globbing (shell may expand globs before ripgrep sees them if not quoted)",
+    "Consider adding performance metrics or benchmarks for different glob strategies",
+    "The --glob-case-insensitive explanation could be clearer about it affecting all subsequent -g patterns"
   ],
   "cross_references": [
-    "automatic-filtering",
-    "manual-filtering-types",
-    "performance"
+    "automatic-filtering"
   ],
+  "cross_reference_validation": {
+    "total_internal_links": 1,
+    "broken_links": 0,
+    "valid_links": [
+      {
+        "text": "automatic filtering",
+        "target": "automatic-filtering.md",
+        "resolved_path": "docs/automatic-filtering.md",
+        "status": "valid",
+        "locations": ["line 3", "line 384"]
+      }
+    ]
+  },
   "metadata": {
-    "analyzed_at": "2025-11-13T20:53:28Z",
+    "analyzed_at": "2025-11-19T18:24:00Z",
     "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
     "topics_covered": [
       "glob patterns",
       "manual filtering",
-      "file inclusion/exclusion",
-      "pattern precedence",
+      "include/exclude patterns",
+      "brace expansion",
       "case-insensitive matching",
       "gitignore compatibility",
       "performance optimization"
     ],
     "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
-    "internal_links_validated": true,
-    "broken_links_found": 0,
-    "total_internal_links": 2
+    "features_referenced": [
+      "filtering.manual_globs"
+    ]
   }
 }
