@@ -166,7 +166,7 @@ When multiple ignore files exist, ripgrep applies them in a specific order:
 3. Parent directory ignore files are respected by default
 
 ```mermaid
-flowchart TD
+flowchart LR
     Start[File Pattern Match Check] --> Ignore[".ignore files
     (ripgrep-specific)"]
     Ignore -->|Not matched| GitIgnore[".gitignore files
@@ -185,7 +185,7 @@ flowchart TD
     Global -->|Matched| Decision
     Custom -->|Matched| Decision
 
-    Decision -->|Yes (!pattern)| Include[Include File]
+    Decision -->|"Yes (!pattern)"| Include[Include File]
     Decision -->|No| Skip[Skip File]
     Custom -->|Not matched| Include
 

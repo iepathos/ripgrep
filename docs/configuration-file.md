@@ -248,64 +248,33 @@ The `--debug` flag shows:
 ripgrep handles configuration file errors as follows:
 
 ```mermaid
-flowchart TD
-    Start([Config Loading Starts]) --> CheckEnv{RIPGREP_CONFIG_PATH
-set?}
+flowchart LR
+    Start([Config Loading]) --> CheckEnv{RIPGREP_CONFIG_PATH set?}
 
-    CheckEnv -->|No| NoConfig[No config loaded]
-    CheckEnv -->|Empty value| NoConfig
-    CheckEnv -->|Yes| ReadFile[Attempt to read file]
+    CheckEnv -->|No/Empty| NoConfig[No config loaded]
+    CheckEnv -->|Yes| ReadFile{File readable?}
 
-    ReadFile --> FileExists{File
-exists?}
-
-    FileExists -->|No| FileError[Error: File not found]
-    FileExists -->|Permission denied| FileError
+    ReadFile -->|No| FileError[File Error]
     FileError --> NoConfig
 
-    FileExists -->|Yes| ParseLines[Parse lines sequentially]
+    ReadFile -->|Yes| ParseLines[Parse each line]
 
-    ParseLines --> CheckLine{Process
-each line}
+    ParseLines --> Process["Skip empty lines and comments
+    Validate UTF-8
+    Collect arguments"]
 
-    CheckLine --> IsEmpty{Empty
-line?}
-    IsEmpty -->|Yes| NextLine[Skip to next line]
+    Process --> Errors{Parse errors?}
 
-    IsEmpty -->|No| IsComment{Starts with
-'#'?}
-    IsComment -->|Yes| NextLine
+    Errors -->|Yes| Report[Report errors with line numbers]
+    Errors -->|No| Success[Config loaded]
 
-    IsComment -->|No| ConvertUTF8{Valid
-UTF-8?}
-
-    ConvertUTF8 -->|Yes| AddArg[Add to arguments list]
-    AddArg --> NextLine
-
-    ConvertUTF8 -->|No| Platform{Platform?}
-    Platform -->|Unix-like| ParseErr[Report parse error
-with line number]
-    Platform -->|Windows| ParseErr
-
-    ParseErr --> NextLine
-    NextLine --> MoreLines{More
-lines?}
-
-    MoreLines -->|Yes| CheckLine
-    MoreLines -->|No| ReportErrs{Parse errors
-occurred?}
-
-    ReportErrs -->|Yes| ShowErrs[Display errors
-with line numbers]
-    ReportErrs -->|No| Success[Config loaded successfully]
-
-    ShowErrs --> Success
-    NoConfig --> End([Continue with CLI args only])
+    Report --> Success
+    NoConfig --> End([Continue with CLI args])
     Success --> End
 
     style Start fill:#e1f5ff
     style FileError fill:#ffebee
-    style ParseErr fill:#fff3e0
+    style Report fill:#fff3e0
     style Success fill:#e8f5e9
     style NoConfig fill:#f5f5f5
     style End fill:#e8f5e9

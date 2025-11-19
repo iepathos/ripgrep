@@ -281,7 +281,7 @@ Glob patterns with `-g/--glob` are "override patterns" that sit at the top of ri
 8. **Hidden file detection** - Automatic filtering of dotfiles
 
 ```mermaid
-graph TD
+graph LR
     File[File Encountered] --> L1["1. Override Patterns
     -g/--glob, --iglob"]
 

@@ -5,7 +5,7 @@
     The documentation is organized into five main sections: Introduction, User Guide, Advanced Topics, Reference, and Troubleshooting.
 
 ```mermaid
-graph TD
+graph LR
     Root["ripgrep Documentation"] --> Intro["Introduction
     Get Started"]
     Root --> Guide["User Guide
