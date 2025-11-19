@@ -37,6 +37,41 @@ This documentation covers ripgrep version 14.1 and later.
 
 ripgrep combines the usability of The Silver Searcher (ag) with the raw performance of GNU grep. It's designed to be fast while providing smart defaults that respect your project's structure:
 
+```mermaid
+graph LR
+    subgraph Traditional["Traditional grep"]
+        direction TB
+        G1["Fast but no
+smart filtering"] --> G2["Manual exclusions
+needed"]
+    end
+
+    subgraph AG["Silver Searcher (ag)"]
+        direction TB
+        A1["Smart .gitignore
+support"] --> A2["Slower on
+large codebases"]
+    end
+
+    subgraph RG["ripgrep"]
+        direction TB
+        R1["Fast parallel
+search"] --> R2["Smart .gitignore
+filtering"]
+        R2 --> R3["Rich features
+(PCRE2, multiline)"]
+    end
+
+    Traditional -.->|"Speed only"| RG
+    AG -.->|"Usability only"| RG
+
+    style Traditional fill:#ffebee
+    style AG fill:#fff3e0
+    style RG fill:#e8f5e9
+```
+
+**Figure**: ripgrep combines grep's speed with ag's smart filtering and adds modern features.
+
 - **Performance**: Often faster than other search tools due to aggressive optimizations and intelligent use of parallelism
 - **Smart filtering**: Automatically respects `.gitignore` and skips hidden/binary files without needing manual configuration
 - **Feature-rich**: Supports PCRE2 regex, searching compressed files, multiline search, and replacement operations
