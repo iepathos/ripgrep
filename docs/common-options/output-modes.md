@@ -175,8 +175,47 @@ Quickfix format"]
       }
       ```
 
-  !!! tip "Using JSON Output"
+  !!! note "JSON Message Flow"
+      Messages appear in a specific order during search execution:
+
+      ```mermaid
+      sequenceDiagram
+          participant rg as ripgrep
+          participant out as stdout
+
+          rg->>out: Begin (file start)
+
+          loop For each match/context line
+              alt Match found
+                  rg->>out: Match (with submatches)
+              else Context line (-A/-B/-C)
+                  rg->>out: Context (no submatches)
+              end
+          end
+
+          rg->>out: End (file stats)
+
+          Note over rg,out: After all files processed
+          rg->>out: Summary (total stats)
+      ```
+
+      **Figure**: JSON message sequence showing how ripgrep streams results for each file, ending with aggregate statistics.
+
+      Each message is a complete JSON object on a single line, enabling streaming processing. The `Begin` and `End` messages bracket all matches from a file, while `Summary` appears once at the end.
+
+  !!! tip "Using JSON Output with jq"
       JSON Lines format is ideal for streaming parsers. Each line is a complete, valid JSON object that can be processed independently. Perfect for integration with tools like `jq`, custom scripts, or editor plugins.
+
+      **Example pipeline**: Extract just the file paths and line numbers of matches:
+      ```bash
+      # Source: Common pattern for parsing ripgrep JSON output
+      rg --json 'pattern' | jq -r 'select(.type == "match") | "\(.data.path.text):\(.data.line_number)"'
+      ```
+
+      Or count matches per file:
+      ```bash
+      rg --json 'TODO' | jq -s 'group_by(.data.path.text) | map({file: .[0].data.path.text, matches: length})'
+      ```
 
 - **`--vimgrep`**: Output in vim-compatible quickfix format
   ```bash
@@ -254,6 +293,27 @@ Quickfix format"]
 
 ## Performance and Limits
 
+!!! tip "Performance-Oriented Output Modes"
+    Different output modes have different performance characteristics:
+
+    **Fastest** (exits on first match):
+
+    - `-q, --quiet` - No output, immediate exit on match
+    - `-l, --files-with-matches` - Stops at first match per file
+
+    **Fast** (minimal output):
+
+    - `-c, --count` - Just counts lines with matches
+    - `--files-without-match` - Inverse search with early exit
+
+    **Slower** (requires processing all matches):
+
+    - `--count-matches` - Counts every match occurrence
+    - `--vimgrep` - Duplicates lines with multiple matches
+    - `--sort` - Buffers all results before displaying
+
+    **Use case**: If you only need to verify pattern existence, use `-q` for instant results. If you need full details but have many matches, consider `--max-count` to limit output per file.
+
 ### Match Limits
 
 - **`-m, --max-count NUM`**: Stop after NUM matches per file
@@ -292,8 +352,26 @@ Quickfix format"]
   rg --mmap pattern
   ```
 
-  !!! note "System-Dependent Performance"
-      Memory mapping can be faster on some systems but uses more memory. Performance depends on your OS, file system, and available RAM. Benchmark with your specific use case.
+  !!! example "When to Use Memory Mapping"
+      **Use `--mmap` when:**
+
+      - Searching large files (>10MB) with ample system RAM
+      - Files are likely to be in OS page cache (recently accessed)
+      - Searching the same large files repeatedly
+
+      **Use `--no-mmap` (default) when:**
+
+      - Searching many small files (lower overhead)
+      - Limited system memory (mmap competes with page cache)
+      - Files are on network filesystems (NFS, SMB)
+      - Binary or compressed files are common
+
+      **Benchmark example:**
+      ```bash
+      # Compare performance on your codebase
+      time rg --mmap 'pattern' > /dev/null
+      time rg --no-mmap 'pattern' > /dev/null
+      ```
 
 ### Sorting
 
@@ -312,6 +390,21 @@ Results can be sorted by various criteria, though this requires buffering all re
   rg --sort created pattern
   ```
   Available criteria: `path` (lexicographic), `modified` (modification time), `accessed` (access time), `created` (creation time).
+
+  !!! example "Sort Direction Comparison"
+      **`--sort modified`** (ascending - oldest first):
+      ```
+      old/legacy.rs:1:match
+      src/deprecated.rs:5:match
+      src/current.rs:42:match
+      ```
+
+      **`--sortr modified`** (descending - newest first):
+      ```
+      src/current.rs:42:match
+      src/deprecated.rs:5:match
+      old/legacy.rs:1:match
+      ```
 
   !!! tip "Performance Impact"
       Sorting disables parallelism and buffers all results in memory before displaying them. This can significantly impact performance on large searches. Consider using external sorting tools if speed is critical.
@@ -375,6 +468,22 @@ These flags help troubleshoot search behavior and analyze performance:
   ```
   Shows which files are searched, which are ignored, regex engine selection, and configuration details. Useful for understanding why certain files are included or excluded.
 
+  !!! example "Debug Output Sample"
+      The `--debug` flag reveals search internals:
+      ```
+      DEBUG|rg::config::default: Using default config
+      DEBUG|rg: regex engine: rust
+      DEBUG|rg: searching: src/main.rs
+      DEBUG|rg: ignored: target/debug/app (gitignore)
+      DEBUG|rg: searching: src/lib.rs
+      ```
+
+      This helps diagnose:
+
+      - Why files are being skipped (gitignore, hidden, binary detection)
+      - Which regex engine is selected (Rust native vs PCRE2)
+      - Configuration source (CLI flags, config file, defaults)
+
 - **`--trace`**: Show trace-level debug information (very verbose)
   ```bash
   rg --trace pattern 2> trace.log
@@ -392,6 +501,29 @@ These flags help troubleshoot search behavior and analyze performance:
   - Number of searches with matches
 
   Useful for performance analysis and understanding search scope.
+
+  !!! example "Using Stats for Performance Analysis"
+      Compare search strategies to find bottlenecks:
+
+      ```bash
+      # Baseline search
+      $ rg --stats 'pattern'
+      [... results ...]
+
+      13 matches
+      13 matched lines
+      42 files searched
+      1048576 bytes searched
+      0.045 seconds spent searching
+      0.001 seconds spent printing
+      ```
+
+      **Analyze the output:**
+
+      - **High "bytes searched" but few files**: Consider adding file type filters (`-t rust`)
+      - **Long search time, small printed output**: Optimize with `--max-count` or narrower patterns
+      - **Print time >> search time**: Redirect output to file or use `--count` for large result sets
+      - **Many files searched**: Use `.gitignore` or glob patterns to exclude directories
 
 ## See Also
 
