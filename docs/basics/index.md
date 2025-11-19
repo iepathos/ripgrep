@@ -6,6 +6,50 @@ This chapter covers the fundamental usage of ripgrep, including pattern matching
 
 Here are the most common ripgrep commands to get you started:
 
+```mermaid
+flowchart LR
+    Start["Start Search"] --> HasSpecial{"Pattern has
+    regex chars
+    () [] . * + ?"}
+
+    HasSpecial -->|Yes| WantRegex{"Want regex
+    matching?"}
+    HasSpecial -->|No| CaseQ["Check case
+    sensitivity"]
+
+    WantRegex -->|Yes| CaseQ
+    WantRegex -->|No| UseLiteral["Use -F
+    (literal)"]
+
+    UseLiteral --> Done[Execute Search]
+
+    CaseQ --> KnowCase{"Know exact
+    case?"}
+
+    KnowCase -->|Yes| UseDefault["Use default
+    (case-sensitive)"]
+    KnowCase -->|No| UseCaseFlag["Use -i
+    (ignore case)"]
+
+    UseDefault --> BoundaryQ{"Need word
+    boundaries?"}
+    UseCaseFlag --> BoundaryQ
+
+    BoundaryQ -->|Yes| UseWord["Add -w
+    (whole word)"]
+    BoundaryQ -->|No| Done
+
+    UseWord --> Done
+
+    style HasSpecial fill:#fff3e0
+    style WantRegex fill:#e1f5ff
+    style KnowCase fill:#f3e5f5
+    style BoundaryQ fill:#e8f5e9
+    style Done fill:#c8e6c9
+```
+
+**Figure**: Decision flow for choosing the right ripgrep search flags based on your pattern and requirements.
+
 !!! tip "New to ripgrep?"
     If you're coming from `grep`, most basic patterns work the same. The key difference: ripgrep uses Rust regex syntax and automatically respects `.gitignore` files.
 
@@ -28,8 +72,14 @@ rg -l pattern                  # (5)!
 # Search with line numbers and context
 rg -n -C 2 pattern             # (6)!
 
+# Match whole lines only
+rg -x "import sys"             # (7)!
+
+# Search for multiple patterns
+rg -e TODO -e FIXME            # (8)!
+
 # Combine flags: case-insensitive word search with context
-rg -i -w -C 2 function         # (7)!
+rg -i -w -C 2 function         # (9)!
 ```
 
 1. Searches recursively from current directory for "TODO"
@@ -38,7 +88,41 @@ rg -i -w -C 2 function         # (7)!
 4. Shows count of matching lines per file, useful for statistics
 5. Just shows filenames, not the matches themselves
 6. `-C 2` shows 2 lines before and after each match for context
-7. `-w` ensures "function" matches as whole word, not "functions" or "malfunction"
+7. `-x` matches entire line exactly - useful for finding exact imports or function signatures
+8. `-e` allows searching for multiple patterns in one command - finds lines with TODO OR FIXME
+9. `-w` ensures "function" matches as whole word, not "functions" or "malfunction"
+
+!!! tip "Smart Case Matching"
+    Use `-S` or `--smart-case` for intelligent case sensitivity:
+
+    - `rg -S error` → matches "error", "Error", "ERROR" (all lowercase pattern = case-insensitive)
+    - `rg -S Error` → matches only "Error" (has uppercase = case-sensitive)
+
+    This is useful when you want flexibility without typing `-i` every time.
+
+!!! example "Invert Match: Finding What's NOT There"
+    Use `-v` or `--invert-match` to find lines that DON'T contain a pattern:
+
+    ```bash
+    # Find all lines without "test" or "Test"
+    rg -v test
+
+    # Find configuration files without comments
+    rg -v "^#" config.yml
+
+    # Find imports that aren't from standard library
+    rg "^import" | rg -v "^import (os|sys|re)"
+    ```
+
+!!! warning "Common Pitfalls"
+    **Regex special characters**: Without `-F`, characters like `.` `*` `+` `?` `()` `[]` have special meaning:
+
+    - `rg file.txt` matches "file.txt" but also "fileXtxt" (`.` = any character)
+    - `rg -F file.txt` matches only literal "file.txt"
+
+    **Word boundaries**: `-w` requires word boundaries on both sides:
+
+    - `rg -w test` matches "test" and "test()" but NOT "testing" or "attest"
 
 ## Common Flags Cheat Sheet
 
@@ -75,6 +159,17 @@ rg -i -w -C 2 function         # (7)!
     | `--count-matches` | | Count individual matches |
     | `--files-with-matches` | `-l` | List files with matches |
     | `--files-without-match` | | List files without matches |
+
+    !!! warning "Commonly Confused Flags"
+        **`-c` vs `--count-matches`**: These behave differently!
+
+        - `rg -c pattern` → counts matching **lines** per file (one line with 3 matches = count of 1)
+        - `rg --count-matches pattern` → counts **individual matches** (one line with 3 matches = count of 3)
+
+        **Example**: Searching for "the" in a file with one line "the theater"
+
+        - `rg -c the` → outputs `1` (one matching line)
+        - `rg --count-matches the` → outputs `2` (two matches: "the" and "the" in "theater")
 
 === "Context Lines"
 
