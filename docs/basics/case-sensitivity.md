@@ -13,6 +13,38 @@ By default, ripgrep performs case-sensitive searches.
 | **Case-Sensitive** | `-s` / `--case-sensitive` | Matches exact case only | `TODO` | TODO only |
 | **Smart Case** | `-S` / `--smart-case` | Lowercase → insensitive; Uppercase → sensitive | `todo`; `TODO` | TODO, todo, Todo; TODO only |
 
+```mermaid
+graph LR
+    Input["Input Text:
+    'TODO todo Todo'"]
+
+    Input --> CaseInsensitive["-i
+    Case-Insensitive"]
+    Input --> CaseSensitive["-s
+    Case-Sensitive"]
+    Input --> SmartLower["-S with 'todo'
+    Smart Case (lowercase)"]
+    Input --> SmartUpper["-S with 'TODO'
+    Smart Case (uppercase)"]
+
+    CaseInsensitive --> Result1["Matches ALL:
+    TODO, todo, Todo"]
+    CaseSensitive --> Result2["Matches EXACT:
+    TODO only"]
+    SmartLower --> Result3["Matches ALL:
+    TODO, todo, Todo"]
+    SmartUpper --> Result4["Matches EXACT:
+    TODO only"]
+
+    style CaseInsensitive fill:#e8f5e9
+    style CaseSensitive fill:#ffebee
+    style SmartLower fill:#e1f5ff
+    style SmartUpper fill:#fff3e0
+    style Input fill:#f5f5f5
+```
+
+**Figure**: How different case modes handle the same input text.
+
 ## Case-Insensitive Search
 
 Use `-i` or `--ignore-case` to search case-insensitively:
@@ -81,6 +113,9 @@ If both conditions are met, the search is case-insensitive. Otherwise, it's case
 
 !!! note "Patterns Without Literals"
     Regex patterns consisting entirely of metacharacters (like `\w+`, `\d{3}`, `.*`) have no literal characters, so smart case treats them as case-insensitive by default. If you need case-sensitive matching for such patterns, use `-s` or add an uppercase literal to the pattern.
+
+!!! warning "Common Smart Case Pitfall"
+    Character classes like `[A-Z]` or `[a-z]` are treated as **literals** for smart case detection. So the pattern `[A-Z]+` contains uppercase literals, making smart case use case-sensitive mode even though the intent is to match any uppercase letters. If you want case-insensitive matching with character classes, use `-i` explicitly or use `(?i)` inline flags.
 
 ### Configuring Smart Case as Default
 
@@ -161,13 +196,20 @@ For fine-grained control, you can use inline regex flags to change case sensitiv
 !!! example "Per-Pattern Case Control"
     ```bash
     # Case-insensitive "error" followed by case-sensitive "FATAL"
-    rg "(?i)error.*(?-i)FATAL"
+    rg "(?i)error.*(?-i)FATAL"  # (1)!
 
     # Mixed case matching in a single pattern
-    rg "(?i)warning(?-i):.*CRITICAL"
+    rg "(?i)warning(?-i):.*CRITICAL"  # (2)!
 
     # Case-insensitive search even when using -s flag
-    rg -s "(?i)todo"
+    rg -s "(?i)todo"  # (3)!
     ```
 
+    1. `(?i)` makes "error" case-insensitive, then `(?-i)` switches back to case-sensitive for "FATAL"
+    2. Combines case-insensitive prefix with case-sensitive suffix in one pattern
+    3. Inline `(?i)` flag overrides the `-s` command-line flag
+
 These flags override any command-line flags (`-i`, `-s`, `-S`) for the portion of the pattern they affect.
+
+!!! tip "When to Use Inline Flags"
+    Inline regex flags are most useful when you need different case sensitivity for different parts of a pattern. For example, searching for log entries where the severity level must be exact case (`ERROR`, `WARN`) but the message can be any case: `rg "(?-i)(ERROR|WARN)(?i):.*timeout"`
