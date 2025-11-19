@@ -138,7 +138,23 @@ Ripgrep automatically selects the best I/O strategy:
     - More predictable memory usage
 
 !!! note "Platform-Specific Behavior"
-    Memory mapping is **disabled by default on macOS** due to platform-specific performance characteristics. On other platforms, ripgrep automatically uses mmap for single-file searches when beneficial.
+    Memory mapping behavior differs by platform:
+
+    === "macOS"
+        Memory mapping is **disabled by default** due to platform-specific performance characteristics. Ripgrep uses buffered reading for both single-file and directory searches.
+
+        ```bash
+        # Use --mmap only if profiling shows benefit
+        $ rg "pattern" --mmap file.txt
+        ```
+
+    === "Linux / Windows"
+        Memory mapping is **enabled by default** for single-file searches. Ripgrep automatically uses the optimal strategy.
+
+        ```bash
+        # Automatically uses mmap for single files
+        $ rg "pattern" largefile.log
+        ```
 
 !!! tip "Let Ripgrep Choose Automatically"
     Ripgrep's automatic I/O selection is optimized for most use cases. Only override with `--mmap` or `--no-mmap` if you've identified a specific performance issue through profiling with `--stats`.
