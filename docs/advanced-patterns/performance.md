@@ -119,6 +119,42 @@ Ripgrep uses parallel search by default for maximum performance:
     rg --threads 1 'pattern'
     ```
 
+```mermaid
+flowchart LR
+    Start[Files to Search] --> Distribute["Thread Scheduler
+    Work Stealing"]
+
+    Distribute --> T1["Thread 1
+    File Subset"]
+    Distribute --> T2["Thread 2
+    File Subset"]
+    Distribute --> T3["Thread 3
+    File Subset"]
+    Distribute --> TN["Thread N
+    File Subset"]
+
+    T1 --> Search1[Search Files]
+    T2 --> Search2[Search Files]
+    T3 --> Search3[Search Files]
+    TN --> SearchN[Search Files]
+
+    Search1 --> Collect[Collect Results]
+    Search2 --> Collect
+    Search3 --> Collect
+    SearchN --> Collect
+
+    Collect --> Output[Output Matches]
+
+    style Distribute fill:#e1f5ff
+    style T1 fill:#fff3e0
+    style T2 fill:#fff3e0
+    style T3 fill:#fff3e0
+    style TN fill:#fff3e0
+    style Collect fill:#e8f5e9
+```
+
+**Figure**: Parallel search architecture showing how ripgrep distributes files across threads with work-stealing scheduler for optimal load balancing.
+
 **When to use single-threaded mode**:
 - Need deterministic output order
 - Running in constrained environments
@@ -333,6 +369,55 @@ help: use --regex-size-limit to increase the limit
     Hitting regex limits usually means your pattern is too complex and should be simplified. Only increase limits for legitimate use cases like auto-generated patterns or comprehensive matching needs.
 
 Hitting regex limits is often a sign that your pattern needs simplification, but sometimes large patterns are legitimate. Here's how to decide:
+
+```mermaid
+flowchart TD
+    Start[Regex Limit Error] --> Type{"Pattern
+    Type?"}
+
+    Type -->|Auto-generated| Increase1["Increase Limit
+    Legitimate Use"]
+    Type -->|Large Alternations| Check{"Truly Need
+    All Cases?"}
+    Type -->|Deeply Nested| Simplify1["Refactor Pattern
+    Reduce Nesting"]
+    Type -->|Unclear| Review["Review Design
+    Understand Complexity"]
+
+    Check -->|Yes| Increase2["Increase Limit
+    Document Why"]
+    Check -->|No| Multiple["Use Multiple
+    Simpler Searches"]
+
+    Review --> Clear{"Complexity
+    Justified?"}
+    Clear -->|Yes| Increase3[Increase Limit]
+    Clear -->|No| Simplify2["Simplify Pattern
+    Or Split Search"]
+
+    Increase1 --> Test[Test Performance]
+    Increase2 --> Test
+    Increase3 --> Test
+
+    Multiple --> Done[Efficient Search]
+    Simplify1 --> Done
+    Simplify2 --> Done
+    Test --> Acceptable{"Performance
+    OK?"}
+    Acceptable -->|Yes| Done
+    Acceptable -->|No| Rethink["Rethink Approach
+    Consider Alternatives"]
+
+    style Increase1 fill:#fff3e0
+    style Increase2 fill:#fff3e0
+    style Increase3 fill:#fff3e0
+    style Simplify1 fill:#e8f5e9
+    style Simplify2 fill:#e8f5e9
+    style Multiple fill:#e8f5e9
+    style Done fill:#e8f5e9
+```
+
+**Figure**: Decision flow for handling regex limit errors - when to increase limits versus simplifying patterns based on use case and pattern characteristics.
 
 **Increase limits for**:
 - **Auto-generated patterns**: Patterns produced by tools or scripts (e.g., generated from configuration)
