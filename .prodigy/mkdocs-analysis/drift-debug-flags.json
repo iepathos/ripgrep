@@ -4,97 +4,151 @@
   "page_title": "debug flags",
   "page_file": "docs/troubleshooting/debug-flags.md",
   "drift_detected": true,
-  "severity": "medium",
-  "quality_assessment": "Page accurately documents debug flags but could be enhanced with visual features and minor corrections",
+  "severity": "low",
+  "quality_assessment": "Excellent documentation with strong visual guidance using Mermaid flowchart and comprehensive MkDocs Material features. Content is accurate with only minor completeness improvements needed. The page already uses advanced visual features (diagrams, admonitions, code annotations) that exceed typical documentation standards.",
   "issues": [
     {
       "type": "incomplete_explanation",
-      "severity": "medium",
-      "section": "--stats",
-      "description": "Stats output format in example shows generic output but tests reveal more specific format",
-      "current_content": "6 matches\n3 matched lines\n2 files contained matches\n10 files searched\n52849 bytes printed\n96749 bytes searched\n0.002390 seconds spent searching\n0.000839 seconds",
-      "should_be": "Based on tests (tests/feature.rs:427-430), the format is:\n- 'N matched lines' (not 'N matches')\n- 'N files contained matches'\n- 'N files searched'\n- 'seconds' (timing info)\nThe example should better reflect actual output",
-      "fix_suggestion": "Update the example output to match the actual format from the codebase. The current example mixes different stat types that may not all appear together",
-      "source_reference": "tests/feature.rs:425-443"
+      "severity": "low",
+      "section": "Stats Output",
+      "description": "Documentation lists 6 statistics fields but actual --stats output includes 8 fields (missing 'matches' count and time breakdown)",
+      "current_content": "- **matched lines** - Number of lines containing matches\n- **files contained matches** - Number of files that had at least one match\n- **files searched** - Total number of files searched\n- **bytes searched** - Total bytes searched across all files\n- **bytes printed** - Total bytes output to stdout\n- **seconds** - Time spent searching",
+      "should_be": "- **matches** - Total number of individual matches found\n- **matched lines** - Number of lines containing matches\n- **files contained matches** - Number of files that had at least one match\n- **files searched** - Total number of files searched\n- **bytes printed** - Total bytes output to stdout\n- **bytes searched** - Total bytes searched across all files\n- **seconds spent searching** - Time spent in search phase\n- **seconds total** - Total process time",
+      "fix_suggestion": "Update the statistics list to include all 8 fields shown in actual output. Differentiate between 'seconds spent searching' (search time) and 'seconds total' (process time). Add the 'matches' field which is distinct from 'matched lines'.",
+      "source_reference": "crates/core/main.rs:464-472"
     },
     {
       "type": "missing_content",
       "severity": "low",
-      "section": "--stats",
-      "description": "Missing information about additional stats fields available",
-      "feature_reference": "utility_features.statistics",
-      "fix_suggestion": "Document that stats include: matches, matched_lines, searches (files searched), searches_with_match (files contained matches), bytes_searched, bytes_printed, and elapsed time. The exact format may vary.",
-      "source_reference": "crates/printer/src/stats.rs:13-21"
+      "section": "Debug Output Examples",
+      "description": "Could benefit from additional real debug output examples for common scenarios beyond ignore file processing",
+      "current_content": "Single example showing ignore file matching",
+      "fix_suggestion": "Add examples showing:\n- Binary file detection: `DEBUG|grep_searcher|...: detected binary data at byte offset 128`\n- Regex engine selection: `DEBUG|grep_regex|...: using PCRE2 engine for pattern with lookahead`\n- Configuration loading: `DEBUG|ignore|...: loading config from ~/.ripgreprc`",
+      "source_reference": "crates/core/flags/defs.rs:1473-1481"
     },
     {
-      "type": "missing_content",
+      "type": "content_enhancement",
       "severity": "low",
-      "section": "--stats",
-      "description": "Missing mention that --stats can be combined with --json for structured output",
-      "feature_reference": "utility_features.statistics",
-      "fix_suggestion": "Add note: '--stats is implicitly enabled when --json is used, allowing structured statistics output'",
-      "source_reference": "crates/core/flags/defs.rs:6544"
-    },
-    {
-      "type": "missing_content",
-      "severity": "low",
-      "section": "--stats",
-      "description": "Missing information about when --stats has no effect",
-      "feature_reference": "utility_features.statistics",
-      "fix_suggestion": "Add note: '--stats has no effect when used with --files, --files-with-matches, or --files-without-match'",
-      "source_reference": "crates/core/flags/defs.rs:6546-6547"
-    },
-    {
-      "type": "missing_content",
-      "severity": "low",
-      "section": "Page structure",
-      "description": "Page lacks visual enhancements expected in MkDocs Material documentation",
-      "fix_suggestion": "Add MkDocs Material features:\n- Use admonitions (tip, warning, info) for better visual organization\n- Add code annotations to explain output fields\n- Consider using tabs for different debug scenarios\n- Use admonition for the --trace warning instead of bold text",
-      "source_reference": "validation note: Auto-discovered page - check for drift and enhance with visual features"
-    },
-    {
-      "type": "incomplete_explanation",
-      "severity": "low",
-      "section": "--debug",
-      "description": "Example output shows specific line numbers and paths that may not match current codebase structure",
-      "current_content": "DEBUG|ignore::walk|crates/ignore/src/walk.rs:1140",
-      "fix_suggestion": "Consider making the example more generic or add a note that line numbers and paths are illustrative and may vary by version",
-      "source_reference": "docs/troubleshooting/debug-flags.md:22"
+      "section": "Debug/Trace Usage",
+      "description": "Missing practical tip about redirecting stderr for debug/trace output",
+      "fix_suggestion": "Add tip explaining that debug and trace output goes to stderr, not stdout. Example: `rg --debug pattern . 2> debug.log` to save debug output to a file for analysis.",
+      "source_reference": "Standard ripgrep logging behavior"
     }
   ],
   "positive_aspects": [
-    "Clear, focused documentation on debug flags",
-    "Good use cases for each flag ('Use --debug when...')",
+    "Outstanding Mermaid flowchart providing clear decision tree for flag selection",
+    "Excellent use of MkDocs Material admonitions (example, note, tip, warning, info)",
+    "Well-structured nested admonitions (note inside example)",
+    "Code annotations (numbered callouts) effectively explain stats output fields",
+    "Clear differentiation between --debug, --trace, and --stats use cases",
+    "Accurate documentation of when --stats has no effect (--files, --files-with-matches, --files-without-match)",
+    "Helpful 'Start with --debug' tip to guide users toward right tool",
     "Appropriate warning about --trace verbosity",
-    "Concrete example output for --debug showing typical information",
-    "Proper cross-reference to parent troubleshooting page",
-    "All internal links are valid"
+    "Good use case guidance for each flag ('Use --debug when...')",
+    "Source attribution in example comments (tests/feature.rs:425-430)",
+    "Proper heading hierarchy and section organization",
+    "Visual styling in Mermaid diagram (colored boxes for different flag types)",
+    "Accurate technical content matches implementation",
+    "Already implements the visual enhancements expected for MkDocs Material",
+    "No broken internal links (validated: 0 internal links, all external or anchors)"
   ],
   "improvement_suggestions": [
-    "Add MkDocs Material admonitions to highlight warnings and tips",
-    "Use code annotations to label different parts of debug output",
-    "Add a comparison table showing Debug vs Trace vs Stats",
-    "Include a practical troubleshooting scenario showing debug flag usage",
-    "Add cross-references to configuration and performance tuning pages",
-    "Consider adding a 'Common Debug Scenarios' section with examples",
-    "Update stats example to reflect actual output format more accurately"
+    {
+      "type": "content_addition",
+      "suggestion": "Add 'Common Debug Scenarios' section with practical examples",
+      "examples": [
+        "Finding why a file is being skipped: `rg --debug pattern . 2>&1 | grep 'ignoring.*myfile'`",
+        "Identifying which .gitignore is excluding files: `rg --debug pattern . 2>&1 | grep gitignore`",
+        "Checking which regex engine is selected: `rg --debug -P 'pattern' . 2>&1 | grep engine`",
+        "Profiling search to find performance bottlenecks: `rg --stats pattern large-dir/`"
+      ]
+    },
+    {
+      "type": "visual_enhancement",
+      "suggestion": "Add comparison table showing information provided by each flag",
+      "example": "| Information Type | --debug | --trace | --stats |\n|-----------------|---------|---------|--------|\n| Files searched/skipped | ✓ | ✓ | ✓ (count only) |\n| Ignore file matches | ✓ | ✓ | ✗ |\n| Regex engine selection | ✓ | ✓ | ✗ |\n| Binary detection | ✓ | ✓ | ✗ |\n| Filter processing | ✗ | ✓ | ✗ |\n| Performance metrics | ✗ | ✗ | ✓ |"
+    },
+    {
+      "type": "cross_reference",
+      "suggestion": "Add links to related troubleshooting topics",
+      "links": [
+        "Link to ignore files documentation when discussing --debug output for skip reasons",
+        "Link to performance tuning when discussing --stats metrics",
+        "Link to encoding troubleshooting when mentioning --debug encoding detection",
+        "Link to regex documentation when discussing engine selection in debug output"
+      ]
+    },
+    {
+      "type": "content_enhancement",
+      "suggestion": "Add explanation of debug output format",
+      "details": "Brief explanation that debug output uses format `DEBUG|module::path|source_location: message` to help users parse and filter debug output effectively."
+    },
+    {
+      "type": "practical_tip",
+      "suggestion": "Add tip about combining --stats with other output modes",
+      "example": "Mention that --stats works with -c/--count, -l/--files-with-matches (shows stats), but note that it has no effect with --files, --files-with-matches, --files-without-match (already documented in 'When Stats Has No Effect' section)"
+    }
   ],
   "cross_references": [
-    "index",
-    "configuration",
-    "performance"
+    {
+      "topic": "ignore_files",
+      "relevance": "--debug shows which ignore files (.gitignore, .ignore) are loaded and why files are skipped",
+      "suggested_link": "Link from 'Which ignore files are being loaded' bullet point"
+    },
+    {
+      "topic": "performance",
+      "relevance": "--stats provides performance metrics (time, bytes) useful for optimization and profiling",
+      "suggested_link": "Link from performance issues bullet in flowchart or 'Use --stats to' section"
+    },
+    {
+      "topic": "encoding",
+      "relevance": "--debug shows encoding detection and BOM sniffing results",
+      "suggested_link": "Could add to debug output examples"
+    },
+    {
+      "topic": "binary_detection",
+      "relevance": "--debug shows binary file detection results and NUL byte detection",
+      "suggested_link": "Already mentioned in 'Binary file detection results' bullet"
+    },
+    {
+      "topic": "regex_engine",
+      "relevance": "--debug shows which regex engine is selected (default Rust regex vs PCRE2)",
+      "suggested_link": "Already mentioned in 'Regex engine selection' bullet"
+    },
+    {
+      "topic": "configuration",
+      "relevance": "--debug shows configuration file loading",
+      "suggested_link": "Already mentioned in 'Configuration file loading' bullet"
+    }
   ],
   "metadata": {
-    "analyzed_at": "2025-11-13T20:53:28Z",
+    "analyzed_at": "2025-11-19T18:24:00Z",
     "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
     "topics_covered": [
       "debugging",
       "troubleshooting",
       "statistics",
+      "performance profiling",
       "logging"
     ],
     "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
-    "links_validated": 1,
-    "broken_links": 0
+    "internal_links_validated": true,
+    "broken_links_found": 0,
+    "total_internal_links": 0,
+    "mkdocs_features_used": [
+      "Mermaid diagrams (flowchart with styled nodes)",
+      "Admonitions: example, note, tip, warning, info",
+      "Nested admonitions (note inside example)",
+      "Code blocks with syntax highlighting (bash)",
+      "Code annotations (numbered callouts with explanations)",
+      "Bold text formatting",
+      "Lists (bulleted and numbered)",
+      "Figure captions"
+    ],
+    "features_mapped": [
+      "utility_features.debugging",
+      "utility_features.statistics",
+      "performance.statistics"
+    ]
   }
 }
