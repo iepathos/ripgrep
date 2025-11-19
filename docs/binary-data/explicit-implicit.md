@@ -1,5 +1,12 @@
 # Explicit vs Implicit Files
 
+!!! info "Related Topics"
+    This page covers explicit vs implicit file behavior. See also:
+
+    - [Detection](detection.md) - How ripgrep detects binary files
+    - [Modes](modes.md) - Different binary handling modes
+    - [Flags](flags.md) - Command-line flags for binary control
+
 One of the most important concepts in ripgrep's binary handling is the distinction between **implicit** and **explicit** files:
 
 | File Type | How Specified | Binary Behavior | Warning Message |
@@ -162,12 +169,26 @@ rg -c "pattern"  # (1)!
 
     The match might not be shown because the buffer is classified as binary before the match is output.
 
+## Troubleshooting
+
+!!! question "Why does `rg -l` show binary files?"
+    When using `--files-with-matches` / `-l`, ripgrep stops reading after the first match for performance. This means it might list a binary file before encountering a NUL byte that would normally trigger binary detection.
+
+    **This is expected behavior** - the performance benefit of stopping early outweighs the minor inconvenience of occasionally listing binary files.
+
+    **Workaround:** If you need to exclude binary files from `-l` output, use `rg -l pattern | xargs file | grep text` to filter the results.
+
+!!! question "Why doesn't `--quiet` detect binary files?"
+    Similarly, `--quiet` / `-q` exits immediately upon finding any match, potentially before binary detection occurs. This is a deliberate performance optimization.
+
 ## For Library Users
 
 If you're using the `grep-searcher` crate in your own Rust code, binary detection works differently:
 
 !!! note "Library vs CLI Defaults"
-    Binary detection is **disabled by default** in the library, unlike the CLI where binary files are skipped by default. You must explicitly enable it using the `BinaryDetection` API.
+    Binary detection is **disabled by default** in the library, unlike the CLI where binary files are skipped by default during recursive search. You must explicitly enable it using the `BinaryDetection` API.
+
+    **Why the difference?** The CLI enables binary detection automatically for recursive search to provide a better user experience (avoiding binary file noise), while the library defaults to maximum flexibility, letting you opt-in to the behavior you need.
 
 ### Default Behavior
 
