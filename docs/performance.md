@@ -255,15 +255,19 @@ The default regex engine uses deterministic finite automata (DFA). Control DFA m
 
 ```bash
 # Set DFA cache size limit (in bytes)
-rg --dfa-size-limit 100M pattern   # (1)!
+rg --dfa-size-limit 2G pattern   # (1)!
 ```
 
-1. Increase DFA cache from default 1 MB to 100 MB for complex patterns
+1. Increase DFA cache from default 1000 MB to 2 GB for extremely complex patterns
 
-The default is 1 MB (1000000 bytes). Increase this if you see warnings about DFA cache thrashing on very large or complex patterns.
+<!-- Source: crates/regex/src/config.rs:59 -->
+
+The default is 1000 MB (approximately 1 GB). Increase this if you see warnings about DFA cache thrashing on very large or complex patterns.
 
 !!! tip "When to Increase DFA Size"
-    If you see "DFA cache capacity exceeded" warnings or notice slowdowns with complex patterns, try increasing to 10M or 100M. The trade-off is higher memory usage for faster matching.
+    If you see "DFA cache capacity exceeded" warnings (rare with the 1000 MB default), you can increase further to 2G or more. The trade-off is higher memory usage for faster matching.
+
+    The default of 1000 MB is quite generous and handles most real-world patterns well. Only increase if you're working with extremely complex regex patterns or see actual DFA cache warnings.
 
 ### Regex Size Limits
 
@@ -274,7 +278,12 @@ Limit the compiled size of the regex:
 rg --regex-size-limit 10M pattern
 ```
 
-The default is 100 MB. Useful in memory-constrained environments or when dealing with extremely large patterns.
+<!-- Source: crates/regex/src/config.rs:58 -->
+
+The default is 100 MB (104,857,600 bytes) for the compiled regex bytecode size. This is separate from the DFA cache limit. Useful in memory-constrained environments or when dealing with extremely large patterns.
+
+!!! note "Bytecode Size vs. DFA Cache"
+    This limit controls the size of the compiled regex bytecode, not the DFA cache size during matching. The bytecode is the compiled representation of your pattern. The DFA cache (controlled by `--dfa-size-limit`) is used during matching execution.
 
 ### Engine Selection
 
@@ -585,7 +594,7 @@ rg -j 2 pattern
 # Reduce thread count
 rg --threads 2 pattern
 
-# Set conservative limits
+# Set conservative limits (reduce from 1000 MB and 100 MB defaults)
 rg --dfa-size-limit 10M --regex-size-limit 5M pattern
 
 # Disable memory mapping
