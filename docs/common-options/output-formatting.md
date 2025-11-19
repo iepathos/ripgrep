@@ -55,6 +55,114 @@ Files?"}
 
 **Figure**: Output formatting decision flow showing how ripgrep combines different formatting options.
 
+## Alternative Output Formats
+
+Ripgrep offers specialized output formats optimized for different use cases:
+
+### Vim-Compatible Format
+
+- **`--vimgrep`**: Print results in vim quickfix format
+  <!-- Source: crates/core/flags/defs.rs:7348-7392 -->
+  ```bash
+  rg --vimgrep pattern
+  # Output: file.txt:42:7:matching line
+  #         path:line:column:text
+  ```
+
+  Each match appears on its own line with the format `path:line:column:text`. If a line contains multiple matches, it will be printed multiple times (once per match).
+
+  !!! warning "Output Size Consideration"
+      Lines with many matches will be printed multiple times, which can lead to significantly larger output. For editor integrations, consider using `--json` instead for more efficient programmatic consumption.
+
+  !!! tip "Editor Integration"
+      This format is designed for vim's quickfix list (`:copen`). Many editors can parse this format:
+      ```bash
+      rg --vimgrep pattern > quickfix.txt
+      # In vim: :cfile quickfix.txt
+      ```
+
+### JSON Lines Format
+
+- **`--json`**: Print results as JSON Lines for programmatic consumption
+  <!-- Source: crates/core/flags/defs.rs:3434-3470 -->
+  ```bash
+  rg --json pattern
+  ```
+
+  Emits one JSON object per line with five message types:
+
+  === "begin"
+      Indicates a file is being searched and contains at least one match:
+      ```json
+      {"type":"begin","data":{"path":{"text":"src/main.rs"}}}
+      ```
+
+  === "match"
+      Contains match details including line number, column, and matched text:
+      ```json
+      {"type":"match","data":{
+        "path":{"text":"src/main.rs"},
+        "lines":{"text":"fn main() {\n"},
+        "line_number":1,
+        "absolute_offset":0,
+        "submatches":[{
+          "match":{"text":"main"},
+          "start":3,
+          "end":7
+        }]
+      }}
+      ```
+
+  === "context"
+      Context lines around matches (when using `-A`, `-B`, or `-C`):
+      ```json
+      {"type":"context","data":{
+        "path":{"text":"src/main.rs"},
+        "lines":{"text":"    println!(\"Hello\");\n"},
+        "line_number":2,
+        "absolute_offset":12
+      }}
+      ```
+
+  === "end"
+      Marks the end of results for a file:
+      ```json
+      {"type":"end","data":{"path":{"text":"src/main.rs"}}}
+      ```
+
+  === "summary"
+      Final aggregate statistics:
+      ```json
+      {"type":"summary","data":{
+        "elapsed_total":{"secs":0,"nanos":12345678},
+        "stats":{
+          "matched_lines":42,
+          "matches":56,
+          "searches":150,
+          "searches_with_match":8
+        }
+      }}
+      ```
+
+  !!! note "Automatic Statistics"
+      The `--stats` flag is implicitly enabled with `--json`, ensuring the summary message includes search statistics.
+
+  !!! tip "Programmatic Processing"
+      JSON Lines format is ideal for:
+
+      - **Editor integrations** - Parse structured data instead of text output
+      - **CI/CD pipelines** - Extract match counts and statistics
+      - **Search result analysis** - Process with `jq`, Python, or other tools
+
+      Example with `jq`:
+      ```bash
+      # Extract all matched file paths
+      rg --json pattern | jq -r 'select(.type=="match") | .data.path.text' | sort -u
+
+      # Count total matches
+      rg --json pattern | jq -r 'select(.type=="summary") | .data.stats.matches'
+      ```
+
 ## Line Numbers and Filenames
 
 - **`-n, --line-number`**: Show line numbers (default when searching files)
@@ -86,6 +194,43 @@ Files?"}
   ```
 
   1. Adds column position after line number, useful for editor integrations and precise navigation
+
+### Field Separators
+
+Customize the separators between output fields (filename, line number, column number, and text):
+
+- **`--field-match-separator SEPARATOR`**: Set separator for match lines
+  <!-- Source: crates/core/flags/defs.rs:1889-1920 -->
+  ```bash
+  # Use tab separator for easier parsing
+  rg --field-match-separator $'\t' pattern
+  # Output: file.txt<TAB>42<TAB>matching line
+
+  # Use custom separator
+  rg --field-match-separator ' | ' pattern
+  # Output: file.txt | 42 | matching line
+  ```
+
+  Default is `:` (colon). Useful for generating machine-readable output or avoiding conflicts when searching for patterns containing colons.
+
+- **`--field-context-separator SEPARATOR`**: Set separator for context lines
+  ```bash
+  # Different separator for context vs matches
+  rg -C 2 --field-context-separator '-' pattern
+  # Match:   file.txt:42:matching line
+  # Context: file.txt-41-context line
+  ```
+
+  Default is `-` (hyphen). Helps distinguish context lines from actual matches in the output.
+
+!!! tip "Programmatic Parsing"
+    Use custom field separators when post-processing ripgrep output:
+    ```bash
+    # CSV-style output with tab separator
+    rg --field-match-separator $'\t' pattern | while IFS=$'\t' read file line text; do
+      echo "File: $file, Line: $line"
+    done
+    ```
 
 ## Context Lines
 
@@ -119,8 +264,36 @@ Show lines before and/or after each match to understand the surrounding code:
 
   1. Shorthand for `-B 5 -A 5` - shows the same number of lines before and after
 
-!!! note "Context Separators"
-    When showing context, ripgrep prints `--` as a separator between different match groups to clearly distinguish them in the output.
+### Context Separators
+
+When showing context lines, ripgrep prints a separator between different match groups to clearly distinguish them:
+
+- **`--context-separator SEPARATOR`**: Customize the separator string
+  <!-- Source: crates/core/flags/defs.rs:1136-1170 -->
+  ```bash
+  # Use a custom separator
+  rg -C 2 --context-separator '━━━' pattern
+
+  # Use an empty line as separator
+  rg -C 3 --context-separator '' pattern
+  ```
+
+  Default separator is `--`. You can specify any string, including empty strings or special characters.
+
+- **`--no-context-separator`**: Disable the separator entirely
+  ```bash
+  # No separator between match groups
+  rg -C 2 --no-context-separator pattern
+  ```
+
+  Useful when you want continuous output without visual breaks, or when post-processing the results programmatically.
+
+!!! tip "Visual Distinction"
+    The default `--` separator helps you quickly identify where one match context ends and another begins. Consider customizing it when:
+
+    - Output might naturally contain `--` (e.g., searching code with command-line flags)
+    - You need more visual separation with a longer separator like `═════`
+    - Processing output programmatically and want a unique delimiter
 
 ## Match Output
 
@@ -288,3 +461,94 @@ Show lines before and/or after each match to understand the surrounding code:
     rg -p pattern | less -R
     ```
     This combines color, file grouping, and line numbers in one convenient flag.
+
+## Additional Output Options
+
+### Statistics
+
+- **`--stats`**: Print aggregate statistics about the search
+  <!-- Source: crates/core/flags/defs.rs:6514-6546 -->
+  ```bash
+  rg --stats pattern
+  ```
+
+  Displays search summary including:
+  - Number of matched lines
+  - Number of files with matches
+  - Number of files searched
+  - Time elapsed
+
+  Example output:
+  ```
+  42 matches
+  8 matched lines
+  3 files contained matches
+  150 files searched
+  0.012 seconds elapsed
+  ```
+
+  !!! note "JSON Format Integration"
+      When using `--json`, statistics are automatically enabled and included in the summary message. This flag has no effect with `--files`, `--files-with-matches`, `--files-without-match`, or `--count`.
+
+### Null-Separated Output
+
+- **`-0, --null`**: Use NUL byte (`\0`) as separator instead of newline
+  <!-- Source: crates/core/flags/defs.rs -->
+  ```bash
+  # Safe handling of filenames with spaces/newlines
+  rg --files --null | xargs -0 grep pattern
+  ```
+
+  Essential for shell scripting when filenames may contain spaces, newlines, or other special characters.
+
+- **`--null-data`**: Treat input as NUL-separated instead of line-separated
+  ```bash
+  # Search null-separated data (e.g., from find -print0)
+  find . -name '*.txt' -print0 | rg --null-data pattern
+  ```
+
+  Useful when processing output from tools that use null separators.
+
+### Output Buffering
+
+- **`--line-buffered`**: Force line-by-line output buffering
+  ```bash
+  # Show results incrementally as they're found
+  rg --line-buffered pattern | while read line; do
+    # Process each result immediately
+    process_result "$line"
+  done
+  ```
+
+  Useful for real-time processing of search results in pipelines.
+
+- **`--block-buffered`**: Use block buffering for better performance
+  ```bash
+  rg --block-buffered pattern > results.txt
+  ```
+
+  Default buffering mode that optimizes throughput at the cost of delayed output.
+
+### Column Width Limiting
+
+- **`-M NUM, --max-columns NUM`**: Don't print lines longer than NUM bytes
+  ```bash
+  # Skip very long lines (e.g., minified files)
+  rg -M 500 pattern
+  ```
+
+  Lines exceeding this limit are silently skipped. Useful when searching code that may contain minified files or generated content with extremely long lines.
+
+- **`--max-columns-preview`**: Print a preview of long lines instead of omitting them
+  ```bash
+  # Show truncated preview of long lines
+  rg --max-columns-preview pattern
+  ```
+
+  When a line exceeds the column limit, ripgrep prints a preview instead of skipping it entirely, helping you identify what was truncated.
+
+  !!! tip "Handling Minified Files"
+      Combine with type exclusions for better control:
+      ```bash
+      rg --max-columns 1000 --max-columns-preview -g '!*.min.js' pattern
+      ```
