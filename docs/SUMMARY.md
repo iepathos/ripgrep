@@ -5,69 +5,38 @@
     The documentation is organized into five main sections: Introduction, User Guide, Advanced Topics, Reference, and Troubleshooting.
 
 ```mermaid
-graph LR
-    Root["Documentation"]
-    Intro["Introduction"]
-    IntroPage["Introduction Page"]
-    Guide["User Guide"]
-    Basics["Basics"]
-    Search["Search Features"]
-    RecSearch["Recursive Search"]
-    Filter["Filtering"]
-    AutoFilter["Automatic Filtering"]
-    GlobFilter["Manual: Globs"]
-    TypeFilter["Manual: File Types"]
-    BinaryData["Binary Data"]
-    Config["Configuration"]
-    Replace["Replacements"]
-    ConfigFile["Configuration File"]
-    Encoding["File Encoding"]
-    Compressed["Compressed Files"]
-    Preproc["Preprocessor"]
-    Output["Output & Display"]
-    Context["Context Lines"]
-    Formats["Output Formats"]
-    Sort["Sorting Results"]
-    Utility["Utility Modes"]
-    Advanced["Advanced Topics"]
-    AdvPatterns["Advanced Patterns"]
-    Perf["Performance"]
-    Stats["Statistics & Metrics"]
-    Links["Hyperlinks"]
-    Reference["Reference"]
-    CommonOpts["Common Options"]
-    Troubleshoot["Troubleshooting"]
+graph TD
+    Root["ripgrep Documentation"] --> Intro["Introduction
+    Get Started"]
+    Root --> Guide["User Guide
+    Core Features"]
+    Root --> Advanced["Advanced Topics
+    Optimization"]
+    Root --> Reference["Reference
+    Quick Lookup"]
+    Root --> Troubleshoot["Troubleshooting
+    Problem Solving"]
 
-    Root --> Intro
-    Root --> Guide
-    Root --> Advanced
-    Root --> Reference
-    Root --> Troubleshoot
-    Intro --> IntroPage
-    Guide --> Basics
-    Guide --> Search
-    Guide --> Filter
-    Guide --> BinaryData
-    Guide --> Config
-    Guide --> Output
-    Search --> RecSearch
-    Filter --> AutoFilter
-    Filter --> GlobFilter
-    Filter --> TypeFilter
-    Config --> Replace
-    Config --> ConfigFile
-    Config --> Encoding
-    Config --> Compressed
-    Config --> Preproc
-    Output --> Context
-    Output --> Formats
-    Output --> Sort
-    Output --> Utility
-    Advanced --> AdvPatterns
-    Advanced --> Perf
-    Advanced --> Stats
-    Advanced --> Links
-    Reference --> CommonOpts
+    Guide --> G1["Basics
+    8 topics"]
+    Guide --> G2["Search & Filter
+    4 topics"]
+    Guide --> G3["Binary Data
+    5 topics"]
+    Guide --> G4["Configuration
+    5 topics"]
+    Guide --> G5["Output & Display
+    4 topics"]
+
+    Advanced --> A1["Advanced Patterns
+    8 topics"]
+    Advanced --> A2["Performance
+    2 topics"]
+    Advanced --> A3["Special Features
+    1 topic"]
+
+    Reference --> R1["Common Options
+    5 topics"]
 
     style Root fill:#e8f5e9
     style Guide fill:#e1f5ff
@@ -77,7 +46,7 @@ graph LR
     style Troubleshoot fill:#fff9c4
 ```
 
-**Figure**: Documentation structure showing the organization of topics across five main sections.
+**Figure**: Documentation structure showing the five main sections and key topic groups.
 
 !!! tip "Getting Started"
     New users should start with the [Introduction](introduction.md), then explore the [Basics](basics/index.md) to learn fundamental concepts. After mastering the basics, explore other User Guide topics based on your needs. Advanced Topics cover performance optimization and specialized features.
