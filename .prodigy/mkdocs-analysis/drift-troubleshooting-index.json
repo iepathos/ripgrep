@@ -1,110 +1,67 @@
 {
-  "item_type": "auto-discovered",
+  "item_type": "page",
   "page_id": "index",
-  "page_title": "Troubleshooting Index",
+  "page_title": "index",
   "page_file": "docs/troubleshooting/index.md",
-  "drift_detected": true,
-  "severity": "medium",
-  "quality_assessment": "Index page has broken cross-references to non-existent files and lacks MkDocs Material visual enhancements despite containing good structural content",
-  "issues": [
-    {
-      "type": "broken_links",
-      "severity": "medium",
-      "section": "Related Resources",
-      "description": "Found 2 broken internal links to files not in the MkDocs navigation structure",
-      "broken_links": [
-        {
-          "link_text": "FAQ.md",
-          "original_target": "../FAQ.md",
-          "expected_path": "docs/../FAQ.md (outside docs directory)",
-          "current_file": "docs/troubleshooting/index.md",
-          "reason": "File exists at root level but not included in MkDocs nav structure"
-        },
-        {
-          "link_text": "GUIDE.md",
-          "original_target": "../GUIDE.md",
-          "expected_path": "docs/../GUIDE.md (outside docs directory)",
-          "current_file": "docs/troubleshooting/index.md",
-          "reason": "File exists at root level but not included in MkDocs nav structure"
-        }
-      ],
-      "fix_suggestion": "Either: (1) Remove references to FAQ.md and GUIDE.md since they're not in the MkDocs navigation, or (2) Add these files to the MkDocs navigation if they should be accessible"
-    },
-    {
-      "type": "missing_visual_enhancements",
-      "severity": "low",
-      "section": "Quick Troubleshooting Checklist",
-      "description": "Page lacks MkDocs Material admonitions and visual features for better user experience",
-      "fix_suggestion": "Convert the Quick Troubleshooting Checklist into a tip/info admonition box, and consider adding warning admonitions for common pitfalls",
-      "example": "!!! tip \"Quick Troubleshooting Steps\"\n    1. Run with `--files` to see which files would be searched\n    2. Run with `--debug` to see what files are being searched..."
-    },
-    {
-      "type": "incomplete_content",
-      "severity": "low",
-      "section": "Overall structure",
-      "description": "Index page is purely navigational without troubleshooting content or quick-win solutions",
-      "fix_suggestion": "Consider adding a 'Common Quick Fixes' section with 2-3 most frequent issues and solutions before directing users to detailed pages"
-    },
-    {
-      "type": "outdated_information",
-      "severity": "low",
-      "section": "Quick Troubleshooting Checklist",
-      "description": "References to 'FAQ' and 'GUIDE' that are not part of the MkDocs documentation structure",
-      "current_content": "**Review the FAQ** and GUIDE for common issues",
-      "should_be": "Reference actual MkDocs pages like 'Basics', 'Common Options', or other in-nav pages",
-      "fix_suggestion": "Update references to point to actual MkDocs navigation pages rather than external files"
-    }
-  ],
+  "drift_detected": false,
+  "severity": "low",
+  "quality_assessment": "Excellent navigation page with clear troubleshooting guidance. Could be enhanced with code examples and tabbed content for visual engagement.",
+  "issues": [],
   "positive_aspects": [
-    "Clear hierarchical organization of troubleshooting topics",
-    "Good quick checklist with actionable steps",
-    "Comprehensive navigation section listing all troubleshooting sub-pages",
-    "Clean, scannable structure that's easy to navigate",
-    "All sub-page links are valid and correctly formatted"
+    "Comprehensive quick troubleshooting checklist covering all major diagnostic steps",
+    "Excellent visual decision flow diagram using Mermaid for issue diagnosis",
+    "Clear navigation structure to all troubleshooting sub-sections",
+    "Good use of MkDocs Material admonitions (tip, note, question)",
+    "All internal links are valid and correctly point to existing files",
+    "Well-organized progression from quick fixes to detailed guides",
+    "Cross-references to related documentation sections",
+    "Helpful 'Still Stuck?' guidance pointing to bug reports"
   ],
   "improvement_suggestions": [
-    "Add a 'Most Common Issues' section at the top with 2-3 quick wins before directing to detailed pages",
-    "Convert the quick checklist into an admonition box for better visual hierarchy",
-    "Add a 'Still Stuck?' admonition at the bottom with link to bug reports page",
-    "Consider adding icons or badges to navigation items to indicate difficulty level or topic type",
-    "Add a brief introductory paragraph explaining the philosophy of troubleshooting ripgrep (e.g., 'Most issues stem from filtering behavior')",
-    "Remove or replace references to FAQ.md and GUIDE.md with actual MkDocs pages"
+    "Add code examples to the quick troubleshooting checklist for better clarity (e.g., show actual `rg --files` and `rg --debug` output)",
+    "Consider using tabbed content to organize troubleshooting by issue category (No Results, Performance, Errors, etc.)",
+    "Add visual code annotations to highlight key diagnostic flags in examples",
+    "Include a 'Most Common Issues' section with quick links to specific solutions",
+    "Consider adding admonition boxes for each major issue category with quick diagnostic commands"
   ],
-  "cross_references_valid": [
-    "troubleshooting/debug-flags.md",
-    "troubleshooting/no-results.md",
-    "troubleshooting/performance.md",
-    "troubleshooting/errors.md",
-    "troubleshooting/binary-encoding.md",
-    "troubleshooting/bug-reports.md",
-    "configuration-file.md",
-    "file-encoding.md"
-  ],
-  "cross_references_broken": [
-    "../FAQ.md",
-    "../GUIDE.md"
+  "cross_references": [
+    "debug-flags",
+    "no-results",
+    "performance",
+    "errors",
+    "binary-encoding",
+    "bug-reports",
+    "basics/index",
+    "common-options/reference",
+    "configuration-file",
+    "file-encoding"
   ],
   "metadata": {
-    "analyzed_at": "2025-11-13T20:53:00Z",
+    "analyzed_at": "2025-11-19T18:24:02Z",
     "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
     "topics_covered": [
       "troubleshooting overview",
-      "debug flags",
-      "common issues",
-      "performance",
-      "errors",
-      "binary files",
-      "encoding"
+      "diagnostic workflow",
+      "quick fixes",
+      "issue navigation"
     ],
     "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
-    "total_internal_links": 10,
-    "broken_links_count": 2,
-    "valid_links_count": 8,
-    "mkdocs_material_features_used": false,
-    "suggested_mkdocs_features": [
-      "admonitions (tip, warning, info)",
-      "content tabs (if adding multiple troubleshooting paths)",
-      "icons in navigation links"
+    "link_validation": {
+      "total_internal_links": 10,
+      "broken_links": 0,
+      "all_links_valid": true
+    },
+    "visual_features_used": [
+      "Mermaid flowchart diagram",
+      "MkDocs Material admonitions (tip, note, question)",
+      "Numbered list for quick steps",
+      "Bulleted navigation lists"
+    ],
+    "visual_features_suggested": [
+      "Code block examples with syntax highlighting",
+      "Tabbed content for issue categories",
+      "Code annotations for diagnostic flags",
+      "Admonition boxes for common issue quick fixes"
     ]
   }
 }
