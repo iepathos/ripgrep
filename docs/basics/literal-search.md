@@ -34,6 +34,34 @@ rg -F "[debug]"
 
 When searching for strings with special characters, you have two options:
 
+```mermaid
+flowchart LR
+    Start["Search Pattern
+    Contains Special Chars?"] --> HasSpecial{"Contains
+    . * ( ) [ ] etc?"}
+
+    HasSpecial -->|No| Either["Use Either Approach"]
+    HasSpecial -->|Yes| NeedRegex{"Need Regex
+    Features?"}
+
+    NeedRegex -->|No| UseLiteral["Use -F
+    (Literal Search)"]
+    NeedRegex -->|Yes| UseRegex["Escape Special Chars
+    (Regex Mode)"]
+
+    UseLiteral --> FastPath["✓ Faster (SIMD)
+    ✓ No Escaping"]
+    UseRegex --> FlexPath["✓ Combine with Regex
+    ✓ More Complex"]
+
+    style UseLiteral fill:#e8f5e9
+    style UseRegex fill:#fff3e0
+    style FastPath fill:#e8f5e9
+    style FlexPath fill:#fff3e0
+```
+
+**Figure**: Decision flow for choosing between literal search (`-F`) and escaped regex patterns.
+
 === "Literal Search (-F)"
     ```bash
     # Source: tests/misc.rs:176
