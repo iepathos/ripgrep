@@ -165,22 +165,40 @@ When multiple ignore files exist, ripgrep applies them in a specific order:
 2. Within each ignore file type, more nested files have higher precedence
 3. Parent directory ignore files are respected by default
 
-!!! note "Ignore File Precedence Hierarchy"
-    ```
-    Highest Priority
-    ↓
-    .ignore files (ripgrep-specific)
-    ↓
-    .gitignore files (nested overrides parent)
-    ↓
-    .git/info/exclude (repository-specific)
-    ↓
-    Global gitignore (~/.config/git/ignore)
-    ↓
-    Custom ignore files (--ignore-file)
-    ↓
-    Lowest Priority
-    ```
+```mermaid
+flowchart TD
+    Start[File Pattern Match Check] --> Ignore[".ignore files
+    (ripgrep-specific)"]
+    Ignore -->|Not matched| GitIgnore[".gitignore files
+    (nested > parent)"]
+    GitIgnore -->|Not matched| Exclude[".git/info/exclude
+    (repository-specific)"]
+    Exclude -->|Not matched| Global["Global gitignore
+    (~/.config/git/ignore)"]
+    Global -->|Not matched| Custom["Custom ignore files
+    (--ignore-file)"]
+
+    Ignore -->|Matched| Decision{Whitelist
+    pattern?}
+    GitIgnore -->|Matched| Decision
+    Exclude -->|Matched| Decision
+    Global -->|Matched| Decision
+    Custom -->|Matched| Decision
+
+    Decision -->|Yes (!pattern)| Include[Include File]
+    Decision -->|No| Skip[Skip File]
+    Custom -->|Not matched| Include
+
+    style Ignore fill:#e1f5ff
+    style GitIgnore fill:#fff3e0
+    style Exclude fill:#fff9c4
+    style Global fill:#f3e5f5
+    style Custom fill:#fce4ec
+    style Include fill:#e8f5e9
+    style Skip fill:#ffebee
+```
+
+**Figure**: Ignore file precedence hierarchy. Higher-priority files can override lower-priority ones. Whitelist patterns (!) in any file can override earlier exclusions.
 
 For example, if you have:
 - `/project/.gitignore` with `*.log`
@@ -205,6 +223,68 @@ You can use the `!` prefix in ignore files to whitelist paths, overriding earlie
 # Whitelist an entire directory
 !logs/keep/
 ```
+
+!!! example "Whitelist Patterns in Action"
+
+    **Scenario 1: Whitelisting specific files in ignored directory**
+
+    `.gitignore`:
+    ```
+    # Ignore all of node_modules
+    node_modules/
+
+    # Except keep the README for a specific package
+    !node_modules/critical-package/README.md
+    ```
+
+    **Before whitelist:**
+    ```bash
+    $ rg --files | grep node_modules
+    # (no results - all of node_modules ignored)
+    ```
+
+    **After whitelist:**
+    ```bash
+    $ rg --files | grep node_modules
+    node_modules/critical-package/README.md
+    ```
+
+    **Scenario 2: Cross-file whitelist override**
+
+    `/project/.gitignore`:
+    ```
+    *.log
+    build/
+    ```
+
+    `/project/important/.ignore`:
+    ```
+    # Override parent .gitignore for this directory
+    !debug.log
+    !build/
+    ```
+
+    **Result:**
+    ```bash
+    $ rg --files important/
+    important/debug.log        # Whitelisted despite *.log in parent
+    important/build/output.txt # Whitelisted despite build/ in parent
+    important/other.txt
+    ```
+
+    **Scenario 3: Whitelist with nested patterns**
+
+    `.ignore`:
+    ```
+    # Ignore all test directories
+    **/test/
+
+    # But keep integration tests
+    !**/test/integration/
+
+    # And keep specific critical test file
+    !**/test/critical_test.rs
+    ```
 
 !!! tip "Whitelist Override Power"
     Whitelist patterns in `.ignore` files can override exclusions from `.gitignore` files, even in parent directories. This makes `.ignore` files powerful for project-specific ripgrep configurations without modifying your Git settings.
@@ -446,12 +526,35 @@ For more precise control, use specific `--no-ignore-*` flags:
 | `--no-ignore-parent` | Don't read ignore files from parent directories |
 | `--no-ignore-files` | Disable custom ignore files from `--ignore-file` |
 
-Example combining flags:
+!!! example "Combining Fine-Grained Flags"
 
-```bash
-$ rg 'pattern' --no-ignore-vcs --hidden
-# Ignore .gitignore but respect .ignore, and search hidden files
-```
+    **Scenario: Search hidden config files but skip Git files**
+
+    ```bash
+    $ rg 'api_key' --no-ignore-vcs --hidden
+    # Searches .env, .bashrc, etc., but respects .ignore files
+    ```
+
+    **Scenario: Ignore only global gitignore, keep everything else**
+
+    ```bash
+    $ rg 'TODO' --no-ignore-global
+    # Respects .gitignore and .ignore, but not ~/.config/git/ignore
+    ```
+
+    **Scenario: Custom ignore files without standard ones**
+
+    ```bash
+    $ rg 'pattern' --no-ignore --ignore-file team-ignores.txt
+    # Only respects team-ignores.txt, not .gitignore or .ignore
+    ```
+
+    **Scenario: Parent directory patterns interfering**
+
+    ```bash
+    $ rg 'pattern' subdir/ --no-ignore-parent
+    # Only respects ignore files in or below subdir/
+    ```
 
 ## Ignore File Error Handling
 
@@ -461,6 +564,16 @@ By default, ripgrep reports errors when ignore files are malformed. Suppress the
 $ rg 'pattern' --no-ignore-messages
 # Silently skip malformed ignore files
 ```
+
+!!! warning "Malformed Ignore Files"
+    If ripgrep reports errors about ignore file syntax, it will skip the problematic patterns but continue searching. Use `--no-ignore-messages` to suppress these warnings, but be aware that some patterns may not be applied.
+
+    **Common ignore file issues:**
+    - Invalid regex patterns (when using regex mode)
+    - Incomplete glob patterns (e.g., unclosed brackets)
+    - Invalid escape sequences
+
+    Always test your ignore files with `rg --files` to verify they work as expected.
 
 ## Case Insensitive Ignore Files
 
@@ -568,6 +681,29 @@ See the [Manual Filtering: Globs](manual-filtering-globs.md) and [Manual Filteri
    ```bash
    $ rg 'pattern' --debug 2>&1 | grep filename
    ```
+
+!!! example "Understanding --debug Output"
+
+    The `--debug` flag shows detailed filtering information. Here's what the output looks like:
+
+    ```bash
+    $ rg 'TODO' --debug 2>&1 | head -20
+    DEBUG|grep_regex::literal|crates/regex/src/literal.rs:58: literal prefixes detected: Literals { lits: [Complete(TODO)], limit_size: 250, limit_class: 10 }
+    DEBUG|globset|crates/globset/src/lib.rs:102: built glob set; 0 literals, 3 basenames, 1 extensions, 0 prefixes, 0 suffixes, 0 required extensions, 0 regexes
+    DEBUG|ignore::walk|crates/ignore/src/walk.rs:1450: ignore file found: .gitignore
+    DEBUG|ignore::walk|crates/ignore/src/walk.rs:1450: ignore file found: .ignore
+    DEBUG|ignore::walk|crates/ignore/src/walk.rs:2134: ignoring ./target: Ignore(IgnoreMatch(Gitignore(Glob { from: Some(".gitignore"), original: "/target", actual: "target", is_whitelist: false, is_only_dir: false })))
+    DEBUG|ignore::walk|crates/ignore/src/walk.rs:2134: ignoring ./node_modules: Ignore(IgnoreMatch(Gitignore(Glob { from: Some(".gitignore"), original: "node_modules/", actual: "node_modules", is_whitelist: false, is_only_dir: true })))
+    DEBUG|ignore::walk|crates/ignore/src/walk.rs:2134: ignoring ./.git: Ignore(IgnoreMatch(Gitignore(Glob { from: Some(".gitignore"), original: ".git/", actual: ".git", is_whitelist: false, is_only_dir: true })))
+    ```
+
+    **Key information in debug output:**
+    - **`ignore file found`**: Which ignore files were discovered
+    - **`ignoring ./path`**: Which files/directories are being filtered
+    - **`from: Some(".gitignore")`**: Which ignore file contains the pattern
+    - **`original: "target"`**: The original pattern from the ignore file
+    - **`is_whitelist: false`**: Whether this is a whitelist (!) or ignore pattern
+    - **`is_only_dir: true`**: Whether the pattern only matches directories
 
 3. Try disabling ignore files progressively:
    ```bash
