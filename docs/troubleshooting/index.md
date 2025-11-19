@@ -2,9 +2,95 @@
 
 This chapter helps you diagnose and solve common problems when using ripgrep. Most issues can be resolved by understanding ripgrep's filtering behavior and using the `--debug` flag to see what's happening behind the scenes.
 
+## Most Common Issues
+
+=== "No Results Found"
+    **Symptom**: Search returns no matches when you expect results.
+
+    **Quick Fix**:
+    ```bash
+    # Check which files would be searched
+    rg --files | head -20  # (1)!
+
+    # See detailed filtering info
+    rg --debug pattern 2>&1 | head -30  # (2)!
+
+    # Try unrestricted search
+    rg -uuu pattern  # (3)!
+    ```
+
+    1. Shows first 20 files that would be searched. If your target files aren't listed, they're being filtered out.
+    2. Displays debug output showing which files are searched and which are ignored.
+    3. Disables all filtering including gitignore, hidden files, and binary detection.
+
+    **→** See [No Results Found](./no-results.md) for detailed guidance.
+
+=== "Too Slow"
+    **Symptom**: Search takes longer than expected.
+
+    **Quick Fix**:
+    ```bash
+    # Check search statistics
+    rg --stats pattern  # (1)!
+
+    # Limit to specific file types
+    rg -tpy pattern  # (2)!
+
+    # Use glob patterns
+    rg -g '*.py' pattern  # (3)!
+    ```
+
+    1. Shows number of files searched, bytes searched, and time taken.
+    2. Searches only Python files using built-in type filter.
+    3. Searches only files matching the glob pattern.
+
+    **→** See [Performance Issues](./performance.md) for optimization strategies.
+
+=== "Error Messages"
+    **Symptom**: Ripgrep exits with an error.
+
+    **Quick Fix**:
+    ```bash
+    # Common regex syntax errors
+    rg 'pattern('  # Missing closing parenthesis
+    # Error: regex parse error
+
+    # Try literal search if pattern is complex
+    rg -F 'pattern('  # (1)!
+
+    # Check encoding issues
+    rg --encoding=auto pattern  # (2)!
+    ```
+
+    1. The `-F` flag treats your pattern as literal text, not regex.
+    2. Automatically detects file encoding instead of assuming UTF-8.
+
+    **→** See [Common Error Messages](./errors.md) for detailed solutions.
+
+=== "Binary/Encoding"
+    **Symptom**: Files skipped as binary or garbled output.
+
+    **Quick Fix**:
+    ```bash
+    # Search binary files
+    rg -a pattern  # (1)!
+
+    # Specify encoding
+    rg --encoding=latin1 pattern  # (2)!
+
+    # Show binary file detection
+    rg --debug pattern 2>&1 | grep -i binary  # (3)!
+    ```
+
+    1. Treats binary files as text and searches them.
+    2. Uses Latin-1 encoding instead of default UTF-8.
+    3. Shows which files are detected as binary and why.
+
+    **→** See [Binary and Encoding Problems](./binary-encoding.md) for more details.
+
 ## Quick Troubleshooting Checklist
 
-!!! tip "Quick Troubleshooting Steps"
+!!! tip "Diagnostic Steps"
     If you're experiencing unexpected behavior, try these steps in order:
 
     1. **Run with `--files`** to see which files would be searched (without actually searching)
@@ -71,9 +157,11 @@ or -g for globs"]
 **Figure**: Troubleshooting decision flow showing how to diagnose common issues and navigate to the relevant guide section.
 
 !!! note "How to Use This Guide"
-    **New to troubleshooting?** Follow the decision flow diagram above to identify your issue and get quick diagnostic steps.
+    **Quick fix needed?** Check the [Most Common Issues](#most-common-issues) section above for tabbed examples with annotated commands.
 
-    **Know your issue category?** Jump directly to the relevant section using the navigation links below.
+    **New to troubleshooting?** Follow the decision flow diagram above to identify your issue and get diagnostic steps.
+
+    **Know your issue category?** Jump directly to the relevant detailed guide using the navigation links below.
 
 ## Navigation
 
