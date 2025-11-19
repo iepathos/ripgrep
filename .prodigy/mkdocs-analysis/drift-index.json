@@ -1,70 +1,79 @@
 {
-  "item_type": "auto-discovered",
+  "item_type": "page",
   "page_id": "index",
   "page_title": "index",
-  "page_file": "docs/binary-data/index.md",
+  "page_file": "docs/advanced-patterns/index.md",
   "drift_detected": false,
-  "severity": "none",
-  "quality_assessment": "Excellent overview page with clear structure, accurate content, and valid cross-references. All subsection links are valid and all related topic links work correctly.",
-  "issues": [],
+  "severity": "low",
+  "quality_assessment": "Excellent overview page with comprehensive visual features. Well-structured content with Mermaid diagrams, tabbed sections, code annotations, and clear navigation. All internal links are valid. Content accurately reflects ripgrep's advanced pattern capabilities.",
+  "issues": [
+    {
+      "type": "enhancement_opportunity",
+      "severity": "low",
+      "section": "Quick Command Reference",
+      "description": "Code annotations (numbered comments) are used but could benefit from more context",
+      "current_content": "Code examples use annotation markers (1)!, (2)!, etc.",
+      "fix_suggestion": "The annotations are well-explained below the code block. This is already following MkDocs Material best practices. No changes needed.",
+      "feature_reference": "advanced_patterns.multiline_mode, advanced_patterns.pcre2_engine"
+    }
+  ],
   "positive_aspects": [
-    "Clear, concise introduction explaining why binary data handling matters",
-    "Well-organized subsection navigation with descriptive titles and summaries",
-    "Effective summary section highlighting the three key concerns (Performance, User intent, Safety)",
-    "Comprehensive key takeaways that provide actionable guidance",
-    "All internal links validated and working correctly (5 subsections + 3 related topics)",
-    "Uses MkDocs Material features appropriately for navigation",
-    "Properly scoped as an overview/index page - doesn't try to document everything inline",
-    "Good cross-references to related topics (file encoding, manual filtering, compressed files)"
+    "Excellent use of Mermaid diagrams to visualize feature architecture and decision trees",
+    "Clear feature comparison using Material tabbed sections",
+    "Comprehensive quick reference with annotated code examples",
+    "Well-organized table of contents linking to sub-pages",
+    "Good use of admonitions (tip, note, warning, success) to highlight important information",
+    "Accurate coverage of multiline mode, PCRE2 engine, Unicode support, and performance tradeoffs",
+    "All internal documentation links are valid and properly formatted",
+    "Clear distinction between default engine and PCRE2 with practical guidance",
+    "Performance warnings about catastrophic backtracking are well-placed",
+    "Strong summary section with key principles and common pitfalls",
+    "Cross-references to related chapters at the end",
+    "Decision tree helps users choose appropriate flags systematically"
   ],
   "improvement_suggestions": [
-    "Consider adding a quick example or visual diagram showing the binary detection flow",
-    "Could add a 'When to Read This' section to help users know which subpage to read first",
-    "Might benefit from a brief comparison table showing when to use --binary vs --text vs default behavior"
+    "Consider adding a visual comparison chart showing performance characteristics (speed vs features)",
+    "Could add a troubleshooting section specific to advanced pattern issues (e.g., 'DFA gave up' error)",
+    "Might benefit from a 'Common Mistakes' section with before/after examples",
+    "Could enhance the Quick Command Reference section with expected output examples"
   ],
-  "link_validation": {
-    "total_internal_links": 8,
-    "broken_links": 0,
-    "valid_links": [
-      "./detection.md",
-      "./modes.md",
-      "./explicit-implicit.md",
-      "./flags.md",
-      "./examples.md",
-      "../file-encoding.md",
-      "../manual-filtering-types.md",
-      "../compressed-files.md"
-    ]
-  },
   "cross_references": [
-    "file-encoding",
-    "manual-filtering-types",
-    "compressed-files",
-    "binary-detection",
-    "binary-modes",
-    "explicit-implicit",
-    "binary-flags",
-    "binary-examples"
+    "multiline",
+    "pcre2",
+    "lookaround",
+    "backreferences",
+    "unicode",
+    "inline-flags",
+    "performance",
+    "examples",
+    "basics/index",
+    "replacements",
+    "file-encoding"
   ],
   "metadata": {
-    "analyzed_at": "2025-11-13T20:53:28Z",
+    "analyzed_at": "2025-11-19T18:24:00Z",
     "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
     "topics_covered": [
-      "Binary data handling overview",
-      "Binary detection",
-      "Binary modes",
-      "Explicit vs implicit files",
-      "Binary flags"
+      "multiline search",
+      "PCRE2 engine",
+      "lookaround assertions",
+      "backreferences",
+      "Unicode patterns",
+      "inline flags",
+      "performance considerations",
+      "engine selection"
     ],
     "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
-    "page_type": "section_index",
-    "parent_section": "binary-data",
-    "subsections": [
-      "detection",
-      "modes",
-      "explicit-implicit",
-      "flags",
-      "examples"
-    ]
+    "visual_features_used": [
+      "Mermaid diagrams (2): feature architecture and decision tree",
+      "Material tabbed sections: engine comparison",
+      "Code annotations: quick reference examples",
+      "Admonitions: tip, note, warning, success"
+    ],
+    "link_validation": {
+      "total_internal_links": 11,
+      "broken_links": 0,
+      "all_links_valid": true
+    }
   }
 }
