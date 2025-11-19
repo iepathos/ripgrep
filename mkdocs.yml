@@ -60,7 +60,7 @@ markdown_extensions:
 
 # Navigation structure (matching SUMMARY.md)
 nav:
-  - Home: introduction.md
+  - Home: index.md
   - User Guide:
       - Basics:
           - basics/index.md
