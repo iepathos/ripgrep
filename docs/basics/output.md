@@ -386,7 +386,7 @@ rg --sortr path pattern
 ```
 
 !!! warning "Performance Impact"
-    Sorting requires collecting all results before output, which **disables parallelism**. Use only when needed, especially on large codebases.
+    Sorting requires collecting all results before output, which **disables parallelism**. Use only when needed, especially on large codebases. See [Performance](../performance.md) for more details on parallelism and optimization.
 
 ## Context Lines
 
@@ -448,6 +448,31 @@ src/main.rs
 !!! note "Context Line Markers"
     Lines with `:` are matches, lines with `-` are context. Groups are separated by `--` when matches are far apart.
 
+## Hyperlinks
+
+Modern terminals support clickable hyperlinks that can open files directly in your editor. Use `--hyperlink-format` to enable:
+
+```bash
+# Source: crates/printer/src/hyperlink/aliases.rs:6-68
+
+# VS Code integration
+rg --hyperlink-format vscode pattern
+
+# Default platform-aware format
+rg --hyperlink-format default pattern
+
+# Disable hyperlinks
+rg --hyperlink-format none pattern
+```
+
+**Built-in formats:** `default`, `vscode`, `vscode-insiders`, `vscodium`, `macvim`, `textmate`, `cursor`, `file`, `grep+`, `kitty`, `none`
+
+!!! tip "Terminal Integration"
+    Hyperlinks work in modern terminals (iTerm2, Windows Terminal, WezTerm, Kitty) and allow clicking on results to open files at the exact line in your editor.
+
+!!! note "Detailed Documentation"
+    For comprehensive hyperlink documentation including custom formats, terminal compatibility, URL scheme registration, and troubleshooting, see the [Hyperlinks](../hyperlinks.md) page.
+
 ## Quick Reference
 
 | Flag | Description | Use Case |
@@ -464,6 +489,7 @@ src/main.rs
 | `-A/-B/-C` | Context lines | Understanding context |
 | `--sort` | Sort results | Organized output |
 | `--color` | Color control | Readability, piping |
+| `--hyperlink-format` | Clickable links | Terminal integration |
 
 ## Combining Flags
 
