@@ -28,6 +28,56 @@ tests/test.rs
 !!! tip "Common Usage"
     Most users add `-n` to their shell aliases or ripgrep config file, as line numbers are helpful for navigation and editor integration.
 
+## Choosing the Right Output Format
+
+Ripgrep offers multiple output formats optimized for different use cases. This decision flow helps you select the appropriate format:
+
+```mermaid
+flowchart TD
+    Start[What do you need?] --> Type{Output Type?}
+
+    Type -->|Just filenames| FileOnly{Matches?}
+    FileOnly -->|With matches| FilesMatch["Use: -l
+    or --files-with-matches"]
+    FileOnly -->|Without matches| FilesNoMatch["Use: --files-without-match"]
+
+    Type -->|Count only| CountType{Count what?}
+    CountType -->|Lines with matches| CountLines["Use: -c
+    Counts matching lines"]
+    CountType -->|Total matches| CountMatches["Use: --count-matches
+    Counts individual matches"]
+
+    Type -->|Full matches| FullType{For what use?}
+
+    FullType -->|Human reading| Human["Use: default output
+    with -n for line numbers"]
+    FullType -->|IDE/Editor| Editor{Which editor?}
+    FullType -->|Machine parsing| Machine["Use: --json
+    Structured data"]
+    FullType -->|Data extraction| Extract["Use: -o
+    Only matching parts"]
+
+    Editor -->|Vim/Neovim| VimEditor["Use: --vimgrep
+    file:line:col:text"]
+    Editor -->|VS Code| VSCode["Use: --no-heading
+    with --hyperlink-format vscode"]
+    Editor -->|Other| OtherEditor["Use: --no-heading -n
+    Easier to parse"]
+
+    style FilesMatch fill:#e1f5ff
+    style FilesNoMatch fill:#e1f5ff
+    style CountLines fill:#fff3e0
+    style CountMatches fill:#fff3e0
+    style Human fill:#e8f5e9
+    style VimEditor fill:#f3e5f5
+    style VSCode fill:#f3e5f5
+    style OtherEditor fill:#f3e5f5
+    style Machine fill:#ffe0b2
+    style Extract fill:#ffe0b2
+```
+
+**Figure**: Decision flow for selecting the appropriate ripgrep output format based on your use case.
+
 ## Standard Output Options
 
 ### Line Numbers
@@ -134,18 +184,18 @@ Ripgrep offers two distinct output grouping modes optimized for different use ca
 graph LR
     Input[Search Results] --> Decision{Output Mode?}
     Decision -->|Default| Heading["Heading Mode
-Grouped by file"]
+    Grouped by file"]
     Decision -->|--no-heading| NoHeading["Non-Heading Mode
-File on each line"]
+    File on each line"]
     Decision -->|--vimgrep| Vim["Vimgrep Mode
-file:line:col:text"]
+    file:line:col:text"]
 
     Heading --> Human["Human Reading
-Terminal display"]
+    Terminal display"]
     NoHeading --> Parse["Machine Parsing
-Line-by-line processing"]
+    Line-by-line processing"]
     Vim --> IDE["IDE Integration
-Quickfix lists"]
+    Quickfix lists"]
 
     style Heading fill:#e1f5ff
     style NoHeading fill:#fff3e0
@@ -386,7 +436,7 @@ rg --sortr path pattern
 ```
 
 !!! warning "Performance Impact"
-    Sorting requires collecting all results before output, which **disables parallelism**. Use only when needed, especially on large codebases.
+    Sorting requires collecting all results before output, which **disables parallelism**. Use only when needed, especially on large codebases. See [Performance](../performance.md) for more details on parallelism and optimization.
 
 ## Context Lines
 
@@ -448,6 +498,31 @@ src/main.rs
 !!! note "Context Line Markers"
     Lines with `:` are matches, lines with `-` are context. Groups are separated by `--` when matches are far apart.
 
+## Hyperlinks
+
+Modern terminals support clickable hyperlinks that can open files directly in your editor. Use `--hyperlink-format` to enable:
+
+```bash
+# Source: crates/printer/src/hyperlink/aliases.rs:6-68
+
+# VS Code integration
+rg --hyperlink-format vscode pattern
+
+# Default platform-aware format
+rg --hyperlink-format default pattern
+
+# Disable hyperlinks
+rg --hyperlink-format none pattern
+```
+
+**Built-in formats:** `default`, `vscode`, `vscode-insiders`, `vscodium`, `macvim`, `textmate`, `cursor`, `file`, `grep+`, `kitty`, `none`
+
+!!! tip "Terminal Integration"
+    Hyperlinks work in modern terminals (iTerm2, Windows Terminal, WezTerm, Kitty) and allow clicking on results to open files at the exact line in your editor.
+
+!!! note "Detailed Documentation"
+    For comprehensive hyperlink documentation including custom formats, terminal compatibility, URL scheme registration, and troubleshooting, see the [Hyperlinks](../hyperlinks.md) page.
+
 ## Quick Reference
 
 | Flag | Description | Use Case |
@@ -464,6 +539,7 @@ src/main.rs
 | `-A/-B/-C` | Context lines | Understanding context |
 | `--sort` | Sort results | Organized output |
 | `--color` | Color control | Readability, piping |
+| `--hyperlink-format` | Clickable links | Terminal integration |
 
 ## Combining Flags
 
