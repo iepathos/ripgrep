@@ -10,6 +10,33 @@
     error: unexpected argument '-o' found
     ```
 
+```mermaid
+flowchart LR
+    Start["rg -foo"] --> Parse{"Argument
+    starts with -?"}
+    Parse -->|Yes| Flag["Interpret as Flag
+    '-f -o -o'"]
+    Flag --> Error["Error: Unknown flag 'o'"]
+
+    Parse2["rg -- -foo"] --> Separator["'--' Separator"]
+    Separator --> Literal["Everything after '--'
+    is literal pattern"]
+    Literal --> Success1["Search for '-foo'"]
+
+    Parse3["rg -e -foo"] --> Explicit["-e Flag"]
+    Explicit --> Pattern["Next arg is pattern
+    regardless of format"]
+    Pattern --> Success2["Search for '-foo'"]
+
+    style Error fill:#ffebee
+    style Success1 fill:#e8f5e9
+    style Success2 fill:#e8f5e9
+    style Separator fill:#e1f5ff
+    style Explicit fill:#e1f5ff
+```
+
+**Figure**: Argument parsing flow - use `--` or `-e` to search for patterns starting with `-`.
+
 !!! tip "Solutions"
     Use `--` to separate flags from the pattern:
 
@@ -232,24 +259,24 @@ src/main.rs
 src/lib.rs
 8:    // TODO: optimize this function
 
-3 matches
-3 matched lines
-2 files contained matches
-15 files searched
-1234 bytes printed
-45678 bytes searched
-0.005123 seconds spent searching
-0.001234 seconds
+3 matches                          # (1)!
+3 matched lines                    # (2)!
+2 files contained matches          # (3)!
+15 files searched                  # (4)!
+1234 bytes printed                 # (5)!
+45678 bytes searched               # (6)!
+0.005123 seconds spent searching   # (7)!
+0.001234 seconds                   # (8)!
 ```
 
-**Understanding the output:**
-- **matches**: Total number of matches found
-- **matched lines**: Number of lines containing at least one match (may be less than total matches if a line contains multiple matches)
-- **files contained matches**: Number of files that had at least one match
-- **files searched**: Total number of files ripgrep examined
-- **bytes searched**: Total bytes of content searched
-- **seconds spent searching**: Time spent in the actual search algorithm
-- **seconds**: Total wall clock time
+1. Total number of matches found across all files
+2. Number of lines containing at least one match (can be less than total matches if a line has multiple matches)
+3. Number of files that had at least one match
+4. Total number of files ripgrep examined (includes files without matches)
+5. Total bytes of matched content printed to output
+6. Total bytes of content that was searched
+7. Time spent in the actual search algorithm (pure search time)
+8. Total wall clock time (includes file traversal, filtering, output formatting)
 
 !!! tip "Using --stats for diagnostics"
     Use `--stats` to:
