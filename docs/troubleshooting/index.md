@@ -101,6 +101,9 @@ This chapter helps you diagnose and solve common problems when using ripgrep. Mo
     6. **Check `--stats`** to see how many files were searched and matches found
     7. **Review the [Basics](../basics/index.md)** for fundamental concepts
 
+!!! warning "Be Careful with Unrestricted Search"
+    The `-uuu` flag disables all filtering including gitignore rules, hidden files, and binary detection. This can make ripgrep search thousands of unwanted files (like `node_modules/`, `.git/`, build artifacts) and significantly slow down your search. Use it only for diagnostic purposes to confirm filtering is the issue, then use more targeted flags like `-uu` or specific `--no-ignore` options.
+
 ## Troubleshooting Decision Flow
 
 ```mermaid
