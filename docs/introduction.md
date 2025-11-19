@@ -31,7 +31,7 @@ pattern?"}
 
 **Figure**: ripgrep's search process showing automatic file filtering and line-by-line pattern matching.
 
-This documentation covers ripgrep version 14.1.1.
+This documentation covers ripgrep version 14.1 and later.
 
 ## Why ripgrep?
 
@@ -49,21 +49,21 @@ For comprehensive performance benchmarks and feature comparisons with grep, ag, 
 
 ## Key Features
 
-- **Fast**: ripgrep is built on top of Rust's regex engine, which uses finite automata, SIMD, and aggressive literal optimizations to make searching very fast.
-- **Respects ignore files**: By default, ripgrep respects `.gitignore`, `.ignore`, and `.rgignore` files.
-- **Automatic filtering**: Hidden files, binary files, and symbolic links are automatically filtered by default.
+- **Fast**: ripgrep is built on top of Rust's regex engine, which uses finite automata, SIMD, and aggressive literal optimizations to make searching very fast. See [Performance](performance.md) for benchmarks and optimization details.
+- **Respects ignore files**: By default, ripgrep respects `.gitignore`, `.ignore`, and `.rgignore` files. See [Automatic Filtering](automatic-filtering.md) for details.
+- **Automatic filtering**: Hidden files, binary files, and symbolic links are automatically filtered by default. See [Automatic Filtering](automatic-filtering.md) for details.
 - **Cross-platform**: Works on Linux, macOS, and Windows.
-- **Powerful filtering**: Support for glob patterns and file type filtering.
-- **Multiple encoding support**: Handles UTF-8, UTF-16, and other encodings with BOM detection.
+- **Powerful filtering**: Support for glob patterns and file type filtering. See [Manual Filtering: Globs](manual-filtering-globs.md) and [Manual Filtering: Types](manual-filtering-types.md) for details.
+- **Multiple encoding support**: Handles UTF-8, UTF-16, and other encodings with BOM detection. See [File Encoding](file-encoding.md) for details.
 - **PCRE2 regex support**: Use advanced regex features like look-around and backreferences with the `-P/--pcre2` flag.
-- **Compressed file search**: Search inside gzip, bzip2, xz, lz4, lzma, brotli, and zstd compressed files automatically.
-- **Preprocessor support**: Transform files before searching using custom preprocessors for specialized file formats.
-- **Configuration files**: Define default settings in configuration files for consistent behavior across projects.
+- **Compressed file search**: Search inside gzip, bzip2, xz, lz4, lzma, brotli, and zstd compressed files automatically. See [Compressed Files](compressed-files.md) for details.
+- **Preprocessor support**: Transform files before searching using custom preprocessors for specialized file formats. See [Preprocessor](preprocessor.md) for details.
+- **Configuration files**: Define default settings in configuration files for consistent behavior across projects. See [Configuration File](configuration-file.md) for details.
 - **Multiline search**: Search patterns that span multiple lines with the `-U/--multiline` flag.
-- **Replacement support**: Replace matched patterns with the `-r/--replace` flag.
-- **JSON output**: Machine-readable JSON output format for integration with other tools.
-- **Hyperlink support**: Terminal hyperlinks for clickable file paths with `--hyperlink-format` (built-in support for VSCode, file://, and custom formats).
-- **Performance statistics**: Track and display search metrics with `--stats` for understanding search performance.
+- **Replacement support**: Replace matched patterns with the `-r/--replace` flag. See [Replacements](replacements.md) for details.
+- **JSON output**: Machine-readable JSON output format for integration with other tools. See [Output Formats](output-formats.md) for details.
+- **Hyperlink support**: Terminal hyperlinks for clickable file paths with `--hyperlink-format` (built-in support for VSCode, file://, and custom formats). See [Hyperlinks](hyperlinks.md) for details.
+- **Performance statistics**: Track and display search metrics with `--stats` for understanding search performance. See [Statistics](statistics.md) for details.
 
 ## Installation
 
@@ -183,3 +183,34 @@ This guide assumes that:
 - ripgrep is [installed](https://github.com/BurntSushi/ripgrep#installation)
 - You have passing familiarity with using command line tools
 - You are using a Unix-like system (although most commands translate easily to any command line shell environment)
+
+## Where to Go Next
+
+After getting familiar with the basics, explore these topics based on your needs:
+
+**Filtering and Performance:**
+
+- [Automatic Filtering](automatic-filtering.md) - Understand how ripgrep automatically skips files using `.gitignore` and other ignore files
+- [Manual Filtering: Types](manual-filtering-types.md) - Filter searches by file type (e.g., only search Python or JavaScript files)
+- [Manual Filtering: Globs](manual-filtering-globs.md) - Use glob patterns for fine-grained file filtering
+- [Performance](performance.md) - Optimize search performance and understand benchmarks
+
+**Output and Integration:**
+
+- [Output Formats](output-formats.md) - JSON output and other machine-readable formats for tooling integration
+- [Hyperlinks](hyperlinks.md) - Generate terminal hyperlinks for clickable file paths in supported terminals
+- [Statistics](statistics.md) - Track search performance metrics with `--stats`
+- [Replacements](replacements.md) - Replace matched patterns with new text
+
+**Advanced Features:**
+
+- [Compressed Files](compressed-files.md) - Search inside gzip, bzip2, xz, and other compressed archives
+- [Configuration File](configuration-file.md) - Set up persistent configuration for consistent behavior
+- [Preprocessor](preprocessor.md) - Transform files before searching for specialized formats
+- [File Encoding](file-encoding.md) - Handle UTF-16, Latin-1, and other text encodings
+
+**Search Techniques:**
+
+- [Recursive Search](recursive-search.md) - Control directory traversal and recursion depth
+- [Context Lines](context-lines.md) - Show surrounding context for search matches
+- [Sorting Results](sorting-results.md) - Control output ordering
