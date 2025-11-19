@@ -1,0 +1,108 @@
+{
+  "item_type": "page",
+  "page_id": "basics-index",
+  "page_title": "Basics - Index",
+  "page_file": "docs/basics/index.md",
+  "drift_detected": true,
+  "severity": "medium",
+  "quality_assessment": "Good introductory page with clear examples and MkDocs Material features. Some gaps in advanced flag coverage and could benefit from visual enhancements.",
+  "issues": [
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Quick Start",
+      "description": "Missing line-regexp (-x) flag which is a fundamental pattern matching feature",
+      "feature_reference": "search_basics.pattern_matching",
+      "fix_suggestion": "Add example for -x/--line-regexp flag in Quick Start or Common Flags section",
+      "source_reference": "features.json:search_basics.pattern_matching (line-regexp feature)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Quick Start",
+      "description": "Multiple patterns feature (-e flag) not demonstrated in basics",
+      "feature_reference": "search_basics.multiple_patterns",
+      "fix_suggestion": "Consider adding example showing how to search for multiple patterns with -e flag",
+      "source_reference": "features.json:search_basics.multiple_patterns"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Quick Start",
+      "description": "Smart case (-S) explained in table but not demonstrated with example",
+      "feature_reference": "search_basics.case_sensitivity.smart_case",
+      "fix_suggestion": "Add code annotation explaining when smart case is useful (all lowercase = case-insensitive, any uppercase = case-sensitive)",
+      "source_reference": "features.json:search_basics.case_sensitivity"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Common Flags Cheat Sheet",
+      "description": "Invert match (-v) flag shown in table but not demonstrated with practical example",
+      "feature_reference": "search_basics.pattern_matching",
+      "fix_suggestion": "Add example showing how -v is useful (e.g., 'rg -v test' to find lines NOT containing 'test')",
+      "source_reference": "features.json:search_basics.pattern_matching"
+    },
+    {
+      "type": "missing_visual_enhancement",
+      "severity": "low",
+      "section": "Common Flags Cheat Sheet",
+      "description": "Tables could benefit from visual admonitions for commonly confused flags",
+      "fix_suggestion": "Add warning admonition about common mistakes like -c vs --count-matches, or -l vs -L (files-with-matches vs follow-symlinks)",
+      "source_reference": "MkDocs Material admonitions feature"
+    },
+    {
+      "type": "missing_visual_enhancement",
+      "severity": "low",
+      "section": "Quick Start",
+      "description": "Could benefit from more strategic use of admonitions for common pitfalls",
+      "fix_suggestion": "Add warning admonition about regex special characters when not using -F flag, or tip about when to use -w vs plain pattern",
+      "source_reference": "MkDocs Material admonitions feature"
+    }
+  ],
+  "positive_aspects": [
+    "Excellent use of MkDocs Material features (admonitions, tabs, code annotations)",
+    "Code annotations are clear and educational",
+    "Good progression from simple to complex examples",
+    "Clear organization with tabbed flag reference",
+    "Strategic tip admonitions for new users",
+    "All internal cross-references are valid",
+    "Appropriate scope for an index/overview page"
+  ],
+  "improvement_suggestions": [
+    "Add more admonitions for common pitfalls (e.g., warning about regex special characters, gotchas with flag combinations)",
+    "Consider adding a visual callout box for the most essential 3-5 flags every user should know",
+    "Add example demonstrating smart case (-S) behavior with concrete input/output",
+    "Consider adding a 'Common Mistakes' admonition section",
+    "Add visual distinction between 'must know' vs 'nice to know' flags in the cheat sheet",
+    "Consider adding example showing difference between -c and --count-matches"
+  ],
+  "cross_references": [
+    "recursive-search",
+    "automatic-filtering",
+    "manual-filtering-globs",
+    "advanced-patterns/index",
+    "replacements",
+    "output-formats"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-19T18:24:00Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": [
+      "Quick start examples",
+      "Pattern matching flags",
+      "Output control flags",
+      "Counting and listing",
+      "Context lines"
+    ],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "internal_links_validated": true,
+    "broken_links_found": 0,
+    "total_internal_links": 6,
+    "mkdocs_material_features_used": [
+      "admonitions (tip, note)",
+      "code annotations",
+      "tabbed content"
+    ]
+  }
+}
