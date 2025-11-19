@@ -6,10 +6,11 @@ Binary data handling is one of ripgrep's most important and nuanced features. Un
 
 ```mermaid
 flowchart LR
-    Start[File to search] --> Explicit{"Explicitly
-named?"}
+    Start[File to search] --> Explicit{"Explicit file?
+(rg pattern file.txt)"}
     Explicit -->|Yes| SearchSuppress["Search and Suppress mode"]
-    Explicit -->|No| AutoMode[Auto mode]
+    Explicit -->|No| AutoMode["Implicit file
+(recursive search)"]
 
     AutoMode --> CheckNUL{"Contains
 NUL byte?"}
@@ -30,7 +31,7 @@ suppress output"]
 ```
 
 !!! note "Source Reference"
-    Binary detection behavior is defined in `crates/core/flags/lowargs.rs:233-252`
+    Binary detection behavior is defined by the `BinaryMode` enum in `crates/core/flags/lowargs.rs:233` (full implementation spans lines 233-252)
 
 ## When to Read This
 
@@ -46,12 +47,16 @@ This section helps you navigate the binary data documentation efficiently:
 
 ## Flag Comparison
 
+!!! warning "Terminal Corruption Risk"
+    Using `--text` on binary files can corrupt your terminal output by displaying control characters. Always use it with caution and combine with filters like `-g` or `-t` to limit scope.
+
 Choose the right flag for your use case:
 
 | Behavior | Default (Auto) | `--binary` | `--text` / `-a` |
 |----------|----------------|------------|-----------------|
 | **Implicit files with NUL** | Skip silently | Show warning, suppress output | Search and display |
 | **Explicit files with NUL** | Show warning, suppress output | Show warning, suppress output | Search and display |
+| **stdin with NUL** | Show warning, suppress output (treated as explicit) | Show warning, suppress output | Search and display |
 | **NUL byte handling** | Detect and react | Detect and react | Ignored (treated as data) |
 | **Performance** | Fast (skips binary) | Medium (searches but suppresses) | Slower (processes all data) |
 | **Use when...** | Normal searching | Debugging why files are skipped | Known text-only files or need all data |
