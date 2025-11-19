@@ -2,6 +2,56 @@
 
 These flags control which files are searched.
 
+## Filtering Decision Flow
+
+Ripgrep applies multiple filtering layers to determine which files to search:
+
+```mermaid
+flowchart LR
+    Start[File Discovered] --> Hidden{Hidden
+file?}
+    Hidden -->|Yes + no --hidden| Skip1[Skip]
+    Hidden -->|No or --hidden| Ignore{In ignore
+files?}
+
+    Ignore -->|Yes + no -u| Skip2[Skip]
+    Ignore -->|No or -u| Type{Matches file
+type filter?}
+
+    Type -->|No -t match| Skip3[Skip]
+    Type -->|-T exclude| Skip3
+    Type -->|Yes or no filter| Glob{Matches glob
+patterns?}
+
+    Glob -->|No match| Skip4[Skip]
+    Glob -->|-g exclude| Skip4
+    Glob -->|Yes or no filter| Binary{Binary
+file?}
+
+    Binary -->|Yes + no --binary/-a| Skip5[Skip]
+    Binary -->|No or --binary/-a| Size{Exceeds
+max size?}
+
+    Size -->|Yes| Skip6[Skip]
+    Size -->|No or no limit| Depth{Beyond
+max depth?}
+
+    Depth -->|Yes| Skip7[Skip]
+    Depth -->|No or no limit| Search[Search File]
+
+    style Start fill:#e1f5ff
+    style Search fill:#c8e6c9
+    style Skip1 fill:#ffcdd2
+    style Skip2 fill:#ffcdd2
+    style Skip3 fill:#ffcdd2
+    style Skip4 fill:#ffcdd2
+    style Skip5 fill:#ffcdd2
+    style Skip6 fill:#ffcdd2
+    style Skip7 fill:#ffcdd2
+```
+
+**Figure**: File filtering decision flow showing how ripgrep evaluates files through multiple filtering layers.
+
 !!! tip "Quick reference: Common filtering patterns"
     - Search specific file types: `rg -trust pattern` or `rg -tpy pattern`
     - Search with globs: `rg -g '*.rs' pattern`
@@ -131,6 +181,46 @@ Ripgrep knows about common file extensions for popular languages and formats. Yo
 
 !!! tip "Preview matched files"
     Use `rg --files -g 'pattern'` to preview which files match your glob patterns before searching. This helps verify your glob syntax is correct.
+
+!!! example "Common glob pattern recipes"
+    Here are common glob pattern use cases:
+
+    === "Include by extension"
+        ```bash
+        # Single extension
+        rg -g '*.rs' pattern
+
+        # Multiple extensions
+        rg -g '*.{rs,toml,md}' pattern
+
+        # Specific directory tree
+        rg -g 'src/**/*.rs' pattern
+        ```
+
+    === "Exclude patterns"
+        ```bash
+        # Exclude single pattern
+        rg -g '!*.min.js' pattern
+
+        # Exclude directory
+        rg -g '!target/' pattern
+
+        # Exclude multiple patterns
+        rg -g '!*.test.js' -g '!*.spec.js' pattern
+        ```
+
+    === "Complex filters"
+        ```bash
+        # Include one type, exclude another
+        rg -g '*.js' -g '!*.min.js' pattern
+
+        # Specific files in specific directories
+        rg -g 'src/**/*.{rs,toml}' -g '!**/target/**' pattern
+
+        # Match by naming pattern
+        rg -g '*test*.rs' pattern
+        rg -g 'test_*.py' pattern
+        ```
 
 ## Unrestricted Search
 
