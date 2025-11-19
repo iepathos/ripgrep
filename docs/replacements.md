@@ -25,6 +25,9 @@ Ripgrep can replace matched text in its output using the `-r/--replace` flag. Th
 
 When you use the `-r/--replace` flag, ripgrep processes text through several stages:
 
+!!! note "Implementation Details"
+    The replacement logic is implemented in `crates/matcher/src/interpolate.rs`, which handles capture group interpolation and special character escaping. The printer configuration is in `crates/printer/src/standard.rs`.
+
 ```mermaid
 flowchart LR
     Input[Input Text] --> Match{"Pattern
@@ -110,7 +113,7 @@ Named groups make complex patterns more maintainable and self-documenting.
 ### Capture Group Syntax Rules
 
 !!! info "Understanding Capture Group References"
-    Understanding how ripgrep parses capture group references is important:
+    Understanding how ripgrep parses capture group references is important. The parsing logic is implemented in `crates/matcher/src/interpolate.rs`.
 
     - **Valid characters**: Group names consist of letters, numbers, and underscores only (`[_0-9A-Za-z]`)
     - **Longest match**: Ripgrep takes the longest matching name after `$`
@@ -255,6 +258,7 @@ rg 'api.old.com' -r 'api.new.com'
 
 ```bash
 # Reverse first and last names
+# Source: tests/misc.rs:199-209 (replace_groups test)
 rg '([A-Z][a-z]+) ([A-Z][a-z]+)' -r '$2, $1'
 # "John Watson" becomes "Watson, John"
 ```
@@ -263,6 +267,7 @@ rg '([A-Z][a-z]+) ([A-Z][a-z]+)' -r '$2, $1'
 
 ```bash
 # Extract just the path from log entries
+# Source: tests/misc.rs:228-240 (replace_with_only_matching test)
 rg 'GET (/[^\s]+)' -r '$1' -o
 # Input:  "GET /api/users HTTP/1.1"
 # Output: "/api/users"
@@ -451,4 +456,4 @@ rg '(\w+),(\w+)' -r '$2 $1' -o | sort | uniq
 
 - [Output Formats](./output-formats.md) - For other output formatting options
 - [Introduction](./introduction.md) - For getting started with ripgrep
-- [Recursive Search](./recursive-search.md) - For file traversal and pattern matching
+- [Recursive Search](./recursive-search.md) - For file traversal and pattern matching basics
