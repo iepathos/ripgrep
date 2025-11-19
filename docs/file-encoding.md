@@ -295,7 +295,7 @@ Slower but reliable"]
 
 ## Supported Encodings
 
-ripgrep supports all encodings from the [WHATWG Encoding Standard](https://encoding.spec.whatwg.org/#concept-encoding-get) via the `encoding_rs` crate. The `encoding_rs` crate provides a complete implementation of the WHATWG Encoding Standard, ensuring reliable encoding detection and transcoding.
+ripgrep supports all encodings from the [WHATWG Encoding Standard](https://encoding.spec.whatwg.org/#concept-encoding-get) via the `encoding_rs` crate. The `encoding_rs` crate is Rust's standard implementation of the WHATWG Encoding Standard, originally developed for Firefox and maintained as part of the Rust/Mozilla ecosystem. This provides a battle-tested, reliable foundation for encoding detection and transcoding.
 
 **Common encodings:**
 
@@ -427,7 +427,7 @@ For more details on regex flags, see the [Advanced Patterns](advanced-patterns/i
 **Likely cause:** Encoding mismatch
 
 **Solutions:**
-1. Use `--debug` to see encoding detection: `rg --debug pattern file` (shows which encoding was detected or transcoding performed)
+1. Use `--debug` to see encoding detection and BOM sniffing details: `rg --debug pattern file` (shows BOM sniffing results, which encoding was detected, and any transcoding performed)
 2. Check if file has a BOM: `hexdump -C file | head -n 1`
 3. Try explicit encoding: `rg -E utf-16 pattern file`
 4. Try disabling encoding: `rg -E none pattern file` (search raw bytes)
