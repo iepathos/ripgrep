@@ -77,15 +77,38 @@ The `--debug` flag shows detailed information about ripgrep's search decisions, 
 !!! tip "Saving Debug Output"
     Debug and trace output goes to stderr, not stdout. To save debug output to a file for analysis:
 
-    ```bash
-    rg --debug pattern . 2> debug.log
-    ```
+    === "Linux / macOS"
+        Save debug output only:
+        ```bash
+        rg --debug pattern . 2> debug.log
+        ```
 
-    Or to view both search results and debug output:
+        View both search results and debug output:
+        ```bash
+        rg --debug pattern . 2>&1 | less
+        ```
 
-    ```bash
-    rg --debug pattern . 2>&1 | less
-    ```
+    === "Windows (PowerShell)"
+        Save debug output only:
+        ```powershell
+        rg --debug pattern . 2> debug.log
+        ```
+
+        View both search results and debug output:
+        ```powershell
+        rg --debug pattern . 2>&1 | Out-Host -Paging
+        ```
+
+    === "Windows (cmd.exe)"
+        Save debug output only:
+        ```cmd
+        rg --debug pattern . 2> debug.log
+        ```
+
+        View both search results and debug output:
+        ```cmd
+        rg --debug pattern . 2>&1 | more
+        ```
 
 ## `--trace`
 
@@ -97,6 +120,9 @@ The `--trace` flag provides even more detailed output than `--debug`, showing tr
 
 !!! warning "Very Verbose Output"
     `--trace` produces extremely verbose output that can be overwhelming. Use it only when `--debug` doesn't provide enough information to diagnose the issue.
+
+!!! tip "Performance Impact"
+    Debug flags add minimal overhead. `--debug` and `--trace` primarily affect output volume, not search speed. You can safely use `--stats` in production scripts to gather performance metrics.
 
 ## `--stats`
 
