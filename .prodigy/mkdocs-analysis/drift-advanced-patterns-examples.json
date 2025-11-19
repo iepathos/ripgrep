@@ -1,0 +1,65 @@
+{
+  "item_type": "page",
+  "page_id": "examples",
+  "page_title": "examples",
+  "page_file": "docs/advanced-patterns/examples.md",
+  "drift_detected": false,
+  "severity": "none",
+  "quality_assessment": "Excellent - comprehensive examples with accurate implementation references, strong use of MkDocs Material features",
+  "issues": [],
+  "positive_aspects": [
+    "All code examples are technically accurate and verified against implementation",
+    "Excellent use of MkDocs Material features: Mermaid diagrams, admonitions, tabs, code annotations",
+    "Decision flowchart provides clear guidance for flag selection",
+    "Code annotations (numbered comments with explanations) enhance understanding",
+    "Good use of admonition types: example, tip, warning, danger, note",
+    "Cross-reference link to performance.md is valid and appropriate",
+    "Comprehensive coverage of advanced features: multiline, PCRE2, Unicode, replacements",
+    "Clear explanation of gotchas and limitations with specific examples",
+    "Expected output examples help users verify results",
+    "Progressive complexity: starts simple, builds to complex combinations"
+  ],
+  "improvement_suggestions": [
+    "Consider adding a 'Prerequisites' admonition at the top noting that PCRE2 support is optional and may need compilation flags",
+    "Could add links to Unicode documentation from the Unicode Script Searches section",
+    "The 'Combining Multiline and PCRE2' section could benefit from a warning admonition about memory usage for large files",
+    "Consider adding a 'See Also' section at the end linking to related documentation: context-lines.md, backreferences.md, unicode.md"
+  ],
+  "cross_references": [
+    "performance"
+  ],
+  "link_validation": {
+    "total_internal_links": 1,
+    "broken_links": 0,
+    "validated_links": [
+      {
+        "link_text": "Performance Considerations",
+        "target": "./performance.md",
+        "status": "valid"
+      }
+    ]
+  },
+  "mkdocs_material_features": {
+    "mermaid_diagrams": true,
+    "admonitions": true,
+    "code_annotations": true,
+    "content_tabs": true,
+    "analysis": "Excellent use of MkDocs Material extensions. The Mermaid flowchart provides valuable visual guidance, admonitions effectively highlight important information by severity, code annotations explain complex patterns inline, and content tabs organize related examples efficiently."
+  },
+  "metadata": {
+    "analyzed_at": "2025-11-19T18:24:00Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": [
+      "multiline patterns",
+      "PCRE2 engine",
+      "lookahead/lookbehind",
+      "backreferences",
+      "Unicode scripts",
+      "replacements",
+      "context flags",
+      "advanced regex"
+    ],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "implementation_verification": "All examples verified against ripgrep source code in /crates/core/flags/defs.rs, /crates/pcre2/src/matcher.rs, and documentation files"
+  }
+}
