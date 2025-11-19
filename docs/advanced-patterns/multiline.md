@@ -34,6 +34,30 @@ When multiline mode is enabled:
 
 Ripgrep intelligently analyzes your pattern to avoid the memory penalty when possible. If your pattern contains `\n` but doesn't actually need to match across lines, ripgrep can still use its efficient line-by-line processing.
 
+```mermaid
+flowchart LR
+    Start["Pattern with -U flag"] --> Analysis{"Pattern
+    Analysis"}
+
+    Analysis -->|"Contains \n only"| LineByLine["Line-by-Line
+    Processing"]
+    Analysis -->|"Contains . with dotall
+    or \p{any}"| FullMemory["Full Memory
+    Loading"]
+
+    LineByLine --> Fast["Fast
+    Low Memory"]
+    FullMemory --> Slow["Slower
+    High Memory"]
+
+    style LineByLine fill:#e8f5e9
+    style FullMemory fill:#fff3e0
+    style Fast fill:#e8f5e9
+    style Slow fill:#ffebee
+```
+
+**Figure**: Ripgrep's pattern optimization showing when it avoids the memory penalty.
+
 **Patterns that avoid the memory penalty:**
 
 ```bash
@@ -116,6 +140,31 @@ rg -U '\{.*\n.*"status":\s*"active".*\n.*"role"'
 ## Multiline Dotall Mode
 
 Even in multiline mode, the `.` metacharacter does **not** match newlines by default. To make `.` match newlines, use the `--multiline-dotall` flag.
+
+```mermaid
+flowchart LR
+    Pattern["Pattern with .
+    metacharacter"] --> Mode{"Multiline
+    Mode?"}
+
+    Mode -->|"-U only"| NoDot["Dot does NOT
+    match newline"]
+    Mode -->|"-U --multiline-dotall
+    or (?s)"| YesDot["Dot matches
+    newline"]
+
+    NoDot --> UseAny["Use \p{any}
+    to match newlines"]
+    YesDot --> CanSpan["Can match across
+    line boundaries"]
+
+    style NoDot fill:#fff3e0
+    style YesDot fill:#e8f5e9
+    style UseAny fill:#e1f5ff
+    style CanSpan fill:#e8f5e9
+```
+
+**Figure**: How dotall mode changes `.` metacharacter behavior in multiline searches.
 
 ### Using Multiline Dotall
 
