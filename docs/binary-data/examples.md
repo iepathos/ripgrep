@@ -26,25 +26,20 @@ This table summarizes when binary detection triggers and what output you'll see:
 
 ```mermaid
 flowchart TD
-    A[File to search] --> B{"Explicit file
-or stdin?"}
+    A[File to search] --> B{"Explicit file or stdin?"}
     B -->|Yes| C{--text flag?}
     B -->|No - Implicit| D{--binary flag?}
 
-    C -->|Yes| E["Search as text
-Show all content"]
+    C -->|Yes| E["Search as text - Show all content"]
     C -->|No| F{Contains NUL byte?}
 
     D -->|Yes| F
     D -->|No| G{Contains NUL byte?}
 
-    F -->|Yes| H["Show binary file matches
-or WARNING: stopped searching"]
-    F -->|No| I["Search normally
-Show matches"]
+    F -->|Yes| H["Show binary file matches or WARNING: stopped searching"]
+    F -->|No| I["Search normally - Show matches"]
 
-    G -->|Yes| J["Silent skip
-No output"]
+    G -->|Yes| J["Silent skip - No output"]
     G -->|No| I
 
     style E fill:#ffe6e6
@@ -61,8 +56,7 @@ No output"]
 graph LR
     subgraph Implicit["Implicit Files (Recursive Search)"]
         I1[rg pattern] --> I2{Binary?}
-        I2 -->|Yes| I3["Silent skip
-no output"]
+        I2 -->|Yes| I3["Silent skip - no output"]
         I2 -->|No| I4[Show matches]
     end
 
@@ -74,8 +68,7 @@ no output"]
 
     subgraph Explicit["Explicit Files"]
         E1[rg pattern file.bin] --> E2{Binary?}
-        E2 -->|Yes| E3["Show warning
-binary file matches"]
+        E2 -->|Yes| E3["Show warning - binary file matches"]
         E2 -->|No| E4[Show matches]
     end
 
