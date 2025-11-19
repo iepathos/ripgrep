@@ -186,7 +186,18 @@ rg -g '{src,lib,bin}/**/*.rs' pattern
 rg -g '{Cargo.toml,Cargo.lock,*.rs}' pattern
 ```
 
-**Note:** Empty alternatives like `{,c}` are not currently supported (as of ripgrep 14.1+). Brace expansion is a ripgrep extension beyond standard `.gitignore` syntax.
+```rust
+// Source: crates/globset/src/glob.rs:229-231,245
+// empty_alternates is set to false by default in GlobOptions
+// which means {,c} patterns won't match empty alternatives
+```
+
+!!! note "Empty Alternatives in Brace Expansion"
+    Empty alternatives like `{,c}` are supported by the underlying glob library but are **disabled by default** in ripgrep. The `empty_alternates` option in the globset crate controls this behavior and is set to `false` in the default configuration.
+
+    This means patterns like `test_{,suffix}` will only match `test_suffix`, not `test_`. This is intentional to avoid unexpected matches with empty strings.
+
+Brace expansion is a ripgrep extension beyond standard `.gitignore` syntax.
 
 ## Case-Insensitive Globs
 
@@ -253,7 +264,7 @@ This override behavior gives you ultimate control when automatic filtering is to
 
 Glob patterns with `-g/--glob` are "override patterns" that sit at the top of ripgrep's ignore hierarchy. The complete precedence order (highest to lowest priority) is:
 
-1. **Override patterns** - `--include`/`--exclude` (not currently implemented) and `-g/--glob` patterns
+1. **Override patterns** - `-g/--glob` and `--iglob` patterns
 2. **Custom ignore files** - Files specified with `--ignore-file`
 3. **`.ignore` files** - Repository-specific ignore rules
 4. **`.gitignore` files** - Git ignore rules
