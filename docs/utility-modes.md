@@ -118,6 +118,8 @@ rg --files --no-ignore
 !!! note "Flag Precedence"
     The `--files` flag takes precedence over `--type-list`. If you specify both flags, ripgrep will list files rather than displaying type definitions.
 
+    Source: `crates/core/flags/defs.rs:2151`
+
 ## Type List Mode
 
 The `--type-list` flag displays all built-in file type definitions.
@@ -193,10 +195,14 @@ The `--generate` flag creates shell completions and man pages for ripgrep. All g
 ### Supported Shells
 
 ripgrep can generate completions for:
-- Bash
-- Zsh
-- Fish
-- PowerShell
+
+- Bash (`complete-bash`)
+- Zsh (`complete-zsh`)
+- Fish (`complete-fish`)
+- PowerShell (`complete-powershell`)
+- Man pages (`man`)
+
+Source: `crates/core/flags/defs.rs:2454-2458`, `crates/core/main.rs:359-365`
 
 ### Generating Shell Completions
 
@@ -289,15 +295,14 @@ rg -V
 
 **Example output from `rg --version`:**
 ```
-ripgrep 14.1.0
--SIMD -AVX (compiled)
-+SIMD +AVX (runtime)
+ripgrep 14.1.0             # (1)!
+-SIMD -AVX (compiled)      # (2)!
++SIMD +AVX (runtime)       # (3)!
 ```
 
-The output shows:
-- ripgrep version number
-- Compile-time features
-- Runtime CPU features detected
+1. Version number of the ripgrep binary
+2. Features available at compile time (prefixed with + or -)
+3. CPU features detected at runtime on your system
 
 !!! tip "Version Flag Usage"
     The `--version` flag provides more verbose output including feature information, while `-V` provides a more compact version string. Use `--version` when you need to check feature support, and `-V` when you only need the version number.
@@ -320,6 +325,8 @@ This confirms:
 - PCRE2 library version
 - Whether JIT (Just-In-Time) compilation is enabled
 - Feature availability for advanced regex patterns
+
+Source: `crates/core/main.rs:392-399`
 
 ### Use Cases
 
@@ -347,38 +354,59 @@ echo "Using ripgrep version: $version"
 
 ### Example 1: Audit Project Structure
 
+Get a quick overview of your codebase composition by counting files per language:
+
 ```bash
 # Count files by type
-echo "Rust files:" $(rg --files -t rust | wc -l)
-echo "Python files:" $(rg --files -t py | wc -l)
-echo "JavaScript files:" $(rg --files -t js | wc -l)
-echo "Total files:" $(rg --files | wc -l)
+echo "Rust files:" $(rg --files -t rust | wc -l)        # (1)!
+echo "Python files:" $(rg --files -t py | wc -l)        # (2)!
+echo "JavaScript files:" $(rg --files -t js | wc -l)    # (3)!
+echo "Total files:" $(rg --files | wc -l)               # (4)!
 ```
+
+1. Count Rust source files (*.rs) using type filter
+2. Count Python files (*.py, *.pyw, *.pyi)
+3. Count JavaScript files (*.js, *.jsx, *.mjs)
+4. Count all searchable files respecting ignore rules
 
 ### Example 2: Find Large Files
 
+Identify large files that might need optimization or exclusion from searches:
+
 ```bash
 # List largest files in project
-rg --files | xargs du -h | sort -rh | head -20
+rg --files | xargs du -h | sort -rh | head -20    # (1)!
 ```
+
+1. Pipeline: list searchable files → get sizes → sort by size (largest first) → show top 20
 
 ### Example 3: Verify Search Coverage
 
+Understand how many files are being filtered by ignore rules:
+
 ```bash
 # Compare total files vs searched files
-total=$(find . -type f | wc -l)
-searched=$(rg --files | wc -l)
+total=$(find . -type f | wc -l)                    # (1)!
+searched=$(rg --files | wc -l)                     # (2)!
 echo "Total files: $total"
 echo "Searched files: $searched"
-echo "Filtered: $((total - searched))"
+echo "Filtered: $((total - searched))"             # (3)!
 ```
+
+1. Count all files in directory tree (no filtering)
+2. Count files ripgrep would search (respects .gitignore, etc.)
+3. Calculate how many files are being filtered out
 
 ### Example 4: Generate File Inventory
 
+Create a machine-readable inventory for build systems or analysis tools:
+
 ```bash
 # Create JSON inventory of searchable files
-rg --files | jq -R . | jq -s '{files: .}' > inventory.json
+rg --files | jq -R . | jq -s '{files: .}' > inventory.json    # (1)!
 ```
+
+1. Convert file list to JSON array: read lines → wrap each as JSON string → collect into array → save
 
 ### Example 5: Setup Development Environment
 
@@ -386,21 +414,32 @@ rg --files | jq -R . | jq -s '{files: .}' > inventory.json
 # Complete shell integration setup script
 #!/bin/bash
 
-# Install completions
-completion_dir="$HOME/.local/share/bash-completion/completions"
-mkdir -p "$completion_dir"
-rg --generate complete-bash > "$completion_dir/rg"
+# Install completions                                                    # (1)!
+completion_dir="$HOME/.local/share/bash-completion/completions"         # (2)!
+mkdir -p "$completion_dir"                                              # (3)!
+rg --generate complete-bash > "$completion_dir/rg"                      # (4)!
 
-# Install man page
-man_dir="$HOME/.local/share/man/man1"
-mkdir -p "$man_dir"
-rg --generate man > "$man_dir/rg.1"
+# Install man page                                                       # (5)!
+man_dir="$HOME/.local/share/man/man1"                                   # (6)!
+mkdir -p "$man_dir"                                                     # (7)!
+rg --generate man > "$man_dir/rg.1"                                     # (8)!
 
-# Update man database
-mandb "$HOME/.local/share/man"
+# Update man database                                                    # (9)!
+mandb "$HOME/.local/share/man"                                          # (10)!
 
 echo "ripgrep shell integration installed"
 ```
+
+1. Set up shell completions for tab completion in bash
+2. Define user-local completion directory (no sudo required)
+3. Create completion directory if it doesn't exist
+4. Generate and save bash completions to the directory
+5. Set up man page for offline documentation access
+6. Define user-local man page directory (section 1 for user commands)
+7. Create man directory structure if needed
+8. Generate and save man page in roff format
+9. Update the man page index database
+10. Run mandb to make the new man page searchable with `man rg`
 
 ## Integration with Development Workflows
 

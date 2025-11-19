@@ -3,80 +3,70 @@
   "page_id": "utility-modes",
   "page_title": "utility modes",
   "page_file": "docs/utility-modes.md",
-  "drift_detected": true,
-  "severity": "medium",
-  "quality_assessment": "Good documentation with accurate content and comprehensive examples. Two broken cross-reference links need updating due to file reorganization. Content matches implementation well.",
-  "issues": [
-    {
-      "type": "broken_links",
-      "severity": "medium",
-      "section": "See Also",
-      "description": "Found 2 broken internal links due to documentation restructuring",
-      "broken_links": [
-        {
-          "link_text": "Common Options",
-          "original_target": "common-options.md",
-          "expected_path": "docs/common-options.md",
-          "current_file": "docs/utility-modes.md",
-          "suggested_fix": "common-options/index.md",
-          "reason": "File moved to common-options/ subdirectory"
-        },
-        {
-          "link_text": "Troubleshooting",
-          "original_target": "troubleshooting.md",
-          "expected_path": "docs/troubleshooting.md",
-          "current_file": "docs/utility-modes.md",
-          "suggested_fix": "troubleshooting/index.md",
-          "reason": "File moved to troubleshooting/ subdirectory"
-        }
-      ],
-      "fix_suggestion": "Update links to point to index.md files in their respective subdirectories: common-options/index.md and troubleshooting/index.md"
-    }
-  ],
+  "drift_detected": false,
+  "severity": "low",
+  "quality_assessment": "Page accurately documents utility modes with good examples and visual aids. Documentation matches codebase implementation. Minor enhancements possible with additional visual features.",
+  "issues": [],
   "positive_aspects": [
-    "Comprehensive coverage of all utility modes (--files, --type-list, --generate, --version, --pcre2-version)",
-    "Accurate examples matching actual flag implementations in crates/core/flags/defs.rs",
-    "Good use of MkDocs Material features (code blocks with syntax highlighting)",
-    "Practical examples showing real-world use cases and shell integration",
-    "Clear explanations of each mode's purpose and output format",
-    "Includes troubleshooting section for common issues",
-    "Properly documents that --files overrides --type-list (confirmed in source at crates/core/flags/defs.rs:2151)",
-    "Accurately describes GenerateMode options (man, complete-bash, complete-zsh, complete-fish, complete-powershell) matching crates/core/flags/defs.rs:2424-2437",
-    "Version flag documentation correctly distinguishes between -V and --version behavior"
+    "Excellent use of Mermaid diagram to visualize utility mode selection flow",
+    "Comprehensive coverage of all utility modes: --files, --type-list, --generate, --version, --pcre2-version",
+    "Accurate documentation of --files overriding --type-list (matches source code at crates/core/flags/defs.rs:2151)",
+    "Good use of MkDocs Material admonitions (tip, note, warning, example) for highlighting important information",
+    "Excellent use of tabbed content blocks for shell-specific completion installation",
+    "Practical examples demonstrate real-world integration patterns (editor integration, CI/CD pipelines, build scripts)",
+    "Clear troubleshooting section with common issues and solutions",
+    "Valid cross-references to related documentation pages (all links verified and working)",
+    "Appropriate page scope - focuses on utility modes without documenting unrelated features",
+    "Accurate GenerateMode options matching crates/core/flags/defs.rs:2454-2458 (man, complete-bash, complete-zsh, complete-fish, complete-powershell)",
+    "Correctly documents PCRE2 version check behavior matching crates/core/main.rs:392-399"
   ],
   "improvement_suggestions": [
-    "Consider adding admonitions for important notes (e.g., !!! note for the --files overrides --type-list behavior)",
-    "Could add tabs for different shell examples in the Installation Workflow section",
-    "Visual diagram showing the relationship between utility modes could enhance understanding",
-    "Consider adding source code references in comments for examples that directly relate to implementation"
+    "Consider adding code annotations to complex examples (e.g., annotate the shell integration setup script to explain each step)",
+    "Could enhance the version information section with annotated example output showing what each line means",
+    "The 'Practical Examples' section could benefit from annotations explaining why each example is useful",
+    "Consider adding a comparison table showing which filters (--hidden, --no-ignore, -t, -g) work with --files mode"
+  ],
+  "visual_features_analysis": {
+    "current_usage": [
+      "Mermaid flowchart diagram showing utility mode selection (lines 15-44)",
+      "Admonitions: tip (lines 64, 146, 302, 326), note (line 118), example (lines 179, 260), warning (lines 457, 469, 480)",
+      "Tabbed content blocks for shell-specific examples (lines 203-243)",
+      "Code blocks with syntax highlighting throughout"
+    ],
+    "enhancement_opportunities": [
+      "Add code annotations to the shell integration setup script (lines 387-403) to explain each installation step",
+      "Add annotations to the version output example (lines 290-295) to explain each line",
+      "Consider adding a comparison table for filter compatibility with --files mode",
+      "Add annotations to practical examples explaining their use cases"
+    ]
+  },
+  "cross_references": [
+    "common-options/index.md",
+    "manual-filtering-types.md",
+    "troubleshooting/index.md"
   ],
   "metadata": {
-    "analyzed_at": "2025-11-13T20:53:00Z",
-    "feature_inventory": "N/A - utility modes are command-line flags",
+    "analyzed_at": "2025-11-19T18:24:02Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
     "topics_covered": [
-      "files mode",
-      "type-list mode",
-      "generate mode",
-      "version information",
-      "pcre2 version check",
-      "shell completions",
-      "man page generation",
-      "development workflow integration"
+      "Files mode (--files)",
+      "Type list mode (--type-list)",
+      "Generation mode (--generate)",
+      "Version information (--version, -V, --pcre2-version)",
+      "Shell integration",
+      "Editor integration",
+      "CI/CD integration"
     ],
     "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
-    "source_files_reviewed": [
-      "crates/core/flags/defs.rs:2131-2170 (Files flag)",
-      "crates/core/flags/defs.rs:7167-7206 (TypeList flag)",
-      "crates/core/flags/defs.rs:2397-2447 (Generate flag)",
-      "crates/core/flags/defs.rs:7293-7327 (Version flag)",
-      "crates/core/flags/defs.rs:5409-5449 (PCRE2Version flag)",
-      "crates/core/main.rs:89-92 (Mode handling)",
-      "crates/core/main.rs:235-250 (files function)",
-      "crates/core/main.rs:329-344 (types function)",
-      "crates/core/main.rs:355-366 (generate function)"
-    ],
-    "internal_links_checked": 3,
-    "broken_links_found": 2,
-    "accurate_examples_count": "15+"
+    "internal_links_validated": true,
+    "broken_links_found": 0,
+    "source_code_references": [
+      "crates/core/flags/defs.rs:2131-2170 (Files flag implementation)",
+      "crates/core/flags/defs.rs:7167-7182 (TypeList flag implementation)",
+      "crates/core/flags/defs.rs:2399-2414 (Generate flag implementation)",
+      "crates/core/flags/defs.rs:7294-7309 (Version flag implementation)",
+      "crates/core/main.rs:359-365 (GenerateMode handling)",
+      "crates/core/main.rs:383-404 (SpecialMode handling for version flags)"
+    ]
   }
 }
