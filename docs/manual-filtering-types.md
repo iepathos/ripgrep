@@ -513,7 +513,7 @@ docs:include:markdown,rst,asciidoc
 
 Then ripgrep will automatically load these type definitions for every search.
 
-See the Configuration chapter for more details on configuration files.
+See [Configuration Files](configuration-file.md) for more details on ripgrep configuration.
 
 ## How Type Matching Works
 
