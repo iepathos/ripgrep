@@ -1,45 +1,47 @@
 {
-  "item_type": "auto-discovered",
+  "item_type": "page",
   "page_id": "examples",
   "page_title": "examples",
   "page_file": "docs/binary-data/examples.md",
   "drift_detected": false,
   "severity": "none",
-  "quality_assessment": "Good - Examples are accurate and cover the key binary data handling scenarios. The troubleshooting section provides practical solutions. Page could be enhanced with visual features like diagrams.",
+  "quality_assessment": "Excellent documentation with accurate examples, comprehensive coverage, and effective visual diagrams",
   "issues": [],
   "positive_aspects": [
-    "Clear progression from default behavior through various flags (--binary, --text)",
-    "Examples accurately demonstrate explicit vs implicit file behavior",
-    "Warning message formats match actual implementation (verified against tests/binary.rs)",
-    "Troubleshooting section addresses real issues (UTF-16, mmap inconsistency, recursive search behavior)",
-    "Good coverage of stdin behavior (treated as explicit file)",
-    "Examples include realistic scenarios (memory map vs buffered)",
-    "Offset values in warning messages are consistent with implementation"
+    "Accurate source references with exact line numbers (tests/binary.rs:328, tests/binary.rs:168, tests/binary.rs:70, crates/printer/src/standard.rs:1401, 1412, crates/searcher/src/line_buffer.rs:6, tests/misc.rs:803)",
+    "All examples match actual test cases and implementation code",
+    "Comprehensive coverage of binary detection scenarios including implicit files, explicit files, stdin, --binary flag, --text flag, --mmap vs --no-mmap modes",
+    "Excellent use of Mermaid diagrams for visualization (binary detection decision flow, implicit vs explicit file handling comparison)",
+    "Clear table summarizing all scenarios with behavior explanations",
+    "Well-structured troubleshooting section addressing common issues",
+    "Good use of MkDocs Material admonitions (info, warning, tip, question, success) to highlight important information",
+    "Code annotation example with numbered callout explaining offset meaning",
+    "Material Design tabs for comparing --mmap vs --no-mmap modes side-by-side",
+    "Accurate buffer size documentation (64KB from DEFAULT_BUFFER_CAPACITY constant)",
+    "Proper warning message format matches printer implementation",
+    "stdin handling accurately documented as explicit file behavior"
   ],
   "improvement_suggestions": [
-    "Add visual diagram showing the decision tree for binary detection modes",
-    "Include a comparison table showing when each example scenario applies",
-    "Add code annotations to highlight key concepts in examples using MkDocs Material features",
-    "Consider adding a 'Common Pitfalls' admonition box for the UTF-16 and mmap issues",
-    "Add cross-references using anchor links to related sections within binary-data pages",
-    "Consider adding tabs to show multiple related examples side-by-side",
-    "Add a visual flowchart showing how --binary, --text, and --no-mmap interact"
+    "Consider adding a cross-reference link to the encoding documentation page for the UTF-16 troubleshooting example, as encoding handling is a related topic",
+    "Could add a visual example showing terminal corruption from --text flag to emphasize the warning",
+    "Might benefit from a diagram showing the buffer scanning behavior difference between --mmap (first 64KB + match regions) and --no-mmap (sequential 64KB chunks)"
   ],
-  "cross_references": [
-    "detection",
-    "modes",
-    "explicit-implicit",
-    "flags",
-    "file-encoding"
-  ],
+  "cross_references": [],
   "metadata": {
-    "analyzed_at": "2025-11-13T20:53:28Z",
+    "analyzed_at": "2025-11-19T18:24:02Z",
     "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
-    "topics_covered": ["binary detection", "examples", "troubleshooting", "mmap behavior", "explicit vs implicit files"],
+    "topics_covered": [
+      "binary detection",
+      "implicit vs explicit files",
+      "binary flag behavior",
+      "text mode",
+      "memory-mapped vs buffered I/O",
+      "stdin handling",
+      "NUL byte detection",
+      "buffer size and detection coverage"
+    ],
     "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
-    "internal_links_validated": true,
-    "internal_links_status": "valid",
-    "total_internal_links": 1,
-    "broken_links": []
+    "internal_links_checked": 0,
+    "broken_links_found": 0
   }
 }
