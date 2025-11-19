@@ -87,6 +87,11 @@ property".-> M1
 
 For a comprehensive list of Unicode properties, see the [Rust regex Unicode documentation](https://github.com/rust-lang/regex/blob/master/UNICODE.md).
 
+!!! note "Unicode Support Across Regex Engines"
+    The availability and behavior of Unicode properties may vary between ripgrep's default regex engine and the PCRE2 engine. While both support Unicode, PCRE2 provides additional Unicode features and properties. If you need extended Unicode support not available in the default engine, see the [PCRE2 documentation](./pcre2.md) for details on enabling the PCRE2 engine with `--pcre2` or `-P`.
+
+    Additionally, Unicode support depends on the Unicode version used by your system and ripgrep version. Character property definitions and emoji classifications may evolve across Unicode versions.
+
 ## Unicode-Aware Metacharacters
 
 By default, these metacharacters are Unicode-aware:
