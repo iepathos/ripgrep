@@ -180,6 +180,33 @@ If files aren't UTF-8 encoded, ripgrep may fail to search them correctly. This m
 
     The `-E/--encoding` flag tells ripgrep how to **decode the file**, but your pattern is always interpreted as UTF-8 unless you use raw hex patterns.
 
+**How Encoding Affects Matching:**
+
+```mermaid
+flowchart LR
+    Pattern["Search Pattern
+    café (UTF-8)
+    Bytes: 63 61 66 C3 A9"] --> Decode["File Decoding
+    -E latin1"]
+
+    File["File on Disk
+    café (Latin1)
+    Bytes: 63 61 66 E9"] --> Decode
+
+    Decode --> Compare["Pattern Comparison
+    After Decoding"]
+
+    Compare --> Match["✓ Match Found
+    Both decoded to café"]
+
+    style Pattern fill:#e1f5ff
+    style File fill:#fff3e0
+    style Decode fill:#f3e5f5
+    style Match fill:#e8f5e9
+```
+
+**Figure**: Encoding transformation showing how `-E latin1` decodes file bytes to match UTF-8 pattern.
+
 ### Diagnosis Workflow
 
 ```mermaid
