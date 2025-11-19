@@ -63,6 +63,22 @@ rg --count-matches pattern     # (2)!
     - `rg -c "error"` returns `1` (one line)
     - `rg --count-matches "error"` returns `3` (three matches)
 
+**Side-by-side comparison:**
+
+=== "Count Lines (-c)"
+    ```bash
+    $ echo 'error error error' | rg -c 'error'
+    1
+    ```
+    Counts the **line** containing matches (one count per line)
+
+=== "Count Matches (--count-matches)"
+    ```bash
+    $ echo 'error error error' | rg --count-matches 'error'
+    3
+    ```
+    Counts **individual occurrences** of the pattern
+
 **Example output:**
 ```
 src/main.rs:2
@@ -101,6 +117,14 @@ rg --files-without-match pattern     # (2)!
 
 1. Shows only filenames that contain at least one match (no match content displayed)
 2. Shows filenames that do NOT contain any matches (useful for finding gaps in test coverage)
+
+**Quick Reference: When to use each flag:**
+
+| Flag | Purpose | Example Use Case |
+|------|---------|------------------|
+| `-l` | Files **with** matches | `rg -l 'unsafe' -t rust` - Find Rust files using unsafe code |
+| `--files-without-match` | Files **without** matches | `rg --files-without-match 'test_api' -g "*test*.rs"` - Find test files missing API tests |
+| `--files` | All searchable files (no search) | `rg --files -t rust` - List all Rust files that would be searched |
 
 **Practical use:**
 ```bash
@@ -147,13 +171,30 @@ rg -l "TODO" | rg -v README
 ```
 
 **Practical examples:**
-```bash
-# Filter out log lines with "DEBUG" level
-rg "error" app.log | rg -v "DEBUG"
 
-# Find Rust files without documentation comments
-rg -v "^///" -t rust
+=== "Filtering Logs"
+    **Before (normal search):**
+    ```bash
+    $ rg 'error' app.log
+    10:ERROR: connection failed
+    15:DEBUG: error handling enabled
+    22:ERROR: timeout occurred
+    25:DEBUG: error recovery started
+    ```
 
-# Show configuration without comments
-rg -v "^#" config.conf
-```
+    **After (inverted filtering):**
+    ```bash
+    $ rg 'error' app.log | rg -v 'DEBUG'
+    10:ERROR: connection failed
+    22:ERROR: timeout occurred
+    ```
+    Filters out DEBUG lines while keeping ERROR lines containing "error"
+
+=== "Code Analysis"
+    ```bash
+    # Find Rust files without documentation comments
+    rg -v "^///" -t rust
+
+    # Show configuration without comments
+    rg -v "^#" config.conf
+    ```
