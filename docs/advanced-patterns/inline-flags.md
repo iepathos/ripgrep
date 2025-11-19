@@ -97,6 +97,36 @@ matches: foobar, FOOBAR, FooBar"]
 
 Inline flags override command-line flags, giving you precise control:
 
+```mermaid
+flowchart LR
+    Start["Command:
+    rg -i 'foo(?-i:bar)'"] --> CLI["Command-line Flag
+    -i (case-insensitive)"]
+
+    CLI --> Pattern["Parse Pattern"]
+
+    Pattern --> Part1["Part: foo
+    No inline flag"]
+    Pattern --> Part2["Part: (?-i:bar)
+    Inline flag: -i"]
+
+    Part1 --> Apply1["Apply CLI flag
+    Case-insensitive"]
+    Part2 --> Override["Override CLI flag
+    Case-sensitive"]
+
+    Apply1 --> Result1["Matches: foo, Foo, FOO"]
+    Override --> Result2["Matches: bar only"]
+
+    style CLI fill:#e1f5ff
+    style Part2 fill:#fff3e0
+    style Override fill:#ffebee
+    style Result1 fill:#e8f5e9
+    style Result2 fill:#e8f5e9
+```
+
+**Figure**: Flag precedence flow showing how inline flags override command-line flags for specific pattern parts.
+
 ```bash
 # -i flag overridden by (?-i) in pattern
 rg -i 'foo(?-i:bar)'  # "foo" is case-insensitive, "bar" is case-sensitive
