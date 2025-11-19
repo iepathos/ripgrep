@@ -39,7 +39,9 @@ rg "[^0-9]"          # Matches any non-digit character
 ```
 
 !!! tip "Prefer Predefined Classes"
-    Use predefined classes like `\d` instead of `[0-9]` and `\w` instead of `[a-zA-Z0-9_]` for better readability and Unicode support. For example, `\d` matches Unicode digits in all scripts, not just ASCII 0-9.
+    Use predefined classes like `\d` instead of `[0-9]` and `\w` instead of `[a-zA-Z0-9_]` for better readability.
+
+    **Note on Unicode support**: In the default regex engine, `\d` is equivalent to `[0-9]` (ASCII digits only). For matching Unicode digits across all scripts, use `\p{N}` instead. PCRE2 may have different Unicode handling.
 
 ## Predefined Character Classes
 
@@ -177,7 +179,7 @@ rg -P pattern           # Shorthand
 
 # Auto-select engine based on pattern
 rg --engine auto pattern
-rg --auto-hybrid-regex pattern  # Synonym for --engine auto
+rg --auto-hybrid-regex pattern  # DEPRECATED: Use --engine auto instead
 ```
 
 **When to use different engines:**
@@ -196,7 +198,7 @@ Fast &amp; Efficient"]
     Check -->|Backreferences, Lookahead/behind, Advanced features| PCRE["Use PCRE2 Engine
 -P flag"]
     Check -->|Not sure| Auto["Use Auto Mode
---auto-hybrid-regex"]
+--engine auto"]
 
     Default --> Search[Execute Search]
     PCRE --> Search
@@ -216,7 +218,10 @@ Pattern Type"}
 **Figure**: Decision flow for selecting the appropriate regex engine based on pattern requirements.
 
 !!! tip "Auto Engine Selection"
-    Use `--auto-hybrid-regex` when you're not sure which engine to use. Ripgrep will automatically select the best engine based on your pattern's complexity.
+    Use `--engine auto` when you're not sure which engine to use. Ripgrep will automatically select the best engine based on your pattern's complexity.
+
+!!! warning "Deprecated Flag"
+    The `--auto-hybrid-regex` flag is deprecated. Use `--engine auto` instead for future compatibility.
 
 ## PCRE2 Engine
 
