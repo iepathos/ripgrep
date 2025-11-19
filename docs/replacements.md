@@ -128,7 +128,7 @@ flowchart TD
     Start["$1a"] --> Parse{Has Braces?}
     Parse -->|No| Longest["Parse Longest
 Valid Name"]
-    Parse -->|Yes $&#123;1&#125;a| Extract["Extract Group
+    Parse -->|"Yes ${1}a"| Extract["Extract Group
 Reference"]
 
     Longest --> Check{"Group 1a
