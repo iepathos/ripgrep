@@ -50,6 +50,9 @@ Ripgrep uses a work-stealing scheduler for parallel iteration. When one thread f
 
 This lock-free parallel iteration (using atomic operations for work distribution) means ripgrep scales well across many cores without contention overhead.
 
+!!! tip "Performance Sweet Spot"
+    Ripgrep's work-stealing scheduler is most effective when searching many files (100+) of varying sizes. The dynamic load balancing ensures that all CPU cores remain busy even when file sizes differ significantly.
+
 ```mermaid
 graph TD
     Start[Directory Traversal] --> WorkQueue["Work Queue
@@ -164,15 +167,18 @@ rg --no-mmap pattern           # (2)!
 1. Override automatic selection and force memory-mapped I/O
 2. Force buffered reading even for large files
 
-Memory mapping is beneficial when:
-- Searching very large files (>10 MB)
-- The file is likely to be in the OS page cache
-- You have sufficient RAM
+!!! tip "When to Use Memory Mapping"
+    Memory mapping is beneficial when:
 
-Avoid memory mapping when:
-- Searching many small files (<1 MB)
-- Working with network file systems (NFS, SMB)
-- Memory is constrained
+    - Searching very large files (>10 MB)
+    - The file is likely to be in the OS page cache
+    - You have sufficient RAM
+
+    Avoid memory mapping when:
+
+    - Searching many small files (<1 MB)
+    - Working with network file systems (NFS, SMB)
+    - Memory is constrained
 
 !!! warning "macOS Memory Mapping"
     Memory mapping is disabled by default on macOS due to performance overhead in the kernel's mmap implementation. You can enable it with `--mmap` if benchmarking shows it's beneficial for your specific use case.
@@ -215,6 +221,14 @@ rg 'TODO.*urgent'
 
 Ripgrep first uses fast literal matching to find "TODO", then applies the full regex only to those candidates. This makes complex regex searches nearly as fast as literal searches.
 
+!!! tip "Optimize Patterns for Literal Extraction"
+    Structure your regex patterns to include literal strings that can be extracted. For example:
+
+    - **Good**: `'TODO.*urgent'` (extracts "TODO" for fast pre-filtering)
+    - **Less optimal**: `'T.DO.*urgent'` (cannot extract literal, must run full regex on every line)
+
+    The more specific the literal prefix, the faster the search.
+
 ### Binary Detection
 
 Ripgrep quickly detects binary files by scanning for NUL bytes. By default, binary files are skipped or have binary data suppressed.
@@ -255,15 +269,19 @@ The default regex engine uses deterministic finite automata (DFA). Control DFA m
 
 ```bash
 # Set DFA cache size limit (in bytes)
-rg --dfa-size-limit 100M pattern   # (1)!
+rg --dfa-size-limit 2G pattern   # (1)!
 ```
 
-1. Increase DFA cache from default 1 MB to 100 MB for complex patterns
+1. Increase DFA cache from default 1000 MB to 2 GB for extremely complex patterns
 
-The default is 1 MB (1000000 bytes). Increase this if you see warnings about DFA cache thrashing on very large or complex patterns.
+<!-- Source: crates/regex/src/config.rs:59 -->
+
+The default is 1000 MB (approximately 1 GB). Increase this if you see warnings about DFA cache thrashing on very large or complex patterns.
 
 !!! tip "When to Increase DFA Size"
-    If you see "DFA cache capacity exceeded" warnings or notice slowdowns with complex patterns, try increasing to 10M or 100M. The trade-off is higher memory usage for faster matching.
+    If you see "DFA cache capacity exceeded" warnings (rare with the 1000 MB default), you can increase further to 2G or more. The trade-off is higher memory usage for faster matching.
+
+    The default of 1000 MB is quite generous and handles most real-world patterns well. Only increase if you're working with extremely complex regex patterns or see actual DFA cache warnings.
 
 ### Regex Size Limits
 
@@ -274,7 +292,12 @@ Limit the compiled size of the regex:
 rg --regex-size-limit 10M pattern
 ```
 
-The default is 100 MB. Useful in memory-constrained environments or when dealing with extremely large patterns.
+<!-- Source: crates/regex/src/config.rs:58 -->
+
+The default is 100 MB (104,857,600 bytes) for the compiled regex bytecode size. This is separate from the DFA cache limit. Useful in memory-constrained environments or when dealing with extremely large patterns.
+
+!!! note "Bytecode Size vs. DFA Cache"
+    This limit controls the size of the compiled regex bytecode, not the DFA cache size during matching. The bytecode is the compiled representation of your pattern. The DFA cache (controlled by `--dfa-size-limit`) is used during matching execution.
 
 ### Engine Selection
 
@@ -494,18 +517,36 @@ When benchmarking ripgrep, consider these factors:
 
 ### Warm vs. Cold Cache
 
-File system caches dramatically affect performance:
+File system caches dramatically affect performance. Understanding the difference between cold and warm cache helps you benchmark realistically.
+
+**Clearing the cache** (cold cache):
+
+=== "macOS"
+    ```bash
+    # Clear file system cache
+    sudo purge
+
+    # Then run search
+    rg pattern
+    ```
+
+=== "Linux"
+    ```bash
+    # Clear page cache, dentries, and inodes
+    sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'
+
+    # Then run search
+    rg pattern
+    ```
+
+**Warm cache** (subsequent runs):
 
 ```bash
-# Cold cache (first run after clearing cache)
-sudo purge  # macOS
-sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'  # Linux
-
-# Warm cache (subsequent runs)
-rg pattern  # Fast due to OS caching
+# Fast due to OS caching files in memory
+rg pattern
 ```
 
-For realistic benchmarks, run searches multiple times and measure warm cache performance.
+For realistic benchmarks, run searches multiple times and measure warm cache performance, as most real-world usage benefits from OS file caching.
 
 ### Fair Comparisons
 
@@ -585,7 +626,7 @@ rg -j 2 pattern
 # Reduce thread count
 rg --threads 2 pattern
 
-# Set conservative limits
+# Set conservative limits (reduce from 1000 MB and 100 MB defaults)
 rg --dfa-size-limit 10M --regex-size-limit 5M pattern
 
 # Disable memory mapping
