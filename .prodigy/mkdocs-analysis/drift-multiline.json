@@ -1,0 +1,77 @@
+{
+  "item_type": "page",
+  "page_id": "multiline",
+  "page_title": "multiline",
+  "page_file": "docs/advanced-patterns/multiline.md",
+  "drift_detected": true,
+  "severity": "low",
+  "quality_assessment": "Good foundation with accurate content. Minor enhancements recommended for visual appeal and completeness.",
+  "issues": [
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Examples",
+      "description": "Missing real-world examples beyond basic syntax demonstrations",
+      "fix_suggestion": "Add practical examples like multi-line log entry matching, XML/JSON element matching, or code block searching to illustrate real use cases",
+      "source_reference": "features.json:common_patterns.multiline_struct_search"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Performance",
+      "description": "Could expand on the automatic optimization mentioned briefly",
+      "current_content": "However, ripgrep automatically optimizes when possible. If your pattern contains \\n but doesn't actually need to match across lines, the memory penalty is avoided.",
+      "should_be": "Add more detail about when ripgrep can detect and optimize patterns that don't truly need multiline mode, with examples of patterns that trigger vs. avoid the optimization",
+      "fix_suggestion": "Expand the optimization section to explain pattern analysis and when memory mapping can still be used",
+      "source_reference": "crates/core/flags/defs.rs:4177-4181"
+    },
+    {
+      "type": "missing_visual_features",
+      "severity": "low",
+      "section": "Throughout",
+      "description": "Page lacks MkDocs Material visual enhancements that could improve readability",
+      "fix_suggestion": "Add admonitions (!!!warning, !!!tip, !!!example) for the performance implications, best practices, and examples. Consider using code annotations or tabbed examples for different use cases.",
+      "validation_note": "Auto-discovered page should be enhanced with visual features"
+    }
+  ],
+  "positive_aspects": [
+    "Clear explanation of multiline mode fundamentals",
+    "Accurate technical details matching implementation (crates/core/flags/defs.rs)",
+    "Good coverage of dotall mode and inline syntax alternatives",
+    "Helpful comparison showing what works vs. what doesn't (lines 55-59)",
+    "Important performance warnings are present",
+    "Explains the \\p{any} alternative for matching newlines",
+    "Examples use proper syntax and demonstrate key concepts"
+  ],
+  "improvement_suggestions": [
+    "Add a 'Common Use Cases' section with real-world examples (log parsing, code searching, XML/JSON matching)",
+    "Use MkDocs Material admonitions to highlight the performance warning more prominently",
+    "Add a troubleshooting subsection addressing common issues (e.g., 'Pattern doesn't match expected multi-line content')",
+    "Include a comparison table showing default regex engine vs. multiline mode behavior",
+    "Add code annotations to explain complex regex patterns in examples",
+    "Consider adding a 'See Also' section linking to related pages (PCRE2, Unicode, Performance)",
+    "Expand on the relationship between multiline mode and --stop-on-nonmatch flag (mentioned in defs.rs:4183)",
+    "Add examples showing multiline mode with replacements (-r flag) for practical transformations"
+  ],
+  "cross_references": [
+    "pcre2",
+    "unicode",
+    "performance",
+    "replacements",
+    "inline-flags"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-19T18:24:02Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": [
+      "multiline search",
+      "multiline-dotall",
+      "performance implications",
+      "memory usage",
+      "pattern syntax"
+    ],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "internal_links_validated": true,
+    "internal_links_status": "All links valid (anchor-only link within same page)"
+  }
+}
