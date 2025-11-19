@@ -12,19 +12,14 @@ Hyperlink support allows terminal emulators to display clickable file paths that
 
 ```mermaid
 flowchart LR
-    A[ripgrep Output] --> B["OSC 8 Escape
-Sequence"]
+    A[ripgrep Output] --> B["OSC 8 Escape Sequence"]
     B --> C[Terminal Emulator]
-    C --> D{"User Clicks
-Link?"}
+    C --> D{User Clicks Link?}
     D -->|Yes| E[Extract URL]
     D -->|No| End[Display Only]
-    E --> F{"URL Scheme
-Registered?"}
-    F -->|Yes| G["Open in Editor/
-Application"]
-    F -->|No| H["Error: No
-Handler"]
+    E --> F{URL Scheme Registered?}
+    F -->|Yes| G[Open in Editor or Application]
+    F -->|No| H[Error: No Handler]
     G --> End
     H --> End
 
@@ -122,6 +117,13 @@ Available variables for hyperlink templates:
     - `{wslprefix}` enables proper file:// URLs when working in Windows Subsystem for Linux
     - `{path}` is required in every hyperlink format
     - `{column}` requires `{line}` to also be present in the format
+
+!!! note "WSL Users"
+    If you're using ripgrep inside WSL but clicking hyperlinks from Windows Terminal, include `{wslprefix}` in your format:
+    ```bash
+    rg --hyperlink-format 'file://{wslprefix}{path}:{line}' pattern
+    ```
+    This ensures Windows applications can locate files within your WSL filesystem.
 
 ## Terminal Support
 
@@ -359,14 +361,15 @@ rg --hyperlink-format 'file://{path}' pattern "$(pwd)"
 
 To include literal braces in your hyperlink format, use double braces:
 
-```bash
-# Include literal { and } characters in format
-rg --hyperlink-format 'myscheme://{{literal}}/{path}' pattern
+!!! example "Literal Braces in Formats"
+    ```bash
+    # Include literal { and } characters in format
+    rg --hyperlink-format 'myscheme://{{literal}}/{path}' pattern
 
-# This expands to: myscheme://{literal}/path/to/file
-```
+    # This expands to: myscheme://{literal}/path/to/file
+    ```
 
-Use `{{` for a literal `{` and `}}` for a literal `}`.
+    Use `{{` for a literal `{` and `}}` for a literal `}`.
 
 ### Format Validation Requirements
 
@@ -375,6 +378,14 @@ Hyperlink formats must meet these validation constraints:
 - Must contain at least a `{path}` variable
 - If `{column}` is used, `{line}` must also be present
 - Format must start with a valid URL scheme (alphanumeric characters, `+`, `-`, or `.`)
+
+!!! example "Valid Format"
+    ```bash
+    # Well-formed hyperlink format
+    rg --hyperlink-format 'vscode://file/{path}:{line}:{column}' pattern  # (1)!
+
+    1. Includes URL scheme, required {path}, and optional {line} and {column} for precise navigation
+    ```
 
 !!! warning "Invalid Format Examples"
     ```bash

@@ -3,79 +3,36 @@
   "page_id": "hyperlinks",
   "page_title": "hyperlinks",
   "page_file": "docs/hyperlinks.md",
-  "drift_detected": true,
-  "severity": "medium",
-  "quality_assessment": "Page is comprehensive and well-structured, but has one broken internal link and some minor documentation gaps compared to implementation",
-  "issues": [
-    {
-      "type": "broken_links",
-      "severity": "medium",
-      "section": "Cross-References",
-      "description": "Found 1 broken internal link",
-      "broken_links": [
-        {
-          "link_text": "Common Options",
-          "original_target": "common-options.md",
-          "expected_path": "docs/common-options.md",
-          "current_file": "docs/hyperlinks.md",
-          "actual_path": null,
-          "suggested_fixes": [
-            "common-options/index.md - Main index for common options section",
-            "common-options/output-formatting.md - Output formatting options (likely more relevant)",
-            "common-options/reference.md - Reference page for all common options"
-          ]
-        }
-      ],
-      "fix_suggestion": "Update the link from 'common-options.md' to 'common-options/index.md' or 'common-options/output-formatting.md' depending on context. Given this is in a 'See Also' section about hyperlinks, 'common-options/output-formatting.md' may be more appropriate."
-    },
-    {
-      "type": "incomplete_explanation",
-      "severity": "low",
-      "section": "Built-in Aliases",
-      "description": "Documentation shows all built-in aliases but doesn't explain the actual format strings they expand to for most aliases",
-      "current_content": "Table shows alias names and their expanded formats, e.g., 'vscode' expands to 'vscode://file/{path}:{line}:{column}'",
-      "should_be": "The table is accurate and complete for all aliases defined in crates/printer/src/hyperlink/aliases.rs",
-      "fix_suggestion": "Documentation is actually correct. The table comprehensively lists all aliases: cursor, default, file, grep+, kitty, macvim, none, textmate, vscode, vscode-insiders, vscodium. This matches the implementation exactly.",
-      "source_reference": "crates/printer/src/hyperlink/aliases.rs:6-68"
-    },
-    {
-      "type": "missing_content",
-      "severity": "low",
-      "section": "Format Variables",
-      "description": "Documentation describes the {wslprefix} variable but doesn't provide complete details about when it's populated or example values",
-      "current_content": "{wslprefix}: WSL distro prefix like `wsl$/Ubuntu` (Windows only, set when running in WSL)",
-      "should_be": "Should explain that {wslprefix} is populated from the WSL_DISTRO_NAME environment variable and provide format guidance",
-      "fix_suggestion": "Add clarification that {wslprefix} is automatically set from the WSL_DISTRO_NAME environment variable. The documentation mentions 'wsl$/Ubuntu' as an example, which is helpful.",
-      "source_reference": "crates/printer/src/hyperlink/mod.rs:272-281"
-    },
-    {
-      "type": "incomplete_explanation",
-      "severity": "low",
-      "section": "Advanced Usage - Escaping Special Characters",
-      "description": "Documentation explains double-brace escaping but could clarify the validation constraints",
-      "current_content": "To include literal braces, use double braces: {{ for { and }} for }",
-      "should_be": "Should mention that formats must contain at least a {path} variable and must start with a valid URL scheme",
-      "fix_suggestion": "Add a note about format validation requirements: (1) at least {path} variable required, (2) if {column} is used, {line} must also be present, (3) format must start with valid URL scheme (alphanumeric, +, -, .)",
-      "source_reference": "crates/printer/src/hyperlink/mod.rs:442-505"
-    }
-  ],
+  "drift_detected": false,
+  "severity": "none",
+  "quality_assessment": "Excellent - comprehensive, accurate, and well-structured hyperlink documentation with visual aids and no drift from implementation",
+  "issues": [],
   "positive_aspects": [
-    "Comprehensive coverage of all built-in aliases (cursor, default, file, grep+, kitty, macvim, textmate, vscode, vscode-insiders, vscodium, none)",
-    "Excellent explanation of the 'default' alias being platform-aware (includes hostname on Unix, omits on Windows)",
-    "Clear distinction between built-in aliases and custom formats",
-    "Good terminal compatibility section listing supported terminals",
-    "Helpful troubleshooting section for common hyperlink issues",
-    "Security considerations section is valuable",
-    "Examples demonstrate both built-in aliases and custom formats",
-    "Documentation of format variables is accurate ({path}, {line}, {column}, {host}, {wslprefix})",
-    "Good coverage of configuration file usage",
-    "Clear warnings about community-suggested custom editor formats requiring URL scheme registration"
+    "Comprehensive coverage of all hyperlink functionality including OSC 8 escape sequences",
+    "Complete and accurate documentation of all built-in aliases matching crates/printer/src/hyperlink/aliases.rs:6-68: cursor, default, file, grep+, kitty, macvim, none, textmate, vscode, vscode-insiders, vscodium",
+    "Excellent visual flowchart (Mermaid diagram) showing hyperlink resolution process from ripgrep → OSC 8 → terminal → URL handler",
+    "Platform-aware documentation explaining default alias behavior (Unix/Linux/macOS includes hostname, Windows omits for compatibility)",
+    "Accurate format variables table with complete descriptions: {path}, {line}, {column}, {host}, {wslprefix}",
+    "Comprehensive terminal support matrix categorized by well supported, partial support, and not supported",
+    "Platform-specific URL scheme registration instructions using MkDocs Material tabs (macOS/Linux/Windows)",
+    "Strong troubleshooting section with platform-specific solutions and diagnostic commands",
+    "Good examples progression from simple (built-in aliases) to advanced (custom formats, escaping)",
+    "Accurate validation requirements documented: must contain {path}, {column} requires {line}, must start with URL scheme (matches crates/printer/src/hyperlink/mod.rs:442-505)",
+    "Security considerations section with appropriate warnings about custom URL schemes and handlers",
+    "All internal cross-references are valid and exist: output-formats.md, configuration-file.md, common-options/output-formatting.md",
+    "Strategic use of MkDocs Material admonitions (tip, note, warning, example) for testing, platform differences, and security",
+    "Escaping documentation for literal braces using double braces ({{, }}) matches parser implementation",
+    "Clear distinction between built-in aliases and community-suggested custom formats requiring registration",
+    "Format Validation Requirements section accurately documents all constraints from FormatBuilder::validate()",
+    "Best Practices section with actionable configuration recommendations",
+    "Quick Start example admonition for immediate VS Code integration"
   ],
   "improvement_suggestions": [
-    "Fix the broken link to common-options.md (should be common-options/index.md or common-options/output-formatting.md)",
-    "Add a brief note about format validation constraints in the Advanced Usage section",
-    "Consider adding a visual example showing what a clickable hyperlink looks like in a supported terminal",
-    "Could add performance note that path canonicalization on Unix can touch the filesystem (from implementation comments)"
+    "Consider adding a note about the minimum ripgrep version that introduced hyperlinks support",
+    "Could add example terminal emulator configuration snippets for popular terminals (iTerm2, WezTerm, Kitty)",
+    "Might add a comparison table showing which built-in aliases work best with which terminal emulators",
+    "Could expand WSL section with specific example showing how {wslprefix} variable gets populated from WSL_DISTRO_NAME",
+    "Could mention that path canonicalization on Unix/macOS touches the filesystem (minor performance note)"
   ],
   "cross_references": [
     "output-formats",
@@ -83,19 +40,35 @@
     "common-options/output-formatting"
   ],
   "metadata": {
-    "analyzed_at": "2025-11-13T20:53:28Z",
+    "analyzed_at": "2025-11-19T18:24:02Z",
     "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
     "topics_covered": [
       "hyperlinks",
-      "terminal integration",
       "OSC 8 escape sequences",
-      "editor integration",
+      "terminal integration",
       "URL schemes",
+      "editor integration",
+      "platform-specific behavior",
       "hyperlink aliases",
-      "format variables"
+      "format variables",
+      "validation requirements",
+      "security considerations"
     ],
     "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "code_references_verified": [
+      "crates/printer/src/hyperlink/aliases.rs:6-68 (all built-in aliases)",
+      "crates/printer/src/hyperlink/mod.rs:99-174 (format parsing and validation)",
+      "crates/printer/src/hyperlink/mod.rs:284-376 (error handling and validation requirements)",
+      "crates/printer/src/hyperlink/mod.rs:442-505 (FormatBuilder::validate() - validation logic)",
+      "crates/printer/src/hyperlink/mod.rs:481-505 (URL scheme validation per RFC 1738)",
+      "crates/printer/src/hyperlink/mod.rs:714-877 (HyperlinkPath::from_path - platform-specific path handling)"
+    ],
+    "internal_links_validated": true,
     "internal_links_checked": 3,
-    "broken_links_found": 1
+    "all_links_valid": true,
+    "broken_links_found": 0,
+    "features_matched": [
+      "output_control.hyperlinks"
+    ]
   }
 }
