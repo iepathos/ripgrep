@@ -74,6 +74,32 @@ rg -P '(?P<word>\w+)\s+\k<word>'    # (1)!
 
 Backreferences are particularly useful with the `-r` flag for replacements:
 
+```mermaid
+flowchart LR
+    Input["Input Text:
+    'john@example.com'"] --> Pattern["Pattern:
+    (\w+)@(\w+)\.com"]
+
+    Pattern --> Capture1["Capture Group 1:
+    'john'"]
+    Pattern --> Capture2["Capture Group 2:
+    'example'"]
+
+    Capture1 --> Replace["Replacement:
+    'User: $1, Domain: $2'"]
+    Capture2 --> Replace
+
+    Replace --> Output["Output:
+    'User: john, Domain: example'"]
+
+    style Input fill:#e8f5e9
+    style Capture1 fill:#e1f5ff
+    style Capture2 fill:#e1f5ff
+    style Output fill:#f3e5f5
+```
+
+**Figure**: Backreference replacement flow - shows how captured groups are extracted and substituted in replacement expression.
+
 ```bash
 # Swap two words
 rg -P '(\w+)\s+(\w+)' -r '$2 $1'                        # (1)!
