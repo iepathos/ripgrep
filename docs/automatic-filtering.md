@@ -526,12 +526,35 @@ For more precise control, use specific `--no-ignore-*` flags:
 | `--no-ignore-parent` | Don't read ignore files from parent directories |
 | `--no-ignore-files` | Disable custom ignore files from `--ignore-file` |
 
-Example combining flags:
+!!! example "Combining Fine-Grained Flags"
 
-```bash
-$ rg 'pattern' --no-ignore-vcs --hidden
-# Ignore .gitignore but respect .ignore, and search hidden files
-```
+    **Scenario: Search hidden config files but skip Git files**
+
+    ```bash
+    $ rg 'api_key' --no-ignore-vcs --hidden
+    # Searches .env, .bashrc, etc., but respects .ignore files
+    ```
+
+    **Scenario: Ignore only global gitignore, keep everything else**
+
+    ```bash
+    $ rg 'TODO' --no-ignore-global
+    # Respects .gitignore and .ignore, but not ~/.config/git/ignore
+    ```
+
+    **Scenario: Custom ignore files without standard ones**
+
+    ```bash
+    $ rg 'pattern' --no-ignore --ignore-file team-ignores.txt
+    # Only respects team-ignores.txt, not .gitignore or .ignore
+    ```
+
+    **Scenario: Parent directory patterns interfering**
+
+    ```bash
+    $ rg 'pattern' subdir/ --no-ignore-parent
+    # Only respects ignore files in or below subdir/
+    ```
 
 ## Ignore File Error Handling
 
@@ -541,6 +564,16 @@ By default, ripgrep reports errors when ignore files are malformed. Suppress the
 $ rg 'pattern' --no-ignore-messages
 # Silently skip malformed ignore files
 ```
+
+!!! warning "Malformed Ignore Files"
+    If ripgrep reports errors about ignore file syntax, it will skip the problematic patterns but continue searching. Use `--no-ignore-messages` to suppress these warnings, but be aware that some patterns may not be applied.
+
+    **Common ignore file issues:**
+    - Invalid regex patterns (when using regex mode)
+    - Incomplete glob patterns (e.g., unclosed brackets)
+    - Invalid escape sequences
+
+    Always test your ignore files with `rg --files` to verify they work as expected.
 
 ## Case Insensitive Ignore Files
 
