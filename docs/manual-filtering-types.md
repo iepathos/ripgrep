@@ -62,6 +62,9 @@ rg "database" -t yaml -t toml -t json
 
 ### Short Form Syntax
 
+!!! tip "Quick Typing at the Command Line"
+    Short form syntax (`-trust` instead of `-t rust`) saves keystrokes during interactive terminal sessions. Particularly useful for frequently-searched types like `-tpy`, `-tjs`, or `-tmd`.
+
 The `-t` flag supports a compact short form where you can combine `-t` with the type name:
 
 ```bash
@@ -513,26 +516,26 @@ docs:include:markdown,rst,asciidoc
 
 Then ripgrep will automatically load these type definitions for every search.
 
-See the Configuration chapter for more details on configuration files.
+See [Configuration Files](configuration-file.md) for more details on ripgrep configuration.
 
 ## How Type Matching Works
 
 Under the hood, file types are implemented as named collections of glob patterns. When you use `-t rust`, ripgrep internally applies the glob pattern `*.rs` to match files.
 
 ```mermaid
-flowchart TD
-    Start[File Encountered] --> IgnoreCheck{"In .gitignore
-or ignore file?"}
+flowchart LR
+    Start[File Encountered] --> IgnoreCheck{"In .gitignore or
+    ignore file?"}
     IgnoreCheck -->|Yes| Skip[Skip File]
-    IgnoreCheck -->|No| TypeCheck{"-t or -T
-specified?"}
+    IgnoreCheck -->|No| TypeCheck{"Type flags
+    -t or -T?"}
 
-    TypeCheck -->|No Type Flags| GlobCheck{"-g glob
-specified?"}
-    TypeCheck -->|Has -t| MatchType{"File matches
--t types?"}
-    TypeCheck -->|Has -T| ExcludeType{"File matches
--T types?"}
+    TypeCheck -->|No Type Flags| GlobCheck{"Glob pattern
+    -g specified?"}
+    TypeCheck -->|Has -t| MatchType{"Matches
+    -t types?"}
+    TypeCheck -->|Has -T| ExcludeType{"Matches
+    -T types?"}
 
     MatchType -->|Yes| GlobCheck
     MatchType -->|No| Skip
@@ -541,8 +544,8 @@ specified?"}
     ExcludeType -->|No| GlobCheck
 
     GlobCheck -->|No Glob| Search[Search File]
-    GlobCheck -->|Has -g| MatchGlob{"File matches
-glob pattern?"}
+    GlobCheck -->|Has -g| MatchGlob{"Matches glob
+    pattern?"}
 
     MatchGlob -->|Yes| Search
     MatchGlob -->|No| Skip

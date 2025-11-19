@@ -4,97 +4,72 @@
   "page_title": "manual filtering types",
   "page_file": "docs/manual-filtering-types.md",
   "drift_detected": true,
-  "severity": "medium",
-  "quality_assessment": "Good comprehensive coverage with clear examples, but contains several factual errors about file type definitions that could mislead users",
+  "severity": "low",
+  "quality_assessment": "Excellent comprehensive documentation with accurate examples, proper use of MkDocs Material features, and good source references. Minor improvement opportunity for cross-reference clarity.",
   "issues": [
-    {
-      "type": "incorrect_information",
-      "severity": "high",
-      "section": "Quick Start",
-      "description": "Documentation incorrectly lists *.pyw as part of Python type",
-      "current_content": "Search only Python files (*.py, *.pyi, *.pyw)",
-      "should_be": "Search only Python files (*.py, *.pyi)",
-      "fix_suggestion": "Remove *.pyw from the Python type description at line 38",
-      "source_reference": "crates/ignore/src/default_types.rs:217"
-    },
-    {
-      "type": "incorrect_information",
-      "severity": "medium",
-      "section": "Built-in File Types",
-      "description": "CSS type description is misleading - doesn't clarify that *.scss is shared with sass type",
-      "current_content": "**Note:** There is a separate `sass` type that includes *.sass and *.scss files.",
-      "should_be": "**Note:** Both the `css` and `sass` types include *.scss files. The `css` type includes *.css and *.scss, while the `sass` type includes *.sass and *.scss. When searching with -t css or -t sass, *.scss files will be included in both cases.",
-      "fix_suggestion": "Clarify at line 300 that *.scss files are included in both css and sass types to avoid confusion",
-      "source_reference": "crates/ignore/src/default_types.rs:61,242"
-    },
-    {
-      "type": "incomplete_information",
-      "severity": "medium",
-      "section": "Built-in File Types",
-      "description": "PHP type definition is incomplete - missing *.php7, *.php8, and *.pht extensions",
-      "current_content": "*.php, *.phtml, *.php3, *.php4, *.php5",
-      "should_be": "*.php, *.php3, *.php4, *.php5, *.php7, *.php8, *.pht, *.phtml",
-      "fix_suggestion": "Update line 293 to include all PHP extensions supported by ripgrep",
-      "source_reference": "crates/ignore/src/default_types.rs:203-207"
-    },
-    {
-      "type": "missing_content",
-      "severity": "low",
-      "section": "Type vs Glob Filtering",
-      "description": "Missing explanation of when glob patterns take precedence over types",
-      "feature_reference": "filtering.manual_filtering.capabilities.file_types",
-      "fix_suggestion": "The section 'Type Filtering Precedence' (line 407) mentions this but could be clearer. Consider adding an explicit callout that glob patterns always override type selections.",
-      "source_reference": "docs/manual-filtering-types.md:407-429"
-    },
     {
       "type": "unclear_content",
       "severity": "low",
-      "section": "Listing Available Types",
-      "description": "Type alias explanation could be clearer about how aliases work",
-      "current_content": "To see which types have aliases, check the output of `--type-list`. Types with aliases appear as `alias, fullname:` in the list.",
-      "should_be": "To see which types have aliases, check the output of `--type-list`. Types with aliases appear on the same line separated by commas (e.g., 'markdown, md:' or 'py, python:'), with all names referring to the same glob patterns.",
-      "fix_suggestion": "Provide a concrete example of what alias output looks like in --type-list at line 155",
-      "source_reference": "docs/manual-filtering-types.md:133-162"
+      "section": "Configuration File Persistence",
+      "description": "Cross-reference to 'Configuration chapter' is vague - should specify exact page filename",
+      "current_content": "See the Configuration chapter for more details on configuration files.",
+      "should_be": "See [Configuration Files](configuration-file.md) for more details on ripgrep configuration.",
+      "fix_suggestion": "Update cross-reference to use explicit markdown link with correct filename",
+      "source_reference": "docs/manual-filtering-types.md:516"
     }
   ],
   "positive_aspects": [
-    "Excellent progression from basic to advanced usage",
-    "Clear and comprehensive examples throughout",
-    "Good coverage of --type-add composition with include: directive",
-    "Helpful troubleshooting section",
-    "Accurate documentation of type name restrictions (alphanumeric only)",
-    "Good explanation of configuration file persistence",
-    "Clear examples of combining -t and -T flags",
-    "Helpful comparison of when to use types vs globs"
+    "Accurate documentation of --type and --type-not flags with 'all' special value support",
+    "Correct documentation of whitelist mode (--type all) and blacklist mode (--type-not all)",
+    "Accurate Python type definition (*.py, *.pyi) with source reference to default_types.rs:217",
+    "Correct documentation of CSS and SCSS handling with accurate note about both types including *.scss",
+    "Accurate PHP type definition (*.php, *.php3, *.php4, *.php5, *.php7, *.php8, *.pht, *.phtml) with source references to default_types.rs:203-207",
+    "Excellent use of MkDocs Material admonitions (tip, warning, note, example) throughout",
+    "Well-structured mermaid diagram showing type matching flow and precedence",
+    "Comprehensive examples with code annotations using numbered markers (1)!, (2)!, (3)!",
+    "Good use of tabbed content sections (=== syntax) for comparing type vs glob filtering",
+    "Accurate implementation details with specific source file references",
+    "Correct documentation of include: directive for type composition",
+    "Accurate type name restrictions (alphanumeric only, no hyphens or underscores)",
+    "Proper documentation of --type-clear behavior and precedence",
+    "Good troubleshooting section with practical solutions",
+    "Accurate explanation of type precedence relative to globs and ignore files",
+    "All previously identified drift issues have been fixed (*.pyw removed, PHP type complete, CSS/SCSS clarified)"
   ],
   "improvement_suggestions": [
-    "Add visual diagram showing type filtering precedence hierarchy (ignore files > globs > types)",
-    "Include a table of the most commonly used file types with their exact glob patterns",
-    "Add example showing how to discover what files would be matched by a type before running the search (using --files)",
-    "Consider adding a note about performance: type filtering is very fast because it uses GlobSet internally",
-    "Add cross-reference to configuration chapter for persistent type definitions",
-    "Consider adding an example of using --debug to troubleshoot type matching issues",
-    "Add a warning that custom types defined with --type-add are not visible to other tools or shell completion"
+    "Update vague cross-reference to 'Configuration chapter' with explicit markdown link to configuration-file.md",
+    "Consider adding a brief note about case-sensitivity of type names (though this appears to be case-insensitive in practice)",
+    "Could enhance the 'How Type Matching Works' section with performance notes about GlobSet efficiency mentioned in types.rs comments",
+    "Add example showing how to discover what files would be matched by a type before running the search (using --files -t <type>)",
+    "Consider adding visual diagram showing type filtering precedence hierarchy (ignore files > globs > types) to complement the existing mermaid diagram"
   ],
   "cross_references": [
-    "manual-filtering-glob",
-    "configuration-file",
-    "automatic-filtering"
+    "configuration-file"
   ],
   "metadata": {
-    "analyzed_at": "2025-11-13T20:53:28Z",
+    "analyzed_at": "2025-11-19T18:24:02Z",
     "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
     "topics_covered": [
       "file type filtering",
-      "type selection",
-      "type negation",
+      "type selection with -t/--type",
+      "type negation with -T/--type-not",
       "custom type definitions",
-      "type aliases",
+      "type composition with include:",
+      "whitelist and blacklist modes",
+      "built-in file types",
       "type precedence"
     ],
     "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
     "internal_links_validated": true,
     "broken_links_found": 0,
-    "total_internal_links": 0
+    "mermaid_diagrams": 1,
+    "admonitions_used": 7,
+    "code_examples": "extensive",
+    "source_references": "accurate and helpful",
+    "previously_fixed_issues": [
+      "Removed incorrect *.pyw from Python type definition",
+      "Added complete PHP type definition with all extensions (*.php7, *.php8, *.pht)",
+      "Clarified CSS and SCSS overlap with accurate note"
+    ]
   }
 }
