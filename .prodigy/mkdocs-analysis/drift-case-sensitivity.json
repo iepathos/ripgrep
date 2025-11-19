@@ -4,52 +4,65 @@
   "page_title": "case sensitivity",
   "page_file": "docs/basics/case-sensitivity.md",
   "drift_detected": false,
-  "severity": "low",
-  "quality_assessment": "Documentation is accurate and complete. Content correctly describes all case sensitivity flags and their behavior. All examples are valid and work as documented.",
+  "severity": "none",
+  "quality_assessment": "Excellent documentation with accurate information, clear examples, and effective use of MkDocs Material features",
   "issues": [],
   "positive_aspects": [
-    "All flags (-i, -s, -S) are accurately documented and match implementation",
-    "Clear explanation of smart case behavior with concrete examples",
-    "Examples show all three modes with practical use cases",
-    "Correct description of default case-sensitive behavior",
-    "Valid cross-reference to basics index page",
-    "Concise and focused documentation"
+    "Clear default behavior warning using MkDocs admonition",
+    "Excellent comparison table showing all three case modes side-by-side",
+    "Outstanding use of Mermaid flowchart to visualize smart case decision logic",
+    "Effective use of MkDocs Material tabs for contrasting examples",
+    "Comprehensive visual comparison section with practical examples",
+    "Good cross-reference to configuration file documentation",
+    "Examples are practical and cover common use cases",
+    "Flag syntax is accurate (-i, -s, -S with long form alternatives)",
+    "Correctly explains that case-sensitive is the default behavior",
+    "Properly documents flag precedence and override behavior",
+    "Accurate documentation of Unicode's simple case folding rules (mentioned in source)",
+    "Smart case behavior correctly explained with lowercase/uppercase pattern detection",
+    "All internal cross-references are valid"
   ],
   "improvement_suggestions": [
-    "Consider adding admonition boxes for important concepts (e.g., highlighting that smart case is popular and often set in config files)",
-    "Could add visual feature: code block with syntax highlighting using ```bash",
-    "Could add cross-reference to configuration page since smart case is mentioned as 'often set in configuration files'",
-    "Could include a visual table comparing the three modes side-by-side",
-    "Could add tabs showing the same search with different case modes for visual comparison"
+    "Consider adding a tip box about Unicode case folding to explain how international characters (é, É, etc.) are handled in case-insensitive mode",
+    "Could add an advanced section showing inline regex flags (?i) and (?-i) for per-pattern case control, as mentioned in the source code documentation",
+    "Might add the specific smart case literal detection rules: (1) pattern must contain at least one literal character, (2) none of the literals can be uppercase according to Unicode",
+    "Could include a troubleshooting note about patterns with no literals (e.g., '\\w+') and how smart case handles them",
+    "Consider adding a practical example of configuring smart case as default via RIPGREP_CONFIG_PATH"
   ],
   "cross_references": [
-    "basics/index"
+    "configuration-file"
   ],
+  "link_validation": {
+    "total_internal_links": 1,
+    "broken_links": 0,
+    "all_valid": true,
+    "validated_links": [
+      "../configuration-file.md"
+    ]
+  },
   "metadata": {
-    "analyzed_at": "2025-11-13T20:53:28Z",
+    "analyzed_at": "2025-11-19T18:24:02Z",
     "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
     "topics_covered": [
-      "case sensitivity",
-      "search flags",
-      "pattern matching"
+      "case-sensitive search",
+      "case-insensitive search",
+      "smart case",
+      "flag syntax",
+      "flag precedence",
+      "unicode case folding"
     ],
     "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
-    "features_analyzed": [
-      "search_basics.pattern_matching.case-insensitive (-i/--ignore-case)",
-      "search_basics.pattern_matching.smart-case (-S/--smart-case)",
-      "search_basics.pattern_matching.case-sensitive (default, -s/--case-sensitive)"
+    "mkdocs_features_used": [
+      "admonitions (warning, note, tip, example)",
+      "mermaid diagrams",
+      "content tabs",
+      "code blocks with syntax highlighting",
+      "markdown tables"
     ],
-    "link_validation": {
-      "total_internal_links": 1,
-      "broken_links": 0,
-      "links_checked": [
-        {
-          "text": "Basics",
-          "target": "./index.md",
-          "resolved_path": "docs/basics/index.md",
-          "status": "valid"
-        }
-      ]
-    }
+    "features_analyzed": [
+      "search_basics.case_sensitivity.case_insensitive",
+      "search_basics.case_sensitivity.smart_case",
+      "search_basics.case_sensitivity.case_sensitive"
+    ]
   }
 }

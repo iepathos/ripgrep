@@ -1,131 +1,78 @@
 {
-  "item_type": "auto-discovered",
+  "item_type": "page",
   "page_id": "reference",
   "page_title": "reference",
   "page_file": "docs/common-options/reference.md",
   "drift_detected": true,
-  "severity": "medium",
-  "quality_assessment": "Good quick reference but missing several important flags and could benefit from visual enhancements",
+  "severity": "low",
+  "quality_assessment": "Page is accurate and well-structured with minor enhancement opportunities. All documented flags match codebase implementation. Visual features (Mermaid diagram, admonitions) are used effectively.",
   "issues": [
     {
       "type": "missing_content",
-      "severity": "medium",
-      "section": "Quick Reference",
-      "description": "Smart case flag (-S/--smart-case) not documented in quick reference",
-      "feature_reference": "search_basics.capabilities.pattern_matching.features[3]",
-      "fix_suggestion": "Add -S flag row: 'Smart case (insensitive unless uppercase) | rg -S Error'",
-      "source_reference": "features.json:search_basics.capabilities.pattern_matching"
-    },
-    {
-      "type": "missing_content",
-      "severity": "medium",
-      "section": "Quick Reference",
-      "description": "Multiple pattern flags (-e, -f) not documented",
-      "feature_reference": "search_basics.capabilities.multiple_patterns",
-      "fix_suggestion": "Add rows for -e (multiple patterns) and -f (pattern file)",
-      "source_reference": "features.json:search_basics.capabilities.multiple_patterns"
-    },
-    {
-      "type": "missing_content",
-      "severity": "medium",
-      "section": "Quick Reference",
-      "description": "Only-matching flag (-o) not documented",
-      "feature_reference": "output_control.capabilities.standard_output.features[4]",
-      "fix_suggestion": "Add -o row: 'Show only matched part | rg -o pattern'",
-      "source_reference": "features.json:output_control.capabilities.standard_output"
-    },
-    {
-      "type": "missing_content",
-      "severity": "medium",
-      "section": "Quick Reference",
-      "description": "Statistics flag (--stats) not documented",
-      "feature_reference": "utility_features.capabilities.statistics",
-      "fix_suggestion": "Add --stats row: 'Show search statistics | rg --stats pattern'",
-      "source_reference": "features.json:utility_features.capabilities.statistics"
-    },
-    {
-      "type": "missing_content",
       "severity": "low",
-      "section": "Quick Reference",
-      "description": "Files listing mode (--files) not documented",
-      "feature_reference": "utility_features.capabilities.list_modes.features[0]",
-      "fix_suggestion": "Add --files row: 'List files that would be searched | rg --files'",
-      "source_reference": "features.json:utility_features.capabilities.list_modes"
+      "section": "Quick Reference Table",
+      "description": "Missing some useful flags that would enhance the quick reference",
+      "feature_reference": "output_control.hyperlinks, output_control.json_output, output_control.vimgrep_format",
+      "fix_suggestion": "Consider adding these flags to the quick reference table: `--hyperlink` (terminal hyperlinks), `--json` (JSON output), `--vimgrep` (vim quickfix format). These are commonly used in workflows and scripts.",
+      "source_reference": "crates/core/flags/defs.rs:HyperlinkFormat, JSON, Vimgrep"
     },
     {
-      "type": "incomplete_explanation",
-      "severity": "medium",
-      "section": "Quick Reference",
-      "description": "The -u flag doesn't explain three levels of unrestricted search",
-      "current_content": "| `-u` | Search ignored files | `rg -u pattern` |",
-      "should_be": "| `-u/-uu/-uuu` | Search ignored files (levels: ignore rules, hidden files, binary files) | `rg -uuu pattern` |",
-      "fix_suggestion": "Clarify that -u has three levels: -u (ignore .gitignore), -uu (+ hidden files), -uuu (+ binary files)",
-      "source_reference": "features.json:filtering.automatic_filtering.capabilities.override_flags"
-    },
-    {
-      "type": "incomplete_explanation",
+      "type": "unclear_content",
       "severity": "low",
-      "section": "Quick Reference",
-      "description": "Context flags don't explain what the number means",
-      "current_content": "| `-A/-B/-C` | Show context lines | `rg -C 3 pattern` |",
-      "should_be": "| `-A/-B/-C` | Show N lines after/before/around matches | `rg -C 3 pattern` |",
-      "fix_suggestion": "Add clarification that the number specifies how many context lines to show",
-      "source_reference": "features.json:output_control.capabilities.context_lines"
-    },
-    {
-      "type": "missing_visual_features",
-      "severity": "low",
-      "section": "Overall",
-      "description": "Page lacks MkDocs Material visual enhancements",
-      "fix_suggestion": "Add admonitions for tips (e.g., '!!! tip \"Pro Tip\"'), code annotations, or tabs for alternative approaches",
-      "source_reference": "N/A - MkDocs Material extension features"
-    },
-    {
-      "type": "broken_links",
-      "severity": "medium",
-      "section": "Cross-References",
-      "description": "Found 1 internal link - validated successfully",
-      "validated_links": [
-        {
-          "link_text": "Common Options",
-          "target": "./index.md",
-          "resolved_path": "docs/common-options/index.md",
-          "status": "valid"
-        }
-      ],
-      "fix_suggestion": "All cross-references are valid. No action needed."
+      "section": "Combining Flags - Source References",
+      "description": "Source code line number references in comments have minor drift",
+      "current_content": "# Source: tests/feature.rs:212 (smart-case example)\n# Source: tests/feature.rs:551 (multiple -e flags)\n# Source: tests/feature.rs:425 (stats example)\n# Source: tests/multiline.rs:45 (only-matching example)",
+      "should_be": "Line numbers are approximately correct but may drift over time as code evolves",
+      "fix_suggestion": "Consider referencing test names or removing line numbers entirely. For example: 'Source: tests/feature.rs (smart-case test)' or 'Source: tests/feature.rs:f411_single_threaded_search_stats'",
+      "source_reference": "tests/feature.rs, tests/multiline.rs"
     }
   ],
   "positive_aspects": [
-    "Clear, scannable table format for quick reference",
-    "Excellent grep comparison table for users migrating from grep",
-    "Practical flag combination examples showing real-world usage",
-    "Concise descriptions that are easy to understand",
-    "Good coverage of most common daily-use flags"
+    "Excellent visual decision flowchart using Mermaid for flag selection",
+    "Accurate and comprehensive quick reference table covering essential flags",
+    "Effective use of MkDocs Material admonitions (tip, warning, note, example)",
+    "Practical tabbed examples showing common flag combinations with annotations",
+    "Clear comparison table with grep for users transitioning from grep",
+    "Good performance guidance (warning about -uuu impact)",
+    "Smart case behavior is clearly explained",
+    "All documented flags match codebase implementation exactly",
+    "Source references help readers explore test examples",
+    "Focused scope - stays true to 'quick reference' purpose"
   ],
   "improvement_suggestions": [
-    "Add a 'Tips' admonition highlighting the most powerful flag combinations",
-    "Include a note about -uuu being slower due to searching everything",
-    "Add cross-reference to advanced patterns page for regex users",
-    "Consider adding a 'Performance' section noting which flags are fast vs slow",
-    "Add --files flag for discovering what ripgrep would search"
+    "Add `--hyperlink` flag for terminal hyperlink support (modern feature for editor integration)",
+    "Add `--json` flag for structured output (essential for automation and scripting)",
+    "Add `--vimgrep` flag for vim quickfix format (common editor integration use case)",
+    "Consider updating source code line references to use test function names instead of line numbers to reduce maintenance burden",
+    "Could add a small section on 'Editor Integration' highlighting --vimgrep and --hyperlink together",
+    "Consider adding --replace flag to quick reference as it's commonly used"
   ],
-  "cross_references": [
-    "index",
-    "file-filtering",
-    "output-modes"
-  ],
+  "cross_references": [],
+  "internal_links_validation": {
+    "total_links_found": 0,
+    "broken_links_found": 0,
+    "status": "No internal markdown links found in this page"
+  },
   "metadata": {
-    "analyzed_at": "2025-11-13T21:48:18Z",
+    "analyzed_at": "2025-11-19T18:24:02Z",
     "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
-    "topics_covered": ["quick reference", "common flags", "grep comparison"],
+    "topics_covered": [
+      "quick reference",
+      "common flags",
+      "flag combinations",
+      "case sensitivity",
+      "file type filtering",
+      "output control",
+      "grep comparison"
+    ],
     "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
-    "total_flags_documented": 11,
-    "total_flags_in_features": 50,
-    "link_validation": {
-      "total_internal_links": 1,
-      "broken_links": 0,
-      "valid_links": 1
-    }
+    "page_type": "auto-discovered",
+    "mkdocs_features_used": [
+      "mermaid diagrams",
+      "admonitions (tip, warning, note, example)",
+      "tabbed content (=== syntax)",
+      "code annotations ((1)!, (2)!)",
+      "markdown tables"
+    ]
   }
 }

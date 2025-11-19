@@ -1,0 +1,99 @@
+{
+  "item_type": "page",
+  "page_id": "errors",
+  "page_title": "errors",
+  "page_file": "docs/troubleshooting/errors.md",
+  "drift_detected": true,
+  "severity": "low",
+  "quality_assessment": "High-quality troubleshooting page with excellent visual aids and comprehensive error coverage. Only minor issues: one broken internal link and a few missing error types that could enhance completeness.",
+  "issues": [
+    {
+      "type": "broken_links",
+      "severity": "medium",
+      "section": "Regex Pattern Errors",
+      "description": "Found 1 broken internal link",
+      "broken_links": [
+        {
+          "link_text": "FAQ in the project root (`FAQ.md`)",
+          "original_target": "FAQ.md",
+          "expected_resolved_path": "docs/FAQ.md",
+          "current_file_path": "docs/troubleshooting/errors.md",
+          "line_number": 210,
+          "suggestion": "Change to ../../FAQ.md to correctly reference FAQ.md from docs/troubleshooting/ subdirectory"
+        }
+      ],
+      "fix_suggestion": "Update the link on line 210 from 'FAQ.md' to '../../FAQ.md' to correctly reference the FAQ file from the troubleshooting subdirectory.",
+      "source_reference": "docs/troubleshooting/errors.md:210"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Common Error Messages",
+      "description": "Missing documentation for some error types found in features.json troubleshooting section",
+      "feature_reference": "meta_content.troubleshooting.common_issues",
+      "missing_error_types": [
+        "Missing decompression tool - when searching compressed files without required tool installed",
+        "Symlink loops - when using -L/--follow with circular symlinks",
+        "Permission errors during recursive search - more detailed explanation of how ripgrep handles permission denied during directory traversal"
+      ],
+      "fix_suggestion": "Consider adding sections for these additional error types to provide more comprehensive troubleshooting coverage. These are documented in features.json but not in the errors page.",
+      "source_reference": "features.json:lines 681-691"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "Permission denied",
+      "description": "Could add cross-reference to filtering documentation for users who want to understand how --no-messages interacts with filtering",
+      "fix_suggestion": "Add a cross-reference link to the filtering chapter to help users understand the relationship between permissions, ignore files, and filtering.",
+      "source_reference": "docs/troubleshooting/errors.md:63-76"
+    }
+  ],
+  "positive_aspects": [
+    "Excellent use of MkDocs Material admonitions (error, tip, warning, note) for clear visual hierarchy",
+    "Two well-designed mermaid diagrams that significantly enhance understanding (ignore file precedence and exit code logic)",
+    "Comprehensive coverage of the most common error scenarios users encounter",
+    "Clear, actionable solutions with concrete code examples for each error type",
+    "Good use of Material tabbed code examples for showing alternatives (unrestricted levels, selective bypass)",
+    "Effective cross-referencing to file-encoding.md for encoding-related errors",
+    "Statistics output section provides excellent diagnostic guidance",
+    "Exit code documentation with practical scripting examples"
+  ],
+  "improvement_suggestions": [
+    "Fix the broken link to FAQ.md by using the correct relative path (../../FAQ.md)",
+    "Add sections for missing error types: decompression tool errors, symlink loops, and permission handling details",
+    "Consider adding a 'See Also' section at the bottom with links to related troubleshooting pages",
+    "Add cross-reference to filtering documentation in the 'Permission denied' section",
+    "Consider adding troubleshooting for multiline mode errors (users often struggle with -U/--multiline)",
+    "Could add examples of using --debug flag to diagnose various issues, not just ignore files"
+  ],
+  "cross_references": [
+    "file-encoding.md (valid reference)",
+    "FAQ.md (broken - needs path correction)"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-19T18:24:00Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": [
+      "command-line parsing errors",
+      "regex compilation errors",
+      "DFA cache limits",
+      "permission errors",
+      "encoding errors",
+      "ignore file behavior",
+      "regex pattern syntax",
+      "statistics output",
+      "PCRE2 availability",
+      "exit codes"
+    ],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "visual_features_present": [
+      "MkDocs Material admonitions (error, tip, warning, note)",
+      "Mermaid diagrams (2 total: ignore precedence, exit code logic)",
+      "Code annotations with numbered callouts",
+      "Tabbed code examples"
+    ],
+    "total_internal_links": 2,
+    "broken_internal_links": 1,
+    "valid_internal_links": 1
+  }
+}

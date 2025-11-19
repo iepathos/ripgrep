@@ -137,6 +137,25 @@ Ripgrep automatically selects the best I/O strategy:
     - Better for many small files
     - More predictable memory usage
 
+!!! note "Platform-Specific Behavior"
+    Memory mapping behavior differs by platform:
+
+    === "macOS"
+        Memory mapping is **disabled by default** due to platform-specific performance characteristics. Ripgrep uses buffered reading for both single-file and directory searches.
+
+        ```bash
+        # Use --mmap only if profiling shows benefit
+        $ rg "pattern" --mmap file.txt
+        ```
+
+    === "Linux / Windows"
+        Memory mapping is **enabled by default** for single-file searches. Ripgrep automatically uses the optimal strategy.
+
+        ```bash
+        # Automatically uses mmap for single files
+        $ rg "pattern" largefile.log
+        ```
+
 !!! tip "Let Ripgrep Choose Automatically"
     Ripgrep's automatic I/O selection is optimized for most use cases. Only override with `--mmap` or `--no-mmap` if you've identified a specific performance issue through profiling with `--stats`.
 
@@ -191,12 +210,13 @@ $ rg --one-file-system 'pattern'  # (1)!
 
 **Configure regex engine limits:**
 ```bash
+# Source: crates/core/flags/defs.rs:1504-1578, 5762-5801
 $ rg --dfa-size-limit 50M 'pattern'    # (1)!
 $ rg --regex-size-limit 50M 'pattern'  # (2)!
 ```
 
-1. Increase DFA memory limit (default: 10M) - controls memory usage for deterministic finite automaton
-2. Increase regex compilation size (default: 10M) - raise if you encounter "regex too large" errors
+1. Increase DFA memory limit - controls memory usage for the deterministic finite automaton. Ripgrep sets a generous default limit suitable for most patterns; increase this for very large regex inputs to avoid falling back to slower engines.
+2. Increase regex compilation size - controls the size of the compiled regex matcher in memory. Ripgrep's default is generous for reasonable patterns; raise if you encounter "regex too large" errors with many patterns.
 
 ## Testing and Profiling
 

@@ -237,6 +237,15 @@ Use named captures for readable transformations:
 
 Powerful queries combining multiple features:
 
+!!! warning "Performance Considerations"
+    Combining multiline mode with PCRE2 and lookahead can be memory-intensive, especially on large files. For performance-critical searches, consider:
+
+    - Using more specific patterns to reduce backtracking
+    - Filtering files by type or size first
+    - Testing patterns on smaller file sets before running on large codebases
+
+    See [Performance Considerations](./performance.md) for optimization strategies.
+
 ```bash
 # Find struct definitions with specific fields (multiline + lookahead)
 rg -UP '(?s)struct (\w+).*?\{(?=.*field_name).*?\}'  # (1)!

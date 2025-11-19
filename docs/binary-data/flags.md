@@ -9,7 +9,7 @@ Ripgrep uses three binary handling modes (defined in `crates/core/flags/lowargs.
 | Mode | Description | Behavior | When Used |
 |------|-------------|----------|-----------|
 | **Auto** (default) | Automatically determines binary handling | Explicit files: SearchAndSuppress; Implicit files: Skip binary files | Default behavior |
-| **SearchAndSuppress** | Search binary files but suppress matches | Shows warning when binary match found; NUL bytes replaced with line terminators | Explicit files, or `--binary` flag |
+| **SearchAndSuppress** | Search binary files but suppress matches | Shows warning when binary match found; NUL bytes replaced with line terminators (to prevent impractically large lines when treating binary data as line-oriented) | Explicit files, or `--binary` flag |
 | **AsText** | Treat everything as text | No binary detection; No NUL byte replacement | `--text` / `-a` flag |
 
 ```mermaid
@@ -44,6 +44,8 @@ or explicit file"
 
 !!! info "Binary Detection Mechanism"
     Ripgrep detects binary files by searching for NUL bytes (`\0`) in the first few KB of data. This is implemented in the `BinaryDetection` struct (`crates/searcher/src/searcher/mod.rs:55`).
+
+    When a binary file is detected, ripgrep outputs: `Binary file X matches (found "\0" byte around offset Y)`
 
 ## `--binary`
 
@@ -237,9 +239,59 @@ Silent skip"]
 
 The binary handling logic is implemented across several key components:
 
-- **`BinaryMode` enum** (`crates/core/flags/lowargs.rs:233-252`): Defines the three modes (Auto, SearchAndSuppress, AsText)
-- **`BinaryDetection` struct** (`crates/searcher/src/searcher/mod.rs:55`): Implements the NUL byte detection mechanism
+- **`BinaryMode` enum** (`crates/core/flags/lowargs.rs:233-252`): Defines the three modes (Auto, SearchAndSuppress, AsText). The SearchAndSuppress mode includes a comment explaining the memory usage optimization: NUL bytes are replaced with line terminators to prevent impractically large lines when treating binary data as line-oriented.
+- **`BinaryDetection` struct** (`crates/searcher/src/searcher/mod.rs:55`): A wrapper around `line_buffer::BinaryDetection` that implements the NUL byte detection mechanism. The actual binary detection logic is in the convert() method.
 - **Flag definitions** (`crates/core/flags/defs.rs`): Command-line flag parsing and validation
+
+## Troubleshooting
+
+### Binary files are unexpectedly skipped
+
+If files you expect to be searched are being skipped:
+
+1. **Check if the file is being detected as binary**: Use `--debug` to see which files are classified as binary
+   ```bash
+   rg --debug "pattern" 2>&1 | grep -i binary
+   ```
+
+2. **Force searching with `--binary`**: If you want to search the file anyway and see warnings
+   ```bash
+   rg --binary "pattern"
+   ```
+
+3. **Disable binary detection entirely**: Use `--text` if you know the file contains text but has NUL bytes
+   ```bash
+   rg --text "pattern"
+   ```
+
+### Performance impact of --text vs --binary
+
+!!! tip "Performance Considerations"
+    - **`--binary` (SearchAndSuppress mode)**: Minimal performance impact. Binary files are searched, but matches are suppressed and warnings shown. NUL byte replacement helps prevent memory issues.
+    - **`--text` (AsText mode)**: Can be slower on large binary files because ripgrep treats all data as line-oriented without NUL byte replacement, potentially creating very large lines that consume more memory.
+
+**Recommendation**: Use `--binary` for mixed directories. Only use `--text` when you're certain the files contain text data with NUL bytes.
+
+### Terminal corruption after using --text
+
+If your terminal displays garbage after searching binary files with `--text`:
+
+1. **Reset your terminal**:
+   ```bash
+   reset
+   # or
+   tput reset
+   ```
+
+2. **Prevent corruption by redirecting output**:
+   ```bash
+   rg --text "pattern" *.bin > results.txt 2>&1
+   ```
+
+3. **Use `--binary` instead**: Safer alternative that shows warnings without binary content
+   ```bash
+   rg --binary "pattern" *.bin
+   ```
 
 ## See Also
 

@@ -1,0 +1,110 @@
+{
+  "item_type": "page",
+  "page_id": "index",
+  "page_title": "Binary Data",
+  "page_file": "docs/binary-data/index.md",
+  "drift_detected": true,
+  "severity": "low",
+  "quality_assessment": "Excellent overview page with accurate information and good use of visual features. Minor improvements possible for source references and diagram labels.",
+  "issues": [
+    {
+      "type": "outdated_information",
+      "severity": "low",
+      "section": "Binary Detection Flow diagram",
+      "description": "Diagram labels could be more descriptive for better clarity",
+      "current_content": "Diagram uses labels 'Explicitly named?' and 'Auto mode' without explaining the context",
+      "should_be": "Consider enhancing labels: 'Explicit files (rg pattern file.bin)' vs 'Implicit files (recursive search)'",
+      "fix_suggestion": "The diagram labels were recently improved in the explicit-implicit.md page. Consider using similar descriptive labels in the index page diagram for consistency.",
+      "source_reference": "docs/binary-data/explicit-implicit.md diagram shows better labels"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "Source Reference admonition",
+      "description": "Source reference line number range is imprecise",
+      "current_content": "Binary detection behavior is defined in `crates/core/flags/lowargs.rs:233-252`",
+      "should_be": "More specific: `crates/core/flags/lowargs.rs:233` defines BinaryMode enum (lines 233-252 contain the full implementation)",
+      "fix_suggestion": "Consider adding more specific context about what exactly is at line 233 (the enum definition vs the implementation)",
+      "source_reference": "crates/core/flags/lowargs.rs:233-252"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Flag Comparison table",
+      "description": "Table could mention stdin behavior",
+      "current_content": "Table covers implicit/explicit files but doesn't mention stdin",
+      "should_be": "Add a note or row explaining that stdin is treated as explicit",
+      "fix_suggestion": "Add note below table: 'Note: stdin input is always treated as explicit, so it uses SearchAndSuppress mode by default.'",
+      "source_reference": "tests/binary.rs:187-195, docs/binary-data/examples.md:164-171"
+    }
+  ],
+  "positive_aspects": [
+    "Excellent use of MkDocs Material features (mermaid diagrams, admonitions, tabs)",
+    "Clear navigation table ('When to Read This') helps users find relevant information quickly",
+    "Comprehensive flag comparison table with practical use cases",
+    "Accurate source code references with specific line numbers",
+    "Good use of visual hierarchy with flowcharts showing binary detection behavior",
+    "Appropriate cross-references to related documentation pages",
+    "Summary section effectively recaps key takeaways",
+    "Mermaid diagram effectively visualizes the binary detection decision flow"
+  ],
+  "improvement_suggestions": [
+    "Consider adding a visual comparison diagram showing buffered vs memory-mapped detection differences",
+    "The diagram in the index could use more descriptive labels similar to those in explicit-implicit.md",
+    "Consider adding a 'Common Gotchas' admonition highlighting the stdin behavior",
+    "Could add a link to the test file (tests/binary.rs) for users who want to see concrete examples",
+    "Consider mentioning the HAY test file comment about 65,536 byte buffer in a tip/note admonition"
+  ],
+  "cross_references": [
+    "detection.md",
+    "modes.md",
+    "explicit-implicit.md",
+    "flags.md",
+    "examples.md",
+    "file-encoding.md",
+    "manual-filtering-types.md",
+    "compressed-files.md"
+  ],
+  "link_validation": {
+    "total_internal_links": 8,
+    "broken_links": 0,
+    "all_links_valid": true,
+    "links_checked": [
+      "./detection.md",
+      "./modes.md",
+      "./explicit-implicit.md",
+      "./flags.md",
+      "./examples.md",
+      "../file-encoding.md",
+      "../manual-filtering-types.md",
+      "../compressed-files.md"
+    ]
+  },
+  "visual_features": {
+    "mermaid_diagrams": 1,
+    "admonitions": 3,
+    "tables": 2,
+    "code_blocks": 0,
+    "quality": "excellent",
+    "notes": "Strong use of visual features. Mermaid flowchart effectively illustrates binary detection flow. Admonitions (note, tip, example) appropriately used for source references and guidance."
+  },
+  "metadata": {
+    "analyzed_at": "2025-11-19T18:24:00Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": [
+      "binary detection overview",
+      "binary detection flow",
+      "flag comparison",
+      "explicit vs implicit files",
+      "binary modes"
+    ],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "source_code_references_verified": [
+      "crates/core/flags/lowargs.rs:233-252 - BinaryMode enum (VERIFIED)",
+      "crates/searcher/src/line_buffer.rs:6 - DEFAULT_BUFFER_CAPACITY (VERIFIED)",
+      "crates/searcher/src/line_buffer.rs:66-69 - BinaryDetection default (VERIFIED)",
+      "crates/searcher/src/searcher/glue.rs:119-120 - binary_upto mmap limit (VERIFIED - actual line 120)",
+      "tests/binary.rs - comprehensive test examples (VERIFIED)"
+    ]
+  }
+}

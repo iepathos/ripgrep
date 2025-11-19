@@ -251,20 +251,26 @@ Example timing for large codebases (actual values depend on hardware, file count
 ### Sorted Output with Context
 
 ```bash
-rg --sort modified -C 3 'pattern'
+rg --sort modified -C 3 'pattern'  # (1)!
 ```
+
+1. Combines `--sort modified` (newest files first) with `-C 3` (show 3 lines of context before and after each match)
 
 ### Sorted Results by File Type
 
 ```bash
-rg --sort path -trs 'fn '
+rg --sort path -trs 'fn '  # (1)!
 ```
+
+1. Combines `--sort path` (alphabetical order) with `-trs` (Rust files only) to search for function definitions in sorted order
 
 ### Sorted JSON Output
 
 ```bash
-rg --sort modified --json 'TODO'
+rg --sort modified --json 'TODO'  # (1)!
 ```
+
+1. Outputs results in JSON format sorted by modification time, useful for programmatic processing of recent TODOs
 
 ## Examples
 

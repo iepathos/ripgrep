@@ -63,16 +63,24 @@ Occurs?"}
     1. **Output of `rg --version`**
     2. **How you installed ripgrep** (cargo, apt, homebrew, etc.)
     3. **Operating system and version**
-    4. **Command run with `--debug` flag**
-    5. **Complete `--debug` output**
+    4. **Command run with `--debug` flag** (or `--trace` for even more detail)
+    5. **Complete `--debug` output** (or `--trace` output)
     6. **Minimal reproduction case** (pattern and sample file if possible)
     7. **Expected vs. actual behavior**
 
-    See the [bug report template](https://github.com/BurntSushi/ripgrep/blob/master/.github/ISSUE_TEMPLATE/bug_report.yml) for the complete format.
+    !!! note "Debug vs Trace Flags"
+        The `--debug` flag shows why ripgrep skipped files and other diagnostic information.
+        For even more detailed output, use the `--trace` flag, which implies `--debug` along
+        with additional trace data. Generally, start with `--debug` and only use `--trace` if
+        you need more information.
+
+        <!-- Source: crates/core/flags/defs.rs:1479-1480 -->
+
+    See the [bug report template](https://github.com/iepathos/ripgrep/blob/master/.github/ISSUE_TEMPLATE/bug_report.yml) for the complete format.
 
 !!! example "Example Bug Report Structure"
     ```
-    **Version**: rg 14.0.3 (installed via homebrew)
+    **Version**: rg 15.1.0 (installed via homebrew)
     **OS**: macOS 14.1 (Sonoma)
     **Command**: rg --debug "pattern" file.txt
 

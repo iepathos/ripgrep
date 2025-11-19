@@ -1,0 +1,62 @@
+{
+  "item_type": "page",
+  "page_id": "index",
+  "page_title": "Common Options - Index",
+  "page_file": "docs/common-options/index.md",
+  "drift_detected": true,
+  "severity": "low",
+  "quality_assessment": "Good overview page with appropriate scope. Well-organized with Mermaid visualization. Successfully uses MkDocs Material extensions (admonitions, mermaid). All cross-references are valid. Minor improvements suggested for visual features and consistency with other pages.",
+  "issues": [
+    {
+      "type": "missing_visual_features",
+      "severity": "low",
+      "section": "Navigation and Cross-references",
+      "description": "Page uses basic list-based links in 'See Also' section. Other pages in the codebase demonstrate richer visual features like tabbed examples, callout boxes, and annotated code blocks that could enhance navigation.",
+      "fix_suggestion": "Consider enhancing the 'See Also' section with visual cards or more structured navigation elements to match the visual richness of the Mermaid diagram above.",
+      "source_reference": "docs/common-options/index.md:50-59"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "Navigation Guide",
+      "description": "Navigation tip mentions 'Reference' page but doesn't provide a link to it. The text says 'The Reference page provides a quick lookup table of all common flags' but no such link exists.",
+      "fix_suggestion": "Add a link to the reference page in the navigation guide, or clarify that this refers to a subsection within the common-options section.",
+      "source_reference": "docs/common-options/index.md:47-48"
+    },
+    {
+      "type": "potential_enhancement",
+      "severity": "low",
+      "section": "Overview",
+      "description": "The page mentions that options are 'organized by use case' but doesn't indicate this is an index page that links to detailed sub-pages. If sub-pages exist (like search-basics.md, output-formatting.md), this should be clarified.",
+      "fix_suggestion": "If this section has sub-pages, add a brief note explaining the structure: 'Each category below links to a dedicated page with detailed examples and usage patterns.'",
+      "source_reference": "docs/common-options/index.md:8-45"
+    }
+  ],
+  "positive_aspects": [
+    "Excellent use of Mermaid diagram to visualize organization",
+    "Clear categorization of common options by use case",
+    "Good use of MkDocs Material admonitions (tips, notes)",
+    "Appropriate scope as an overview/index page",
+    "All internal cross-references are valid and correct",
+    "Well-structured navigation guidance for different user levels",
+    "Concise and focused content suitable for an index page",
+    "Good use of styled nodes in Mermaid diagram for visual hierarchy"
+  ],
+  "improvement_suggestions": [
+    "Clarify or link the 'Reference' page mentioned in the navigation tip",
+    "Consider adding visual cards or structured elements for 'See Also' section to match the diagram's visual quality",
+    "If sub-pages exist for each category, make this clearer in the introduction",
+    "Consider adding a 'Quick Start' or 'Most Common Flags' summary box for absolute beginners",
+    "Could add a brief note about flag syntax conventions (--flag vs -f) for first-time users"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-19T18:24:00Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": ["overview", "navigation", "common-options-organization"],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "internal_links_checked": 4,
+    "broken_links_found": 0,
+    "mermaid_diagrams": 1,
+    "admonitions_used": 2
+  }
+}

@@ -1,508 +1,624 @@
 {
   "search_basics": {
     "type": "major_feature",
-    "description": "Core search functionality for finding patterns in files",
+    "description": "Core pattern matching and search operations",
     "capabilities": {
       "pattern_matching": {
-        "description": "Find text using literal strings or regular expressions",
+        "description": "Search using patterns and regex",
         "features": [
-          "Literal string search with -F/--fixed-strings",
+          "Literal search with -F/--fixed-strings",
           "Regular expression patterns (default)",
+          "Multiline search with -U/--multiline",
+          "PCRE2 engine support with -P/--pcre2"
+        ]
+      },
+      "case_sensitivity": {
+        "description": "Control case-sensitive and case-insensitive searches",
+        "features": [
           "Case-insensitive search with -i/--ignore-case",
-          "Smart case with -S/--smart-case (case-insensitive unless uppercase present)",
+          "Smart case with -S/--smart-case",
+          "Case-sensitive by default"
+        ]
+      },
+      "word_boundaries": {
+        "description": "Match whole words with boundary detection",
+        "features": [
           "Word boundary matching with -w/--word-regexp",
           "Line-oriented matching by default"
         ]
       },
       "multiple_patterns": {
-        "description": "Search for multiple patterns simultaneously",
+        "description": "Search for multiple patterns in a single invocation",
         "features": [
           "Multiple patterns with -e/--regexp flags",
           "Pattern files with -f/--file",
-          "OR logic between patterns",
-          "Boolean operations with combinations"
+          "OR logic between patterns"
+        ]
+      }
+    }
+  },
+  "recursive_search": {
+    "type": "major_feature",
+    "description": "Directory tree traversal and recursive searching",
+    "capabilities": {
+      "default_recursive": {
+        "description": "Automatically search subdirectories",
+        "features": [
+          "Recursive by default when given directory path",
+          "File vs directory path handling",
+          "Mix file and directory paths"
         ]
       },
-      "recursive_search": {
-        "description": "Search through directory trees automatically",
+      "depth_control": {
+        "description": "Limit recursion depth during directory traversal",
         "features": [
-          "Recursive by default in current directory",
-          "Specify paths to search",
+          "Maximum depth with --max-depth/-d",
+          "Depth 0 disables recursion",
+          "Depth semantics (1=direct children)"
+        ]
+      },
+      "symlink_handling": {
+        "description": "Control following of symbolic links",
+        "features": [
           "Follow symlinks with -L/--follow",
-          "Hidden file/directory control",
-          "Maximum depth limits with --max-depth"
+          "Default: do not follow symlinks",
+          "Automatic loop detection"
+        ]
+      },
+      "filesystem_boundaries": {
+        "description": "Control crossing file system boundaries",
+        "features": [
+          "Stay on same filesystem with --one-file-system",
+          "Prevent traversing network mounts",
+          "Per-path argument application"
         ]
       }
     }
   },
   "filtering": {
     "type": "major_feature",
-    "description": "Automatic and manual filtering of files and content",
-    "automatic_filtering": {
-      "description": "Files automatically excluded from search",
-      "capabilities": {
-        "ignore_files": {
-          "description": "Respect version control and custom ignore patterns",
-          "features": [
-            ".gitignore file support",
-            ".ignore file support (ripgrep-specific)",
-            ".rgignore file support (legacy)",
-            "Global gitignore support",
-            ".git/info/exclude support",
-            "Precedence ordering of ignore files"
-          ]
-        },
-        "automatic_exclusions": {
-          "description": "Default file/directory exclusions",
-          "features": [
-            "Hidden files/directories excluded by default",
-            "Binary files excluded by default",
-            "Parent gitignore files respected",
-            "VCS directories (.git, .svn, etc.) excluded"
-          ]
-        },
-        "override_flags": {
-          "description": "Disable automatic filtering",
-          "features": [
-            "-u/--unrestricted flag (three levels: -u, -uu, -uuu)",
-            "--no-ignore to skip ignore files",
-            "--hidden to include hidden files",
-            "--binary to search binary files",
-            "Granular control with specific flags"
-          ]
-        }
-      }
-    },
-    "manual_filtering": {
-      "description": "Explicit file inclusion and exclusion",
-      "capabilities": {
-        "glob_patterns": {
-          "description": "Include or exclude files by glob patterns",
-          "features": [
-            "-g/--glob for include/exclude patterns",
-            "Multiple glob patterns supported",
-            "Negation with ! prefix",
-            "--iglob for case-insensitive globs",
-            "Standard glob syntax (*, **, ?, [...])"
-          ]
-        },
-        "file_types": {
-          "description": "Filter by predefined or custom file types",
-          "features": [
-            "-t/--type to include file types (e.g., -tpy, -tjs)",
-            "-T/--type-not to exclude file types",
-            "Built-in types for common languages",
-            "--type-list to show all types",
-            "Custom type definitions with --type-add",
-            "Multiple type specifications supported"
-          ]
-        }
+    "description": "File and content filtering mechanisms",
+    "capabilities": {
+      "automatic_filtering": {
+        "description": "Respect gitignore and other ignore files",
+        "features": [
+          ".gitignore file support",
+          ".ignore file support (ripgrep-specific)",
+          ".git/info/exclude support",
+          "Global gitignore support",
+          "Precedence rules (.ignore overrides .gitignore)",
+          "Whitelist patterns with ! prefix",
+          "Parent directory ignore files",
+          "VCS ignore files with --no-ignore-vcs"
+        ]
+      },
+      "hidden_files": {
+        "description": "Control searching hidden files and directories",
+        "features": [
+          "Skip hidden files by default",
+          "Search hidden with --hidden",
+          "Explicit file paths override hiding",
+          "Dotfile handling"
+        ]
+      },
+      "binary_detection": {
+        "description": "Automatically detect and handle binary files",
+        "features": [
+          "NUL byte detection heuristic",
+          "Skip binary files in recursive search",
+          "Search binary with --binary/-a",
+          "Force binary detection with --no-binary"
+        ]
+      },
+      "unrestricted_modes": {
+        "description": "Progressive filter removal",
+        "features": [
+          "-u disables ignore files",
+          "-uu disables ignore files + search hidden",
+          "-uuu disables ignore + hidden + binary filters",
+          "Fine-grained --no-ignore-* flags"
+        ]
+      },
+      "manual_globs": {
+        "description": "Glob pattern filtering for precise file control",
+        "features": [
+          "Include/exclude with -g/--glob",
+          "Glob syntax: *, ?, [...], {a,b}, **",
+          "Negation with ! prefix",
+          "Case-insensitive globs with --iglob",
+          "Multiple glob patterns",
+          "Gitignore-compatible syntax",
+          "Override automatic filtering"
+        ]
+      },
+      "file_types": {
+        "description": "Filter by predefined or custom file types",
+        "features": [
+          "Include types with -t/--type",
+          "Exclude types with -T/--type-not",
+          "200+ built-in file types",
+          "Custom type definitions with --type-add",
+          "Type composition with include:",
+          "Type clearing with --type-clear",
+          "Whitelist mode with --type all",
+          "List types with --type-list"
+        ]
       }
     }
   },
   "advanced_patterns": {
     "type": "major_feature",
-    "description": "Advanced regex capabilities beyond basic pattern matching",
+    "description": "Advanced regex and pattern matching features",
     "capabilities": {
-      "multiline_search": {
-        "description": "Match patterns spanning multiple lines",
+      "multiline_mode": {
+        "description": "Search patterns across multiple lines",
         "features": [
-          "-U/--multiline flag enables multiline mode",
+          "-U/--multiline enables multiline mode",
           "Pattern can include \\n for newlines",
-          "\\p{any} matches any character including newlines",
-          "--multiline-dotall for . to match newlines",
-          "Memory implications (reads entire files)",
-          "Slower than line-by-line for most cases"
+          "--multiline-dotall for . matching newlines",
+          "Reads entire files into memory",
+          "Performance implications"
         ]
       },
       "pcre2_engine": {
-        "description": "PCRE2 regex engine for advanced features",
+        "description": "PCRE2 regex engine with advanced features",
         "features": [
-          "-P/--pcre2 flag enables PCRE2",
-          "Lookahead and lookbehind assertions",
-          "Backreferences with \\1, \\2, etc.",
-          "Named capture groups",
-          "Conditional patterns",
-          "--auto-hybrid-regex for automatic engine selection",
-          "--engine option (default|pcre2|auto)"
+          "-P/--pcre2 enables PCRE2 engine",
+          "Lookahead assertions (?=...)",
+          "Lookbehind assertions (?<=...)",
+          "Backreferences \\1, \\2",
+          "Named capture groups (?P<name>...)",
+          "Conditional patterns"
         ]
       },
       "unicode_support": {
-        "description": "Full Unicode pattern matching",
+        "description": "Unicode-aware pattern matching",
         "features": [
           "Unicode enabled by default",
-          "Unicode categories (\\p{Letter}, \\p{Number})",
-          "Unicode scripts (\\p{Greek}, \\p{Han})",
+          "Unicode categories \\p{Letter}, \\p{Number}",
+          "Unicode scripts \\p{Greek}, \\p{Han}",
           "Case-insensitive Unicode matching",
-          "Grapheme cluster awareness"
+          "Disable Unicode with (?-u)"
+        ]
+      },
+      "engine_selection": {
+        "description": "Choose between different regex engines",
+        "features": [
+          "Default: Rust regex (finite automata)",
+          "PCRE2 with -P flag (backtracking)",
+          "Auto engine with --engine auto",
+          "Linear time complexity (Rust regex)",
+          "Literal extraction optimization"
         ]
       }
     }
   },
   "output_control": {
     "type": "major_feature",
-    "description": "Customization of search result output format and display",
+    "description": "Output formatting and display options",
     "capabilities": {
       "standard_output": {
-        "description": "Traditional grep-like output with enhancements",
+        "description": "Default grep-compatible output format",
         "features": [
-          "Line numbers with -n/--line-number (often default)",
+          "Line numbers with -n/--line-number",
+          "Disable line numbers with -N/--no-line-number",
           "Column numbers with --column",
-          "File path display control (--with-filename, --no-filename)",
+          "File path control (--with-filename, --no-filename)",
           "Byte offset with -b/--byte-offset",
-          "Only matching part with -o/--only-matching",
-          "Count matches with -c/--count"
+          "Only matching with -o/--only-matching",
+          "Heading mode with --heading/--no-heading"
         ]
       },
       "json_output": {
-        "description": "Machine-readable JSON output for tool integration",
+        "description": "Structured JSON output for programmatic consumption",
         "features": [
-          "--json flag for JSON Lines format",
-          "Structured data with type field",
-          "Match context and metadata included",
-          "Statistics in JSON format",
-          "Pretty-printing support"
+          "JSON Lines format with --json",
+          "Pretty-printed JSON with -p/--pretty",
+          "Message types: match, context, begin, end, summary",
+          "Complete metadata per match",
+          "Statistics in JSON format"
         ]
       },
-      "alternative_formats": {
-        "description": "Specialized output formats",
+      "vimgrep_format": {
+        "description": "Vim quickfix-compatible output format",
         "features": [
-          "--vimgrep for Vim quickfix format",
-          "-l/--files-with-matches for file names only",
-          "--files-without-match for inverse",
-          "-I/--no-filename for content only",
-          "NULL separator with -0/--null"
-        ]
-      },
-      "context_lines": {
-        "description": "Show surrounding lines for matches",
-        "features": [
-          "-A/--after-context N for N lines after",
-          "-B/--before-context N for N lines before",
-          "-C/--context N for N lines before and after",
-          "Context separator customization",
-          "Smart context merging for nearby matches"
+          "--vimgrep format: file:line:column:text",
+          "Editor integration support",
+          "Quickfix list compatibility"
         ]
       },
       "color_control": {
-        "description": "Syntax highlighting and color customization",
+        "description": "Customize colored output",
         "features": [
-          "Automatic color detection for TTY",
-          "--color flag (never|auto|always|ansi)",
-          "Custom color schemes with --colors",
-          "Match highlighting",
-          "Path, line number, and column coloring"
+          "Color modes: always, never, auto, ansi",
+          "Custom colors with --colors",
+          "Match, path, line, column coloring",
+          "Foreground/background/style attributes",
+          "256-color palette support"
         ]
       },
-      "sorting": {
+      "context_lines": {
+        "description": "Show lines before and after matches",
+        "features": [
+          "-A/--after-context for lines after",
+          "-B/--before-context for lines before",
+          "-C/--context for symmetric context",
+          "Custom context separators with --context-separator",
+          "Disable separators with --no-context-separator",
+          "Context merging for overlapping matches",
+          "Field separators customization"
+        ]
+      },
+      "sorting_results": {
         "description": "Sort search results by various criteria",
         "features": [
-          "--sort path for alphabetical by file path",
-          "--sort modified for newest first",
-          "--sort accessed for most recently accessed",
+          "--sort path for alphabetical sorting",
+          "--sort modified for modification time",
+          "--sort accessed for access time",
           "--sort created for creation time",
           "--sortr for reverse order",
-          "Performance impact (disables parallelism)"
+          "--sort none to disable",
+          "Disables parallelism (performance cost)"
+        ]
+      },
+      "hyperlinks": {
+        "description": "Terminal hyperlink support for clickable file paths",
+        "features": [
+          "OSC 8 terminal hyperlinks",
+          "Built-in formats: default, vscode, vscode-insiders, vscodium, macvim, textmate, cursor",
+          "Custom format with {path}, {line}, {column} placeholders",
+          "Click to open in editor"
+        ]
+      },
+      "additional_output": {
+        "description": "Other output customization options",
+        "features": [
+          "Trim whitespace with --trim",
+          "Max columns with --max-columns",
+          "Column preview with --max-columns-preview",
+          "Null separators with --null/-0",
+          "Null data with --null-data",
+          "Line buffering with --line-buffered",
+          "Block buffering with --block-buffered",
+          "Field separators (--field-match-separator, --field-context-separator)"
         ]
       }
     }
   },
   "file_handling": {
     "type": "major_feature",
-    "description": "Support for various file encodings, formats, and preprocessing",
+    "description": "File encoding, compression, and preprocessing",
     "capabilities": {
       "encoding_support": {
-        "description": "Search files in different text encodings",
+        "description": "Handle different file encodings",
         "features": [
-          "-E/--encoding flag to specify encoding",
-          "UTF-8, UTF-16, Latin-1, GBK, EUC-JP, Shift_JIS support",
-          "Automatic UTF-16 detection (BOM-based)",
-          "--no-encoding to disable automatic detection",
-          "Encoding conversion during search",
-          "Multiple encodings searchable"
+          "Auto mode with BOM sniffing (default)",
+          "Explicit encoding with -E/--encoding",
+          "UTF-8, UTF-16, latin1, GBK, Shift_JIS, EUC-JP support",
+          "All WHATWG encodings supported",
+          "BOM detection (UTF-8, UTF-16LE, UTF-16BE)",
+          "Transcoding to UTF-8",
+          "Disable encoding with --encoding=none",
+          "Reset to auto with --no-encoding"
         ]
       },
       "binary_handling": {
-        "description": "Control how binary files are processed",
+        "description": "Search and handle binary files",
         "features": [
-          "Binary files skipped by default",
-          "--binary to search binary files",
-          "-a/--text to treat all files as text",
-          "--binary-files without-match to skip silently",
-          "Binary detection heuristics",
-          "NULL byte detection"
+          "Binary detection via NUL bytes",
+          "Skip binary files by default (recursive search)",
+          "Search binary with --binary",
+          "Force binary detection with --no-binary",
+          "Text mode with -a/--text"
         ]
       },
-      "compressed_files": {
-        "description": "Search inside compressed archives",
+      "compression": {
+        "description": "Search compressed files transparently",
         "features": [
-          "-z/--search-zip to search compressed files",
+          "Enable with -z/--search-zip",
           "Brotli (.br) support",
-          "Bzip2 (.bz2) support",
-          "Gzip (.gz) support",
+          "Bzip2 (.bz2, .tbz2) support",
+          "Gzip (.gz, .tgz) support",
           "LZ4 (.lz4) support",
           "LZMA (.lzma) support",
-          "XZ (.xz) support",
-          "Zstandard (.zst) support",
-          "Automatic format detection"
+          "XZ (.xz, .txz) support",
+          "Zstandard (.zst, .zstd) support",
+          "Compress (.Z) support",
+          "Automatic format detection by extension",
+          "External tool dependencies",
+          "Out-of-process decompression"
         ]
       },
       "preprocessing": {
-        "description": "Apply custom filters before searching",
+        "description": "Custom file preprocessing before search",
         "features": [
-          "--pre flag to specify preprocessor command",
-          "--pre-glob to apply preprocessor to matching files",
+          "Custom preprocessor with --pre",
+          "Glob matching with --pre-glob",
           "PDF text extraction",
+          "Office document conversion",
           "Custom decompression",
-          "Decryption workflows",
-          "Encoding detection pipelines",
-          "Chain multiple transformations"
+          "Encryption/decryption workflows"
         ]
       }
     }
   },
   "replacements": {
     "type": "major_feature",
-    "description": "Search and replace functionality with capture group support",
+    "description": "Search and replace functionality",
     "capabilities": {
-      "basic_replacement": {
-        "description": "Replace matched text with new content",
+      "replace_mode": {
+        "description": "Replace matched text in output",
         "features": [
-          "-r/--replace flag with replacement text",
-          "Capture group references ($1, $2, etc.)",
-          "Named capture groups (${name})",
+          "Replace with -r/--replace",
+          "Output-only modification (files unchanged)",
           "Literal replacement text",
-          "Output to stdout (original files unchanged)",
-          "Preview mode for safety"
+          "Per-match replacement"
         ]
       },
-      "advanced_replacement": {
-        "description": "Complex replacement patterns",
+      "capture_groups": {
+        "description": "Reference regex capture groups in replacements",
         "features": [
-          "Conditional replacements with PCRE2",
-          "Case conversion in replacements",
-          "Multiple capture group usage",
-          "Backreference syntax",
-          "Escape sequences in replacement"
+          "Numbered groups: $1, $2, ...",
+          "Named groups: $name, ${name}",
+          "$0 for entire match",
+          "Brace syntax for disambiguation: ${1}",
+          "Invalid groups replaced with empty string"
+        ]
+      },
+      "replacement_syntax": {
+        "description": "Advanced replacement string syntax",
+        "features": [
+          "Literal dollar sign: $$",
+          "Empty replacement to remove matches",
+          "Works with --only-matching",
+          "Compatible with context flags",
+          "JSON output includes replacements"
         ]
       }
     }
   },
   "configuration": {
     "type": "major_feature",
-    "description": "Persistent configuration through files and environment",
+    "description": "Configuration files and persistent settings",
     "capabilities": {
       "config_files": {
-        "description": "Store default flags in configuration files",
+        "description": "Load default options from configuration files",
         "features": [
           "RIPGREP_CONFIG_PATH environment variable",
-          "One flag per line format",
+          "One argument per line format",
           "Comments with # prefix",
-          "Override with command line flags",
-          "Flag validation on load",
-          "Debugging with --debug"
+          "Flag=value or separate lines",
+          "Config prepended to CLI args",
+          "Disable with --no-config"
         ]
       },
       "config_locations": {
-        "description": "Where ripgrep looks for configuration",
+        "description": "Specify configuration file locations",
         "features": [
           "Custom path via RIPGREP_CONFIG_PATH",
-          "$XDG_CONFIG_HOME/ripgrep/config",
-          "$HOME/.ripgreprc",
-          "Project-specific configs (not built-in, use shell aliases)",
-          "Precedence: CLI > config file > defaults"
+          "No auto-discovery (must set env var)",
+          "Project-specific configs",
+          "Multiple configs via shell setup"
         ]
       },
-      "environment_variables": {
-        "description": "Environment-based configuration",
+      "flag_precedence": {
+        "description": "Control how command-line flags override config",
         "features": [
-          "RIPGREP_CONFIG_PATH for config file location",
-          "NO_COLOR to disable colors",
-          "GREP_COLORS for color customization (partial)",
-          "Environment variable expansion in config"
+          "Config args prepended to CLI args",
+          "Later flags override earlier flags",
+          "Command-line overrides config",
+          "Debug config loading with --debug"
         ]
       }
     }
   },
   "performance": {
     "type": "major_feature",
-    "description": "Performance optimization and tuning options",
+    "description": "Performance optimization and tuning",
     "capabilities": {
       "parallelism": {
-        "description": "Multi-threaded search for speed",
+        "description": "Multi-threaded parallel searching",
         "features": [
-          "Parallel search by default (uses all cores)",
-          "-j/--threads N to control thread count",
-          "Work-stealing scheduler for load balancing",
+          "Parallel search by default",
+          "Thread control with -j/--threads",
+          "Work-stealing scheduler",
           "Lock-free parallel iteration",
-          "Automatic scaling to CPU count",
-          "Single-threaded with --threads 1"
+          "Auto-scaling to CPU count",
+          "Single-threaded with --threads 1",
+          "Disabled by sorting"
         ]
       },
-      "io_strategy": {
-        "description": "Smart I/O handling for different scenarios",
+      "memory_mapping": {
+        "description": "Memory-mapped I/O for large files",
         "features": [
-          "Memory-mapped files for single file search",
-          "Incremental buffer reading for directory search",
           "Automatic strategy selection",
-          "--mmap flag to force memory mapping",
-          "--no-mmap to force buffered reading",
-          "Stdin handling optimization"
+          "Force mmap with --mmap",
+          "Disable mmap with --no-mmap",
+          "Stdin optimized buffering",
+          "Disabled by default on macOS",
+          "Best for large files (>10MB)"
         ]
       },
-      "optimization_techniques": {
-        "description": "Built-in performance optimizations",
+      "simd_acceleration": {
+        "description": "Hardware-accelerated matching",
         "features": [
-          "SIMD acceleration for literal matching",
-          "Finite automata for predictable regex performance",
-          "Aggressive literal optimizations",
-          "RegexSet for simultaneous glob matching",
-          "UTF-8 decoding in DFA engine",
-          "Prefix literal extraction"
+          "Automatic SIMD detection",
+          "SSE2, SSSE3, AVX2 support",
+          "Fast literal string matching",
+          "Multi-pattern searching",
+          "BOM detection acceleration"
         ]
       },
-      "performance_tuning": {
-        "description": "Flags to adjust performance trade-offs",
+      "regex_optimization": {
+        "description": "Regex engine tuning",
         "features": [
-          "--dfa-size-limit for regex DFA memory limit",
-          "--max-filesize to skip large files",
-          "--max-columns to handle long lines",
-          "--max-count N to stop after N matches",
-          "--max-depth for recursion depth",
-          "--one-file-system to avoid crossing mounts"
+          "DFA size limit with --dfa-size-limit",
+          "Regex size limit with --regex-size-limit",
+          "Literal extraction from patterns",
+          "RegexSet for glob matching",
+          "UTF-8 DFA decoding",
+          "Engine selection (default, pcre2, auto)"
+        ]
+      },
+      "resource_limits": {
+        "description": "Limit resource usage",
+        "features": [
+          "Max file size with --max-filesize",
+          "Max columns with --max-columns",
+          "Max count with -m/--max-count",
+          "Max depth with --max-depth",
+          "One file system with --one-file-system"
+        ]
+      },
+      "statistics": {
+        "description": "Performance metrics and profiling",
+        "features": [
+          "Statistics with --stats",
+          "Files searched count",
+          "Matches found count",
+          "Bytes searched",
+          "Time elapsed",
+          "Search time vs total time"
         ]
       }
     }
   },
   "utility_features": {
     "type": "major_feature",
-    "description": "Additional modes and utility functions",
+    "description": "Additional utility modes and features",
     "capabilities": {
-      "list_modes": {
-        "description": "List files without searching content",
+      "list_files_mode": {
+        "description": "List files that would be searched or match",
         "features": [
-          "--files to list files that would be searched",
-          "--type-list to show all file types",
-          "-l/--files-with-matches for files containing matches",
-          "--files-without-match for files not containing matches"
+          "List files with --files",
+          "Files with matches with -l/--files-with-matches",
+          "Files without matches with --files-without-match",
+          "Include zero count with --include-zero"
         ]
       },
-      "counting": {
+      "count_mode": {
         "description": "Count matches instead of displaying them",
         "features": [
-          "-c/--count for match counts per file",
-          "--count-matches for total match count across files",
-          "Include zero-count files with --include-zero"
+          "Count per file with -c/--count",
+          "Count matches with --count-matches",
+          "Include zero counts with --include-zero"
         ]
       },
       "statistics": {
-        "description": "Search statistics and metrics",
+        "description": "Display search statistics and performance metrics",
         "features": [
-          "--stats flag for detailed statistics",
-          "Files searched count",
-          "Matches found count",
-          "Bytes searched",
-          "Time elapsed",
-          "JSON format available with --json"
+          "Statistics with --stats",
+          "Combine with --json for structured stats",
+          "Performance profiling",
+          "Resource usage tracking"
         ]
       },
       "passthru_mode": {
         "description": "Show all lines with matches highlighted",
         "features": [
-          "--passthru to print all lines",
-          "Highlights matching lines",
-          "Useful for log analysis",
-          "Combines with context flags"
+          "Passthru mode with --passthru",
+          "Highlight matches in all output",
+          "Log file analysis",
+          "Flag precedence with context flags"
         ]
       },
-      "hyperlinks": {
-        "description": "Terminal hyperlink support for results",
+      "debugging": {
+        "description": "Debug and troubleshoot searches",
         "features": [
-          "--hyperlink-format for custom hyperlink format",
-          "VSCode, file://, and custom formats",
-          "Click to open in editor",
-          "Terminal support required"
+          "Debug mode with --debug",
+          "Show ignored files",
+          "Show loaded config",
+          "Encoding detection info"
         ]
       }
     }
   },
   "meta_content": {
     "type": "meta",
-    "description": "Cross-cutting documentation and guidance",
+    "description": "Cross-cutting documentation and reference material",
     "best_practices": {
-      "performance": [
-        "Use file type filters (-t) instead of globs when possible",
-        "Avoid multiline mode unless necessary",
-        "Use literal search (-F) when not needing regex",
-        "Consider --max-filesize for repositories with large files",
-        "Single-threaded mode for deterministic output"
+      "automation": [
+        "Use --json for scripts and automation",
+        "Always use --color never when piping to other commands",
+        "Use --vimgrep for editor integration",
+        "Use --null for safe filename handling",
+        "Use --line-buffered for incremental processing"
       ],
-      "pattern_writing": [
-        "Start with simple patterns, add complexity as needed",
-        "Test patterns on small datasets first",
-        "Use word boundaries (-w) for exact word matches",
-        "Prefer default engine over PCRE2 unless needed",
-        "Use -F for literal strings with special characters"
+      "performance": [
+        "Use UTF-8 files when possible for best performance",
+        "Avoid sorting when maximum performance is critical",
+        "Use file type filtering to reduce search scope",
+        "Use literal search (-F) when regex is not needed",
+        "Increase --dfa-size-limit for complex patterns",
+        "Use --max-count for quick sampling",
+        "Disable mmap on network filesystems"
       ],
       "filtering": [
-        "Create .ignore files for project-specific exclusions",
-        "Use -uuu only when truly needed (slow)",
-        "Define custom file types for specialized formats",
-        "Layer ignore files (global, repo, directory)",
-        "Test glob patterns with --files first"
+        "Use .ignore files for ripgrep-specific patterns",
+        "Combine -t and -g for precise file selection",
+        "Use glob patterns for path-based filtering",
+        "Test globs with --files before searching",
+        "Prefer include patterns over exclude patterns"
       ],
       "output": [
-        "Use --json for programmatic consumption",
-        "Context lines helpful for understanding matches",
-        "Color output for human reading, --color never for scripts",
-        "vimgrep format for editor integration",
-        "Count mode for quick metrics"
+        "Use --heading for multi-file searches",
+        "Use --stats to identify performance bottlenecks",
+        "Use context lines (-C) for understanding matches",
+        "Use --vimgrep for editor quickfix integration",
+        "Customize colors for better terminal visibility"
+      ],
+      "patterns": [
+        "Start with simple patterns, add complexity as needed",
+        "Use word boundaries (-w) for exact word matches",
+        "Prefer default engine over PCRE2 unless needed",
+        "Use -F for literal strings with special characters",
+        "Test patterns on small datasets first"
       ]
     },
     "common_patterns": [
       {
-        "name": "Log analysis",
-        "description": "Search and highlight errors in logs",
-        "example": "rg -i 'error|warning|critical' --passthru app.log"
+        "name": "Search source code",
+        "description": "Find patterns in specific programming languages",
+        "example": "rg -t rust -t python 'TODO'"
       },
       {
-        "name": "Code search with context",
-        "description": "Find function definitions with surrounding code",
-        "example": "rg -tjs -C 3 'function\\s+\\w+\\(' src/"
-      },
-      {
-        "name": "Find todos by author",
-        "description": "Locate TODO comments with names",
-        "example": "rg 'TODO\\(\\w+\\):' -tcpp"
-      },
-      {
-        "name": "Search specific file types only",
-        "description": "Search Python files excluding tests",
-        "example": "rg -tpy -g '!*test*' 'import requests'"
-      },
-      {
-        "name": "JSON output for tools",
-        "description": "Machine-readable output for processing",
-        "example": "rg --json 'pattern' | jq '.data.lines.text'"
-      },
-      {
-        "name": "Replace with preview",
-        "description": "See replacements before applying",
-        "example": "rg 'old_name' -r 'new_name' | less"
-      },
-      {
-        "name": "Count occurrences by file",
-        "description": "Find which files have most matches",
-        "example": "rg -c 'function' --sort path"
+        "name": "Search with context",
+        "description": "Show surrounding lines for better understanding",
+        "example": "rg -C 3 'error'"
       },
       {
         "name": "Search compressed logs",
-        "description": "Look inside gzipped log archives",
-        "example": "rg -z 'error' logs/*.gz"
+        "description": "Search through gzipped log files",
+        "example": "rg -z 'ERROR' logs/*.gz"
+      },
+      {
+        "name": "Extract data with replacements",
+        "description": "Transform and extract structured data",
+        "example": "rg '(\\w+)@(\\w+\\.com)' -o -r '$1 at $2'"
+      },
+      {
+        "name": "Search hidden files",
+        "description": "Include dotfiles in search",
+        "example": "rg --hidden --glob '!.git/' 'config'"
+      },
+      {
+        "name": "Count occurrences",
+        "description": "Count matches per file",
+        "example": "rg -c 'function' --sort path"
+      },
+      {
+        "name": "JSON output for processing",
+        "description": "Machine-readable structured output",
+        "example": "rg --json 'pattern' | jq '.data.lines.text'"
+      },
+      {
+        "name": "Find function definitions",
+        "description": "Search with context for understanding",
+        "example": "rg -A 10 'fn main' src/"
       },
       {
         "name": "Multiline struct search",
-        "description": "Find struct definitions spanning lines",
+        "description": "Search patterns across multiple lines",
         "example": "rg -U 'struct User \\{[^}]*email[^}]*\\}'"
       },
       {
@@ -514,52 +630,72 @@
     "troubleshooting": {
       "common_issues": [
         {
-          "issue": "No files searched (empty results)",
-          "solution": "Check gitignore files. Use --debug to see what files are filtered. Try -uuu to search all files."
+          "issue": "Pattern doesn't match known content",
+          "solution": "Check encoding with --debug, verify file has correct encoding or BOM. Try explicit encoding with -E."
         },
         {
-          "issue": "Pattern not matching expected text",
-          "solution": "Regex special characters need escaping. Use -F for literal strings. Check case sensitivity with -i."
+          "issue": "Files are being ignored unexpectedly",
+          "solution": "Use --debug to see why files are filtered. Try -u/-uu/-uuu to disable filtering. Check .gitignore patterns."
         },
         {
-          "issue": "Performance is slow",
-          "solution": "Large files? Try --max-filesize. Too many files? Use file type filters (-t). Multiline? Avoid unless necessary."
+          "issue": "Compressed file not searched",
+          "solution": "Verify file extension matches compression format. Ensure decompression tool is in PATH (gzip, xz, etc.)."
         },
         {
-          "issue": "Binary file matches not shown",
-          "solution": "Binary files skipped by default. Use --binary or -a to search them."
+          "issue": "Slow search performance",
+          "solution": "Check what's being searched with --files. Use file type filtering. Verify no network filesystems. Use --stats to profile."
+        },
+        {
+          "issue": "Replacement not working as expected",
+          "solution": "Always use single quotes for replacement strings to prevent shell expansion. Use braces ${1} to disambiguate."
+        },
+        {
+          "issue": "Binary files not searched",
+          "solution": "Binary files skipped by default in recursive search. Use --binary or -a to search them."
         },
         {
           "issue": "Hidden files not searched",
           "solution": "Hidden files excluded by default. Use --hidden or -u to include them."
         },
         {
-          "issue": "Regex DFA gave up",
-          "solution": "Pattern too complex for default engine. Use -P for PCRE2 or simplify pattern."
-        },
-        {
-          "issue": "Colors not showing",
-          "solution": "Terminal may not support colors, or output is piped. Use --color always to force."
+          "issue": "No results found",
+          "solution": "Check ignore files with --debug. Try --no-ignore. Verify pattern syntax. Use -F for literal search."
         },
         {
           "issue": "Can't match across lines",
           "solution": "Default is line-oriented. Use -U/--multiline for multi-line patterns."
         },
         {
-          "issue": "Config file not loaded",
-          "solution": "Check RIPGREP_CONFIG_PATH. Verify file location and syntax (one flag per line)."
+          "issue": "Colors not showing",
+          "solution": "Terminal may not support colors or output is piped. Use --color always to force."
         },
         {
-          "issue": "Too many open files error",
-          "solution": "Reduce thread count with -j or increase system file descriptor limit (ulimit)."
+          "issue": "Config file not loaded",
+          "solution": "Check RIPGREP_CONFIG_PATH is set. Verify file location and syntax. Use --debug to see loaded config."
+        },
+        {
+          "issue": "DFA gave up error",
+          "solution": "Pattern too complex for default engine. Use -P for PCRE2 or increase --dfa-size-limit."
+        },
+        {
+          "issue": "Missing decompression tool",
+          "solution": "Install required tool (gzip, xz, zstd, etc.). Enable debug logging: RUST_LOG=debug rg -z 'pattern'"
+        },
+        {
+          "issue": "Symlink loops",
+          "solution": "When using -L/--follow, limit depth with --max-depth to prevent infinite loops."
+        },
+        {
+          "issue": "Permission errors during recursive search",
+          "solution": "ripgrep warns but continues. Use appropriate permissions or sudo if needed for restricted directories."
         }
       ]
     }
   },
   "version_info": {
-    "analyzed_version": "14.1.1",
-    "analysis_date": "2025-11-13",
-    "documentation_source": "docs/ directory",
-    "analysis_scope": "User-facing features from MkDocs documentation"
+    "analyzed_version": "14.1+",
+    "analysis_date": "2025-11-19",
+    "documentation_source": "docs directory MkDocs documentation",
+    "analysis_scope": "Comprehensive feature inventory from user-facing documentation"
   }
 }

@@ -49,6 +49,41 @@ The configuration file format is simple with only two rules:
     - Empty lines are allowed and ignored
     - Comments help document your configuration choices
 
+### Line-by-Line Parsing Process
+
+ripgrep processes each line in your configuration file using this algorithm:
+
+```mermaid
+sequenceDiagram
+    participant File as Config File
+    participant Parser as Config Parser
+    participant Args as Arguments List
+
+    Note over File,Args: Source: crates/core/flags/config.rs:84-100
+
+    File->>Parser: Read next line
+    Parser->>Parser: Trim whitespace
+
+    alt Line is empty
+        Parser->>File: Skip, read next line
+    else Line starts with '#'
+        Parser->>File: Skip comment, read next line
+    else Valid content
+        Parser->>Parser: Convert to OS string
+        alt Conversion succeeds
+            Parser->>Args: Add as single argument
+            Parser->>File: Continue to next line
+        else Invalid UTF-8 (platform-specific)
+            Parser->>Args: Report parse error with line number
+            Parser->>File: Continue to next line
+        end
+    end
+
+    Note over File,Args: Each line becomes exactly one argument
+```
+
+**Figure**: The line-by-line parsing algorithm showing how ripgrep processes configuration files. After trimming whitespace, empty lines and comments are skipped, while valid content becomes a single command-line argument.
+
 ### Example Configuration File
 
 Here's a comprehensive example showing common configuration patterns:
@@ -211,6 +246,41 @@ The `--debug` flag shows:
 ## Error Handling
 
 ripgrep handles configuration file errors as follows:
+
+```mermaid
+flowchart LR
+    Start([Config Loading]) --> CheckEnv{RIPGREP_CONFIG_PATH set?}
+
+    CheckEnv -->|No/Empty| NoConfig[No config loaded]
+    CheckEnv -->|Yes| ReadFile{File readable?}
+
+    ReadFile -->|No| FileError[File Error]
+    FileError --> NoConfig
+
+    ReadFile -->|Yes| ParseLines[Parse each line]
+
+    ParseLines --> Process["Skip empty lines and comments
+    Validate UTF-8
+    Collect arguments"]
+
+    Process --> Errors{Parse errors?}
+
+    Errors -->|Yes| Report[Report errors with line numbers]
+    Errors -->|No| Success[Config loaded]
+
+    Report --> Success
+    NoConfig --> End([Continue with CLI args])
+    Success --> End
+
+    style Start fill:#e1f5ff
+    style FileError fill:#ffebee
+    style Report fill:#fff3e0
+    style Success fill:#e8f5e9
+    style NoConfig fill:#f5f5f5
+    style End fill:#e8f5e9
+```
+
+**Figure**: Error handling flow showing how ripgrep processes configuration file errors. File read errors prevent all config loading, while parse errors are reported with line numbers but don't stop processing. Source: `crates/core/flags/config.rs:26-40,84-100`
 
 ### File Read Errors
 

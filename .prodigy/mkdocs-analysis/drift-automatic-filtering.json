@@ -4,58 +4,49 @@
   "page_title": "automatic filtering",
   "page_file": "docs/automatic-filtering.md",
   "drift_detected": false,
-  "severity": "none",
-  "quality_assessment": "Excellent - comprehensive documentation with accurate examples, clear structure, and valid cross-references",
+  "severity": "low",
+  "quality_assessment": "Excellent comprehensive documentation with accurate implementation details, clear visual features (flowcharts, decision trees), and well-structured content. The page effectively explains ripgrep's automatic filtering mechanisms including ignore files, hidden files, binary detection, and unrestricted modes. All cross-references are valid.",
   "issues": [],
   "positive_aspects": [
     "Comprehensive coverage of all automatic filtering mechanisms",
-    "Clear explanation of ignore file types and precedence rules",
-    "Excellent examples throughout with practical use cases",
-    "Well-organized progressive structure from basic to advanced",
-    "Detailed troubleshooting section addressing common issues",
-    "Accurate documentation of -u/-uu/-uuu flags and fine-grained --no-ignore-* options",
-    "Good coverage of hidden file handling, binary detection, and symlink behavior",
-    "Proper documentation of whitelist patterns and custom ignore files",
-    "Clear interaction documentation with manual filtering and explicit paths",
-    "All cross-references to other documentation pages are valid"
+    "Excellent use of Mermaid flowcharts to visualize filtering decision flow",
+    "Clear decision tree for choosing the right flags (Choosing the Right Flag section)",
+    "Well-organized tabs for project-specific .ignore patterns (JavaScript, Rust, Python, General)",
+    "Accurate documentation of precedence rules for ignore files",
+    "Clear explanation of the progressive -u/-uu/-uuu unrestricted flags",
+    "Good use of admonitions (tip, warning, note) for important information",
+    "Comprehensive troubleshooting section addressing common issues",
+    "Accurate flag descriptions matching the implementation in crates/core/flags/defs.rs",
+    "Clear explanation of binary detection heuristic (NUL byte detection)",
+    "Proper documentation of explicit path behavior bypassing filters",
+    "Valid cross-references to manual-filtering-globs.md and manual-filtering-types.md"
   ],
   "improvement_suggestions": [
-    "Consider adding a visual diagram showing ignore file precedence hierarchy",
-    "Could add a quick reference table summarizing all --no-ignore-* flags and their effects",
-    "Might benefit from a decision tree diagram for choosing which flags to use",
-    "Could add examples of common .ignore file patterns for different project types"
+    "Could add a quick reference table summarizing all --no-ignore-* flags in one place (currently only in Fine-Grained Control section)",
+    "Could include an example of the --debug output to help users understand what filtering information looks like",
+    "Could add a visual diagram showing ignore file precedence hierarchy (currently only text-based in admonition)",
+    "Could add more examples of whitelist patterns in action with before/after scenarios"
   ],
   "cross_references": [
     "manual-filtering-globs",
     "manual-filtering-types"
   ],
-  "link_validation": {
-    "total_internal_links": 2,
-    "broken_links": 0,
-    "all_valid": true,
-    "validated_links": [
-      "manual-filtering-globs.md",
-      "manual-filtering-types.md"
-    ]
-  },
   "metadata": {
-    "analyzed_at": "2025-11-13T20:53:28Z",
+    "analyzed_at": "2025-11-19T18:24:02Z",
     "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
     "topics_covered": [
       "automatic filtering",
       "ignore files",
-      "hidden files",
-      "binary files",
-      "symlinks",
       "gitignore",
+      "hidden files",
+      "binary detection",
+      "unrestricted modes",
+      "symlinks",
       "precedence rules",
-      "unrestricted flags"
+      "whitelist patterns"
     ],
     "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
-    "features_analyzed": [
-      "filtering.automatic_filtering.ignore_files",
-      "filtering.automatic_filtering.automatic_exclusions",
-      "filtering.automatic_filtering.override_flags"
-    ]
+    "internal_links_validated": true,
+    "broken_links": []
   }
 }

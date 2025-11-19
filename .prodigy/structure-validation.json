@@ -1,0 +1,32 @@
+{
+  "validation_timestamp": "2025-11-19T20:40:18Z",
+  "project": "ripgrep",
+  "docs_dir": "docs",
+  "total_files": 55,
+  "total_chapters": 6,
+  "mkdocs_specific": {
+    "index_md_exists": true,
+    "mkdocs_build_passed": true,
+    "orphaned_files_count": 1,
+    "missing_files_count": 1,
+    "broken_links_count": 0,
+    "build_errors_count": 0
+  },
+  "issues_found": [],
+  "summary": {
+    "orphaned_files": 1,
+    "missing_nav_files": 1,
+    "broken_links": 0,
+    "redundant_best_practices": 0,
+    "best_practices_in_reference": 0,
+    "circular_see_also": 0,
+    "generic_see_also": 0,
+    "over_fragmented_chapters": 0,
+    "stub_navigation_files": 0,
+    "meta_sections_in_feature_chapters": 0,
+    "subpages_navigation_labels": 0
+  },
+  "total_issues": 2,
+  "recommendations": [],
+  "status": "validation_complete"
+}

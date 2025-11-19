@@ -1,0 +1,65 @@
+{
+  "item_type": "page",
+  "page_id": "binary-encoding",
+  "page_title": "binary encoding",
+  "page_file": "docs/troubleshooting/binary-encoding.md",
+  "drift_detected": true,
+  "severity": "medium",
+  "quality_assessment": "Page is generally accurate with comprehensive technical detail and good visual features, but contains one significant error regarding a non-existent flag",
+  "issues": [
+    {
+      "type": "incorrect_example",
+      "severity": "high",
+      "section": "Searching Binary Files - Examples",
+      "description": "Documentation references non-existent --binary-files=without-match flag",
+      "current_content": "rg --binary-files=without-match \"pattern\"",
+      "should_be": "Flag does not exist in ripgrep",
+      "fix_suggestion": "Remove this example entirely or replace with correct flag usage. The --binary flag controls binary file searching, but there is no --binary-files flag with values.",
+      "source_reference": "Verified via ripgrep --help and grep in crates/core/flags/ - no such flag exists"
+    }
+  ],
+  "positive_aspects": [
+    "Excellent use of MkDocs Material features (admonitions, tabs, code annotations, Mermaid diagrams)",
+    "Accurate technical explanation of binary detection heuristic (NUL byte detection)",
+    "Correct buffer size documentation (64 KB) matching crates/searcher/src/line_buffer.rs:6",
+    "Accurate description of BinaryDetection modes (Quit, Convert, None) matching crates/searcher/src/line_buffer.rs:51-64",
+    "Correct explanation of binary mode behaviors matching crates/core/flags/lowargs.rs:233-248",
+    "Good visual flow diagram showing binary detection decision tree",
+    "Comprehensive flag comparison table with clear use cases",
+    "Accurate encoding information with BOM detection details",
+    "Helpful diagnosis workflow with Mermaid diagram",
+    "Source code annotations provide excellent traceability",
+    "Well-organized content with tabs for different usage scenarios",
+    "Valid internal link to file-encoding.md page"
+  ],
+  "improvement_suggestions": [
+    "Add example of how to use --debug to diagnose binary detection issues",
+    "Include note about performance implications of -a/--text on large binary files",
+    "Add cross-reference to compression chapter for searching compressed binary files",
+    "Consider adding troubleshooting entry for mixed binary/text files",
+    "Add example showing difference between explicit file path (searches binary) vs recursive search (skips binary)"
+  ],
+  "cross_references": [
+    "file-encoding"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-19T18:24:00Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": [
+      "binary detection",
+      "encoding",
+      "NUL bytes",
+      "text mode",
+      "BOM detection",
+      "UTF-8",
+      "UTF-16",
+      "latin1"
+    ],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "source_code_verified": [
+      "crates/searcher/src/line_buffer.rs:6 (buffer size)",
+      "crates/searcher/src/line_buffer.rs:51-64 (BinaryDetection enum)",
+      "crates/core/flags/lowargs.rs:233-248 (BinaryMode enum)"
+    ]
+  }
+}

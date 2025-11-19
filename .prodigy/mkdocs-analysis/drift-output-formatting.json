@@ -4,105 +4,138 @@
   "page_title": "output formatting",
   "page_file": "docs/common-options/output-formatting.md",
   "drift_detected": true,
-  "severity": "medium",
-  "quality_assessment": "Page has accurate information overall but contains incorrect hyperlink format aliases that need correction",
+  "severity": "high",
+  "quality_assessment": "Page provides good coverage of basic output formatting options with excellent visual enhancements, but is missing several important output formats and modes. The hyperlink format table is accurate and matches the source code.",
   "issues": [
     {
-      "type": "outdated_information",
+      "type": "missing_content",
       "severity": "high",
-      "section": "Match Output - --hyperlink-format",
-      "description": "Documented hyperlink format aliases are incorrect",
-      "current_content": "Built-in formats: `vscode`, `cursor`, `macvim`, `sublime`, `textmate`, `emacs`, `vim`",
-      "should_be": "Built-in formats: `default`, `none`, `cursor`, `file`, `grep+`, `kitty`, `macvim`, `textmate`, `vscode`, `vscode-insiders`, `vscodium`",
-      "fix_suggestion": "Update the list of built-in hyperlink format aliases to match the actual implementation. Remove non-existent aliases (sublime, emacs, vim) and add missing ones (default, none, file, grep+, kitty, vscode-insiders, vscodium).",
-      "source_reference": "crates/printer/src/hyperlink/aliases.rs:6-68"
-    },
-    {
-      "type": "broken_links",
-      "severity": "medium",
-      "section": "Cross-References",
-      "description": "Found 0 broken internal link(s)",
-      "broken_links": [],
-      "fix_suggestion": "All internal links are valid.",
-      "validation_details": {
-        "total_links_checked": 2,
-        "valid_links": 2,
-        "broken_links": 0,
-        "checked_links": [
-          {
-            "target": "./index.md",
-            "resolved_path": "docs/common-options/index.md",
-            "status": "valid"
-          },
-          {
-            "target": "../replacements.md",
-            "resolved_path": "docs/replacements.md",
-            "status": "valid"
-          }
-        ]
-      }
+      "section": "Output Formats",
+      "description": "Missing documentation for --vimgrep output format",
+      "feature_reference": "output_control.vimgrep_format",
+      "fix_suggestion": "Add section documenting --vimgrep flag which prints results in vim quickfix format (file:line:column:text). Note that each line with multiple matches will be printed multiple times (once per match), which can lead to quadratic output size. Recommend using --json for editor integrations instead.",
+      "source_reference": "crates/core/flags/defs.rs:7350-7380"
     },
     {
       "type": "missing_content",
-      "severity": "low",
-      "section": "Match Output - --hyperlink-format",
-      "description": "Missing explanation of hyperlink format aliases and their purposes",
-      "fix_suggestion": "Add brief descriptions for each hyperlink format alias explaining which applications they're for (e.g., 'vscode' for Visual Studio Code, 'vscode-insiders' for VS Code Insiders, 'cursor' for Cursor editor, etc.)",
-      "source_reference": "crates/printer/src/hyperlink/aliases.rs"
+      "severity": "high",
+      "section": "Output Formats",
+      "description": "Missing documentation for --json output format",
+      "feature_reference": "output_control.json_output",
+      "fix_suggestion": "Add section documenting --json flag for JSON Lines output format. Include the five message types (begin, end, match, context, summary), explain use cases for programmatic consumption, and note that --stats is implicitly enabled with --json.",
+      "source_reference": "crates/core/flags/defs.rs:3436-3470"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Additional Output Options",
+      "description": "Missing documentation for --stats flag",
+      "feature_reference": "utility_features.statistics",
+      "fix_suggestion": "Add documentation for --stats which prints aggregate statistics (matched lines, files with matches, files searched, time elapsed). Note it's implicitly enabled with --json and has no effect with --files or --files-with-matches.",
+      "source_reference": "crates/core/flags/defs.rs:6516-6546"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Additional Output Options",
+      "description": "Missing documentation for --null and --null-data flags",
+      "feature_reference": "output_control.additional_output",
+      "fix_suggestion": "Document --null/-0 for null-separated output (useful for filenames with spaces in scripting) and --null-data for treating input as null-separated instead of line-separated.",
+      "source_reference": "crates/core/flags/defs.rs"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Additional Output Options",
+      "description": "Missing documentation for --line-buffered and --block-buffered flags",
+      "feature_reference": "output_control.additional_output",
+      "fix_suggestion": "Document buffering modes: --line-buffered for line-by-line output (useful for piping to other commands for incremental processing) and --block-buffered for block buffering (better performance).",
+      "source_reference": "crates/core/flags/defs.rs"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "Additional Output Options",
+      "description": "Missing documentation for --max-columns and --max-columns-preview flags",
+      "feature_reference": "output_control.additional_output",
+      "fix_suggestion": "Document --max-columns for limiting output width (useful for very long lines) and --max-columns-preview for showing preview of truncated lines instead of omitting them entirely.",
+      "source_reference": "crates/core/flags/defs.rs"
     },
     {
       "type": "incomplete_explanation",
       "severity": "low",
-      "section": "Color and Formatting - --colors",
-      "description": "Color types and styles could be more comprehensive",
-      "current_content": "Types: `path`, `line`, `column`, `match`. Styles: `fg` (foreground), `bg` (background), `style` (bold, intense, underline, italic).",
-      "fix_suggestion": "Clarify that 'style' is the property name, and its values include bold, intense, underline, italic. Consider providing examples for each type to make it clearer.",
-      "source_reference": "crates/core/flags/defs.rs:812-900"
+      "section": "Context Lines",
+      "description": "Context separator section mentions '--' separator but doesn't document --context-separator flag",
+      "current_content": "When showing context, ripgrep prints `--` as a separator between different match groups",
+      "should_be": "Document --context-separator SEPARATOR for customizing the separator and --no-context-separator for disabling it entirely",
+      "fix_suggestion": "Expand the note about context separators to include explicit documentation of --context-separator and --no-context-separator flags with examples.",
+      "source_reference": "crates/core/flags/defs.rs:1138-1170"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Additional Output Options",
+      "description": "Missing documentation for field separators",
+      "feature_reference": "output_control.additional_output",
+      "fix_suggestion": "Document --field-match-separator and --field-context-separator for customizing the separators between fields in output (between filename, line number, column number, and match text).",
+      "source_reference": "crates/core/flags/defs.rs:1891-1920"
     }
   ],
   "positive_aspects": [
-    "Clear organization with logical groupings (Line Numbers, Context Lines, Match Output, Color and Formatting)",
-    "Good use of code examples throughout the page",
-    "Accurate documentation of context flags (-A, -B, -C) with clear explanations",
-    "Correct explanation of --pretty flag as alias for --color always --heading --line-number",
-    "Good coverage of standard output formatting options",
-    "Helpful explanations of when to use each option",
-    "Valid cross-references to related documentation pages"
+    "Excellent visual flowchart showing output formatting decision flow - great use of MkDocs Material Mermaid integration",
+    "Clear examples with annotated code blocks using MkDocs Material code annotations",
+    "Accurate and comprehensive documentation of hyperlink format aliases with detailed table matching source code exactly",
+    "Good use of admonitions (tip, warning, note) for user guidance",
+    "Comprehensive coverage of color customization with multiple examples using tabs (named colors, 256-color, RGB)",
+    "Well-organized structure with logical grouping of related flags",
+    "Valid internal link to replacements.md chapter (verified)",
+    "Helpful 'When to Use Context Lines' tip section with practical use cases",
+    "Accurate documentation of --pretty flag as alias",
+    "Good explanations of when to use --color modes (auto, always, never)",
+    "Template variables for hyperlink format are clearly documented ({path}, {line}, {column}, {host})"
   ],
   "improvement_suggestions": [
-    "Add admonitions using MkDocs Material extensions for important notes (e.g., terminal support requirements for hyperlinks)",
-    "Consider adding a comparison table showing different output format examples side-by-side",
-    "Add 'See Also' section at the bottom linking to related pages (output-modes.md, replacements.md)",
-    "Include troubleshooting tips for common color/formatting issues",
-    "Add examples showing how different --colors combinations look in practice",
-    "Consider using code annotations to highlight key parts of example outputs",
-    "Add information about the 'none' and 'default' hyperlink format aliases which have special meaning"
+    "Add comprehensive section on alternative output formats (--json, --vimgrep) to give users full picture of output options - consider creating a comparison table",
+    "Document all flags mentioned in features.json output_control.additional_output (--null, --null-data, --line-buffered, --block-buffered, --max-columns, --max-columns-preview, --trim)",
+    "Add cross-reference to output-modes.md page for related content about --files, --count, etc.",
+    "Include examples of --json output structure for programmatic use cases",
+    "Add troubleshooting section for common output formatting issues (colors not showing, terminal not supporting hyperlinks, etc.)",
+    "Document --stats flag and how it integrates with other output modes",
+    "Expand context separator documentation from note to full flag documentation with examples",
+    "Add 'See Also' section at bottom linking to related pages (output-modes, replacements, configuration)",
+    "Consider adding a decision tree or table for choosing the right output format for different use cases"
   ],
   "cross_references": [
-    "index",
-    "replacements",
-    "output-modes"
+    "replacements"
   ],
   "metadata": {
-    "analyzed_at": "2025-11-13T21:47:17Z",
+    "analyzed_at": "2025-11-19T18:24:02Z",
     "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
     "topics_covered": [
-      "output formatting",
       "line numbers",
+      "filenames",
       "column numbers",
       "context lines",
       "match output",
-      "colors",
+      "replacements preview",
+      "byte offsets",
       "hyperlinks",
-      "byte offsets"
+      "color customization",
+      "heading mode"
     ],
     "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "internal_links_validated": 1,
+    "broken_links_found": 0,
     "features_referenced": [
       "output_control.standard_output",
-      "output_control.context_lines",
+      "output_control.json_output",
+      "output_control.vimgrep_format",
       "output_control.color_control",
-      "utility_features.hyperlinks",
-      "replacements.basic_replacement"
+      "output_control.context_lines",
+      "output_control.hyperlinks",
+      "output_control.additional_output",
+      "utility_features.statistics",
+      "replacements.replace_mode"
     ]
   }
 }

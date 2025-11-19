@@ -24,7 +24,10 @@ graph LR
     FilterBox --> OutputBox["Exercise 11
     Output Format"]
 
-    OutputBox --> Practice[Practice More]
+    OutputBox --> Challenge["Exercise 12
+    Advanced Challenge"]
+
+    Challenge --> Practice[Practice More]
 
     style Start fill:#e8f5e9
     style Basic fill:#e1f5ff
@@ -32,6 +35,7 @@ graph LR
     style AdvBox fill:#f3e5f5
     style FilterBox fill:#fce4ec
     style OutputBox fill:#e0f2f1
+    style Challenge fill:#ffebee
     style Practice fill:#e8f5e9
 ```
 
@@ -60,6 +64,9 @@ Find all error messages (any case):
 rg -i "error"
 ```
 
+!!! tip
+    Learn more about case sensitivity options in [Case Sensitivity](case-sensitivity.md).
+
 !!! example "Expected Output"
     ```
     src/lib.rs
@@ -77,7 +84,7 @@ rg -F "log()"
 ```
 
 !!! note
-    The `-F` flag treats the pattern as a literal string, so special regex characters like `()` are matched exactly.
+    The `-F` flag treats the pattern as a literal string, so special regex characters like `()` are matched exactly. Learn more in [Literal Search](literal-search.md).
 
 !!! example "Expected Output"
     ```
@@ -93,6 +100,9 @@ Find variable named "id" (not "valid", "identity", etc.):
 rg -w "id"
 ```
 
+!!! tip
+    Learn more about word boundaries and anchors in [Boundaries](boundaries.md).
+
 !!! example "Expected Output"
     ```
     src/models.rs
@@ -107,6 +117,9 @@ Count how many times each file uses "import":
 ```bash
 rg -c "import"
 ```
+
+!!! tip
+    Learn more about counting and listing matches in [Count and List](count-list.md).
 
 !!! example "Expected Output"
     ```
@@ -147,6 +160,9 @@ rg "0x[0-9a-fA-F]+"  # (1)!
 
 1. **Pattern breakdown**: `0x` matches literal "0x" prefix, `[0-9a-fA-F]` matches any hex digit (0-9, a-f, A-F), `+` matches one or more digits
 
+!!! tip
+    Learn more about regex patterns in [Pattern Matching](pattern-matching.md) and [Regex Basics](regex-basics.md).
+
 !!! example "Expected Output"
     ```
     src/constants.rs
@@ -181,7 +197,7 @@ rg -t rust "^use "
     ```
 
 !!! tip
-    Use `rg --type-list` to see all available file types.
+    Use `rg --type-list` to see all available file types. Learn more in [File Filtering](../common-options/file-filtering.md).
 
 ### 10. Multiline Search
 
@@ -219,7 +235,29 @@ rg "TODO" --json
     ```
 
 !!! tip
-    JSON output is useful for integrating ripgrep into tools and scripts.
+    JSON output is useful for integrating ripgrep into tools and scripts. Learn more in [Output Formatting](../common-options/output-formatting.md).
+
+### 12. Advanced Challenge
+
+Combine multiple concepts - search for TODO comments in Rust files only, case-insensitive, with 2 lines of context, output as JSON:
+
+```bash
+rg -t rust -i "TODO" -C 2 --json
+```
+
+!!! example "Expected Output"
+    ```json
+    {"type":"context","data":{"path":{"text":"src/main.rs"},"lines":{"text":"fn main() {\n"},"line_number":13,"absolute_offset":280,"submatches":[]}}
+    {"type":"match","data":{"path":{"text":"src/main.rs"},"lines":{"text":"    // TODO: Implement error handling\n"},"line_number":15,"absolute_offset":342,"submatches":[{"match":{"text":"TODO"},"start":7,"end":11}]}}
+    {"type":"context","data":{"path":{"text":"src/main.rs"},"lines":{"text":"    process();\n"},"line_number":16,"absolute_offset":378,"submatches":[]}}
+    ```
+
+!!! tip "Challenge Yourself"
+    Try modifying this command to:
+
+    - Exclude test files: add `-g '!*test*'`
+    - Only show file names: replace `--json` with `-l`
+    - Count matches per file: replace `-C 2 --json` with `-c`
 
 ## Common Mistakes
 

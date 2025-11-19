@@ -4,66 +4,75 @@
   "page_title": "introduction",
   "page_file": "docs/introduction.md",
   "drift_detected": true,
-  "severity": "medium",
-  "quality_assessment": "Good introduction page with comprehensive coverage, but contains version mismatch that needs correction. Content is mostly accurate and well-structured.",
+  "severity": "low",
+  "quality_assessment": "Well-structured introduction page with excellent visual aids and accurate feature descriptions. Main improvements needed are version clarification and cross-references to detailed feature pages.",
   "issues": [
     {
-      "type": "outdated_information",
-      "severity": "high",
-      "section": "What is ripgrep?",
-      "description": "Documentation states it covers version 15.1.0, but features.json shows analyzed version is 14.1.1",
-      "current_content": "This documentation covers ripgrep version 15.1.0.",
-      "should_be": "This documentation covers ripgrep version 14.1.1.",
-      "fix_suggestion": "Update version number to match the analyzed version (14.1.1), or re-analyze features for version 15.1.0 if documentation is intentionally ahead",
-      "source_reference": "features.json:version_info.analyzed_version"
+      "type": "unclear_content",
+      "severity": "medium",
+      "section": "Introduction",
+      "description": "Version number reference is specific (14.1.1) but feature inventory indicates 14.1+",
+      "current_content": "This documentation covers ripgrep version 14.1.1.",
+      "should_be": "This documentation covers ripgrep version 14.1 and later.",
+      "fix_suggestion": "Update version reference to match feature inventory scope (14.1+) or clarify that documentation covers 14.1.1 specifically",
+      "source_reference": ".prodigy/mkdocs-analysis/features.json:analyzed_version"
     },
     {
       "type": "incomplete_explanation",
-      "severity": "medium",
-      "section": "Key Features",
-      "description": "Hyperlink support mention lacks specificity about supported formats",
-      "current_content": "Hyperlink support: Terminal hyperlinks for clickable file paths with `--hyperlink-format` (built-in support for VSCode, vim, and more).",
-      "should_be": "Hyperlink support: Terminal hyperlinks for clickable file paths with `--hyperlink-format` (built-in support for VSCode, file://, and custom formats).",
-      "fix_suggestion": "Specify the exact supported formats: VSCode, file://, and custom formats instead of 'and more'",
-      "source_reference": "features.json:utility_features.hyperlinks.features"
-    },
-    {
-      "type": "missing_content",
       "severity": "low",
-      "section": "Quick Start",
-      "description": "Quick Start examples don't include the useful --files utility mode for beginners to preview what files would be searched",
-      "fix_suggestion": "Add example in Quick Start section: 'rg --files  # List all files that would be searched'. This helps users understand ripgrep's filtering behavior.",
-      "source_reference": "features.json:utility_features.list_modes.features[0]"
+      "section": "Key Features",
+      "description": "Missing cross-references from feature list to detailed documentation pages",
+      "current_content": "Key Features list mentions features but doesn't link to detailed pages",
+      "should_be": "Add cross-references to relevant detailed documentation pages",
+      "fix_suggestion": "Add cross-reference links after feature mentions, e.g., 'See [Hyperlinks](hyperlinks.md) for details on terminal hyperlink support', 'See [Compressed Files](compressed-files.md) for compression support', etc.",
+      "improvement": [
+        "Link 'PCRE2 regex support' to advanced-patterns documentation",
+        "Link 'Compressed file search' to compressed-files.md",
+        "Link 'Configuration files' to configuration-file.md",
+        "Link 'Hyperlink support' to hyperlinks.md",
+        "Link 'JSON output' to output-formats.md",
+        "Link 'Performance statistics' to statistics.md"
+      ]
     }
   ],
   "positive_aspects": [
-    "Comprehensive coverage of all major feature categories from the inventory",
-    "Clear, logical structure progressing from What → Why → Features → Installation → Quick Start",
-    "Good practical examples in Quick Start section that demonstrate core functionality",
-    "Accurate feature descriptions aligned with features.json capabilities",
-    "Appropriate cross-references to external resources (README, FAQ, GUIDE)",
-    "Effective use of code blocks for installation and usage examples",
-    "Clear explanation of ripgrep's value proposition and differentiators"
+    "Excellent Mermaid flowchart diagram visualizing the search process",
+    "Clear and accurate feature descriptions matching feature inventory",
+    "Well-organized Quick Start section with annotated code examples",
+    "Effective use of MkDocs Material admonitions (tip, note, example boxes)",
+    "Comprehensive installation instructions using tabbed content",
+    "Good explanation of smart default behavior",
+    "Accurate description of automatic filtering and ignore file support"
   ],
   "improvement_suggestions": [
-    "Consider adding a 'Common Use Cases' section with 2-3 real-world examples (similar to features.json meta_content.common_patterns)",
-    "Add visual callouts (MkDocs Material admonitions) to highlight important points like 'ripgrep respects .gitignore by default'",
-    "Consider a comparison table showing ripgrep vs grep/ag for quick reference",
-    "Add a 'Next Steps' section pointing to key chapters (basics, filtering, output formats)"
+    "Add 'Next Steps' or 'Where to Go Next' section linking to key detailed pages",
+    "Consider adding a feature comparison table or matrix linking to detailed docs",
+    "Add cross-references in the 'Getting Help' section to troubleshooting documentation",
+    "Consider linking common use cases in Quick Start to relevant detailed pages"
+  ],
+  "cross_references": [
+    "hyperlinks.md",
+    "compressed-files.md",
+    "configuration-file.md",
+    "output-formats.md",
+    "statistics.md",
+    "automatic-filtering.md",
+    "manual-filtering-types.md",
+    "performance.md",
+    "troubleshooting/*"
   ],
   "metadata": {
-    "analyzed_at": "2025-11-13T20:53:28Z",
+    "analyzed_at": "2025-11-19T18:24:02Z",
     "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
     "topics_covered": [
-      "Introduction",
-      "Why ripgrep",
-      "Key features overview",
-      "Installation",
-      "Quick start",
-      "Getting help"
+      "introduction",
+      "installation",
+      "quick-start",
+      "key-features",
+      "smart-filtering"
     ],
     "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
-    "internal_links_validated": true,
-    "broken_links_found": 0
+    "internal_links_found": 0,
+    "broken_links": 0
   }
 }

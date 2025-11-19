@@ -162,6 +162,13 @@ sequenceDiagram
 !!! note "Statistics in JSON Format"
     You can combine `--json` with `--stats` to get structured statistics output. The summary message will include detailed statistics like elapsed time, files searched, lines searched, and matches found. This is particularly useful for programmatic analysis of search performance.
 
+!!! note "Including Files with Zero Matches"
+    When using `--include-zero` with JSON output, files with zero matches will still emit `begin` and `end` messages but no `match` messages. This is useful for tracking which files were searched, even when they contain no matches. For example:
+    ```json
+    {"type":"begin","data":{"path":"src/empty.rs"}}
+    {"type":"end","data":{"path":"src/empty.rs","stats":{"matches":0}}}
+    ```
+
 ## Color Customization
 
 ripgrep supports extensive color customization:
@@ -214,12 +221,91 @@ rg --field-context-separator '-' pattern
 
 ## Vimgrep Format
 
-Special format compatible with vim's quickfix:
+Special format compatible with vim's quickfix and other editors:
 
 ```bash
 # Vimgrep format: file:line:column:text
 rg --vimgrep pattern
 ```
+
+The vimgrep format produces output in the form `file:line:column:text`, which is compatible with vim's quickfix list and many other editors. Despite the name, this format is editor-agnostic and works with various development tools.
+
+### Editor Integration Examples
+
+=== "Vim/Neovim"
+    ```bash
+    # Load results directly into quickfix list
+    :cexpr system('rg --vimgrep pattern')
+
+    # Or save to file and load
+    rg --vimgrep pattern > /tmp/results.txt
+    vim -q /tmp/results.txt
+
+    # Navigate with quickfix commands
+    :cnext    # Next result
+    :cprev    # Previous result
+    :copen    # Open quickfix window
+    ```
+
+=== "Emacs"
+    ```elisp
+    ; Use with M-x grep or compilation-mode
+    (setq grep-command "rg --vimgrep ")
+
+    ; Or use with M-x compile
+    (compile "rg --vimgrep pattern")
+
+    ; Navigate with:
+    ; M-g n (next-error)
+    ; M-g p (previous-error)
+    ```
+
+=== "VS Code Tasks"
+    ```json
+    // Add to .vscode/tasks.json
+    {
+      "version": "2.0.0",
+      "tasks": [
+        {
+          "label": "ripgrep search",
+          "type": "shell",
+          "command": "rg --vimgrep ${input:searchPattern}",
+          "problemMatcher": {
+            "pattern": [
+              {
+                "regexp": "^(.+):(\\d+):(\\d+):(.*)$",
+                "file": 1,
+                "line": 2,
+                "column": 3,
+                "message": 4
+              }
+            ]
+          }
+        }
+      ],
+      "inputs": [
+        {
+          "id": "searchPattern",
+          "type": "promptString",
+          "description": "Search pattern"
+        }
+      ]
+    }
+    ```
+
+=== "Sublime Text"
+    ```bash
+    # Use with Build Systems
+    # Tools > Build System > New Build System
+    {
+      "shell_cmd": "rg --vimgrep \"$search_term\"",
+      "file_regex": "^(.+):(\\d+):(\\d+):(.*)$",
+      "selector": "source"
+    }
+    ```
+
+!!! tip "Universal Format"
+    The vimgrep format is widely supported across editors because it follows a simple, consistent structure. Any tool that can parse `file:line:column:text` format can use ripgrep with `--vimgrep`.
 
 ## Heading Mode
 
@@ -260,8 +346,11 @@ rg --line-buffered pattern
 rg --block-buffered pattern
 ```
 
+!!! note "When to Use Block Buffering (Default)"
+    Block buffering is optimal for most use cases as it minimizes system calls and maximizes throughput. The output is flushed in larger chunks, which is more efficient when processing large result sets or when the final output destination doesn't require incremental updates. This is the default mode and should be used unless you have specific requirements for line-by-line processing.
+
 !!! note "When to Use Line Buffering"
-    Line buffering is crucial when piping ripgrep to commands that process results incrementally (like `head`, `tail`, or `grep`). Without it, results may be buffered and not appear until the search completes or the buffer fills, creating the appearance of a hang.
+    Line buffering is crucial when piping ripgrep to commands that process results incrementally (like `head`, `tail`, or `grep`). Without it, results may be buffered and not appear until the search completes or the buffer fills, creating the appearance of a hang. Use line buffering when you need immediate, incremental output.
 
 ## Additional Output Options
 
@@ -292,14 +381,34 @@ rg --hyperlink-format textmate pattern
 # Cursor editor
 rg --hyperlink-format cursor pattern
 
+# grep+ (for grepp integration)
+# Source: crates/printer/src/hyperlink/aliases.rs:33
+rg --hyperlink-format grep+ pattern             # (4)!
+
+# Kitty terminal (with line anchor)
+# Source: crates/printer/src/hyperlink/aliases.rs:34-38
+rg --hyperlink-format kitty pattern             # (5)!
+
+# Standard file:// with host
+# Source: crates/printer/src/hyperlink/aliases.rs:28-31
+rg --hyperlink-format file pattern              # (6)!
+
+# Disable hyperlinks
+# Source: crates/printer/src/hyperlink/aliases.rs:45
+rg --hyperlink-format none pattern              # (7)!
+
 # Custom hyperlink format
-rg --hyperlink-format 'vscode://file{path}:{line}:{column}' pattern  # (4)!
+rg --hyperlink-format 'vscode://file{path}:{line}:{column}' pattern  # (8)!
 ```
 
 1. Uses standard `file://` URLs compatible with most terminals
 2. Opens files directly in VS Code at the matched line and column
 3. Variant for VS Code Insiders preview builds
-4. Template supports `{path}`, `{line}`, and `{column}` placeholders
+4. Uses `grep+://` scheme for integration with the grepp tool
+5. Uses `file://` with `#line` anchor syntax for Kitty terminal
+6. Standard RFC 8089 `file://` scheme with host component
+7. Explicitly disables hyperlinks (useful for compatibility testing)
+8. Template supports `{path}`, `{line}`, and `{column}` placeholders
 
 This feature allows compatible terminals (like iTerm2, WezTerm, or recent versions of GNOME Terminal) to make file paths clickable, opening them directly in your editor or file manager.
 

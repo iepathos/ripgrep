@@ -4,56 +4,60 @@
   "page_title": "preprocessor",
   "page_file": "docs/preprocessor.md",
   "drift_detected": false,
-  "severity": "none",
-  "quality_assessment": "Excellent - comprehensive, accurate documentation with no significant drift detected",
+  "severity": "good",
+  "quality_assessment": "Excellent documentation with comprehensive coverage of preprocessor functionality. Well-structured with diagrams, practical examples, security considerations, and troubleshooting guidance. All MkDocs Material enhancements have been applied. No significant drift detected.",
   "issues": [],
   "positive_aspects": [
-    "Excellent practical examples with pdftotext showing the complete workflow from problem to solution",
-    "Clear progression from simple to robust preprocessor implementations",
-    "Comprehensive coverage of --pre-glob optimization with real benchmarks showing 17x performance improvement",
-    "Good security coverage including CVE-2021-3013 reference and safe scripting practices with concrete examples",
-    "Accurate documentation of --pre and --pre-glob flag behavior matching implementation in crates/core/flags/defs.rs:5453-5625",
-    "Helpful comparison table explaining when to use -z/--search-zip vs --pre with clear decision criteria",
-    "Multiple real-world use cases: PDFs, compressed files, encrypted files, encoding conversion, Office documents",
-    "Good troubleshooting section with common issues and practical solutions",
-    "Accurate compressed format listing (gzip, bzip2, xz, lz4, lzma, brotli, zstd, uncompress) matches implementation in crates/cli/src/decompress.rs:490-532",
-    "Example scripts match the patterns shown in the flag documentation",
-    "Performance considerations section with optimization tips and benchmarking examples",
-    "Complete multi-format preprocessor example demonstrating production-ready patterns",
-    "Clear warnings about process overhead and when to use --pre-glob",
-    "Proper handling of edge cases (empty files, non-PDF files, error cases)",
-    "Well-structured with logical flow from basics to advanced topics"
+    "Comprehensive coverage of preprocessor feature from basics to advanced usage",
+    "Excellent use of MkDocs Material features: admonitions (tip, warning, note, danger, failure), tabs for alternative approaches, mermaid diagrams (2 flowcharts), code annotations (1-7 in multi-preprocessor example)",
+    "Quick reference box at the top with key flags and common use cases (lines 5-16)",
+    "Clear explanation of preprocessor execution flow with visual diagram showing conditional transformation (lines 30-49)",
+    "Accurate technical details: preprocessor receives file path as first argument AND file content on stdin (verified in crates/core/search.rs:304)",
+    "Correct compression format list matching crates/cli/src/decompress.rs:490-532",
+    "Strong security coverage including CVE-2021-3013 with danger admonition and safe scripting practices organized in tabs (lines 421-471)",
+    "Performance guidance with --pre-glob strongly recommended, explained with real benchmarks showing 17x speedup (lines 244-293)",
+    "Comprehensive use cases with working code examples (PDFs, compressed files, encrypted files, encoding conversion, document formats)",
+    "Clear relationship between --pre and -z/--search-zip flags explained with comparison table (lines 366-387)",
+    "Practical troubleshooting section with common issues shown as failure admonitions and solutions (lines 473-531)",
+    "Production-ready multi-format preprocessor example with 7 code annotations explaining key concepts (lines 534-600)",
+    "Proper source code references included via HTML comments for key features",
+    "Two detection strategies compared with mermaid diagram showing trade-offs (lines 150-183)",
+    "Testing workflow clearly explained with tip admonition (lines 475-481)"
   ],
   "improvement_suggestions": [
-    "Could add MkDocs Material admonitions for warnings (e.g., !!! warning for security section, performance overhead)",
-    "Could use tabbed code blocks to show alternative implementations side-by-side",
-    "Could add code annotations to explain key parts of complex preprocessor scripts",
-    "Consider adding a quick reference box at the top summarizing key flags and use cases"
+    "Consider adding a note about preprocessor not running on stdin (mentioned in crates/core/flags/defs.rs:5490 and visible in crates/core/search.rs:258-260 logic) - currently not documented",
+    "Could add cross-reference to encoding documentation page if it exists, since preprocessors can be used for encoding conversion",
+    "The 'Testing and Debugging' section mentions RUST_LOG environment variable briefly (line 529) but could elaborate on what debug output it provides",
+    "Could add a note in the 'Relationship with -z/--search-zip' section that preprocessor overrides --search-zip (mentioned in code comments at crates/core/search.rs:121-122 and docs/preprocessor.md:523)"
   ],
   "cross_references": [],
   "metadata": {
-    "analyzed_at": "2025-11-13T20:53:28Z",
+    "analyzed_at": "2025-11-19T18:24:02Z",
     "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
     "topics_covered": [
-      "preprocessor basics",
-      "PDF text extraction",
-      "file type detection",
-      "content sniffing",
+      "preprocessor",
+      "file transformation",
+      "PDF search",
+      "compressed files",
+      "custom preprocessing",
       "performance optimization",
-      "security considerations",
-      "compressed file handling",
-      "multi-format processing",
-      "debugging and testing"
+      "security considerations"
     ],
     "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
-    "feature_references": [
-      "file_handling.preprocessing (lines 250-262)",
-      "file_handling.compressed_files (lines 236-249)"
-    ],
-    "implementation_references": [
-      "crates/core/flags/defs.rs:5453-5625 (--pre and --pre-glob flags)",
-      "crates/cli/src/decompress.rs:490-532 (default decompression commands)",
+    "code_references_verified": [
+      "crates/core/flags/defs.rs:5453-5625 (--pre and --pre-glob flag definitions)",
+      "crates/core/search.rs:87-104 (preprocessor configuration)",
+      "crates/core/search.rs:296-324 (search_preprocessor implementation showing file path + stdin)",
+      "crates/cli/src/decompress.rs:490-532 (compression format list)",
       "CHANGELOG.md:374-432 (CVE-2021-3013 security fix)"
+    ],
+    "mkdocs_material_features_used": [
+      "Admonitions: tip (3), warning (1), note (1), danger (1), failure (3)",
+      "Tabbed content blocks (=== syntax): 2 groups showing alternative approaches",
+      "Mermaid diagrams: 2 flowcharts with styled nodes",
+      "Code annotations: 7 annotations in multi-preprocessor example",
+      "Code titles: title attribute on code blocks",
+      "HTML comments for source references"
     ]
   }
 }

@@ -25,6 +25,11 @@ The `--pre` flag takes a command that receives:
 
 The preprocessor outputs the transformed content to stdout, which ripgrep then searches.
 
+!!! note "Preprocessor and stdin"
+    When ripgrep receives input from stdin (rather than searching files), the preprocessor is **not invoked**. Preprocessors only run when searching actual files on disk.
+
+    <!-- Source: crates/core/flags/defs.rs:5490, crates/core/search.rs:258-260 -->
+
 ### How It Works
 
 ```mermaid
@@ -386,6 +391,11 @@ You can combine both flags if needed:
 rg -z --pre ./pdf-preprocessor --pre-glob '*.pdf' 'search term'
 ```
 
+!!! note "Preprocessor Priority"
+    When a file matches a `--pre-glob` pattern, the preprocessor **takes precedence** over `-z/--search-zip` for that file. This means if you specify both flags and a file matches the glob pattern, only the preprocessor runs (the built-in decompression is skipped).
+
+    <!-- Source: crates/core/search.rs:121-122 -->
+
 ## Performance Considerations
 
 ### Overhead
@@ -528,6 +538,16 @@ Use ripgrep's debugging output to see what's happening:
 # See which files are preprocessed
 RUST_LOG=debug rg --pre ./preprocessor 'pattern' 2>&1 | grep -i preproc
 ```
+
+!!! tip "Understanding RUST_LOG Output"
+    Setting `RUST_LOG=debug` enables detailed logging that shows:
+
+    - Which files matched `--pre-glob` patterns
+    - When the preprocessor command is invoked
+    - File paths passed to the preprocessor
+    - Preprocessor exit codes and errors
+
+    This is invaluable for debugging why files aren't being preprocessed as expected or when preprocessor commands fail silently.
 
 ## Examples
 

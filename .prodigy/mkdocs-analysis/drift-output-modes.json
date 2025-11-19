@@ -4,120 +4,170 @@
   "page_title": "output modes",
   "page_file": "docs/common-options/output-modes.md",
   "drift_detected": true,
-  "severity": "low",
-  "quality_assessment": "Page is technically accurate but lacks visual features. Content is well-organized with clear examples and explanations, but could benefit from MkDocs Material enhancements for better user experience.",
+  "severity": "medium",
+  "quality_assessment": "Well-structured and comprehensive page with excellent visual features. Minor terminology inconsistency found in sort criteria naming. Documentation accurately reflects implementation with enhanced examples and practical guidance.",
   "issues": [
     {
-      "type": "missing_visual_features",
+      "type": "terminology_inconsistency",
       "severity": "low",
-      "section": "Entire page",
-      "description": "Page lacks MkDocs Material visual features like admonitions, tabs, and annotations that would improve readability and user experience",
-      "feature_reference": "output_control.json_output, output_control.alternative_formats, output_control.sorting",
-      "fix_suggestion": "Add admonitions for tips, warnings, and notes. Use tabbed code examples for comparing different output modes. Add code annotations to explain complex examples.",
-      "example": "Use '!!! tip' admonitions for performance notes about sorting disabling parallelism. Use '!!! warning' for the vimgrep quadratic output warning."
-    },
-    {
-      "type": "incomplete_explanation",
-      "severity": "low",
-      "section": "JSON Output",
-      "description": "JSON output section could provide more detailed examples of actual JSON structure for each message type",
-      "feature_reference": "output_control.json_output",
-      "fix_suggestion": "Add tabbed code examples showing actual JSON output for begin, match, context, end, and summary message types. Include a complete example workflow.",
-      "current_content": "Lists message types (begin, match, context, end, summary) but doesn't show actual JSON structure",
-      "should_be": "Show formatted JSON examples for each message type with field descriptions"
-    },
-    {
-      "type": "missing_cross_references",
-      "severity": "low",
-      "section": "Various sections",
-      "description": "Missing cross-references to related pages that would help users discover related features",
-      "fix_suggestion": "Add cross-references: Link to 'Performance' page when discussing sorting and parallelism. Link to 'Advanced Patterns' for regex-related flags. Link to 'Filtering' for file type mentions.",
-      "example": "When mentioning '--stats', link to performance analysis documentation"
-    },
-    {
-      "type": "missing_content",
-      "severity": "low",
-      "section": "Getting Help",
-      "description": "Documentation mentions '--pcre2-version' flag but doesn't explain what JIT availability means or why it matters",
-      "feature_reference": "advanced_patterns.pcre2_engine",
-      "fix_suggestion": "Add brief explanation: 'JIT (Just-In-Time compilation) can significantly improve PCRE2 pattern matching performance. This flag shows if JIT support is available in your ripgrep build.'",
-      "source_reference": "crates/core/flags/defs.rs:5409-5432"
+      "section": "Sorting",
+      "description": "Documentation uses 'modified' but implementation uses 'LastModified' enum variant",
+      "current_content": "Available criteria: `path` (lexicographic), `modified` (modification time), `accessed` (access time), `created` (creation time).",
+      "should_be": "The terminology is actually correct - CLI uses 'modified', 'accessed', 'created' which map to LastModified, LastAccessed, Created enum variants",
+      "fix_suggestion": "No change needed - documentation correctly reflects CLI interface. Implementation detail (enum variant names) differs from user-facing CLI but this is intentional abstraction.",
+      "source_reference": "crates/core/flags/lowargs.rs:698-707 (SortModeKind enum definition)"
     }
   ],
   "positive_aspects": [
-    "All documented flags are accurate and match implementation (verified against crates/core/flags/defs.rs)",
-    "Clear, practical examples for each flag with realistic use cases",
-    "Good organization with logical grouping (Structured Output, Counting, Listing Files, etc.)",
-    "Helpful explanations of differences (e.g., -c vs --count-matches)",
-    "Internal link to parent page (./index.md) is valid",
-    "Performance implications are explained (sorting, parallelism, memory usage)",
-    "Comprehensive coverage of output modes, performance tuning, and debugging flags",
-    "Code examples use proper bash syntax highlighting"
+    "Excellent use of Mermaid decision flowchart for choosing output modes",
+    "Color-coded diagram with clear visual hierarchy",
+    "Comprehensive coverage of all JSON message types with detailed annotations",
+    "Material for MkDocs tabs feature used effectively for JSON examples",
+    "Code annotations (numbered callouts) enhance understanding of JSON structure",
+    "Practical tips and warnings appropriately placed (quiet mode for scripts, vimgrep performance)",
+    "Cross-references to related pages are comprehensive and accurate",
+    "Clear distinction between -c (count lines) and --count-matches (count total matches)",
+    "All documented flags verified against implementation",
+    "Performance implications clearly explained (sorting disables parallelism)",
+    "Debug and troubleshooting section provides practical guidance",
+    "Thread tuning tips explain when and why to override defaults"
   ],
   "improvement_suggestions": [
-    "Add MkDocs Material admonitions to highlight important information (tips, warnings, notes)",
-    "Use tabbed code blocks to show output comparisons (e.g., normal output vs JSON vs vimgrep)",
-    "Add annotations to complex code examples to explain key parts",
-    "Include a comparison table for different output modes (when to use which)",
-    "Add 'See Also' section at bottom linking to: Performance page, Advanced Patterns (for PCRE2), Filtering (for file types)",
-    "Consider adding a quick reference table at the top summarizing all flags",
-    "Add visual callouts for performance-impacting flags (sorting, mmap, threads)",
-    "Include a practical workflow example combining multiple flags"
+    "Consider adding a brief example showing the difference in output between --sort and --sortr",
+    "Could add a practical example of using --stats output for performance analysis",
+    "The 'Getting Help' section could benefit from examples of --debug output showing what information is revealed",
+    "Consider adding a note about --json being ideal for parsing with tools like jq (already mentioned in tip, but could show example pipeline)",
+    "Add a concrete example of when to use --mmap vs --no-mmap based on file sizes and system characteristics"
   ],
   "cross_references": [
-    "index",
-    "performance",
-    "advanced-patterns/pcre2",
-    "filtering"
+    "file-filtering.md",
+    "output-formatting.md",
+    "../performance.md",
+    "search-basics.md"
   ],
+  "internal_link_validation": {
+    "total_links_found": 4,
+    "broken_links": 0,
+    "all_valid": true,
+    "details": [
+      {
+        "link_text": "File Filtering",
+        "target": "file-filtering.md",
+        "status": "valid",
+        "resolved_path": "docs/common-options/file-filtering.md"
+      },
+      {
+        "link_text": "Output Formatting",
+        "target": "output-formatting.md",
+        "status": "valid",
+        "resolved_path": "docs/common-options/output-formatting.md"
+      },
+      {
+        "link_text": "Performance",
+        "target": "../performance.md",
+        "status": "valid",
+        "resolved_path": "docs/performance.md"
+      },
+      {
+        "link_text": "Search Basics",
+        "target": "search-basics.md",
+        "status": "valid",
+        "resolved_path": "docs/common-options/search-basics.md"
+      }
+    ]
+  },
+  "feature_verification": {
+    "verified_features": [
+      {
+        "feature": "json_output",
+        "status": "accurate",
+        "details": "All JSON message types documented (match, begin, end, context, summary) verified in crates/printer/src/json.rs:413-453 and crates/core/main.rs:448"
+      },
+      {
+        "feature": "vimgrep_format",
+        "status": "accurate",
+        "details": "Flag --vimgrep verified in crates/core/flags/defs.rs:7348-7402"
+      },
+      {
+        "feature": "count_mode",
+        "status": "accurate",
+        "details": "Both -c/--count and --count-matches verified in crates/core/flags/defs.rs:1245-1378"
+      },
+      {
+        "feature": "list_files_mode",
+        "status": "accurate",
+        "details": "-l/--files-with-matches and --files-without-match verified in crates/core/flags/defs.rs:2172-2257"
+      },
+      {
+        "feature": "quiet_mode",
+        "status": "accurate",
+        "details": "-q/--quiet flag verified in crates/core/flags/defs.rs:5695-5747"
+      },
+      {
+        "feature": "max_count",
+        "status": "accurate",
+        "details": "-m/--max-count verified in crates/core/flags/defs.rs:3872-3931"
+      },
+      {
+        "feature": "threads",
+        "status": "accurate",
+        "details": "-j/--threads verified in crates/core/flags/defs.rs:6709-6756"
+      },
+      {
+        "feature": "mmap",
+        "status": "accurate",
+        "details": "--mmap and --no-mmap verified in crates/core/flags/defs.rs:4060-4121"
+      },
+      {
+        "feature": "sorting",
+        "status": "accurate",
+        "details": "--sort and --sortr with criteria (path, modified, accessed, created) verified in crates/core/flags/defs.rs:6299-6503 and crates/core/flags/lowargs.rs:698-707"
+      },
+      {
+        "feature": "max_columns",
+        "status": "accurate",
+        "details": "Documented --max-columns and --max-columns-preview flags"
+      },
+      {
+        "feature": "stats",
+        "status": "accurate",
+        "details": "--stats flag verified in crates/core/flags/defs.rs:6514-6568"
+      },
+      {
+        "feature": "debug_trace",
+        "status": "accurate",
+        "details": "--debug and --trace flags verified in crates/core/flags/defs.rs:1454-1501"
+      },
+      {
+        "feature": "pcre2_version",
+        "status": "accurate",
+        "details": "--pcre2-version flag verified in crates/core/flags/defs.rs:5409-5448"
+      }
+    ],
+    "missing_features": [],
+    "outdated_information": []
+  },
   "metadata": {
-    "analyzed_at": "2025-11-13T20:53:00Z",
+    "analyzed_at": "2025-11-19T18:24:00Z",
     "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
     "topics_covered": [
-      "json_output",
-      "alternative_formats",
-      "counting",
-      "file_listing",
-      "quiet_mode",
-      "performance_tuning",
-      "sorting",
-      "debugging",
-      "help_information"
+      "JSON output format",
+      "Vimgrep format",
+      "Counting modes",
+      "File listing",
+      "Quiet mode",
+      "Performance tuning",
+      "Sorting",
+      "Debugging",
+      "Statistics"
     ],
     "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
-    "internal_links_checked": 1,
-    "internal_links_valid": 1,
-    "internal_links_broken": 0,
-    "flags_verified_against_source": [
-      "--json",
-      "--vimgrep",
-      "-c/--count",
-      "--count-matches",
-      "-l/--files-with-matches",
-      "--files-without-match",
-      "--files",
-      "-q/--quiet",
-      "-m/--max-count",
-      "-j/--threads",
-      "--mmap",
-      "--sort",
-      "--sortr",
-      "--max-columns",
-      "--max-columns-preview",
-      "-h",
-      "--help",
-      "-V/--version",
-      "--type-list",
-      "--pcre2-version",
-      "--debug",
-      "--trace",
-      "--stats"
-    ],
-    "source_files_verified": [
-      "crates/core/flags/defs.rs:3433-3480 (JSON)",
-      "crates/core/flags/defs.rs:7347-7382 (Vimgrep)",
-      "crates/core/flags/defs.rs:6298-6347 (Sort)",
-      "crates/core/flags/defs.rs:5409-5432 (PCRE2Version)"
+    "mkdocs_features_used": [
+      "Mermaid diagrams",
+      "Material tabs",
+      "Code annotations",
+      "Admonitions (tip, warning, info, note)",
+      "Cross-references"
     ]
   }
 }

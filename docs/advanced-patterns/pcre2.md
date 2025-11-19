@@ -201,6 +201,54 @@ Understanding the algorithmic differences helps explain the performance tradeoff
 !!! warning "Catastrophic Backtracking"
     PCRE2's backtracking algorithm can become extremely slow with certain patterns. Avoid patterns like `(a+)+b` or `(a*)*b` that create exponential exploration paths. If a PCRE2 search hangs, this is likely the cause. Test complex patterns on small inputs first.
 
+    **How backtracking causes exponential behavior:**
+
+    ```mermaid
+    flowchart TD
+        Start["Input: 'aaab'
+        Pattern: '(a+)+b'"] --> Try1["Try: outer (a+)+ matches 'aaa'
+        inner a+ matches 'aaa' as one group"]
+
+        Try1 --> Fail1["Try to match 'b'
+        Position: end of string
+        ❌ No 'b' found"]
+
+        Fail1 --> Back1["Backtrack: Split 'aaa' differently
+        Inner a+ matches 'aa', 'a'"]
+
+        Back1 --> Try2["Try: outer (a+)+ makes 2 groups
+        Group 1: 'aa', Group 2: 'a'"]
+
+        Try2 --> Fail2["Try to match 'b'
+        ❌ Still no 'b' found"]
+
+        Fail2 --> Back2["Backtrack: Split differently
+        Group 1: 'a', Group 2: 'aa'"]
+
+        Back2 --> Try3["Try: Another split
+        Group 1: 'a', Group 2: 'a', Group 3: 'a'"]
+
+        Try3 --> Fail3["Try to match 'b'
+        ❌ Still no 'b' found"]
+
+        Fail3 --> More["Continue backtracking...
+        Explores 2^n combinations
+        For 'aaaa...': exponential paths"]
+
+        More --> Finally["Eventually matches 'b' at end
+        But explored exponential paths first"]
+
+        style Fail1 fill:#ffebee
+        style Fail2 fill:#ffebee
+        style Fail3 fill:#ffebee
+        style Back1 fill:#fff3e0
+        style Back2 fill:#fff3e0
+        style More fill:#fff3e0
+        style Finally fill:#e8f5e9
+    ```
+
+    **Figure**: How `(a+)+b` creates catastrophic backtracking - the engine tries every possible way to split the 'a' characters between nested quantifiers before finding (or not finding) the final 'b'.
+
 **Explicit engine choice** (`--engine=default` or `--engine=pcre2`):
 - Predictable performance characteristics
 - Clear error messages if features unavailable

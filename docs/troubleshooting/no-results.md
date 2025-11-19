@@ -2,6 +2,16 @@
 
 If ripgrep returns zero results when you expect matches, try these troubleshooting steps:
 
+!!! tip "Quick Checklist - Start Here"
+    1. **Check files being searched**: `rg --files` (are your expected files listed?)
+    2. **Bypass ignore files**: Try `rg -u pattern` or `rg -uu pattern`
+    3. **Include hidden files**: Add `--hidden` flag
+    4. **Search binary files**: Add `-a` or `--text` flag
+    5. **Fix case sensitivity**: Add `-i` (case-insensitive) or `-S` (smart-case)
+    6. **Test literal pattern**: Try `rg -F "literal text"` instead of regex
+    7. **Enable multiline**: Add `-U` for patterns spanning multiple lines
+    8. **Debug filtering**: Use `--debug` to see what's being filtered and why
+
 ```mermaid
 flowchart TD
     Start[No Results Found] --> Files{"Are expected files
@@ -79,10 +89,13 @@ check --type-list"]
 ```bash
 # Source: docs/troubleshooting/debug-flags.md
 $ rg --debug "pattern"
-DEBUG|ignore::walk: ignoring ./node_modules: Ignore(IgnoreMatch(...))  # (1)!
+DEBUG|ignore::walk|ignore_match: ... ignore rule IgnoreMatch(Gitignore(Explicit { from: Some(".gitignore"), original: Some("node_modules/"), ... }))
+DEBUG|ignore::walk: ignoring ./node_modules: Ignore(IgnoreMatch(Gitignore(Explicit { ... })))  # (1)!
+DEBUG|ignore::walk|ignore_match: ... ignore rule IgnoreMatch(Gitignore(Explicit { from: Some(".gitignore"), original: Some("target/"), ... }))
+DEBUG|ignore::walk: ignoring ./target: Ignore(IgnoreMatch(Gitignore(Explicit { ... })))
 ```
 
-1. This line shows that `node_modules/` is being ignored due to a `.gitignore` match. The path and reason are shown for each filtered file/directory.
+1. These lines show which directories are being ignored and which `.gitignore` rule caused the filtering. The `from` field indicates the source file (`.gitignore`), and `original` shows the exact pattern that matched.
 
 ```mermaid
 graph LR
@@ -183,10 +196,13 @@ For more details, see the [Binary and Encoding Problems](./binary-encoding.md) p
 ```bash
 # Source: docs/troubleshooting/debug-flags.md
 $ rg --debug "pattern"
+DEBUG|grep_searcher::searcher: fast BoyerMoore search
 DEBUG|grep_searcher::searcher: binary file matches (but not printed): ./myfile.bin  # (1)!
+DEBUG|grep_searcher::searcher: searching ./script.sh: binary detection: false
+DEBUG|grep_searcher::searcher: binary file matches (but not printed): ./data.db
 ```
 
-1. This indicates the file was searched and matches were found, but results weren't printed because a NUL byte was detected in the first few KB of the file.
+1. These lines indicate which files were detected as binary. When "binary file matches (but not printed)" appears, it means the file was searched, matches were found, but results weren't printed because a NUL byte (`\0`) was detected. Text files show "binary detection: false".
 
 **Solutions:**
 
@@ -290,6 +306,66 @@ This shows all available file types and their associated patterns. Check if your
     ```
 
     For more details, see [Search Basics](../common-options/search-basics.md#multiline-matching).
+
+## Common Search Recipes
+
+Here are combined flag combinations for typical "no results" scenarios:
+
+!!! example "Search Everything (Nuclear Option)"
+    ```bash
+    # Search all files including ignored, hidden, and binary files
+    $ rg -uuu "pattern"
+    ```
+
+    This is the most permissive search - useful when you're sure the text exists but can't find it. Equivalent to disabling all filtering.
+
+!!! example "Search in node_modules or vendor directories"
+    ```bash
+    # Search ignored directories but skip hidden and binary files
+    $ rg -uu "pattern"
+    ```
+
+    Bypasses `.gitignore` and other ignore files while still filtering binaries and hidden files.
+
+!!! example "Search Configuration Files (Including Hidden)"
+    ```bash
+    # Search hidden files like .env, .config, etc.
+    $ rg --hidden -g ".*" "pattern"
+    ```
+
+    Includes hidden files and directories but respects ignore files and binary filtering.
+
+!!! example "Search for Exact Text (Not Regex)"
+    ```bash
+    # Find literal text like "foo.*bar" or "user@example.com"
+    $ rg -F "exact.text.with.special.chars"
+    ```
+
+    Useful when your search term contains regex metacharacters (`.*+?[]{}()^$|\\`).
+
+!!! example "Case-Insensitive Search in All Text Files"
+    ```bash
+    # Ignore case, search all text files including ignored ones
+    $ rg -i -uu "pattern"
+    ```
+
+    Combines case-insensitive matching with bypassing ignore files.
+
+!!! example "Find in Specific File Types Only"
+    ```bash
+    # Search only Rust files, including those in ignored directories
+    $ rg -u -t rust "pattern"
+    ```
+
+    Combines type filtering with bypassing `.gitignore`.
+
+!!! example "Debug Why Files Are Filtered"
+    ```bash
+    # Show detailed filtering decisions
+    $ rg --debug "pattern" 2>&1 | grep -i "ignoring\|binary"
+    ```
+
+    Displays which files are being ignored and why, focusing on ignore and binary detection messages.
 
 ## See Also
 

@@ -1,49 +1,132 @@
 {
-  "item_type": "auto-discovered",
+  "item_type": "page",
   "page_id": "flags",
   "page_title": "flags",
   "page_file": "docs/binary-data/flags.md",
   "drift_detected": false,
   "severity": "low",
-  "quality_assessment": "Page accurately documents binary file handling flags with clear explanations and helpful decision flowchart. Could be enhanced with visual features and more examples.",
-  "issues": [],
+  "quality_assessment": "Excellent documentation with accurate technical details, comprehensive examples, and strong visual aids. The page accurately reflects the implementation and provides clear guidance on binary file handling.",
+  "issues": [
+    {
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "Binary Detection Modes",
+      "description": "The table shows 'SearchAndSuppress' mode with NUL byte replacement, but doesn't explicitly explain the memory usage benefit mentioned in the source code comments",
+      "current_content": "NUL bytes replaced with line terminators",
+      "enhancement_suggestion": "Add brief note about why NUL bytes are replaced: 'to prevent impractically large lines when treating binary data as line-oriented'",
+      "source_reference": "crates/core/flags/lowargs.rs:243-247",
+      "user_impact": "minimal - users can still use the feature correctly without this detail"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Implementation Details",
+      "description": "Documentation references BinaryDetection struct at wrong location - should be crates/searcher/src/searcher/mod.rs:55 (correct) but also mentions crates/core/flags/lowargs.rs for BinaryMode enum which is accurate",
+      "current_content": "Implementation details section lists three components",
+      "should_note": "The BinaryDetection at line 55 is a wrapper around line_buffer::BinaryDetection, and the actual binary detection logic is in the convert() method",
+      "source_reference": "crates/searcher/src/searcher/mod.rs:55-70",
+      "user_impact": "minimal - documentation correctly identifies the struct location"
+    }
+  ],
   "positive_aspects": [
-    "Clear and accurate documentation of all binary-related flags (--binary, --text/-a, --no-binary, --no-text)",
-    "Excellent decision flowchart visualizing binary detection logic",
-    "Accurate explanation of SearchAndSuppress mode for explicit vs implicit files",
-    "Good use of warnings and caution callouts for terminal corruption risks",
-    "Practical examples showing when to use each flag",
-    "Clear explanation of the 'only affects implicit files' behavior for --binary"
+    "Excellent use of Mermaid diagrams - both state diagram and flowchart accurately represent the binary mode behavior",
+    "Comprehensive real-world examples using Material tabs (Mixed Directories, Database Dumps, Log Files, Safe Binary Search, Explicit Files)",
+    "Clear distinction between implicit and explicit file handling throughout",
+    "Accurate technical references to source code locations (BinaryMode enum at lowargs.rs:233, BinaryDetection at searcher/mod.rs:55)",
+    "Well-structured with admonitions (info, tip, warning, danger) that guide users appropriately",
+    "Terminal corruption warnings are prominently displayed with 'danger' admonition",
+    "Decision flowchart provides clear visual representation of the binary handling logic",
+    "Code annotations using numbered comments (# (1)!) for additional context",
+    "Flag negation (--no-binary, --no-text) is documented",
+    "Cross-references to related documentation are complete and accurate",
+    "Table format clearly shows three modes with behavior and use cases"
   ],
   "improvement_suggestions": [
-    "Add admonition boxes for 'When to use' sections to make them more visually prominent",
-    "Add a 'Common Use Cases' section with practical examples combining flags",
-    "Include a comparison table showing behavior differences between Auto, SearchAndSuppress, and AsText modes",
-    "Add code annotations to examples explaining what each flag does in context",
-    "Include a 'See Also' section linking to related topics (encoding, filtering)",
-    "Add examples showing the difference in output between binary modes",
-    "Consider adding a 'Binary Detection Heuristics' section explaining how ripgrep detects binary files (NUL byte detection)"
+    {
+      "type": "enhancement",
+      "priority": "low",
+      "suggestion": "Consider adding a troubleshooting section for common binary file issues",
+      "examples": [
+        "What to do when binary files are unexpectedly skipped",
+        "How to identify which files were detected as binary (use --debug)",
+        "Performance implications of --text vs --binary on large binary files"
+      ]
+    },
+    {
+      "type": "enhancement",
+      "priority": "low",
+      "suggestion": "Add example output showing what 'Binary file X matches (found \"\\0\" byte around offset Y)' looks like",
+      "rationale": "The examples show the warning message format, which is helpful for users to know what to expect"
+    },
+    {
+      "type": "consistency",
+      "priority": "low",
+      "suggestion": "In the state diagram, consider adding transitions back from AsText to Auto (via --no-text flag) for completeness",
+      "note": "The diagram shows --no-text and --no-binary flags in transitions, which is good, but the Auto state could show it accepts --no-text and --no-binary"
+    }
   ],
   "cross_references": [
-    "binary-data/index"
+    {
+      "target": "./index.md",
+      "validated": true,
+      "purpose": "Binary Data Overview - main binary data handling documentation"
+    },
+    {
+      "target": "../file-encoding.md",
+      "validated": true,
+      "purpose": "Character encoding handling"
+    },
+    {
+      "target": "../automatic-filtering.md",
+      "validated": true,
+      "purpose": "File filtering and type detection"
+    }
   ],
+  "visual_features": {
+    "mermaid_diagrams": [
+      {
+        "type": "stateDiagram-v2",
+        "purpose": "Binary mode state transitions",
+        "quality": "excellent - shows all three modes and flag transitions with helpful notes"
+      },
+      {
+        "type": "flowchart TD",
+        "purpose": "Binary file handling decision tree",
+        "quality": "excellent - clear visual representation of the decision logic with color coding"
+      }
+    ],
+    "material_extensions": [
+      "Admonitions (info, tip, warning, danger) - used appropriately throughout",
+      "Content tabs (=== syntax) - effectively organizes use cases",
+      "Code annotations with (1)! syntax - provides inline explanations"
+    ],
+    "tables": [
+      {
+        "location": "Binary Detection Modes section",
+        "quality": "excellent - clear comparison of three modes"
+      }
+    ]
+  },
   "metadata": {
-    "analyzed_at": "2025-11-13T20:53:00Z",
+    "analyzed_at": "2025-11-19T18:24:00Z",
     "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
     "topics_covered": [
-      "binary file handling",
-      "binary detection",
-      "binary flags",
-      "text mode",
-      "NUL byte handling"
+      "binary_handling",
+      "binary_detection",
+      "file_handling",
+      "filtering"
     ],
     "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
-    "documentation_quality": "accurate",
-    "implementation_references": [
-      "crates/core/flags/lowargs.rs:233 - BinaryMode enum definition",
-      "crates/core/flags/defs.rs:427 - Binary flag implementation",
-      "crates/core/flags/defs.rs:6633 - Text flag implementation",
-      "crates/searcher/src/searcher/mod.rs:55 - BinaryDetection struct"
+    "features_referenced": [
+      "filtering.binary_detection",
+      "file_handling.binary_handling"
+    ],
+    "accuracy_notes": [
+      "All source code references verified and accurate",
+      "All flag names and behaviors match implementation",
+      "Binary mode enum values match crates/core/flags/lowargs.rs:233",
+      "BinaryDetection struct location accurate (crates/searcher/src/searcher/mod.rs:55)",
+      "Flag definitions verified in crates/core/flags/defs.rs"
     ]
   }
 }

@@ -1,142 +1,159 @@
 {
-  "item_type": "auto-discovered",
+  "item_type": "page",
   "page_id": "SUMMARY",
   "page_title": "SUMMARY",
   "page_file": "docs/SUMMARY.md",
   "drift_detected": true,
   "severity": "critical",
-  "quality_assessment": "SUMMARY.md contains multiple broken links to non-existent documentation pages. Out of 20 linked pages, 12 are missing (60% broken link rate). This will cause build failures and broken navigation.",
+  "quality_assessment": "SUMMARY page is incomplete - missing references to 5 major documentation sections that exist in the codebase (basics/, advanced-patterns/, binary-data/, common-options/, troubleshooting/)",
   "issues": [
     {
-      "type": "broken_links",
+      "type": "missing_content",
       "severity": "high",
-      "section": "Cross-References",
-      "description": "Found 12 broken internal links to missing documentation files",
-      "broken_links": [
-        {
-          "link_text": "Basics",
-          "target_path": "basics.md",
-          "expected_file": "docs/basics.md",
-          "current_file": "docs/SUMMARY.md",
-          "status": "missing"
-        },
-        {
-          "link_text": "Automatic Filtering",
-          "target_path": "automatic-filtering.md",
-          "expected_file": "docs/automatic-filtering.md",
-          "current_file": "docs/SUMMARY.md",
-          "status": "exists"
-        },
-        {
-          "link_text": "Binary Data",
-          "target_path": "binary-data.md",
-          "expected_file": "docs/binary-data.md",
-          "current_file": "docs/SUMMARY.md",
-          "status": "missing"
-        },
-        {
-          "link_text": "Common Options",
-          "target_path": "common-options.md",
-          "expected_file": "docs/common-options.md",
-          "current_file": "docs/SUMMARY.md",
-          "status": "missing"
-        },
-        {
-          "link_text": "Advanced Patterns",
-          "target_path": "advanced-patterns.md",
-          "expected_file": "docs/advanced-patterns.md",
-          "current_file": "docs/SUMMARY.md",
-          "status": "missing"
-        },
-        {
-          "link_text": "Troubleshooting",
-          "target_path": "troubleshooting.md",
-          "expected_file": "docs/troubleshooting.md",
-          "current_file": "docs/SUMMARY.md",
-          "status": "missing"
-        }
-      ],
-      "fix_suggestion": "Create missing documentation pages or remove broken links from SUMMARY.md. The missing pages are: basics.md, binary-data.md, common-options.md, advanced-patterns.md, troubleshooting.md. These pages are referenced in the navigation but do not exist in the docs/ directory."
+      "section": "User Guide",
+      "description": "Missing reference to 'basics/' section which contains 8 pages covering fundamental search features",
+      "feature_reference": "search_basics",
+      "fix_suggestion": "Add 'Basics' section to User Guide with link to basics/index.md. This section should appear early in the User Guide as it covers fundamental concepts.",
+      "source_reference": "docs/basics/ directory exists with: index.md, boundaries.md, case-sensitivity.md, count-list.md, literal-search.md, output.md, pattern-matching.md, practice.md, regex-basics.md"
     },
     {
-      "type": "incomplete_explanation",
-      "severity": "medium",
-      "section": "Table of Contents Structure",
-      "description": "SUMMARY.md is a table of contents but uses GitBook/mdBook syntax rather than MkDocs Material format",
-      "current_content": "SUMMARY.md with markdown list structure",
-      "should_be": "mkdocs.yml with nav: section for MkDocs Material",
-      "fix_suggestion": "This appears to be a GitBook or mdBook-style SUMMARY.md file. MkDocs Material uses mkdocs.yml for navigation configuration. Consider either: (1) Converting this to mkdocs.yml nav structure, or (2) If using a plugin that reads SUMMARY.md, ensure the plugin is configured correctly.",
-      "source_reference": "MkDocs Material navigation documentation"
+      "type": "missing_content",
+      "severity": "high",
+      "section": "Advanced Topics",
+      "description": "Missing reference to 'advanced-patterns/' section which contains 9 pages covering advanced regex features",
+      "feature_reference": "advanced_patterns",
+      "fix_suggestion": "Add 'Advanced Patterns' section to Advanced Topics with link to advanced-patterns/index.md",
+      "source_reference": "docs/advanced-patterns/ directory exists with: index.md, backreferences.md, examples.md, inline-flags.md, lookaround.md, multiline.md, pcre2.md, performance.md, unicode.md"
     },
     {
       "type": "missing_content",
       "severity": "high",
       "section": "User Guide",
-      "description": "Multiple core documentation pages are missing",
-      "missing_pages": [
-        "basics.md - Core search basics and fundamental concepts",
-        "binary-data.md - How ripgrep handles binary files",
-        "common-options.md - Frequently used command-line options",
-        "advanced-patterns.md - Advanced regex patterns and techniques",
-        "troubleshooting.md - Common issues and solutions"
-      ],
-      "feature_coverage_gap": [
-        "search_basics - No basics.md to introduce fundamental search concepts",
-        "file_handling.binary_handling - No binary-data.md to explain binary file processing",
-        "advanced_patterns - No advanced-patterns.md to cover multiline, PCRE2, lookaround",
-        "meta_content.troubleshooting - No troubleshooting.md despite having comprehensive troubleshooting content in features.json"
-      ],
-      "fix_suggestion": "Create the missing documentation pages to provide complete user guidance. These pages should cover fundamental concepts (basics.md), binary file handling (binary-data.md), commonly used options (common-options.md), advanced regex features (advanced-patterns.md), and troubleshooting guidance (troubleshooting.md)."
+      "description": "Missing reference to 'binary-data/' section which contains 6 pages covering binary file handling",
+      "feature_reference": "file_handling.binary_handling",
+      "fix_suggestion": "Add 'Binary Data' section to User Guide with link to binary-data/index.md. This should appear near other file handling topics (encoding, compression).",
+      "source_reference": "docs/binary-data/ directory exists with: index.md, detection.md, examples.md, explicit-implicit.md, flags.md, modes.md"
+    },
+    {
+      "type": "missing_content",
+      "severity": "medium",
+      "section": "User Guide or Reference",
+      "description": "Missing reference to 'common-options/' section which contains 6 pages of reference material for frequently used options",
+      "feature_reference": "meta_content",
+      "fix_suggestion": "Add 'Common Options Reference' section. Consider creating a separate 'Reference' section in SUMMARY.md for reference material, or add to User Guide with link to common-options/index.md",
+      "source_reference": "docs/common-options/ directory exists with: index.md, file-filtering.md, output-formatting.md, output-modes.md, reference.md, search-basics.md"
+    },
+    {
+      "type": "missing_content",
+      "severity": "high",
+      "section": "Troubleshooting",
+      "description": "Missing reference to 'troubleshooting/' section which contains 7 pages of troubleshooting guidance",
+      "feature_reference": "meta_content.troubleshooting",
+      "fix_suggestion": "Add 'Troubleshooting' section (either in Advanced Topics or as a standalone top-level section after Advanced Topics) with link to troubleshooting/index.md. This is critical user-facing content.",
+      "source_reference": "docs/troubleshooting/ directory exists with: index.md, binary-encoding.md, bug-reports.md, debug-flags.md, errors.md, no-results.md, performance.md"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "medium",
+      "section": "Mermaid Diagram",
+      "description": "Mermaid diagram shows simplified structure but doesn't reflect actual documentation organization with subsections",
+      "current_content": "Graph shows flat structure: Introduction → User Guide (with 12 flat topics) → Advanced Topics (with 3 flat topics)",
+      "should_be": "Graph should show hierarchical structure including: Basics (subsection), Advanced Patterns (subsection), Binary Data (subsection), Common Options (subsection), Troubleshooting (subsection)",
+      "fix_suggestion": "Update Mermaid diagram to include subsection nodes for complete documentation structure visualization. Add nodes for: Basics, AdvancedPatterns, BinaryData, CommonOptions, Troubleshooting with connections to their parent sections."
     },
     {
       "type": "outdated_information",
-      "severity": "medium",
-      "section": "Navigation Structure",
-      "description": "Navigation structure may not align with actual documentation coverage",
-      "current_content": "SUMMARY.md lists 23 pages across Introduction, User Guide, and Advanced Topics sections",
-      "actual_coverage": "Only 18 markdown files exist in docs/ directory (excluding SUMMARY.md)",
-      "fix_suggestion": "Audit the navigation structure against available documentation. Remove links to missing pages or create the missing pages. Ensure the User Guide and Advanced Topics sections accurately reflect available content."
+      "severity": "low",
+      "section": "User Guide organization",
+      "description": "List structure implies all topics are at same hierarchical level, but actual documentation has nested subsections",
+      "current_content": "Flat bullet list of 12 topics in User Guide section",
+      "should_be": "Hierarchical structure showing both top-level pages and subsections with nested items",
+      "fix_suggestion": "Restructure User Guide list to use nested bullets showing subsections. Example:\n- Basics (subsection)\n  - Pattern Matching\n  - Case Sensitivity\n  - etc.\n- Recursive Search\n- Filtering\n  - Automatic Filtering\n  - Manual Filtering: Globs\n  - Manual Filtering: File Types"
     }
   ],
   "positive_aspects": [
+    "All internal links are valid - no broken references to non-existent files",
+    "Good use of MkDocs Material admonitions (note, info, tip, warning) for navigation guidance",
+    "Mermaid diagram provides visual structure overview (though incomplete)",
     "Clear three-section organization (Introduction, User Guide, Advanced Topics)",
-    "Logical progression from basics to advanced topics",
-    "Good topic grouping within User Guide section",
-    "Covers key areas: filtering, replacements, configuration, output formats, performance",
-    "Links to existing pages use correct relative paths"
+    "Helpful getting started tip directing new users to Introduction",
+    "Good use of diagram styling for visual distinction between sections",
+    "Figure captions explain diagram purpose",
+    "Links use correct relative paths"
   ],
   "improvement_suggestions": [
-    "Create missing documentation pages to complete the navigation structure",
-    "Consider converting to mkdocs.yml format if using MkDocs Material",
-    "Add a getting-started page as a gentle introduction before basics",
-    "Consider splitting manual-filtering into subsections if content is large",
-    "Add cross-references between related topics (e.g., performance tips in filtering pages)",
-    "Include version compatibility notes in introduction",
-    "Add visual elements (admonitions, tabs) when creating missing pages"
+    "Add complete table of contents including all subsections (basics/, advanced-patterns/, binary-data/, common-options/, troubleshooting/)",
+    "Update Mermaid diagram to reflect actual hierarchical documentation structure with subsections",
+    "Consider adding a 'Reference' section distinct from User Guide for reference material like common-options",
+    "Add brief descriptions for each major section explaining scope and intended audience",
+    "Consider using nested bullet lists to show hierarchical relationships between topics",
+    "Add cross-reference guidance (e.g., 'After Basics, explore Advanced Patterns')",
+    "Add metadata about documentation coverage completeness",
+    "Consider adding visual indicators for beginner vs intermediate vs advanced topics",
+    "Add estimated reading time or page count for major sections",
+    "Consider adding a 'Quick Reference' section linking to common-options/reference.md",
+    "Add version compatibility note if certain features are version-specific"
   ],
-  "link_validation_summary": {
-    "total_internal_links": 20,
-    "broken_links": 5,
-    "valid_links": 15,
-    "broken_link_percentage": 25,
-    "broken_link_details": [
-      "basics.md - Referenced in User Guide section",
-      "binary-data.md - Referenced in User Guide section",
-      "common-options.md - Referenced in User Guide section",
-      "advanced-patterns.md - Referenced in Advanced Topics section",
-      "troubleshooting.md - Referenced in Advanced Topics section"
-    ]
-  },
+  "cross_references": [
+    "basics/index.md",
+    "advanced-patterns/index.md",
+    "binary-data/index.md",
+    "common-options/index.md",
+    "troubleshooting/index.md"
+  ],
   "metadata": {
-    "analyzed_at": "2025-11-13T14:27:00Z",
+    "analyzed_at": "2025-11-19T18:24:02Z",
     "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
     "topics_covered": [
-      "navigation",
-      "table_of_contents",
-      "documentation_structure"
+      "documentation-navigation",
+      "table-of-contents",
+      "structure-overview"
     ],
     "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
-    "documentation_type": "table_of_contents",
-    "format_type": "gitbook_mdbook_style"
+    "link_validation": {
+      "total_internal_links": 17,
+      "broken_links": 0,
+      "all_links_valid": true,
+      "validated_links": [
+        "introduction.md",
+        "recursive-search.md",
+        "automatic-filtering.md",
+        "manual-filtering-globs.md",
+        "manual-filtering-types.md",
+        "replacements.md",
+        "configuration-file.md",
+        "file-encoding.md",
+        "compressed-files.md",
+        "preprocessor.md",
+        "context-lines.md",
+        "output-formats.md",
+        "sorting-results.md",
+        "utility-modes.md",
+        "performance.md",
+        "statistics.md",
+        "hyperlinks.md"
+      ]
+    },
+    "coverage_analysis": {
+      "documented_top_level_pages": 17,
+      "documented_subsections": 0,
+      "actual_subsections": 5,
+      "missing_subsections": [
+        "basics/",
+        "advanced-patterns/",
+        "binary-data/",
+        "common-options/",
+        "troubleshooting/"
+      ],
+      "subsection_page_counts": {
+        "basics": 9,
+        "advanced-patterns": 9,
+        "binary-data": 6,
+        "common-options": 6,
+        "troubleshooting": 7
+      },
+      "total_undocumented_pages": 37,
+      "completeness_percentage": 31.5
+    }
   }
 }

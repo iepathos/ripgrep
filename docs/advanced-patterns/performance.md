@@ -28,6 +28,11 @@ Advanced regex features can impact performance. Understanding these implications
 - More complex matching algorithm
 - Less optimized for large-scale text search
 
+!!! note "PCRE2 JIT Compilation"
+    PCRE2 includes optional JIT (Just-In-Time) compilation support that can significantly improve performance when available. JIT compilation is only available on 64-bit systems. When JIT is available and enabled, PCRE2 patterns execute faster, though typically still slower than ripgrep's default finite automata engine. Check `rg --version` to see if JIT is available in your build.
+
+    Source: crates/core/flags/doc/version.rs:62-66
+
 **Backtracking Complexity**: PCRE2's backtracking algorithm can exhibit exponential time complexity on certain "pathological" patterns, especially those with:
 - Nested quantifiers (e.g., `(a+)+`)
 - Complex alternations with overlapping possibilities
@@ -96,9 +101,14 @@ These features prevent some optimizations:
 Ripgrep uses parallel search by default for maximum performance:
 
 **Thread Control**:
-- Uses all CPU cores by default with work-stealing scheduler
+- Automatically selects thread count using heuristics (typically matches CPU core count) with work-stealing scheduler
 - Control threads with `-j/--threads N` flag
 - Single-threaded mode: `--threads 1`
+
+!!! tip "Automatic Thread Selection"
+    Ripgrep uses intelligent heuristics to choose the optimal number of threads rather than blindly using all CPU cores. This typically results in a thread count matching your CPU core count, but allows for better default behavior across different systems and workloads.
+
+    Source: crates/ignore/src/walk.rs:698-699
 
 !!! example "Thread Control Examples"
     ```bash
@@ -108,6 +118,42 @@ Ripgrep uses parallel search by default for maximum performance:
     # Single-threaded for deterministic output
     rg --threads 1 'pattern'
     ```
+
+```mermaid
+flowchart LR
+    Start[Files to Search] --> Distribute["Thread Scheduler
+    Work Stealing"]
+
+    Distribute --> T1["Thread 1
+    File Subset"]
+    Distribute --> T2["Thread 2
+    File Subset"]
+    Distribute --> T3["Thread 3
+    File Subset"]
+    Distribute --> TN["Thread N
+    File Subset"]
+
+    T1 --> Search1[Search Files]
+    T2 --> Search2[Search Files]
+    T3 --> Search3[Search Files]
+    TN --> SearchN[Search Files]
+
+    Search1 --> Collect[Collect Results]
+    Search2 --> Collect
+    Search3 --> Collect
+    SearchN --> Collect
+
+    Collect --> Output[Output Matches]
+
+    style Distribute fill:#e1f5ff
+    style T1 fill:#fff3e0
+    style T2 fill:#fff3e0
+    style T3 fill:#fff3e0
+    style TN fill:#fff3e0
+    style Collect fill:#e8f5e9
+```
+
+**Figure**: Parallel search architecture showing how ripgrep distributes files across threads with work-stealing scheduler for optimal load balancing.
 
 **When to use single-threaded mode**:
 - Need deterministic output order
@@ -128,10 +174,16 @@ Ripgrep automatically selects the best I/O strategy based on your search:
     - Maps file directly into memory
     - Faster for large files
     - Lower memory overhead
+    - **Note**: Disabled by default on macOS due to platform-specific performance characteristics
 - **Buffered reading**: Used for directory searches
     - Reads files incrementally
     - Better for many small files
     - More predictable memory usage
+
+!!! info "Platform-Specific Behavior"
+    Memory mapping is automatically disabled on macOS platforms, even when searching single files, due to performance characteristics on that operating system. Ripgrep uses buffered reading on macOS instead.
+
+    Source: crates/searcher/src/searcher/mmap.rs:73-76
 
 **Manual Control**:
 ```bash
@@ -188,9 +240,21 @@ rg --stats -U 'pattern'
 
 This shows:
 - Files searched
+- Searches with match
 - Bytes searched
 - Matches found
 - Search time
+
+!!! example "Stats Output"
+    ```
+    4 files searched
+    2 searches with match
+    15432 bytes searched
+    8 matches found
+    0.012s elapsed
+    ```
+
+    Source: crates/printer/src/stats.rs:12-21
 
 ## Performance Tips
 
@@ -305,6 +369,55 @@ help: use --regex-size-limit to increase the limit
     Hitting regex limits usually means your pattern is too complex and should be simplified. Only increase limits for legitimate use cases like auto-generated patterns or comprehensive matching needs.
 
 Hitting regex limits is often a sign that your pattern needs simplification, but sometimes large patterns are legitimate. Here's how to decide:
+
+```mermaid
+flowchart TD
+    Start[Regex Limit Error] --> Type{"Pattern
+    Type?"}
+
+    Type -->|Auto-generated| Increase1["Increase Limit
+    Legitimate Use"]
+    Type -->|Large Alternations| Check{"Truly Need
+    All Cases?"}
+    Type -->|Deeply Nested| Simplify1["Refactor Pattern
+    Reduce Nesting"]
+    Type -->|Unclear| Review["Review Design
+    Understand Complexity"]
+
+    Check -->|Yes| Increase2["Increase Limit
+    Document Why"]
+    Check -->|No| Multiple["Use Multiple
+    Simpler Searches"]
+
+    Review --> Clear{"Complexity
+    Justified?"}
+    Clear -->|Yes| Increase3[Increase Limit]
+    Clear -->|No| Simplify2["Simplify Pattern
+    Or Split Search"]
+
+    Increase1 --> Test[Test Performance]
+    Increase2 --> Test
+    Increase3 --> Test
+
+    Multiple --> Done[Efficient Search]
+    Simplify1 --> Done
+    Simplify2 --> Done
+    Test --> Acceptable{"Performance
+    OK?"}
+    Acceptable -->|Yes| Done
+    Acceptable -->|No| Rethink["Rethink Approach
+    Consider Alternatives"]
+
+    style Increase1 fill:#fff3e0
+    style Increase2 fill:#fff3e0
+    style Increase3 fill:#fff3e0
+    style Simplify1 fill:#e8f5e9
+    style Simplify2 fill:#e8f5e9
+    style Multiple fill:#e8f5e9
+    style Done fill:#e8f5e9
+```
+
+**Figure**: Decision flow for handling regex limit errors - when to increase limits versus simplifying patterns based on use case and pattern characteristics.
 
 **Increase limits for**:
 - **Auto-generated patterns**: Patterns produced by tools or scripts (e.g., generated from configuration)
