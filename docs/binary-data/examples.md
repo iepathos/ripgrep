@@ -205,6 +205,8 @@ binary file matches (found "\0" byte around offset 512)
     rg --encoding utf-16le "pattern" utf16file.txt
     ```
 
+    For more details on encoding handling, see [File Encoding](../file-encoding.md).
+
 ### "Binary detection seems inconsistent with large files"
 
 !!! question "Problem"
