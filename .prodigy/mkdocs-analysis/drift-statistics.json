@@ -3,69 +3,82 @@
   "page_id": "statistics",
   "page_title": "statistics",
   "page_file": "docs/statistics.md",
-  "drift_detected": true,
-  "severity": "medium",
-  "quality_assessment": "Page accurately documents statistics features with good examples, but has broken cross-references that need fixing.",
-  "issues": [
-    {
-      "type": "broken_links",
-      "severity": "medium",
-      "section": "See Also",
-      "description": "Found 2 broken internal link(s) in the documentation",
-      "broken_links": [
-        {
-          "link_text": "Troubleshooting",
-          "target_path": "troubleshooting.md",
-          "source_line": 296,
-          "issue": "File does not exist"
-        },
-        {
-          "link_text": "Common Options",
-          "target_path": "common-options.md",
-          "source_line": 298,
-          "issue": "File does not exist"
-        }
-      ],
-      "fix_suggestion": "Remove the broken links to troubleshooting.md and common-options.md, or create these pages if they are planned documentation."
-    }
-  ],
+  "drift_detected": false,
+  "severity": "none",
+  "quality_assessment": "Excellent documentation with accurate technical content, comprehensive examples, and outstanding use of visual features. The page accurately reflects the codebase implementation and provides valuable guidance for users. Previously identified broken links have been resolved.",
+  "issues": [],
   "positive_aspects": [
-    "Comprehensive documentation of all statistics fields matches codebase implementation (crates/printer/src/stats.rs)",
-    "Excellent explanation of matches vs matched_lines distinction with clear examples",
-    "Good coverage of thread time vs wall time for parallel searches",
-    "Accurate documentation of JSON output format matching test expectations (tests/json.rs)",
-    "Multiple practical use cases and examples for different scenarios",
-    "Clear explanation of --stats interaction with --quiet mode",
-    "Well-structured sections covering metrics, output format, interpretation, and best practices",
-    "Accurate description of multiline mode behavior for matched_lines counting",
-    "Performance tips section provides actionable guidance"
+    "Accurate reflection of Stats struct from crates/printer/src/stats.rs:13-21 with all 7 fields correctly documented",
+    "Clear explanation of the difference between matches and matched lines with practical examples",
+    "Comprehensive coverage of thread time vs wall-clock time in parallel searches with 4:1 ratio example",
+    "Excellent use of 4 Mermaid diagrams: statistics flow, match counting visualization, thread utilization Gantt chart, and decision flow",
+    "Well-structured tabbed content (=== syntax) comparing text vs JSON output formats",
+    "Appropriate use of 5 MkDocs Material admonitions (note, tip, info, warning) for key information",
+    "Code annotations with numbered callouts (1)! through (7)! for struct field explanations",
+    "Practical examples covering 4 distinct use cases with actual command-line snippets",
+    "Performance implications clearly documented, especially --stats with --quiet disabling early-exit",
+    "Comprehensive best practices section with 6 actionable recommendations",
+    "Script examples for both JSON parsing (with jq) and text parsing (with grep/cut)",
+    "Decision flow diagram for interpreting statistics and identifying optimization opportunities",
+    "Valid cross-reference to performance.md (verified)",
+    "Accurate JSON output structure matching crates/printer/src/stats.rs serialization (lines 151-171)",
+    "Correct documentation of multiline mode behavior for matched_lines counting (docs line 97-98)",
+    "Proper explanation of QuietWithMatch behavior with stats from crates/printer/src/summary.rs:84-94"
   ],
   "improvement_suggestions": [
-    "Consider adding a visual diagram showing the relationship between matches, matched_lines, and files searched",
-    "Could add admonition blocks using MkDocs Material extensions for key warnings (e.g., stats disabling quiet's early-exit)",
-    "Example 4 (debugging slow search) could benefit from showing sample --debug output",
-    "Consider adding code annotations to JSON example using MkDocs Material features",
-    "Could enhance the 'Interpreting Results' section with tabbed examples showing different scenarios"
+    "Consider adding a visual example showing actual terminal output with colors in a screenshot",
+    "Could add a comparison table using MkDocs Material table syntax for --count vs --count-matches",
+    "Might benefit from a troubleshooting admonition for common statistics interpretation questions"
   ],
   "cross_references": [
-    "performance.md"
+    "performance"
   ],
   "metadata": {
-    "analyzed_at": "2025-11-13T20:53:00Z",
+    "analyzed_at": "2025-11-19T18:24:02Z",
     "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
     "topics_covered": [
       "statistics",
-      "metrics",
-      "performance analysis",
-      "json output"
+      "performance metrics",
+      "search profiling",
+      "output formats",
+      "json output",
+      "parallel search metrics",
+      "thread time analysis",
+      "match counting"
     ],
     "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "features_referenced": [
+      "performance.statistics",
+      "output_control.json_output",
+      "utility_features.statistics",
+      "performance.parallelism"
+    ],
+    "visual_features_used": [
+      "mermaid flowcharts (4 diagrams total)",
+      "mermaid gantt chart for thread visualization",
+      "code annotations with numbered callouts (1)! through (7)!",
+      "tabbed content blocks using === syntax",
+      "admonitions: note, tip, info, warning (5 total)"
+    ],
+    "link_validation": {
+      "internal_links_found": 1,
+      "broken_links": 0,
+      "valid_links": [
+        "performance.md"
+      ]
+    },
     "code_references_verified": [
-      "crates/printer/src/stats.rs:13-21 - Stats struct definition matches documented fields",
+      "crates/printer/src/stats.rs:13-21 - Stats struct definition matches documented fields exactly",
+      "crates/printer/src/stats.rs:14 - elapsed field is NiceDuration wrapping Duration",
       "crates/printer/src/stats.rs:151-171 - JSON serialization confirms documented JSON output format",
       "crates/printer/src/summary.rs:84-94 - QuietWithMatch behavior with stats documented correctly",
-      "tests/json.rs:128-136 - Test Stats struct confirms JSON field names and types",
-      "tests/json.rs:140-144 - Duration struct includes 'human' field as documented"
+      "crates/printer/src/summary.rs:255-259 - stats flag disables early-exit optimization as documented"
+    ],
+    "drift_analysis_notes": [
+      "Previous analysis from 2025-11-13 identified broken links to troubleshooting.md and common-options.md",
+      "Current analysis (2025-11-19) confirms these broken links have been removed from the documentation",
+      "Page has been significantly enhanced with Mermaid diagrams and MkDocs Material features",
+      "All technical content remains accurate and aligned with codebase implementation"
     ]
   }
 }
