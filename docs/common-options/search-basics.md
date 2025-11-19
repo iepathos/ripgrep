@@ -4,29 +4,47 @@ These flags control how patterns are interpreted and matched against text.
 
 ## Case Sensitivity
 
-By default, ripgrep uses **smart case**: if your pattern is all lowercase, the search is case-insensitive; if it contains any uppercase letters, the search becomes case-sensitive.
+By default, ripgrep uses **case-sensitive** matching. This means `rg error` will only match the exact lowercase word "error", not "Error" or "ERROR".
 
-```mermaid
-flowchart TD
-    Start[Enter Pattern] --> HasUpper{"Contains
-uppercase?"}
-    HasUpper -->|Yes| CaseSens[Case-Sensitive Search]
-    HasUpper -->|No| CaseInsens[Case-Insensitive Search]
-
-    CaseSens --> Ex1["Matches: 'Error'
-Skips: 'error', 'ERROR'"]
-    CaseInsens --> Ex2["Matches: 'error',
-'Error', 'ERROR'"]
-
-    style HasUpper fill:#e1f5ff
-    style CaseSens fill:#ffebee
-    style CaseInsens fill:#e8f5e9
+```bash
+# Source: Default behavior (crates/core/flags/defs.rs:654)
+# Case-sensitive by default - only matches exact case
+echo -e "error\nError\nERROR" | rg error
+# Output: error
 ```
 
-**Figure**: Smart case behavior - pattern case determines match sensitivity.
+For more flexible matching, use these flags:
 
-!!! tip "Smart Case Default Behavior"
-    Ripgrep's smart case is usually what you want: `rg error` finds all variations, while `rg Error` finds only the capitalized form. Override with `-i` (always ignore case) or `-s` (always match case) when needed.
+- **`-S, --smart-case`**: Enable smart case matching (pattern case determines behavior)
+  ```bash
+  # Lowercase pattern → case-insensitive
+  rg -S error    # Matches: error, Error, ERROR
+
+  # Uppercase present → case-sensitive
+  rg -S Error    # Matches: Error only
+  ```
+
+  ```mermaid
+  flowchart TD
+      Start[Pattern with -S flag] --> HasUpper{"Contains
+  uppercase?"}
+      HasUpper -->|Yes| CaseSens[Case-Sensitive Search]
+      HasUpper -->|No| CaseInsens[Case-Insensitive Search]
+
+      CaseSens --> Ex1["'Error' matches: 'Error'
+  Skips: 'error', 'ERROR'"]
+      CaseInsens --> Ex2["'error' matches:
+  'error', 'Error', 'ERROR'"]
+
+      style HasUpper fill:#e1f5ff
+      style CaseSens fill:#ffebee
+      style CaseInsens fill:#e8f5e9
+  ```
+
+  **Figure**: Smart case behavior with `-S` flag - pattern case determines match sensitivity.
+
+  !!! tip "Smart Case is Useful"
+      Enable smart case with `-S` when you want lowercase patterns to match any case variation. This is convenient for searching logs or prose where you care about the content but not the exact capitalization.
 
 - **`-i, --ignore-case`**: Force case-insensitive search regardless of pattern
   ```bash
@@ -35,18 +53,12 @@ Skips: 'error', 'ERROR'"]
   ```
   Useful when searching prose or when you want to catch all case variations.
 
-- **`-s, --case-sensitive`**: Force case-sensitive search
+- **`-s, --case-sensitive`**: Explicitly force case-sensitive search
   ```bash
   # Only find exact case match "Error"
   rg -s Error
   ```
-  Useful when searching code where case matters (e.g., distinguishing `Error` from `error`).
-
-- **`-S, --smart-case`**: Enable smart case (the default)
-  ```bash
-  rg -S pattern  # Lowercase pattern → case-insensitive
-  rg -S Pattern  # Uppercase present → case-sensitive
-  ```
+  Useful for overriding configuration files that may have set different defaults, or when you want to be explicit about case-sensitive matching.
 
 ## Pattern Types
 
@@ -109,8 +121,9 @@ By default, patterns match within single lines. For patterns that span multiple 
 
 - **`-U, --multiline`**: Enable multiline mode where patterns can match across line boundaries
   ```bash
-  # Match function definitions spanning multiple lines
-  rg -U 'fn \w+\([^)]*\)\s*->'
+  # Source: tests/multiline.rs:8
+  # Match patterns spanning multiple lines
+  rg -U 'abc\ndef'
 
   # Find multi-line comments
   rg -U '/\*.*?\*/'
@@ -118,12 +131,21 @@ By default, patterns match within single lines. For patterns that span multiple 
 
 - **`--multiline-dotall`**: Make `.` match newlines in multiline mode
   ```bash
-  # Match struct definitions with any content between braces
-  rg -U --multiline-dotall 'struct \w+ \{.*?\}'
+  # Source: tests/multiline.rs:28-43
+  # Match patterns where . needs to cross line boundaries
+  rg -U --multiline-dotall 'of this world.+detective work'
   ```
 
   !!! warning "Multiline Gotcha: Dot Behavior"
       In multiline mode (`-U`), the `.` metacharacter **still doesn't match newlines** by default. You must add `--multiline-dotall` to make `.` match `\n`. Without it, `.*` stops at line boundaries even in multiline mode.
+
+      ```bash
+      # This FAILS - dot doesn't match newline even with -U
+      rg -U 'world.+detective'
+
+      # This SUCCEEDS - multiline-dotall makes dot match newline
+      rg -U --multiline-dotall 'world.+detective'
+      ```
 
 ## Regex Engine Selection
 
@@ -154,10 +176,11 @@ Conditional patterns"]
 
 - **`-P, --pcre2`**: Use PCRE2 engine for advanced features like lookahead/lookbehind and backreferences
   ```bash
-  # Lookahead: find "foo" only if followed by "bar"
+  # Source: tests/regression.rs:1152 (lookahead example)
+  # Lookahead: find pattern only if followed by another pattern
   rg -P 'foo(?=bar)'
 
-  # Lookbehind: find "bar" only if preceded by "foo"
+  # Lookbehind: find pattern only if preceded by another pattern
   rg -P '(?<=foo)bar'
 
   # Backreferences: find repeated words
