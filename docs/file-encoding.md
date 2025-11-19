@@ -33,17 +33,22 @@ rg --encoding ENCODING pattern
 **Examples:**
 ```bash
 # Use default automatic mode (BOM detection)
-rg pattern files/
+rg pattern files/                          # (1)!
 
 # Force UTF-16 encoding
-rg -E utf-16 pattern files/
+rg -E utf-16 pattern files/                # (2)!
 
 # Search raw bytes without any transcoding
-rg -E none pattern files/
+rg -E none pattern files/                  # (3)!
 
 # Search Cyrillic text encoded in Windows-1251
-rg -E windows-1251 'текст' files/
+rg -E windows-1251 'текст' files/          # (4)!
 ```
+
+1. BOM sniffing enabled - detects UTF-8/UTF-16 files automatically
+2. All files treated as UTF-16 (unless BOM overrides)
+3. Disables transcoding - useful for binary or byte-level searches
+4. Pattern must match file's actual encoding for correct results
 
 **Short form:** `-E` is the short form of `--encoding`
 
@@ -58,6 +63,11 @@ ripgrep operates in three distinct encoding modes:
 | **Auto** | `--encoding=auto` (default) or `--no-encoding` | BOM sniffing only, assumes ASCII-compatible otherwise |
 | **Explicit** | `--encoding=<label>` (e.g., `utf-16`, `latin1`) | Forces specific encoding with BOM override capability |
 | **Disabled** | `--encoding=none` | No encoding detection, searches raw bytes including BOM |
+
+!!! tip "Choosing the Right Mode"
+    - **Use Auto** (default) when searching modern text files - works for most UTF-8 and BOM-marked files
+    - **Use Explicit** when you know files are in a specific legacy encoding (e.g., `windows-1251`, `shift_jis`)
+    - **Use Disabled** for binary files, byte-level searches, or when BOM should be treated as content
 
 ### Auto Mode (Default)
 
@@ -297,6 +307,9 @@ Slower but reliable"]
 
 ripgrep supports all encodings from the [WHATWG Encoding Standard](https://encoding.spec.whatwg.org/#concept-encoding-get) via the `encoding_rs` crate. The `encoding_rs` crate is Rust's standard implementation of the WHATWG Encoding Standard, originally developed for Firefox and maintained as part of the Rust/Mozilla ecosystem. This provides a battle-tested, reliable foundation for encoding detection and transcoding.
 
+!!! note "Battle-Tested Implementation"
+    The `encoding_rs` crate is the same encoding library used in Firefox, handling billions of web page loads daily. This means ripgrep's encoding support is production-proven and handles edge cases reliably.
+
 **Common encodings:**
 
 | Encoding | Use Case |
@@ -422,33 +435,68 @@ For more details on regex flags, see the [Advanced Patterns](advanced-patterns/i
 
 ## Troubleshooting Common Encoding Issues
 
-### Pattern doesn't match known content
+!!! warning "Pattern doesn't match known content"
+    **Likely cause:** Encoding mismatch
 
-**Likely cause:** Encoding mismatch
+    **Solutions:**
 
-**Solutions:**
-1. Use `--debug` to see encoding detection and BOM sniffing details: `rg --debug pattern file` (shows BOM sniffing results, which encoding was detected, and any transcoding performed)
-2. Check if file has a BOM: `hexdump -C file | head -n 1`
-3. Try explicit encoding: `rg -E utf-16 pattern file`
-4. Try disabling encoding: `rg -E none pattern file` (search raw bytes)
+    1. Use `--debug` to see encoding detection and BOM sniffing details:
+       ```bash
+       rg --debug pattern file
+       ```
+       This shows BOM sniffing results, which encoding was detected, and any transcoding performed.
 
-### Getting garbled output
+    2. Check if file has a BOM:
+       ```bash
+       hexdump -C file | head -n 1
+       ```
 
-**Likely cause:** Wrong encoding specified or BOM override
+    3. Try explicit encoding:
+       ```bash
+       rg -E utf-16 pattern file
+       ```
 
-**Solutions:**
-1. Let ripgrep auto-detect: `rg --no-encoding pattern file`
-2. Try different encoding: `rg -E windows-1252 pattern file`
-3. Check if file is actually UTF-8: `file file`
+    4. Try disabling encoding (search raw bytes):
+       ```bash
+       rg -E none pattern file
+       ```
 
-### Searching for non-ASCII pattern fails
+!!! warning "Getting garbled output"
+    **Likely cause:** Wrong encoding specified or BOM override
 
-**Likely cause:** Pattern encoding doesn't match file encoding
+    **Solutions:**
 
-**Solutions:**
-1. Ensure your terminal/shell uses UTF-8
-2. Specify correct file encoding: `rg -E gbk '中文' file`
-3. Use hex escapes for byte-level search: `rg '(?-u)\xe4\xb8\xad\xe6\x96\x87' file`
+    1. Let ripgrep auto-detect:
+       ```bash
+       rg --no-encoding pattern file
+       ```
+
+    2. Try different encoding:
+       ```bash
+       rg -E windows-1252 pattern file
+       ```
+
+    3. Check if file is actually UTF-8:
+       ```bash
+       file file
+       ```
+
+!!! warning "Searching for non-ASCII pattern fails"
+    **Likely cause:** Pattern encoding doesn't match file encoding
+
+    **Solutions:**
+
+    1. Ensure your terminal/shell uses UTF-8
+
+    2. Specify correct file encoding:
+       ```bash
+       rg -E gbk '中文' file
+       ```
+
+    3. Use hex escapes for byte-level search:
+       ```bash
+       rg '(?-u)\xe4\xb8\xad\xe6\x96\x87' file
+       ```
 
 ## Interaction with Other Flags
 
