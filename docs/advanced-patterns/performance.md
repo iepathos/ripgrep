@@ -28,6 +28,11 @@ Advanced regex features can impact performance. Understanding these implications
 - More complex matching algorithm
 - Less optimized for large-scale text search
 
+!!! note "PCRE2 JIT Compilation"
+    PCRE2 includes optional JIT (Just-In-Time) compilation support that can significantly improve performance when available. JIT compilation is only available on 64-bit systems. When JIT is available and enabled, PCRE2 patterns execute faster, though typically still slower than ripgrep's default finite automata engine. Check `rg --version` to see if JIT is available in your build.
+
+    Source: crates/core/flags/doc/version.rs:62-66
+
 **Backtracking Complexity**: PCRE2's backtracking algorithm can exhibit exponential time complexity on certain "pathological" patterns, especially those with:
 - Nested quantifiers (e.g., `(a+)+`)
 - Complex alternations with overlapping possibilities
@@ -96,9 +101,14 @@ These features prevent some optimizations:
 Ripgrep uses parallel search by default for maximum performance:
 
 **Thread Control**:
-- Uses all CPU cores by default with work-stealing scheduler
+- Automatically selects thread count using heuristics (typically matches CPU core count) with work-stealing scheduler
 - Control threads with `-j/--threads N` flag
 - Single-threaded mode: `--threads 1`
+
+!!! tip "Automatic Thread Selection"
+    Ripgrep uses intelligent heuristics to choose the optimal number of threads rather than blindly using all CPU cores. This typically results in a thread count matching your CPU core count, but allows for better default behavior across different systems and workloads.
+
+    Source: crates/ignore/src/walk.rs:698-699
 
 !!! example "Thread Control Examples"
     ```bash
@@ -128,10 +138,16 @@ Ripgrep automatically selects the best I/O strategy based on your search:
     - Maps file directly into memory
     - Faster for large files
     - Lower memory overhead
+    - **Note**: Disabled by default on macOS due to platform-specific performance characteristics
 - **Buffered reading**: Used for directory searches
     - Reads files incrementally
     - Better for many small files
     - More predictable memory usage
+
+!!! info "Platform-Specific Behavior"
+    Memory mapping is automatically disabled on macOS platforms, even when searching single files, due to performance characteristics on that operating system. Ripgrep uses buffered reading on macOS instead.
+
+    Source: crates/searcher/src/searcher/mmap.rs:73-76
 
 **Manual Control**:
 ```bash
@@ -188,9 +204,21 @@ rg --stats -U 'pattern'
 
 This shows:
 - Files searched
+- Searches with match
 - Bytes searched
 - Matches found
 - Search time
+
+!!! example "Stats Output"
+    ```
+    4 files searched
+    2 searches with match
+    15432 bytes searched
+    8 matches found
+    0.012s elapsed
+    ```
+
+    Source: crates/printer/src/stats.rs:12-21
 
 ## Performance Tips
 
