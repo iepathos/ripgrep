@@ -4,89 +4,118 @@
   "page_title": "bug reports",
   "page_file": "docs/troubleshooting/bug-reports.md",
   "drift_detected": true,
-  "severity": "medium",
-  "quality_assessment": "Page has broken internal links and references non-existent files within docs/. Links should point to repository root files (../../FAQ.md, ../../GUIDE.md) or to actual docs/ structure.",
+  "severity": "low",
+  "quality_assessment": "Excellent page with great visual structure and comprehensive guidance. Only minor issues: outdated version in example and external GitHub URL pointing to upstream instead of fork.",
   "issues": [
-    {
-      "type": "broken_links",
-      "severity": "medium",
-      "section": "Cross-References",
-      "description": "Found 3 broken internal link(s)",
-      "broken_links": [
-        {
-          "link_text": "FAQ.md",
-          "original_target": "../FAQ.md",
-          "expected_resolved_path": "docs/FAQ.md",
-          "current_file": "docs/troubleshooting/bug-reports.md",
-          "reason": "File does not exist at docs/FAQ.md",
-          "suggested_fix": "Use ../../FAQ.md to reference FAQ.md at repository root"
-        },
-        {
-          "link_text": "GUIDE.md",
-          "original_target": "../GUIDE.md",
-          "expected_resolved_path": "docs/GUIDE.md",
-          "current_file": "docs/troubleshooting/bug-reports.md",
-          "reason": "File does not exist at docs/GUIDE.md",
-          "suggested_fix": "Use ../../GUIDE.md to reference GUIDE.md at repository root"
-        },
-        {
-          "link_text": "common options chapter",
-          "original_target": "../common-options.md",
-          "expected_resolved_path": "docs/common-options.md",
-          "current_file": "docs/troubleshooting/bug-reports.md",
-          "reason": "File does not exist at docs/common-options.md (common-options is a directory with index.md)",
-          "suggested_fix": "Use ../common-options/index.md to reference the common options overview page"
-        }
-      ],
-      "fix_suggestion": "Update links to point to current file locations. FAQ.md and GUIDE.md are at repository root (../../), common-options is a section (../common-options/index.md).",
-      "source_reference": "docs/troubleshooting/bug-reports.md:34,35,39"
-    },
     {
       "type": "outdated_information",
       "severity": "low",
-      "section": "Before Filing a Bug Report",
-      "description": "Documentation references 'ripgrep' command (rg) and GitHub-specific issue filing process, which may not align with current project context if this is not the ripgrep project",
-      "current_content": "References rg --version, ripgrep-specific patterns, and BurntSushi/ripgrep GitHub repository",
-      "should_be": "Should reference current project's debugging and issue filing process",
-      "fix_suggestion": "Verify this documentation is intended for ripgrep project. If repurposed for another project, update references to match current project's tooling and repository.",
-      "source_reference": "docs/troubleshooting/bug-reports.md:10-30"
+      "section": "Example Bug Report Structure",
+      "description": "Example shows outdated ripgrep version (14.0.3) when current version is 15.1.0",
+      "current_content": "**Version**: rg 14.0.3 (installed via homebrew)",
+      "should_be": "**Version**: rg 15.1.0 (installed via homebrew)",
+      "fix_suggestion": "Update example to use current ripgrep version 15.1.0",
+      "source_reference": "Cargo.toml:3 (version = \"15.1.0\")"
+    },
+    {
+      "type": "incorrect_external_reference",
+      "severity": "low",
+      "section": "Cross-References",
+      "description": "Bug report template URL points to upstream repository (BurntSushi) instead of current fork (iepathos)",
+      "current_content": "https://github.com/BurntSushi/ripgrep/blob/master/.github/ISSUE_TEMPLATE/bug_report.yml",
+      "should_be": "https://github.com/iepathos/ripgrep/blob/master/.github/ISSUE_TEMPLATE/bug_report.yml",
+      "fix_suggestion": "Update GitHub URL to match the actual repository: https://github.com/iepathos/ripgrep/blob/master/.github/ISSUE_TEMPLATE/bug_report.yml",
+      "source_reference": "git remote -v (origin: git@github.com:iepathos/ripgrep.git)"
+    },
+    {
+      "type": "missing_content",
+      "severity": "low",
+      "section": "Preparing a Good Bug Report",
+      "description": "Missing mention of --trace flag for even more detailed debugging output",
+      "fix_suggestion": "Add note about --trace flag for additional debug output. Flag documentation states: 'To get even more debug output, use the --trace flag, which implies --debug along with additional trace data.'",
+      "source_reference": "crates/core/flags/defs.rs:1479-1480"
     }
   ],
   "positive_aspects": [
-    "Clear structure with actionable steps",
-    "Good guidance on preparing minimal reproduction cases",
-    "Helpful list of common non-bugs to check first",
-    "References to the actual GitHub issue template",
-    "Comprehensive checklist for bug report contents"
+    "Excellent use of Mermaid flowchart to guide users through bug reporting decision process",
+    "Outstanding use of MkDocs Material admonitions (note, warning, tip, example) for visual hierarchy",
+    "Clear checklist format for essential information",
+    "Helpful example bug report structure with concrete formatting",
+    "Good cross-references to related documentation pages (all links valid)",
+    "Comprehensive coverage of pre-flight checks",
+    "Accurate description of common non-bugs matches the GitHub template exactly",
+    "Well-organized sections with logical flow",
+    "Practical guidance on minimal reproductions"
   ],
   "improvement_suggestions": [
-    "Fix broken internal links to use correct relative paths",
-    "Consider adding MkDocs Material admonitions (!!!note, !!!warning) for better visual structure",
-    "Add examples of good vs. bad bug reports",
-    "Include troubleshooting workflow diagram",
-    "Add link to troubleshooting index page for related resources"
+    "Update version number in example to match current ripgrep version (15.1.0)",
+    "Fix GitHub repository URL to point to correct fork (iepathos instead of BurntSushi)",
+    "Add mention of --trace flag for enhanced debugging alongside --debug",
+    "Consider adding a visual example showing actual debug output format",
+    "Add cross-reference to troubleshooting/debug-flags.md page for more detail on debug flags",
+    "Consider adding examples of good vs. bad minimal reproductions",
+    "Add note about using --files to verify which files are being searched"
   ],
   "cross_references": [
-    "index",
-    "debug-flags",
-    "errors",
-    "no-results"
+    "configuration-file",
+    "file-encoding",
+    "common-options",
+    "debug-flags"
   ],
-  "link_validation_summary": {
-    "total_internal_links": 6,
-    "broken_links": 3,
-    "valid_links": 3,
-    "external_links_skipped": 1
+  "link_validation": {
+    "total_internal_links": 3,
+    "broken_links": 0,
+    "valid_links": [
+      {
+        "link_text": "configuration file chapter",
+        "target": "../configuration-file.md",
+        "resolved_path": "docs/configuration-file.md",
+        "status": "valid"
+      },
+      {
+        "link_text": "file encoding chapter",
+        "target": "../file-encoding.md",
+        "resolved_path": "docs/file-encoding.md",
+        "status": "valid"
+      },
+      {
+        "link_text": "common options chapter",
+        "target": "../common-options/index.md",
+        "resolved_path": "docs/common-options/index.md",
+        "status": "valid"
+      }
+    ],
+    "external_links": [
+      {
+        "link_text": "bug report template",
+        "url": "https://github.com/BurntSushi/ripgrep/blob/master/.github/ISSUE_TEMPLATE/bug_report.yml",
+        "note": "Points to upstream repository instead of fork (should be iepathos/ripgrep)"
+      }
+    ],
+    "note": "Previous analysis incorrectly flagged valid internal links as broken. The page references FAQ.md and GUIDE.md in text (not as markdown links), which are correctly described as being in the project root."
   },
   "metadata": {
-    "analyzed_at": "2025-11-13T20:53:28Z",
+    "analyzed_at": "2025-11-19T18:24:02Z",
     "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
     "topics_covered": [
-      "Bug reporting",
-      "Issue filing",
-      "Debugging",
-      "Troubleshooting workflow"
+      "bug reporting",
+      "troubleshooting",
+      "debugging",
+      "common issues",
+      "pre-flight checks",
+      "minimal reproductions"
     ],
-    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features"
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "ripgrep_version": "15.1.0",
+    "features_referenced": [
+      "utility_features.debugging",
+      "meta_content.troubleshooting.common_issues"
+    ],
+    "visual_features_present": [
+      "Mermaid flowchart diagram",
+      "MkDocs Material admonitions (note, warning, tip, example)",
+      "Code fences for examples",
+      "Styled flowchart nodes"
+    ]
   }
 }
