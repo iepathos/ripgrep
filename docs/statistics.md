@@ -97,6 +97,27 @@ pub struct Stats {
 - **Matched lines**: Number of lines containing matches. With multiline patterns (`--multiline` or `-U`), this counts all lines that participate in or are part of any match, not just the first line of each match.
 - **Files contained matches**: Count of files with at least one match
 
+!!! info "Comparing --count vs --count-matches"
+    These options provide different levels of match granularity:
+
+    | Flag | Output | Use Case |
+    |------|--------|----------|
+    | `--count` | Lines per file | When you need per-file line counts (e.g., "How many lines have errors in each file?") |
+    | `--count-matches` | Matches per file | When you need per-file match counts (e.g., "How many TODO comments in each file?") |
+    | `--stats` | Aggregate totals | When you need overall statistics across all files |
+
+    Example:
+    ```bash
+    # Count lines with pattern per file
+    rg --count 'TODO'
+
+    # Count total matches per file
+    rg --count-matches 'TODO'
+
+    # Get aggregate statistics
+    rg --stats 'TODO'
+    ```
+
 ### Search Scope
 
 - **Files searched**: Total number of files examined
@@ -400,12 +421,13 @@ Possible causes:
 
 ## Performance Tips Based on Statistics
 
-If statistics show:
+!!! tip "Optimization Strategies"
+    Use these guidelines to optimize based on what statistics reveal:
 
-1. **High files searched count**: Use file type filters (`-t`) or glob patterns
-2. **High bytes searched**: Consider excluding large files or binary data
-3. **High search time**: Simplify regex patterns or use fixed strings (`-F`)
-4. **Low parallelism benefit**: Check if sorting or other options disabled threading
+    1. **High files searched count**: Use file type filters (`-t`) or glob patterns
+    2. **High bytes searched**: Consider excluding large files or binary data
+    3. **High search time**: Simplify regex patterns or use fixed strings (`-F`)
+    4. **Low parallelism benefit**: Check if sorting or other options disabled threading
 
 ## Statistics in Scripts
 
@@ -430,6 +452,20 @@ MATCHES=$(echo "$OUTPUT" | grep "^[0-9]* matches" | cut -d' ' -f1)
 FILES=$(echo "$OUTPUT" | grep "files contained matches" | cut -d' ' -f1)
 echo "Found $MATCHES matches across $FILES files"
 ```
+
+## Common Questions
+
+!!! question "Why is search time greater than total time?"
+    This is normal for parallel searches. "Seconds spent searching" is cumulative CPU time across all threads, while "seconds total" is wall-clock time. A 4:1 ratio with 4 threads indicates full parallelization. See [Thread Time vs. Wall Time](#thread-time-vs-wall-time) for details.
+
+!!! question "Why are matches and matched lines different?"
+    A single line can contain multiple matches. For example, the line `"the quick brown fox jumps over the lazy dog"` contains 2 matches for the pattern `the`, but only counts as 1 matched line. See [Matches vs. Matched Lines](#matches-vs-matched-lines).
+
+!!! question "Does --stats slow down my search?"
+    No, ripgrep tracks these metrics internally regardless. The `--stats` flag only adds the minimal cost of formatting and printing the summary at the end. However, combining `--stats` with `--quiet` disables quiet mode's early-exit optimization.
+
+!!! question "Why does --stats with --quiet search all files?"
+    To provide accurate statistics, ripgrep must search all files completely when `--stats` is enabled. This overrides `--quiet`'s normal behavior of exiting after the first match. If you only need to check for pattern existence, use `--quiet` alone for better performance.
 
 ## Best Practices
 
