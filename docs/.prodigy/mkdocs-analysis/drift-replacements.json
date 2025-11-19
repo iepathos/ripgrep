@@ -1,0 +1,72 @@
+{
+  "item_type": "page",
+  "page_id": "replacements",
+  "page_title": "replacements",
+  "page_file": "docs/replacements.md",
+  "drift_detected": false,
+  "severity": "none",
+  "quality_assessment": "Excellent documentation with comprehensive coverage, accurate examples, and outstanding use of MkDocs Material visual features. The page is well-structured, technically accurate, and provides exceptional value through diagrams, comparisons, and practical examples.",
+  "issues": [],
+  "positive_aspects": [
+    "Comprehensive coverage of all replacement features from features.json (replace_mode, capture_groups, replacement_syntax)",
+    "Excellent use of MkDocs Material visual features: admonitions (warning, tip, danger, info, note, example), mermaid diagrams, tabbed content, and code annotations",
+    "Technically accurate implementation details verified against codebase (crates/matcher/src/interpolate.rs)",
+    "Clear explanation of shell quoting issues with prominent danger admonition",
+    "Well-organized progression from basic to advanced concepts",
+    "Practical real-world examples with detailed use cases",
+    "Comprehensive troubleshooting section addressing common mistakes",
+    "Performance considerations clearly documented",
+    "Complete reference table for replacement syntax",
+    "Accurate capture group parsing behavior (longest match, brace disambiguation, valid characters)",
+    "Correct documentation of both numbered ($1, $2) and named ($name, ${name}) capture groups",
+    "Verified support for both (?P<name>) and (?<name>) named capture syntaxes",
+    "Accurate behavior documentation: output-only modification, per-match replacement, empty string for invalid groups",
+    "Excellent integration examples with other flags (--only-matching, context flags, --json)",
+    "Clear comparison between numbered and named groups with tabbed examples",
+    "All internal cross-references are valid (output-formats.md, introduction.md, recursive-search.md)"
+  ],
+  "improvement_suggestions": [
+    "Consider adding a brief mention that the alternative named capture syntax (?<name>) is also supported in addition to (?P<name>), though this is a very minor enhancement as the current documentation is already comprehensive",
+    "Could add a visual example showing the Mermaid diagram for nested capture group numbering to complement the text explanation in 'Wrong Group Numbers with Nested Groups' section"
+  ],
+  "cross_references": [
+    "output-formats",
+    "introduction",
+    "recursive-search"
+  ],
+  "metadata": {
+    "analyzed_at": "2025-11-19T18:24:02Z",
+    "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
+    "topics_covered": [
+      "replacements",
+      "capture groups",
+      "replacement syntax",
+      "shell quoting",
+      "output modification",
+      "regex groups"
+    ],
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "feature_coverage": {
+      "replace_mode": "fully_documented",
+      "capture_groups": "fully_documented",
+      "replacement_syntax": "fully_documented"
+    },
+    "visual_features_used": [
+      "admonitions (warning, tip, danger, info, note, example)",
+      "mermaid diagrams (2 flowcharts)",
+      "tabbed content (comparison)",
+      "code annotations",
+      "tables (comparison, reference)"
+    ],
+    "codebase_verification": {
+      "interpolate_implementation": "crates/matcher/src/interpolate.rs",
+      "help_text_verified": "rg --help output",
+      "named_capture_syntax_tested": "both (?P<name>) and (?<name>) verified working"
+    },
+    "link_validation": {
+      "total_internal_links": 3,
+      "broken_links": 0,
+      "all_links_valid": true
+    }
+  }
+}
