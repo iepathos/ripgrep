@@ -257,6 +257,33 @@ rg --passthru -C 2 pattern  # Context mode: only 2 lines of context
 rg -C 2 --passthru pattern  # Passthru mode: all lines shown
 ```
 
+```mermaid
+flowchart LR
+    Start["Command Parsing"] --> Check{"Both flags
+    present?"}
+
+    Check -->|No| Single["Single flag behavior"]
+    Check -->|Yes| Order{"Which flag
+    is last?"}
+
+    Order -->|"--passthru last"| Passthru["Passthru Mode
+    Show all lines"]
+    Order -->|"-A/-B/-C last"| Context["Context Mode
+    Show N lines"]
+
+    Single --> S1["Only --passthru"]
+    Single --> S2["Only -A/-B/-C"]
+
+    S1 --> Passthru
+    S2 --> Context
+
+    style Passthru fill:#e1f5ff,stroke:#2196f3,stroke-width:2px
+    style Context fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+    style Order fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
+```
+
+**Figure**: Flag precedence logic showing how ripgrep resolves conflicts between `--passthru` and context flags.
+
 !!! warning "Flag Precedence"
     When both `--passthru` and context flags (`-A/-B/-C`) are specified, the last flag wins:
 
