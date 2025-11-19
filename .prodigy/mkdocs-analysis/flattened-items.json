@@ -1,442 +1,552 @@
 [
   {
-    "id": "backreferences",
-    "title": "backreferences",
-    "file": "docs/advanced-patterns/backreferences.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
+    "id": "introduction",
+    "title": "Introduction",
+    "file": "docs/introduction.md",
+    "topics": [
+      "Getting started",
+      "Overview"
+    ],
+    "type": "single-file"
   },
   {
-    "id": "examples",
-    "title": "examples",
-    "file": "docs/advanced-patterns/examples.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
-  },
-  {
-    "id": "index",
-    "title": "index",
-    "file": "docs/advanced-patterns/index.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
-  },
-  {
-    "id": "inline-flags",
-    "title": "inline flags",
-    "file": "docs/advanced-patterns/inline-flags.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
-  },
-  {
-    "id": "lookaround",
-    "title": "lookaround",
-    "file": "docs/advanced-patterns/lookaround.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
-  },
-  {
-    "id": "multiline",
-    "title": "multiline",
-    "file": "docs/advanced-patterns/multiline.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
-  },
-  {
-    "id": "pcre2",
-    "title": "pcre2",
-    "file": "docs/advanced-patterns/pcre2.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
-  },
-  {
-    "id": "performance",
-    "title": "performance",
-    "file": "docs/advanced-patterns/performance.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
-  },
-  {
-    "id": "unicode",
-    "title": "unicode",
-    "file": "docs/advanced-patterns/unicode.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
-  },
-  {
-    "id": "automatic-filtering",
-    "title": "automatic filtering",
-    "file": "docs/automatic-filtering.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
-  },
-  {
-    "id": "boundaries",
-    "title": "boundaries",
-    "file": "docs/basics/boundaries.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
-  },
-  {
-    "id": "case-sensitivity",
-    "title": "case sensitivity",
-    "file": "docs/basics/case-sensitivity.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
-  },
-  {
-    "id": "count-list",
-    "title": "count list",
-    "file": "docs/basics/count-list.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
-  },
-  {
-    "id": "index",
-    "title": "index",
+    "id": "basics",
+    "title": "Basics",
     "file": "docs/basics/index.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
-  },
-  {
-    "id": "literal-search",
-    "title": "literal search",
-    "file": "docs/basics/literal-search.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
-  },
-  {
-    "id": "output",
-    "title": "output",
-    "file": "docs/basics/output.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
+    "topics": [
+      "Pattern matching",
+      "Literal search",
+      "Case sensitivity"
+    ],
+    "type": "section-page",
+    "section_id": "user-guide",
+    "section_title": "User Guide"
   },
   {
     "id": "pattern-matching",
-    "title": "pattern matching",
+    "title": "Pattern Matching",
     "file": "docs/basics/pattern-matching.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
+    "topics": [
+      "Basic search",
+      "Multiple patterns",
+      "Patterns from file"
+    ],
+    "type": "section-page",
+    "parent_id": "basics",
+    "parent_title": "Basics",
+    "section_id": "user-guide",
+    "section_title": "User Guide"
   },
   {
-    "id": "practice",
-    "title": "practice",
-    "file": "docs/basics/practice.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
+    "id": "literal-search",
+    "title": "Literal String Search",
+    "file": "docs/basics/literal-search.md",
+    "topics": [
+      "Fixed string mode",
+      "Literal search use cases"
+    ],
+    "type": "section-page",
+    "parent_id": "basics",
+    "parent_title": "Basics",
+    "section_id": "user-guide",
+    "section_title": "User Guide"
   },
   {
     "id": "regex-basics",
-    "title": "regex basics",
+    "title": "Regular Expressions",
     "file": "docs/basics/regex-basics.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
+    "topics": [
+      "Metacharacters",
+      "Character classes",
+      "Unicode",
+      "Quantifiers",
+      "Groups",
+      "Regex engines",
+      "PCRE2"
+    ],
+    "type": "section-page",
+    "parent_id": "basics",
+    "parent_title": "Basics",
+    "section_id": "user-guide",
+    "section_title": "User Guide"
+  },
+  {
+    "id": "case-sensitivity",
+    "title": "Case Sensitivity",
+    "file": "docs/basics/case-sensitivity.md",
+    "topics": [
+      "Case-insensitive search",
+      "Smart case"
+    ],
+    "type": "section-page",
+    "parent_id": "basics",
+    "parent_title": "Basics",
+    "section_id": "user-guide",
+    "section_title": "User Guide"
+  },
+  {
+    "id": "boundaries",
+    "title": "Word and Line Boundaries",
+    "file": "docs/basics/boundaries.md",
+    "topics": [
+      "Whole word matching",
+      "Whole line matching",
+      "Boundary regex"
+    ],
+    "type": "section-page",
+    "parent_id": "basics",
+    "parent_title": "Basics",
+    "section_id": "user-guide",
+    "section_title": "User Guide"
+  },
+  {
+    "id": "output",
+    "title": "Output Format",
+    "file": "docs/basics/output.md",
+    "topics": [
+      "Line numbers",
+      "Column numbers",
+      "Heading mode",
+      "Color output",
+      "Context lines"
+    ],
+    "type": "section-page",
+    "parent_id": "basics",
+    "parent_title": "Basics",
+    "section_id": "user-guide",
+    "section_title": "User Guide"
+  },
+  {
+    "id": "count-list",
+    "title": "Count and List Modes",
+    "file": "docs/basics/count-list.md",
+    "topics": [
+      "Counting matches",
+      "Listing files",
+      "Inverted matching"
+    ],
+    "type": "section-page",
+    "parent_id": "basics",
+    "parent_title": "Basics",
+    "section_id": "user-guide",
+    "section_title": "User Guide"
+  },
+  {
+    "id": "practice",
+    "title": "Practice Examples",
+    "file": "docs/basics/practice.md",
+    "topics": [
+      "Practice exercises",
+      "Common mistakes"
+    ],
+    "type": "section-page",
+    "parent_id": "basics",
+    "parent_title": "Basics",
+    "section_id": "user-guide",
+    "section_title": "User Guide"
+  },
+  {
+    "id": "binary-data",
+    "title": "Binary Data",
+    "file": "docs/binary-data/index.md",
+    "topics": [
+      "Binary files",
+      "Binary detection"
+    ],
+    "type": "section-page",
+    "section_id": "user-guide",
+    "section_title": "User Guide"
   },
   {
     "id": "detection",
-    "title": "detection",
+    "title": "Binary Detection",
     "file": "docs/binary-data/detection.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
-  },
-  {
-    "id": "examples",
-    "title": "examples",
-    "file": "docs/binary-data/examples.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
-  },
-  {
-    "id": "explicit-implicit",
-    "title": "explicit implicit",
-    "file": "docs/binary-data/explicit-implicit.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
-  },
-  {
-    "id": "flags",
-    "title": "flags",
-    "file": "docs/binary-data/flags.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
-  },
-  {
-    "id": "index",
-    "title": "index",
-    "file": "docs/binary-data/index.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
+    "topics": [
+      "NUL byte heuristics",
+      "Buffered vs memory-mapped search"
+    ],
+    "type": "section-page",
+    "parent_id": "binary-data",
+    "parent_title": "Binary Data",
+    "section_id": "user-guide",
+    "section_title": "User Guide"
   },
   {
     "id": "modes",
-    "title": "modes",
+    "title": "Binary Modes",
     "file": "docs/binary-data/modes.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
+    "topics": [
+      "Auto mode",
+      "SearchAndSuppress",
+      "AsText mode"
+    ],
+    "type": "section-page",
+    "parent_id": "binary-data",
+    "parent_title": "Binary Data",
+    "section_id": "user-guide",
+    "section_title": "User Guide"
   },
   {
-    "id": "file-filtering",
-    "title": "file filtering",
-    "file": "docs/common-options/file-filtering.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
+    "id": "explicit-implicit",
+    "title": "Explicit vs Implicit Files",
+    "file": "docs/binary-data/explicit-implicit.md",
+    "topics": [
+      "Explicit files",
+      "Implicit files",
+      "Library usage"
+    ],
+    "type": "section-page",
+    "parent_id": "binary-data",
+    "parent_title": "Binary Data",
+    "section_id": "user-guide",
+    "section_title": "User Guide"
   },
   {
-    "id": "index",
-    "title": "index",
+    "id": "flags",
+    "title": "Binary Flags Reference",
+    "file": "docs/binary-data/flags.md",
+    "topics": [
+      "--binary flag",
+      "--text flag",
+      "Decision flowchart"
+    ],
+    "type": "section-page",
+    "parent_id": "binary-data",
+    "parent_title": "Binary Data",
+    "section_id": "user-guide",
+    "section_title": "User Guide"
+  },
+  {
+    "id": "examples",
+    "title": "Examples and Troubleshooting",
+    "file": "docs/binary-data/examples.md",
+    "topics": [
+      "Practical examples",
+      "Common issues"
+    ],
+    "type": "section-page",
+    "parent_id": "binary-data",
+    "parent_title": "Binary Data",
+    "section_id": "user-guide",
+    "section_title": "User Guide"
+  },
+  {
+    "id": "common-options",
+    "title": "Common Options",
     "file": "docs/common-options/index.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
-  },
-  {
-    "id": "output-formatting",
-    "title": "output formatting",
-    "file": "docs/common-options/output-formatting.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
-  },
-  {
-    "id": "output-modes",
-    "title": "output modes",
-    "file": "docs/common-options/output-modes.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
-  },
-  {
-    "id": "reference",
-    "title": "reference",
-    "file": "docs/common-options/reference.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
+    "topics": [
+      "Command-line options",
+      "Flags"
+    ],
+    "type": "section-page",
+    "section_id": "user-guide",
+    "section_title": "User Guide"
   },
   {
     "id": "search-basics",
-    "title": "search basics",
+    "title": "Search Basics",
     "file": "docs/common-options/search-basics.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
+    "topics": [
+      "Case sensitivity",
+      "Pattern types",
+      "Multiline",
+      "Regex engine",
+      "Invert match"
+    ],
+    "type": "section-page",
+    "parent_id": "common-options",
+    "parent_title": "Common Options",
+    "section_id": "user-guide",
+    "section_title": "User Guide"
   },
   {
-    "id": "compressed-files",
-    "title": "compressed files",
-    "file": "docs/compressed-files.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
+    "id": "output-formatting",
+    "title": "Output Formatting",
+    "file": "docs/common-options/output-formatting.md",
+    "topics": [
+      "Line numbers",
+      "Context lines",
+      "Match output",
+      "Color formatting"
+    ],
+    "type": "section-page",
+    "parent_id": "common-options",
+    "parent_title": "Common Options",
+    "section_id": "user-guide",
+    "section_title": "User Guide"
   },
   {
-    "id": "configuration-file",
-    "title": "configuration file",
-    "file": "docs/configuration-file.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
+    "id": "file-filtering",
+    "title": "File Filtering",
+    "file": "docs/common-options/file-filtering.md",
+    "topics": [
+      "File type filtering",
+      "Glob patterns",
+      "Unrestricted search",
+      "Hidden files",
+      "Directory depth"
+    ],
+    "type": "section-page",
+    "parent_id": "common-options",
+    "parent_title": "Common Options",
+    "section_id": "user-guide",
+    "section_title": "User Guide"
   },
   {
-    "id": "context-lines",
-    "title": "context lines",
-    "file": "docs/context-lines.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
+    "id": "output-modes",
+    "title": "Output Modes",
+    "file": "docs/common-options/output-modes.md",
+    "topics": [
+      "Structured output",
+      "Counting",
+      "Listing files",
+      "Quiet mode"
+    ],
+    "type": "section-page",
+    "parent_id": "common-options",
+    "parent_title": "Common Options",
+    "section_id": "user-guide",
+    "section_title": "User Guide"
   },
   {
-    "id": "file-encoding",
-    "title": "file encoding",
-    "file": "docs/file-encoding.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
+    "id": "reference",
+    "title": "Quick Reference",
+    "file": "docs/common-options/reference.md",
+    "topics": [
+      "Quick reference",
+      "Combining flags",
+      "Comparison with grep"
+    ],
+    "type": "section-page",
+    "parent_id": "common-options",
+    "parent_title": "Common Options",
+    "section_id": "user-guide",
+    "section_title": "User Guide"
   },
   {
-    "id": "hyperlinks",
-    "title": "hyperlinks",
-    "file": "docs/hyperlinks.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
+    "id": "advanced-patterns",
+    "title": "Advanced Patterns",
+    "file": "docs/advanced-patterns/index.md",
+    "topics": [
+      "Multiline search",
+      "PCRE2",
+      "Unicode patterns"
+    ],
+    "type": "section-page",
+    "section_id": "advanced-topics",
+    "section_title": "Advanced Topics"
   },
   {
-    "id": "introduction",
-    "title": "introduction",
-    "file": "docs/introduction.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
+    "id": "multiline",
+    "title": "Multiline Search",
+    "file": "docs/advanced-patterns/multiline.md",
+    "topics": [
+      "Multiline mode",
+      "Dotall mode"
+    ],
+    "type": "section-page",
+    "parent_id": "advanced-patterns",
+    "parent_title": "Advanced Patterns",
+    "section_id": "advanced-topics",
+    "section_title": "Advanced Topics"
   },
   {
-    "id": "manual-filtering-globs",
-    "title": "manual filtering globs",
-    "file": "docs/manual-filtering-globs.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
+    "id": "pcre2",
+    "title": "PCRE2 Engine",
+    "file": "docs/advanced-patterns/pcre2.md",
+    "topics": [
+      "PCRE2 features",
+      "Default vs PCRE2"
+    ],
+    "type": "section-page",
+    "parent_id": "advanced-patterns",
+    "parent_title": "Advanced Patterns",
+    "section_id": "advanced-topics",
+    "section_title": "Advanced Topics"
   },
   {
-    "id": "manual-filtering-types",
-    "title": "manual filtering types",
-    "file": "docs/manual-filtering-types.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
+    "id": "lookaround",
+    "title": "Lookaround Assertions",
+    "file": "docs/advanced-patterns/lookaround.md",
+    "topics": [
+      "Lookahead",
+      "Lookbehind",
+      "Use cases"
+    ],
+    "type": "section-page",
+    "parent_id": "advanced-patterns",
+    "parent_title": "Advanced Patterns",
+    "section_id": "advanced-topics",
+    "section_title": "Advanced Topics"
   },
   {
-    "id": "output-formats",
-    "title": "output formats",
-    "file": "docs/output-formats.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
+    "id": "backreferences",
+    "title": "Backreferences",
+    "file": "docs/advanced-patterns/backreferences.md",
+    "topics": [
+      "Numbered backreferences",
+      "Named backreferences"
+    ],
+    "type": "section-page",
+    "parent_id": "advanced-patterns",
+    "parent_title": "Advanced Patterns",
+    "section_id": "advanced-topics",
+    "section_title": "Advanced Topics"
+  },
+  {
+    "id": "unicode",
+    "title": "Unicode Patterns",
+    "file": "docs/advanced-patterns/unicode.md",
+    "topics": [
+      "Unicode character classes",
+      "Unicode-aware metacharacters"
+    ],
+    "type": "section-page",
+    "parent_id": "advanced-patterns",
+    "parent_title": "Advanced Patterns",
+    "section_id": "advanced-topics",
+    "section_title": "Advanced Topics"
+  },
+  {
+    "id": "inline-flags",
+    "title": "Inline Regex Flags",
+    "file": "docs/advanced-patterns/inline-flags.md",
+    "topics": [
+      "Pattern modifiers"
+    ],
+    "type": "section-page",
+    "parent_id": "advanced-patterns",
+    "parent_title": "Advanced Patterns",
+    "section_id": "advanced-topics",
+    "section_title": "Advanced Topics"
   },
   {
     "id": "performance",
-    "title": "performance",
-    "file": "docs/performance.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
+    "title": "Performance Considerations",
+    "file": "docs/advanced-patterns/performance.md",
+    "topics": [
+      "Multiline performance",
+      "PCRE2 performance",
+      "Regex limits"
+    ],
+    "type": "section-page",
+    "parent_id": "advanced-patterns",
+    "parent_title": "Advanced Patterns",
+    "section_id": "advanced-topics",
+    "section_title": "Advanced Topics"
   },
   {
-    "id": "preprocessor",
-    "title": "preprocessor",
-    "file": "docs/preprocessor.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
+    "id": "examples",
+    "title": "Practical Examples",
+    "file": "docs/advanced-patterns/examples.md",
+    "topics": [
+      "Real-world examples",
+      "Limitations",
+      "Gotchas"
+    ],
+    "type": "section-page",
+    "parent_id": "advanced-patterns",
+    "parent_title": "Advanced Patterns",
+    "section_id": "advanced-topics",
+    "section_title": "Advanced Topics"
   },
   {
-    "id": "recursive-search",
-    "title": "recursive search",
-    "file": "docs/recursive-search.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
-  },
-  {
-    "id": "replacements",
-    "title": "replacements",
-    "file": "docs/replacements.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
-  },
-  {
-    "id": "sorting-results",
-    "title": "sorting results",
-    "file": "docs/sorting-results.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
-  },
-  {
-    "id": "statistics",
-    "title": "statistics",
-    "file": "docs/statistics.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
-  },
-  {
-    "id": "SUMMARY",
-    "title": "SUMMARY",
-    "file": "docs/SUMMARY.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
-  },
-  {
-    "id": "binary-encoding",
-    "title": "binary encoding",
-    "file": "docs/troubleshooting/binary-encoding.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
-  },
-  {
-    "id": "bug-reports",
-    "title": "bug reports",
-    "file": "docs/troubleshooting/bug-reports.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
+    "id": "troubleshooting",
+    "title": "Troubleshooting",
+    "file": "docs/troubleshooting/index.md",
+    "topics": [
+      "Common issues",
+      "Solutions"
+    ],
+    "type": "section-page",
+    "section_id": "advanced-topics",
+    "section_title": "Advanced Topics"
   },
   {
     "id": "debug-flags",
-    "title": "debug flags",
+    "title": "Debug Flags",
     "file": "docs/troubleshooting/debug-flags.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
-  },
-  {
-    "id": "errors",
-    "title": "errors",
-    "file": "docs/troubleshooting/errors.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
-  },
-  {
-    "id": "index",
-    "title": "index",
-    "file": "docs/troubleshooting/index.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
+    "topics": [
+      "Debug output",
+      "Trace mode",
+      "Statistics"
+    ],
+    "type": "section-page",
+    "parent_id": "troubleshooting",
+    "parent_title": "Troubleshooting",
+    "section_id": "advanced-topics",
+    "section_title": "Advanced Topics"
   },
   {
     "id": "no-results",
-    "title": "no results",
+    "title": "No Results Found",
     "file": "docs/troubleshooting/no-results.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
+    "topics": [
+      "File filtering",
+      "Hidden files",
+      "Binary files",
+      "Case sensitivity"
+    ],
+    "type": "section-page",
+    "parent_id": "troubleshooting",
+    "parent_title": "Troubleshooting",
+    "section_id": "advanced-topics",
+    "section_title": "Advanced Topics"
   },
   {
     "id": "performance",
-    "title": "performance",
+    "title": "Performance Issues",
     "file": "docs/troubleshooting/performance.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
+    "topics": [
+      "Performance diagnostics",
+      "Search scope optimization"
+    ],
+    "type": "section-page",
+    "parent_id": "troubleshooting",
+    "parent_title": "Troubleshooting",
+    "section_id": "advanced-topics",
+    "section_title": "Advanced Topics"
   },
   {
-    "id": "utility-modes",
-    "title": "utility modes",
-    "file": "docs/utility-modes.md",
-    "type": "auto-discovered",
-    "topics": [],
-    "validation": "Auto-discovered page - check for drift and enhance with visual features"
+    "id": "errors",
+    "title": "Common Error Messages",
+    "file": "docs/troubleshooting/errors.md",
+    "topics": [
+      "Error reference",
+      "Exit codes"
+    ],
+    "type": "section-page",
+    "parent_id": "troubleshooting",
+    "parent_title": "Troubleshooting",
+    "section_id": "advanced-topics",
+    "section_title": "Advanced Topics"
+  },
+  {
+    "id": "binary-encoding",
+    "title": "Binary and Encoding Problems",
+    "file": "docs/troubleshooting/binary-encoding.md",
+    "topics": [
+      "Binary detection",
+      "Encoding issues"
+    ],
+    "type": "section-page",
+    "parent_id": "troubleshooting",
+    "parent_title": "Troubleshooting",
+    "section_id": "advanced-topics",
+    "section_title": "Advanced Topics"
+  },
+  {
+    "id": "bug-reports",
+    "title": "When to File a Bug",
+    "file": "docs/troubleshooting/bug-reports.md",
+    "topics": [
+      "Bug reports",
+      "Additional resources"
+    ],
+    "type": "section-page",
+    "parent_id": "troubleshooting",
+    "parent_title": "Troubleshooting",
+    "section_id": "advanced-topics",
+    "section_title": "Advanced Topics"
   }
 ]
