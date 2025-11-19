@@ -88,6 +88,22 @@ rg -x -i "error"    # Match lines that are exactly "error" (any case)
 
 This is equivalent to surrounding your pattern with `^` and `$` line anchors.
 
+!!! example "Finding standalone markers and configuration values"
+    Line boundaries are useful for finding lines that contain only specific markers or values:
+
+    ```bash
+    # Find TODO comments that are on their own line
+    rg -x "TODO"
+
+    # Find configuration lines with just numbers (like port numbers)
+    rg -x "[0-9]+"
+
+    # Find lines that are exactly a specific keyword
+    rg -x -i "error"    # Case-insensitive exact match
+    ```
+
+**Why this matters:** Line boundaries help you find complete configuration entries, standalone markers, or lines with specific formats, filtering out lines where the pattern appears as part of larger content.
+
 ```mermaid
 flowchart TD
     Start[rg command with flags]
