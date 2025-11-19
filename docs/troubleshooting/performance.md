@@ -137,6 +137,9 @@ Ripgrep automatically selects the best I/O strategy:
     - Better for many small files
     - More predictable memory usage
 
+!!! note "Platform-Specific Behavior"
+    Memory mapping is **disabled by default on macOS** due to platform-specific performance characteristics. On other platforms, ripgrep automatically uses mmap for single-file searches when beneficial.
+
 !!! tip "Let Ripgrep Choose Automatically"
     Ripgrep's automatic I/O selection is optimized for most use cases. Only override with `--mmap` or `--no-mmap` if you've identified a specific performance issue through profiling with `--stats`.
 
@@ -191,12 +194,13 @@ $ rg --one-file-system 'pattern'  # (1)!
 
 **Configure regex engine limits:**
 ```bash
+# Source: crates/core/flags/defs.rs:1504-1578, 5762-5801
 $ rg --dfa-size-limit 50M 'pattern'    # (1)!
 $ rg --regex-size-limit 50M 'pattern'  # (2)!
 ```
 
-1. Increase DFA memory limit (default: 10M) - controls memory usage for deterministic finite automaton
-2. Increase regex compilation size (default: 10M) - raise if you encounter "regex too large" errors
+1. Increase DFA memory limit - controls memory usage for the deterministic finite automaton. Ripgrep sets a generous default limit suitable for most patterns; increase this for very large regex inputs to avoid falling back to slower engines.
+2. Increase regex compilation size - controls the size of the compiled regex matcher in memory. Ripgrep's default is generous for reasonable patterns; raise if you encounter "regex too large" errors with many patterns.
 
 ## Testing and Profiling
 
