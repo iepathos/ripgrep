@@ -175,6 +175,34 @@ Quickfix format"]
       }
       ```
 
+  !!! note "JSON Message Flow"
+      Messages appear in a specific order during search execution:
+
+      ```mermaid
+      sequenceDiagram
+          participant rg as ripgrep
+          participant out as stdout
+
+          rg->>out: Begin (file start)
+
+          loop For each match/context line
+              alt Match found
+                  rg->>out: Match (with submatches)
+              else Context line (-A/-B/-C)
+                  rg->>out: Context (no submatches)
+              end
+          end
+
+          rg->>out: End (file stats)
+
+          Note over rg,out: After all files processed
+          rg->>out: Summary (total stats)
+      ```
+
+      **Figure**: JSON message sequence showing how ripgrep streams results for each file, ending with aggregate statistics.
+
+      Each message is a complete JSON object on a single line, enabling streaming processing. The `Begin` and `End` messages bracket all matches from a file, while `Summary` appears once at the end.
+
   !!! tip "Using JSON Output with jq"
       JSON Lines format is ideal for streaming parsers. Each line is a complete, valid JSON object that can be processed independently. Perfect for integration with tools like `jq`, custom scripts, or editor plugins.
 
@@ -264,6 +292,27 @@ Quickfix format"]
   Exits immediately on first match for performance.
 
 ## Performance and Limits
+
+!!! tip "Performance-Oriented Output Modes"
+    Different output modes have different performance characteristics:
+
+    **Fastest** (exits on first match):
+
+    - `-q, --quiet` - No output, immediate exit on match
+    - `-l, --files-with-matches` - Stops at first match per file
+
+    **Fast** (minimal output):
+
+    - `-c, --count` - Just counts lines with matches
+    - `--files-without-match` - Inverse search with early exit
+
+    **Slower** (requires processing all matches):
+
+    - `--count-matches` - Counts every match occurrence
+    - `--vimgrep` - Duplicates lines with multiple matches
+    - `--sort` - Buffers all results before displaying
+
+    **Use case**: If you only need to verify pattern existence, use `-q` for instant results. If you need full details but have many matches, consider `--max-count` to limit output per file.
 
 ### Match Limits
 
