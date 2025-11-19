@@ -1,71 +1,78 @@
 {
-  "item_type": "auto-discovered",
+  "item_type": "page",
   "page_id": "search-basics",
   "page_title": "search basics",
   "page_file": "docs/common-options/search-basics.md",
   "drift_detected": true,
-  "severity": "medium",
-  "quality_assessment": "Page content is accurate but has broken link that needs fixing",
+  "severity": "high",
+  "quality_assessment": "Page contains significant factual error about default case behavior. Otherwise well-structured with excellent diagrams and examples.",
   "issues": [
     {
-      "type": "broken_links",
+      "type": "incorrect_information",
+      "severity": "high",
+      "section": "Case Sensitivity",
+      "description": "Documentation incorrectly states that smart case is the default behavior",
+      "current_content": "By default, ripgrep uses **smart case**: if your pattern is all lowercase, the search is case-insensitive; if it contains any uppercase letters, the search becomes case-sensitive.",
+      "should_be": "By default, ripgrep uses **case-sensitive** matching. Use the -S/--smart-case flag to enable smart case behavior, where lowercase patterns are searched case-insensitively and patterns with uppercase are searched case-sensitively.",
+      "fix_suggestion": "Update the case sensitivity section to correctly state that case-sensitive is the default, and that smart case requires the -S flag. Update the diagram and tip box accordingly.",
+      "source_reference": "crates/core/flags/defs.rs:678-680, crates/core/flags/defs.rs:3190-3193 - all tests confirm CaseMode::Sensitive is default. The -s/--case-sensitive flag help text says 'Search case sensitively (default).'"
+    },
+    {
+      "type": "misleading_content",
       "severity": "medium",
-      "section": "Cross-References",
-      "description": "Found 1 broken internal link",
-      "broken_links": [
-        {
-          "link_text": "Regular Expressions",
-          "original_target": "../regex.md",
-          "expected_path": "docs/regex.md",
-          "current_file": "docs/common-options/search-basics.md",
-          "line_number": 90,
-          "suggested_fix": "../basics/regex-basics.md",
-          "reason": "File docs/regex.md does not exist. Found docs/basics/regex-basics.md instead."
-        }
-      ],
-      "fix_suggestion": "Update link from '../regex.md' to '../basics/regex-basics.md' on line 90.",
-      "source_reference": "docs/common-options/search-basics.md:90"
+      "section": "Case Sensitivity",
+      "description": "The tip box and diagram present smart case as the default behavior",
+      "current_content": "!!! tip \"Smart Case Default Behavior\"\n    Ripgrep's smart case is usually what you want: `rg error` finds all variations",
+      "should_be": "The tip should clarify that smart case is not the default but is often useful: 'Enable smart case with -S when you want lowercase patterns to match any case variation'",
+      "fix_suggestion": "Revise the tip box to say 'Smart Case is Useful' rather than 'Smart Case Default Behavior'. Update to explain when to enable it with -S.",
+      "source_reference": "Practical testing shows: `echo -e 'Error\\nerror\\nERROR' | rg error` only matches 'error', not all variations"
+    },
+    {
+      "type": "incorrect_information",
+      "severity": "medium",
+      "section": "Case Sensitivity",
+      "description": "Flowchart suggests smart case is applied automatically without flag",
+      "current_content": "Flowchart shows pattern case automatically determining search behavior",
+      "should_be": "Either add a decision node showing 'Using -S flag?' before the case detection, or move this diagram to the -S flag explanation to make it clear this is opt-in behavior",
+      "fix_suggestion": "Restructure the section: (1) Explain default case-sensitive behavior first, (2) Then explain -S/--smart-case as an option with its flowchart, (3) Then cover -i and -s for explicit override",
+      "source_reference": "Default behavior requires explicit -S flag to enable smart case logic"
+    },
+    {
+      "type": "ordering_issue",
+      "severity": "low",
+      "section": "Case Sensitivity",
+      "description": "Documentation presents flags in order that doesn't match usage patterns (smart-case flag comes last despite being discussed first)",
+      "current_content": "Flags listed as: -i, -s, -S",
+      "should_be": "Flags should be ordered: default behavior (no flag), -S (smart-case), -i (always ignore case), -s (always case-sensitive)",
+      "fix_suggestion": "Reorganize to: 1) Default behavior (case-sensitive), 2) -S/--smart-case for adaptive behavior, 3) -i for always case-insensitive, 4) -s for explicitly case-sensitive when overriding config",
+      "source_reference": "Logical progression from default → common option → explicit overrides"
     }
   ],
   "positive_aspects": [
-    "Comprehensive coverage of search pattern flags and options",
-    "Well-organized sections (Case Sensitivity, Pattern Types, Multiline Matching, etc.)",
-    "Excellent code examples for each flag demonstrating practical usage",
-    "Clear explanations of when to use each option",
-    "Good coverage of smart case, fixed strings, word regexp, and line regexp",
-    "Detailed multiline matching documentation with --multiline-dotall",
-    "Thorough regex engine selection coverage (default vs PCRE2)",
-    "Multiple patterns section covers -e and -f flags well",
-    "Invert match (-v) documented with useful examples",
-    "All content aligns with features.json inventory"
+    "Excellent use of Mermaid diagrams to visualize pattern type selection and regex engine choice",
+    "Clear, practical examples for each flag",
+    "Good use of admonitions (tips and warnings) to highlight important points",
+    "Comprehensive coverage of all search-related flags",
+    "Well-structured sections with logical grouping",
+    "Strong explanations of multiline gotchas",
+    "Good cross-reference to regex-basics.md for advanced PCRE2 features",
+    "Practical examples show realistic use cases"
   ],
   "improvement_suggestions": [
-    "Fix broken link to regex documentation (change ../regex.md to ../basics/regex-basics.md)",
-    "Consider adding a brief troubleshooting section for common pattern matching issues",
-    "Could enhance with admonitions (tip/warning boxes) for important concepts like smart case behavior",
-    "Consider adding code annotations to highlight key parts of complex examples",
-    "Could add a comparison table showing when to use -F vs regex vs -w vs -x"
+    "Add a quick reference table summarizing all flags at the end of the page",
+    "Consider adding a 'Common Gotchas' section highlighting the smart-case misconception",
+    "Add examples showing the difference between default behavior and -S flag side-by-side",
+    "Consider adding a troubleshooting section for pattern matching issues",
+    "Add cross-references to output formatting page for context around how results are displayed",
+    "Include performance notes: when to use -F over regex, when PCRE2 impacts performance"
   ],
-  "link_validation": {
-    "total_internal_links": 2,
-    "broken_links": 1,
-    "valid_links": 1,
-    "details": [
-      {
-        "link": "./index.md",
-        "status": "valid",
-        "resolved_to": "docs/common-options/index.md"
-      },
-      {
-        "link": "../regex.md",
-        "status": "broken",
-        "resolved_to": "docs/regex.md",
-        "suggestion": "../basics/regex-basics.md"
-      }
-    ]
-  },
+  "cross_references": [
+    "regex-basics.md",
+    "file-filtering.md",
+    "output-formatting.md"
+  ],
   "metadata": {
-    "analyzed_at": "2025-11-13T20:53:28Z",
+    "analyzed_at": "2025-11-19T18:24:00Z",
     "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
     "topics_covered": [
       "case sensitivity",
@@ -76,11 +83,12 @@
       "multiple patterns"
     ],
     "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
-    "features_referenced": [
-      "search_basics.capabilities.pattern_matching",
-      "advanced_patterns.capabilities.multiline_search",
-      "advanced_patterns.capabilities.pcre2_engine",
-      "search_basics.capabilities.multiple_patterns"
-    ]
+    "link_validation": {
+      "total_internal_links": 1,
+      "broken_links": 0,
+      "valid_links": [
+        "../basics/regex-basics.md"
+      ]
+    }
   }
 }
