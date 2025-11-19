@@ -6,6 +6,50 @@ This chapter covers the fundamental usage of ripgrep, including pattern matching
 
 Here are the most common ripgrep commands to get you started:
 
+```mermaid
+flowchart LR
+    Start["Start Search"] --> HasSpecial{"Pattern has
+    regex chars
+    () [] . * + ?"}
+
+    HasSpecial -->|Yes| WantRegex{"Want regex
+    matching?"}
+    HasSpecial -->|No| CaseQ["Check case
+    sensitivity"]
+
+    WantRegex -->|Yes| CaseQ
+    WantRegex -->|No| UseLiteral["Use -F
+    (literal)"]
+
+    UseLiteral --> Done[Execute Search]
+
+    CaseQ --> KnowCase{"Know exact
+    case?"}
+
+    KnowCase -->|Yes| UseDefault["Use default
+    (case-sensitive)"]
+    KnowCase -->|No| UseCaseFlag["Use -i
+    (ignore case)"]
+
+    UseDefault --> BoundaryQ{"Need word
+    boundaries?"}
+    UseCaseFlag --> BoundaryQ
+
+    BoundaryQ -->|Yes| UseWord["Add -w
+    (whole word)"]
+    BoundaryQ -->|No| Done
+
+    UseWord --> Done
+
+    style HasSpecial fill:#fff3e0
+    style WantRegex fill:#e1f5ff
+    style KnowCase fill:#f3e5f5
+    style BoundaryQ fill:#e8f5e9
+    style Done fill:#c8e6c9
+```
+
+**Figure**: Decision flow for choosing the right ripgrep search flags based on your pattern and requirements.
+
 !!! tip "New to ripgrep?"
     If you're coming from `grep`, most basic patterns work the same. The key difference: ripgrep uses Rust regex syntax and automatically respects `.gitignore` files.
 
