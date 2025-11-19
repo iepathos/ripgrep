@@ -32,7 +32,7 @@ stateDiagram-v2
 The default mode automatically determines the binary handling strategy based on how the file is specified:
 
 - **Explicit files** (e.g., `rg pattern file.bin`): Uses `SearchAndSuppress` mode—the file is searched, but if binary data is detected, a warning is shown instead of the matches
-- **Implicit files** (e.g., `rg pattern` in a directory, or `rg pattern -g '*.bin'`): Quits searching immediately when binary data is detected, no output or warning
+- **Implicit files** (e.g., `rg pattern` in a directory, or `rg pattern -g '*.bin'`): Quits searching immediately when binary data is detected (stops reading the file and moves to the next file, producing no output for that file—a silent skip)
 
 !!! tip "Design Rationale"
     This dual behavior balances precision (don't waste time on binary files) with recall (if the user explicitly named a file, they probably want to search it). See [Explicit vs Implicit Files](./explicit-implicit.md) for more details on this distinction.
@@ -76,6 +76,20 @@ rg --binary pattern  # (1)!
 
 In this mode, **NUL bytes are replaced with line terminators** during searching.
 
+!!! note "Warning Message Format"
+    When binary data is detected, ripgrep shows different messages depending on how the file was specified:
+
+    - **Explicit files** (e.g., `rg pattern file.bin`):
+      ```
+      binary file matches (found "\0" byte around offset N)
+      ```
+    - **Implicit files** searched from directories or globs:
+      ```
+      file.bin: WARNING: stopped searching binary file after match (found "\0" byte around offset N)
+      ```
+
+    <!-- Source: tests/binary.rs:168-169, 181-182 -->
+
 !!! note "Memory-Saving Heuristic"
     True binary data isn't line-oriented, so treating it as such without NUL-to-newline conversion could result in impractically large "lines" (imagine a 100MB binary file with no line breaks consuming all available memory).
 
@@ -113,3 +127,10 @@ Binary detection has minimal performance impact:
     | **`--binary`** | Need to know about binary matches | Slightly slower: searches more files, but still stops early |
     | **`--text`** | Files incorrectly detected as binary | Potentially slower: may search irrelevant data |
     | **Disabled (library)** | Complete control needed | Fastest, but may produce garbage output |
+
+!!! warning "Edge Case: Early-Exit Flags"
+    When using `-l`/`--files-with-matches` or `--quiet`, ripgrep stops searching immediately after finding the first match—before it might detect NUL bytes later in the file. This means binary files may be reported as matching. This is an accepted performance tradeoff.
+
+    However, `--count` requires scanning the entire file, so binary detection works correctly with that flag.
+
+    <!-- Source: tests/binary.rs:253-285 -->
