@@ -26,6 +26,9 @@ Use `-i` or `--ignore-case` to search case-insensitively:
     rg -i "error: .+"
     ```
 
+!!! tip "Unicode Case Folding"
+    Case-insensitive mode uses Unicode's simple case folding rules, so it correctly handles international characters. For example, searching for `café` with `-i` will match `CAFÉ`, `Café`, `café`, etc. This works for characters like `é/É`, `ñ/Ñ`, `ø/Ø`, and thousands of other Unicode letters.
+
 ## Case-Sensitive Search
 
 Use `-s` or `--case-sensitive` to force case-sensitive search (useful to override config files):
@@ -66,6 +69,45 @@ Matches: TODO, todo, Todo"]
 
 !!! tip "Smart case is very popular"
     Smart case is often set in [configuration files](../configuration-file.md) as a default, providing the best of both worlds: convenient case-insensitive search for lowercase patterns, and precise case-sensitive search when you capitalize.
+
+### How Smart Case Detects Pattern Case
+
+Smart case uses these rules to decide case sensitivity:
+
+1. **Pattern must contain at least one literal character** (not just regex metacharacters)
+2. **None of the literal characters can be uppercase** (according to Unicode)
+
+If both conditions are met, the search is case-insensitive. Otherwise, it's case-sensitive.
+
+!!! note "Patterns Without Literals"
+    Regex patterns consisting entirely of metacharacters (like `\w+`, `\d{3}`, `.*`) have no literal characters, so smart case treats them as case-insensitive by default. If you need case-sensitive matching for such patterns, use `-s` or add an uppercase literal to the pattern.
+
+### Configuring Smart Case as Default
+
+Many users prefer to enable smart case by default via a configuration file:
+
+!!! example "Configuration File Setup"
+    === "Unix/Linux/macOS"
+        ```bash
+        # Create config file
+        mkdir -p ~/.config/ripgrep
+        echo "--smart-case" > ~/.config/ripgrep/ripgreprc
+
+        # Set environment variable (add to ~/.bashrc or ~/.zshrc)
+        export RIPGREP_CONFIG_PATH="$HOME/.config/ripgrep/ripgreprc"
+        ```
+
+    === "Windows"
+        ```powershell
+        # Create config file
+        New-Item -ItemType Directory -Force "$env:APPDATA\ripgrep"
+        "--smart-case" | Out-File "$env:APPDATA\ripgrep\ripgreprc"
+
+        # Set environment variable (PowerShell profile)
+        $env:RIPGREP_CONFIG_PATH = "$env:APPDATA\ripgrep\ripgreprc"
+        ```
+
+    With smart case configured, you can still override it per-search with `-i` (always case-insensitive) or `-s` (always case-sensitive).
 
 ### Smart Case Examples
 
@@ -108,3 +150,24 @@ rg -S error app.log   # lowercase pattern
 rg -S Error app.log   # uppercase in pattern
 # → Matches: "Error" only
 ```
+
+## Advanced: Inline Regex Flags
+
+For fine-grained control, you can use inline regex flags to change case sensitivity within a pattern:
+
+- `(?i)` - Enable case-insensitive matching
+- `(?-i)` - Disable case-insensitive matching (back to case-sensitive)
+
+!!! example "Per-Pattern Case Control"
+    ```bash
+    # Case-insensitive "error" followed by case-sensitive "FATAL"
+    rg "(?i)error.*(?-i)FATAL"
+
+    # Mixed case matching in a single pattern
+    rg "(?i)warning(?-i):.*CRITICAL"
+
+    # Case-insensitive search even when using -s flag
+    rg -s "(?i)todo"
+    ```
+
+These flags override any command-line flags (`-i`, `-s`, `-S`) for the portion of the pattern they affect.
