@@ -3,102 +3,71 @@
   "page_id": "no-results",
   "page_title": "no results",
   "page_file": "docs/troubleshooting/no-results.md",
-  "drift_detected": true,
-  "severity": "low",
-  "quality_assessment": "Page is accurate and comprehensive but could benefit from visual enhancements",
-  "issues": [
-    {
-      "type": "missing_visual_features",
-      "severity": "low",
-      "section": "Overall document structure",
-      "description": "Page lacks MkDocs Material visual features (admonitions) that would improve readability and user experience",
-      "fix_suggestion": "Add admonitions to highlight key diagnostic steps, warnings, and solutions. Transform 'Problem/Diagnosis/Solutions' patterns into visually distinct callouts.",
-      "examples": [
-        "Use '!!! tip' admonition for the --files diagnostic flag (lines 7-23)",
-        "Use '!!! warning' admonition for .gitignore filtering behavior (line 27)",
-        "Use '!!! note' admonition for binary file detection explanation (line 52)",
-        "Use '!!! example' admonition blocks for command examples"
-      ]
-    },
-    {
-      "type": "incomplete_content",
-      "severity": "low",
-      "section": "File Type Not Recognized",
-      "description": "Missing reference to custom type definitions feature from configuration",
-      "current_content": "Add custom file types in your configuration file",
-      "should_reference": "features.json -> configuration.capabilities.config_files with --type-add flag",
-      "fix_suggestion": "Add a concrete example showing how to define custom file types in ripgreprc configuration file using --type-add syntax",
-      "source_reference": "features.json:configuration.capabilities.config_files"
-    },
-    {
-      "type": "missing_cross_reference",
-      "severity": "low",
-      "section": "Binary Files Filtered",
-      "description": "Cross-reference to binary-encoding.md is present but could be more prominent",
-      "current_content": "See the [Binary and Encoding Problems](./binary-encoding.md) section below",
-      "fix_suggestion": "Move this cross-reference earlier in the section and use an admonition box to make it more visible. Current placement at line 64 after the solutions is less helpful than placing it near the problem description.",
-      "source_reference": "docs/troubleshooting/binary-encoding.md"
-    },
-    {
-      "type": "missing_content",
-      "severity": "low",
-      "section": "Pattern Doesn't Match",
-      "description": "Section could mention multiline mode for patterns that need to span lines",
-      "feature_reference": "advanced_patterns.capabilities.multiline_search",
-      "fix_suggestion": "Add a note about using -U/--multiline when patterns need to match across line boundaries, with reference to advanced patterns documentation",
-      "source_reference": "features.json:advanced_patterns.capabilities.multiline_search"
-    },
-    {
-      "type": "missing_content",
-      "severity": "low",
-      "section": "All sections",
-      "description": "Missing examples of using --debug flag for troubleshooting, which is mentioned in debug-flags.md",
-      "feature_reference": "utility_features.capabilities.list_modes and configuration.capabilities.config_files.features",
-      "fix_suggestion": "Add more --debug examples showing how to diagnose filtering, ignore files, and pattern matching issues. The page mentions --debug in lines 29 and 54 but could expand on its diagnostic value.",
-      "cross_reference": "debug-flags.md"
-    }
-  ],
+  "drift_detected": false,
+  "severity": "none",
+  "quality_assessment": "Excellent troubleshooting page with accurate content, comprehensive coverage, and effective use of MkDocs Material features",
+  "issues": [],
   "positive_aspects": [
-    "Comprehensive coverage of common 'no results' scenarios",
-    "Clear problem-diagnosis-solution structure for each issue",
-    "Good use of concrete command examples throughout",
-    "Logical progression from file filtering to pattern matching issues",
-    "Accurate technical content matching feature inventory",
-    "Valid internal cross-references to index.md and binary-encoding.md",
-    "Covers all major automatic filtering mechanisms (.gitignore, hidden files, binary files)",
-    "Includes practical solutions with appropriate flags (-u, -uu, -uuu progression)",
-    "Good coverage of file type filtering with --type-list diagnostic"
+    "Comprehensive diagnostic flowchart using Mermaid - provides clear visual decision tree",
+    "Excellent use of MkDocs Material admonitions (tip, warning, note, example) to highlight key information",
+    "Accurate documentation of all flags (-u, -uu, -uuu, --files, --debug, -i, -F, -U, --hidden, -a, --text)",
+    "Well-organized sections covering all major 'no results' scenarios",
+    "Good progressive disclosure with tabs for different unrestricted mode options",
+    "Strong cross-references to related troubleshooting pages",
+    "Includes source comments linking back to original documentation pages",
+    "Clear filtering layer diagram showing how files are progressively filtered",
+    "Practical examples for each troubleshooting scenario",
+    "All internal links are valid and point to correct relative paths"
   ],
   "improvement_suggestions": [
-    "Transform 'Problem/Diagnosis/Solutions' blocks into visual admonitions for better scannability",
-    "Add 'tip' admonition highlighting the --files flag as the primary diagnostic tool",
-    "Include a troubleshooting flowchart or decision tree at the top of the page",
-    "Add 'example' admonition blocks to showcase real-world scenarios",
-    "Cross-reference to debug-flags.md for comprehensive debugging guidance",
-    "Consider adding a 'Quick Checklist' section at the top for rapid diagnosis",
-    "Add visual distinction between diagnostic commands (--files, --debug) and solution commands (-u, --hidden)",
-    "Include a 'See Also' section at the bottom linking to related troubleshooting pages"
+    "Consider adding a 'Quick Checklist' admonition at the top for users who want a TL;DR version",
+    "Could add examples of actual --debug output showing ignore patterns being applied",
+    "Might benefit from a troubleshooting 'recipe' section at the end showing combined flags for common scenarios (e.g., 'search everything including binaries: rg -uuu pattern')"
   ],
   "cross_references": [
-    "index.md",
-    "binary-encoding.md",
-    "debug-flags.md"
+    "debug-flags",
+    "binary-encoding",
+    "search-basics",
+    "configuration-file",
+    "manual-filtering-types"
   ],
+  "link_validation": {
+    "total_internal_links": 6,
+    "broken_links": 0,
+    "valid_links": [
+      "./debug-flags.md",
+      "./binary-encoding.md",
+      "../common-options/search-basics.md",
+      "../common-options/search-basics.md#multiline-matching",
+      "../configuration-file.md",
+      "../manual-filtering-types.md"
+    ]
+  },
+  "visual_features": {
+    "mermaid_diagrams": 2,
+    "admonitions": {
+      "tip": 2,
+      "warning": 1,
+      "note": 1,
+      "example": 4
+    },
+    "tabs": 1,
+    "code_blocks": 16
+  },
   "metadata": {
-    "analyzed_at": "2025-11-13T20:53:28Z",
+    "analyzed_at": "2025-11-19T18:24:00Z",
     "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
     "topics_covered": [
-      "File filtering",
-      "Gitignore behavior",
-      "Hidden files",
-      "Binary file detection",
-      "Case sensitivity",
-      "File type recognition",
-      "Pattern matching",
-      "Diagnostic flags"
+      "no results troubleshooting",
+      "file filtering",
+      "ignore files",
+      "hidden files",
+      "binary files",
+      "case sensitivity",
+      "file types",
+      "pattern matching",
+      "debug flags"
     ],
-    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
-    "internal_links_validated": true,
-    "broken_links": []
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features"
   }
 }
