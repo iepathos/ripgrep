@@ -181,7 +181,6 @@ pattern N?"}
 The `-e` or `--regexp` flag allows you to specify multiple patterns:
 
 ```bash
-# Source: tests/feature.rs
 # Match lines containing either TODO or FIXME
 rg -e TODO -e FIXME  # (1)!
 
@@ -220,7 +219,6 @@ echo "TODO" > patterns.txt
 echo "FIXME" >> patterns.txt
 echo "HACK" >> patterns.txt
 
-# Source: tests/feature.rs
 # Search using patterns from file
 rg -f patterns.txt
 ```
@@ -279,6 +277,24 @@ Here are some practical real-world pattern examples:
     # Find console statements
     rg -e "console\." -e "print\(" -e "println!"
     ```
+
+=== "Advanced Patterns"
+
+    For more complex pattern matching needs, ripgrep supports advanced features:
+
+    ```bash
+    # Multiline patterns (search across multiple lines)
+    rg -U "struct.*\{.*\}" --multiline-dotall
+
+    # PCRE2 engine for advanced regex features
+    rg -P "(?<=TODO: ).*"  # lookbehind assertions
+    ```
+
+    !!! info "Learn more about advanced patterns"
+        - **Multiline mode** (`-U`/`--multiline`) - Match patterns across line boundaries
+        - **PCRE2 engine** (`-P`/`--pcre2`) - Use Perl-compatible regex features like lookahead/lookbehind
+
+        See the [Advanced Regex](regex-basics.md) documentation for detailed examples and use cases.
 
 ## Troubleshooting
 
