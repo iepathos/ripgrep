@@ -47,6 +47,9 @@ This section helps you navigate the binary data documentation efficiently:
 
 ## Flag Comparison
 
+!!! warning "Terminal Corruption Risk"
+    Using `--text` on binary files can corrupt your terminal output by displaying control characters. Always use it with caution and combine with filters like `-g` or `-t` to limit scope.
+
 Choose the right flag for your use case:
 
 | Behavior | Default (Auto) | `--binary` | `--text` / `-a` |
