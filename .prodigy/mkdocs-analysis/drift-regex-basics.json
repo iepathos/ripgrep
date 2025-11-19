@@ -3,103 +3,94 @@
   "page_id": "regex-basics",
   "page_title": "regex basics",
   "page_file": "docs/basics/regex-basics.md",
-  "drift_detected": true,
-  "severity": "medium",
-  "quality_assessment": "Good comprehensive coverage of regex basics with minor issues. Main concern is broken link to advanced-patterns page. Content is accurate and well-structured with excellent Unicode support documentation.",
+  "drift_detected": false,
+  "severity": "low",
+  "quality_assessment": "Excellent comprehensive documentation with accurate technical information, well-organized examples, and effective use of MkDocs Material features. All previously identified issues have been resolved. Minor enhancement opportunities exist but the page is production-ready.",
   "issues": [
     {
-      "type": "broken_links",
-      "severity": "medium",
-      "section": "Cross-References",
-      "description": "Found 1 broken internal link",
-      "broken_links": [
-        {
-          "link_text": "Advanced Patterns",
-          "original_target": "../advanced-patterns.md",
-          "expected_path": "docs/advanced-patterns.md",
-          "current_file": "docs/basics/regex-basics.md",
-          "line_number": 224,
-          "suggested_fix": "../advanced-patterns/index.md",
-          "reason": "File was reorganized into a section with index page"
-        }
-      ],
-      "fix_suggestion": "Update link from '../advanced-patterns.md' to '../advanced-patterns/index.md'"
-    },
-    {
-      "type": "missing_content",
+      "type": "incomplete_explanation",
       "severity": "low",
       "section": "Regex Engine Selection",
-      "description": "Missing documentation for --auto-hybrid-regex flag",
-      "feature_reference": "advanced_patterns.pcre2_engine.features",
-      "fix_suggestion": "Add example showing --auto-hybrid-regex flag usage for automatic engine selection",
-      "current_content": "Mentions --engine auto but not --auto-hybrid-regex synonym",
-      "should_include": "Example: rg --auto-hybrid-regex 'pattern' for automatic engine selection based on pattern complexity"
+      "description": "The --auto-hybrid-regex flag is documented but not marked as deprecated",
+      "current_content": "rg --auto-hybrid-regex pattern  # Synonym for --engine auto",
+      "should_be": "Should note that --auto-hybrid-regex is deprecated in favor of --engine auto",
+      "fix_suggestion": "Add a note or admonition indicating that --auto-hybrid-regex is deprecated and users should prefer --engine auto for future compatibility",
+      "source_reference": "rg --help output shows 'DEPRECATED. Use --engine instead.'"
     },
     {
       "type": "incomplete_explanation",
       "severity": "low",
-      "section": "Unicode Character Classes",
-      "description": "Unicode scripts not documented",
-      "feature_reference": "advanced_patterns.unicode_support.features",
-      "fix_suggestion": "Add examples of Unicode script matching like \\p{Greek}, \\p{Han}, \\p{Arabic} to the Unicode section",
-      "current_content": "Shows Unicode categories (\\p{L}, \\p{N}) but not Unicode scripts"
-    },
-    {
-      "type": "incomplete_explanation",
-      "severity": "low",
-      "section": "Unicode Character Classes",
-      "description": "Grapheme cluster awareness not explained",
-      "feature_reference": "advanced_patterns.unicode_support.features",
-      "fix_suggestion": "Consider brief mention or link to advanced patterns for grapheme cluster handling",
-      "current_content": "Unicode character classes documented but not grapheme clusters"
+      "section": "Predefined Character Classes",
+      "description": "The tip mentions \\d matches Unicode digits but the example shows [0-9] which may be confusing",
+      "current_content": "# \\d matches any digit [0-9]\nrg \"\\d+\"             # Matches numbers like \"42\", \"123\"\n\n!!! tip \"Prefer Predefined Classes\"\n    Use predefined classes like `\\d` instead of `[0-9]` and `\\w` instead of `[a-zA-Z0-9_]` for better readability and Unicode support. For example, `\\d` matches Unicode digits in all scripts, not just ASCII 0-9.",
+      "should_be": "Should clarify that \\d behavior depends on context or regex engine settings",
+      "fix_suggestion": "Update the tip to clarify: 'In the default regex engine, \\d is equivalent to [0-9] (ASCII only). For Unicode digit support across all scripts, use \\p{N} instead. PCRE2 may have different Unicode handling.'",
+      "source_reference": "Rust regex documentation shows \\d is ASCII-only by default unless Unicode mode is enabled"
     }
   ],
   "positive_aspects": [
-    "Comprehensive coverage of basic regex metacharacters",
-    "Excellent Unicode character class documentation with clear table",
-    "Clear PCRE2 vs default engine comparison with practical examples",
-    "Good troubleshooting tips for engine selection",
-    "Practical common pattern examples (email, IP, hex colors, URLs)",
-    "Well-organized progression from simple to complex",
-    "Named capture groups explained with forward reference to replacements chapter",
-    "Performance tradeoffs clearly explained"
+    "Excellent use of MkDocs Material features (admonitions, tabs, code blocks, tables)",
+    "Clear progression from basic to advanced regex concepts",
+    "Accurate technical information verified against source code and runtime behavior",
+    "All code examples tested and confirmed working",
+    "Comprehensive Unicode support documentation including both categories and scripts",
+    "Effective decision flow diagram using Mermaid for engine selection",
+    "All internal cross-references are valid (verified)",
+    "Great balance of practical examples and theoretical explanation",
+    "Clear warnings about performance implications and engine tradeoffs",
+    "Well-organized content with logical sections and smooth transitions",
+    "Real-world pattern examples (email, IP addresses, URLs, etc.)",
+    "Named capture groups explained with forward reference to replacements",
+    "PCRE2 features documented using tabbed interface for clarity",
+    "Previously identified issues (broken link, missing Unicode scripts, missing --auto-hybrid-regex) have all been resolved"
   ],
   "improvement_suggestions": [
-    "Fix broken link to advanced-patterns page (high priority)",
-    "Add --auto-hybrid-regex flag example",
-    "Include 1-2 examples of Unicode script matching (\\p{Greek}, \\p{Han})",
-    "Consider adding a 'Common Gotchas' section for regex beginners",
-    "Add cross-reference to multiline pattern documentation in advanced-patterns section",
-    "Consider adding interactive examples or exercises (if MkDocs supports it)"
+    "Add deprecation notice for --auto-hybrid-regex flag (low priority)",
+    "Clarify Unicode vs ASCII behavior of \\d in default engine (low priority)",
+    "Consider adding a 'Quick Reference' table at the end summarizing all metacharacters",
+    "Could add more examples showing the difference between default and PCRE2 engines side-by-side",
+    "Consider adding a troubleshooting subsection for common regex pattern errors",
+    "Could add performance comparison data between engines for different pattern types",
+    "Consider adding examples of testing patterns before using them in large searches",
+    "Could add a section on avoiding catastrophic backtracking with PCRE2"
   ],
   "cross_references": [
-    "basics/index.md",
-    "replacements.md",
-    "advanced-patterns/index.md",
-    "advanced-patterns/multiline.md",
-    "advanced-patterns/pcre2.md",
-    "advanced-patterns/unicode.md"
+    "replacements",
+    "advanced-patterns/index"
   ],
   "metadata": {
-    "analyzed_at": "2025-11-13T20:53:28Z",
+    "analyzed_at": "2025-11-19T18:24:02Z",
     "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
     "topics_covered": [
-      "basic metacharacters",
+      "regex metacharacters",
       "character classes",
-      "unicode support",
+      "predefined character classes",
+      "unicode character classes",
+      "unicode scripts",
       "quantifiers",
       "groups and alternation",
-      "regex engines",
+      "regex engine selection",
       "PCRE2 features",
-      "engine limitations"
+      "engine limitations",
+      "backreferences",
+      "lookahead and lookbehind",
+      "multiline patterns"
     ],
     "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
-    "internal_links_checked": 3,
-    "broken_links_found": 1,
+    "internal_links_validated": true,
+    "all_links_valid": true,
+    "examples_tested": true,
+    "source_code_verified": true,
+    "improvements_since_last_analysis": [
+      "Fixed broken link to ../advanced-patterns.md (now correctly points to ../advanced-patterns/index.md)",
+      "Added Unicode scripts section with examples (\\p{Greek}, \\p{Han}, \\p{Arabic}, \\p{Cyrillic})",
+      "Added --auto-hybrid-regex flag documentation and examples"
+    ],
     "features_referenced": [
       "advanced_patterns.pcre2_engine",
       "advanced_patterns.unicode_support",
-      "advanced_patterns.multiline_search"
+      "advanced_patterns.multiline_mode",
+      "advanced_patterns.engine_selection"
     ]
   }
 }
