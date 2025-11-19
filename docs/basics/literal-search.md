@@ -19,12 +19,48 @@ rg -F "file*.txt"
 rg -F "[debug]"
 ```
 
+!!! note "Configuration Override"
+    If you've set `--fixed-strings` as a default in your [configuration file](../configuration-file.md), you can explicitly disable it for a specific search using `--no-fixed-strings` to restore regex pattern matching.
+
+    ```bash
+    # Disable fixed-strings mode for this search
+    rg --no-fixed-strings "file.*\.txt"
+    ```
+
 !!! tip "Performance Benefit"
     Using `-F` enables SIMD acceleration and avoids regex compilation overhead, making literal searches significantly faster than equivalent escaped regex patterns. Ripgrep can use fast literal matching algorithms that are optimized for finding exact byte sequences.
 
 ### Literal vs Escaped Regex
 
 When searching for strings with special characters, you have two options:
+
+```mermaid
+flowchart LR
+    Start["Search Pattern
+    Contains Special Chars?"] --> HasSpecial{"Contains
+    . * ( ) [ ] etc?"}
+
+    HasSpecial -->|No| Either["Use Either Approach"]
+    HasSpecial -->|Yes| NeedRegex{"Need Regex
+    Features?"}
+
+    NeedRegex -->|No| UseLiteral["Use -F
+    (Literal Search)"]
+    NeedRegex -->|Yes| UseRegex["Escape Special Chars
+    (Regex Mode)"]
+
+    UseLiteral --> FastPath["✓ Faster (SIMD)
+    ✓ No Escaping"]
+    UseRegex --> FlexPath["✓ Combine with Regex
+    ✓ More Complex"]
+
+    style UseLiteral fill:#e8f5e9
+    style UseRegex fill:#fff3e0
+    style FastPath fill:#e8f5e9
+    style FlexPath fill:#fff3e0
+```
+
+**Figure**: Decision flow for choosing between literal search (`-F`) and escaped regex patterns.
 
 === "Literal Search (-F)"
     ```bash
@@ -51,7 +87,7 @@ When searching for strings with special characters, you have two options:
 
 ## Combining with Other Options
 
-Literal search works with other ripgrep flags:
+Literal search works with other ripgrep flags. These flags are independent and can be combined freely:
 
 ```bash
 # Case-insensitive literal search
@@ -64,9 +100,12 @@ rg -F -w "log"                     # (2)!
 rg -F "api_key" --type python      # (3)!
 ```
 
-1. Combines literal search with case-insensitive matching
+1. Combines literal search with [case-insensitive](case-sensitivity.md) matching
 2. Matches "log" as a complete word, not as part of "login" or "catalog"
 3. Restricts search to Python files while treating pattern as literal string
+
+!!! tip "Flag Independence"
+    The `-F` flag works independently with other search modifiers. Each flag controls a separate aspect of the search behavior, so they can be combined in any way that makes sense for your use case.
 
 !!! example "Common Use Cases"
     Literal search is ideal for:
@@ -85,3 +124,11 @@ rg -F "api_key" --type python      # (3)!
     - Alternation (`foo|bar`)
 
     If you need regex features, use escaped patterns instead of `-F`.
+
+## Related Topics
+
+- [Regex Basics](regex-basics.md) - Learn about regular expression patterns when you need more than literal matching
+- [Case Sensitivity](case-sensitivity.md) - Control case-sensitive and case-insensitive matching
+- [Pattern Matching](pattern-matching.md) - Overview of different pattern matching modes
+- [Performance](../troubleshooting/performance.md) - Tips for optimizing search performance
+- [Configuration File](../configuration-file.md) - Set default flags including `--fixed-strings`
