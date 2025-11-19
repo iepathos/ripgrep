@@ -154,10 +154,18 @@ rg -Po '(?<=\$)\d+\.?\d*' # (1)!
 
 # Extract words between quotes
 rg -Po '(?<=").*?(?=")' # (2)!
+
+# Extract HTML content between title tags
+rg -Po '(?<=<title>).*(?=</title>)' # (3)!
+
+# Extract variable names in assignments (not declarations)
+rg -Po '(?<!let\s)(?<!const\s)\b\w+(?=\s*=)' # (4)!
 ```
 
 1. **Extraction with lookbehind**: Only extracts the digits, not the `$` symbol. `\d+\.?\d*` matches integers or decimals.
-2. **Extraction with both**: `(?<=")` asserts opening quote before, `(?=")` asserts closing quote after. Only the content between quotes is extracted. The `.*?` uses non-greedy matching.
+2. **Extraction with both lookahead and lookbehind**: `(?<=")` asserts opening quote before, `(?=")` asserts closing quote after. Only the content between quotes is extracted. The `.*?` uses non-greedy matching.
+3. **Combined lookaround for HTML extraction**: `(?<=<title>)` ensures we start after the opening tag, `(?=</title>)` ensures we stop before the closing tag. Only the title content is extracted, not the tags.
+4. **Multiple negative lookbehinds with positive lookahead**: `(?<!let\s)(?<!const\s)` ensures the variable is NOT preceded by `let` or `const` (not a declaration), while `(?=\s*=)` ensures an assignment follows. Extracts variable names only in assignments like `x = 5`, not declarations like `let x = 5`.
 
 ## Use Cases
 
@@ -228,3 +236,60 @@ or after?"}
     - Consider simpler alternatives if lookaround isn't strictly necessary
 
     See [Performance Considerations](./performance.md) for detailed optimization strategies.
+
+### Fixed-Length vs Variable-Length Lookbehind
+
+PCRE2 supports both fixed-length and variable-length lookbehind patterns, with significant performance differences:
+
+**Fixed-Length Lookbehind** (faster):
+```bash
+# Fixed: always checks exactly 3 characters
+rg -P '(?<=foo)\w+'     # (1)!
+
+# Fixed: always checks exactly 4 characters
+rg -P '(?<=\$\d{2})\w+' # (2)!
+```
+
+1. **Fixed-length**: The pattern `foo` is always exactly 3 characters, allowing PCRE2 to optimize by stepping back a known distance
+2. **Fixed-length**: `\$\d{2}` always matches exactly 3 characters ($ plus two digits), enabling the same optimization
+
+**Variable-Length Lookbehind** (slower):
+```bash
+# Variable: can match 3-10 characters
+rg -P '(?<=foo.*)\w+'   # (3)!
+
+# Variable: can match varying lengths
+rg -P '(?<=\w+:)\d+'    # (4)!
+```
+
+3. **Variable-length**: `foo.*` can match different lengths, requiring PCRE2 to try multiple starting positions with backtracking
+4. **Variable-length**: `\w+:` matches one or more word characters followed by colon, varying in length
+
+**Performance Impact**: Fixed-length lookbehind can be 10-100x faster because the regex engine knows exactly how far to step back. Variable-length requires backtracking to find all possible starting positions.
+
+**Best Practice**: Use fixed-length lookbehind whenever possible. If you need variable-length, consider if a simpler pattern or capture group might work instead.
+
+### Avoiding Nested Lookaround
+
+Nested lookaround assertions should be avoided due to exponential backtracking:
+
+```bash
+# Bad: nested lookaround (exponential backtracking)
+rg -P '(?=(?!bad))\w+'  # (1)!
+
+# Good: simplified to single lookahead
+rg -P '(?!bad)\w+'      # (2)!
+
+# Bad: complex nesting
+rg -P '(?=(?<=foo)bar)' # (3)!
+
+# Good: combine conditions differently
+rg -P '(?<=foo)bar'     # (4)!
+```
+
+1. **Nested lookaround**: Double assertion `(?=(?!bad))` causes PCRE2 to evaluate both the outer lookahead and inner negative lookahead at each position, leading to quadratic or worse time complexity
+2. **Simplified**: Single negative lookahead `(?!bad)` achieves the same result with linear time
+3. **Complex nesting**: Combining lookahead and lookbehind in nested fashion is rarely necessary and very slow
+4. **Simplified**: In most cases, assertions can be combined at the same level rather than nested
+
+**Why Nested Lookaround is Slow**: Each nesting level multiplies the number of positions the regex engine must check. With backtracking, this can lead to exponential time complexity on certain inputs, especially with patterns that can match in multiple ways.
