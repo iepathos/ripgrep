@@ -2,98 +2,97 @@
   "item_type": "page",
   "page_id": "performance",
   "page_title": "performance",
-  "page_file": "docs/advanced-patterns/performance.md",
-  "drift_detected": false,
-  "severity": "low",
-  "quality_assessment": "Excellent performance documentation with comprehensive coverage, visual aids, and accurate technical details. Minor enhancements possible for completeness.",
+  "page_file": "docs/performance.md",
+  "drift_detected": true,
+  "severity": "high",
+  "quality_assessment": "Page has critical factual error about DFA size limit default value (off by 1000x). Otherwise comprehensive and well-structured with excellent visual diagrams.",
   "issues": [
     {
-      "type": "incomplete_explanation",
-      "severity": "low",
-      "section": "PCRE2 Engine Performance",
-      "description": "Documentation mentions PCRE2 JIT but doesn't explain its performance impact or availability constraints",
-      "current_content": "Generally slower than default engine: Backtracking regex implementation vs finite automata",
-      "fix_suggestion": "Add note about PCRE2 JIT compilation availability (64-bit systems) and its performance impact when available vs unavailable",
-      "source_reference": "crates/core/flags/doc/version.rs:62-66"
-    },
-    {
-      "type": "incomplete_explanation",
-      "severity": "low",
-      "section": "I/O Strategies",
-      "description": "Documentation doesn't mention that memory mapping is disabled by default on macOS",
-      "current_content": "Memory mapping: Used for single file searches. Maps file directly into memory. Faster for large files.",
-      "fix_suggestion": "Add note that memory mapping is disabled by default on macOS platforms due to performance characteristics on that OS",
-      "source_reference": "crates/searcher/src/searcher/mmap.rs:73-76"
-    },
-    {
-      "type": "incomplete_explanation",
-      "severity": "low",
-      "section": "Parallelism and Threading",
-      "description": "Documentation states 'Uses all CPU cores by default' but implementation uses heuristics rather than literal 'all cores'",
-      "current_content": "Uses all CPU cores by default with work-stealing scheduler",
-      "should_be": "Automatically selects thread count using heuristics (typically matches CPU core count) with work-stealing scheduler",
-      "fix_suggestion": "Clarify that thread count is determined by heuristics rather than literally using all cores, which allows for better default behavior across different systems",
-      "source_reference": "crates/ignore/src/walk.rs:698-699"
+      "type": "incorrect_information",
+      "severity": "high",
+      "section": "DFA Size Limits",
+      "description": "Documentation states default DFA size limit is 1 MB (1000000 bytes), but actual default is 1000 MB (1,048,576,000 bytes) - off by 1000x",
+      "current_content": "The default is 1 MB (1000000 bytes). Increase this if you see warnings about DFA cache thrashing on very large or complex patterns.",
+      "should_be": "The default is 1000 MB (approximately 1 GB). Increase this if you see warnings about DFA cache thrashing on very large or complex patterns.",
+      "fix_suggestion": "Update line 263 to reflect the actual default DFA size limit of 1000 MB. The code shows: `dfa_size_limit: 1000 * (1 << 20)` which equals 1,048,576,000 bytes (1000 MB, not 1 MB).",
+      "source_reference": "crates/regex/src/config.rs:59"
     },
     {
       "type": "missing_content",
+      "severity": "medium",
+      "section": "DFA Size Limits",
+      "description": "Documentation suggests increasing to 10M or 100M, but default is already 1000M - recommendation should be revised",
+      "current_content": "If you see \"DFA cache capacity exceeded\" warnings or notice slowdowns with complex patterns, try increasing to 10M or 100M. The trade-off is higher memory usage for faster matching.",
+      "should_be": "If you see \"DFA cache capacity exceeded\" warnings (rare with the 1000 MB default), you can increase further to 2G or more. The trade-off is higher memory usage for faster matching.",
+      "fix_suggestion": "Update the tip box starting at line 265 to provide realistic tuning guidance given the 1000 MB default. Suggest values larger than the default if users need to increase it.",
+      "source_reference": "crates/regex/src/config.rs:59"
+    },
+    {
+      "type": "unclear_content",
       "severity": "low",
-      "section": "Performance Testing",
-      "description": "Stats flag output fields are listed but not all fields shown by actual --stats output are documented",
-      "current_content": "Files searched, Bytes searched, Matches found, Search time",
-      "fix_suggestion": "Add 'Searches with match' to the list of stats fields, which is included in actual --stats output",
-      "source_reference": "crates/printer/src/stats.rs:12-21"
+      "section": "Regex Size Limits",
+      "description": "Documentation says 'default is 100 MB' without clarifying this is compiled regex bytecode size, not DFA cache",
+      "current_content": "The default is 100 MB. Useful in memory-constrained environments or when dealing with extremely large patterns.",
+      "should_be": "The default is 100 MB (104,857,600 bytes) for the compiled regex bytecode size. This is separate from the DFA cache limit. Useful in memory-constrained environments or when dealing with extremely large patterns.",
+      "fix_suggestion": "Add clarification at line 277 that this controls the compiled regex bytecode size, not the DFA cache size, to avoid confusion between --regex-size-limit and --dfa-size-limit.",
+      "source_reference": "crates/regex/src/config.rs:58"
     }
   ],
   "positive_aspects": [
-    "Excellent use of MkDocs Material features (admonitions, code annotations, mermaid diagrams)",
-    "Visual decision flowcharts make complex performance tradeoffs easy to understand",
-    "Clear warning admonitions for high-risk features (multiline memory impact, PCRE2 backtracking)",
-    "Well-structured performance tips section with prioritized 'Quick Performance Wins'",
-    "Comprehensive coverage of regex limits with practical decision guidance",
-    "Accurate technical details about finite automata vs backtracking engines",
-    "Good use of code annotations for explaining flag purposes",
-    "Cross-references to related documentation (file-filtering.md)",
-    "Practical examples throughout showing actual command usage",
-    "Good balance between technical depth and accessibility"
+    "Excellent use of Mermaid diagrams to visualize work-stealing architecture, memory mapping selection, and regex engine choice",
+    "Comprehensive coverage of performance tuning options with practical examples",
+    "Good use of MkDocs Material admonitions (tips, warnings) to highlight important information",
+    "Clear organization progressing from high-level concepts to specific tuning flags",
+    "Includes benchmarking best practices and fair comparison guidelines",
+    "Provides context for when to use different flags rather than just listing them",
+    "Good troubleshooting section for slow searches",
+    "Accurate source references to flag definitions in crates/core/flags/defs.rs",
+    "Work-stealing architecture accurately documented and verified against crates/ignore/src/walk.rs",
+    "SIMD acceleration details are accurate (automatic detection, no configuration needed)",
+    "Memory mapping strategy correctly describes automatic selection and macOS behavior",
+    "Sorting performance impact accurately documented (disables parallelism)"
   ],
   "improvement_suggestions": [
-    "Add a brief note about PCRE2 JIT compilation and its availability constraints",
-    "Mention macOS memory mapping behavior in the I/O Strategies section",
-    "Clarify that automatic thread selection uses heuristics rather than literal 'all cores'",
-    "Complete the list of --stats output fields to match actual implementation",
-    "Consider adding a performance troubleshooting section for common slow-search scenarios",
-    "Could add cross-reference to encoding documentation if memory usage varies by encoding"
-  ],
-  "cross_references": [
-    "file-filtering"
+    "Add a comparison table showing default vs. recommended values for different scenarios (large codebases, network filesystems, memory-constrained environments)",
+    "Include example output from --stats to help users interpret the metrics",
+    "Add cross-reference to troubleshooting/performance.md page if it exists",
+    "Consider adding a 'Quick Performance Checklist' section for users who just want the key optimizations",
+    "Add more specific guidance on when the DFA cache limit actually becomes a bottleneck (currently rare due to high 1000 MB default)",
+    "Include information about how to monitor actual DFA cache usage to determine if limit needs adjustment"
   ],
   "link_validation": {
-    "total_internal_links": 1,
+    "total_internal_links": 0,
     "broken_links": 0,
-    "valid_links": [
-      "../common-options/file-filtering.md"
-    ]
+    "valid_links": []
   },
   "metadata": {
-    "analyzed_at": "2025-11-19T18:24:02Z",
+    "analyzed_at": "2025-11-19T18:24:00Z",
     "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
     "topics_covered": [
-      "multiline mode performance",
-      "PCRE2 engine performance",
-      "parallelism and threading",
-      "I/O strategies",
+      "parallelism",
+      "work-stealing",
       "memory mapping",
-      "regex limits",
-      "performance testing",
-      "optimization tips"
+      "SIMD acceleration",
+      "regex engine tuning",
+      "DFA size limits",
+      "resource limits",
+      "sorting performance",
+      "statistics",
+      "benchmarking"
     ],
     "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
-    "mkdocs_material_features_used": [
-      "admonitions (warning, tip, note, example)",
-      "code annotations",
-      "mermaid diagrams",
-      "syntax highlighting"
-    ]
+    "visual_features_present": [
+      "Work-stealing architecture diagram (Mermaid)",
+      "Memory mapping selection flowchart (Mermaid)",
+      "Regex engine selection graph (Mermaid)",
+      "Code annotations for examples",
+      "Admonition boxes for tips and warnings"
+    ],
+    "source_verification": {
+      "work_stealing_confirmed": "crates/ignore/src/walk.rs:12 - uses crossbeam_deque::{Stealer, Worker}",
+      "dfa_default_verified": "crates/regex/src/config.rs:59 - dfa_size_limit: 1000 * (1 << 20)",
+      "regex_size_default_verified": "crates/regex/src/config.rs:58 - size_limit: 100 * (1 << 20)",
+      "flags_verified": "crates/core/flags/defs.rs - threads, mmap, dfa-size-limit, regex-size-limit, stats"
+    }
   }
 }
