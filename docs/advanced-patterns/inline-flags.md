@@ -57,9 +57,9 @@ matches: foobar, FOOBAR, FooBar"]
 === "Global Scope"
 
     ```bash
-    # Source: tests/regression.rs:1451
+    # Source: tests/regression.rs:1617
     # Dotall for entire pattern
-    rg -U '(?s)world.+detective'
+    rg -U --pcre2 '(?s)Start(?=.*thing2)'
 
     # Case-insensitive for entire pattern
     rg '(?i)foo.*bar'  # Matches "FOO anything BAR"
@@ -68,9 +68,9 @@ matches: foobar, FOOBAR, FooBar"]
 === "Scoped"
 
     ```bash
-    # Source: tests/regression.rs:1451
-    # Dotall only for middle part
-    rg -U 'world(?s:.+)detective'
+    # Source: tests/regression.rs:1152
+    # Dotall in combination with lookahead
+    rg -U '(?s)def (\w+);(?=.*use \w+)'
 
     # Case-insensitive for specific part
     rg 'foo(?i:bar|baz)qux'  # Matches "foobarqux", "fooBarqux", "fooBAZqux"
@@ -79,9 +79,9 @@ matches: foobar, FOOBAR, FooBar"]
 === "Combined"
 
     ```bash
-    # Source: tests/regression.rs:1286
-    # Enable case-insensitive, disable multiline
-    rg '(?i-m)^pattern'
+    # Source: tests/regression.rs:1288
+    # Disable multiline mode
+    rg -U --no-mmap '(?-m)^baz'
 
     # Disable Unicode mode for performance
     rg '(?-u)[a-z]+' file
@@ -98,7 +98,6 @@ matches: foobar, FOOBAR, FooBar"]
 Inline flags override command-line flags, giving you precise control:
 
 ```bash
-# Source: tests/regression.rs:1286
 # -i flag overridden by (?-i) in pattern
 rg -i 'foo(?-i:bar)'  # "foo" is case-insensitive, "bar" is case-sensitive
 ```
@@ -187,17 +186,20 @@ The `(?U)` flag swaps the behavior of greedy and lazy quantifiers.
 
 ```bash
 # By default, quantifiers are greedy (match as much as possible)
-echo 'foo bar baz' | rg 'f.*z'  # Matches entire "foo bar baz"
+echo 'foo bar baz' | rg 'f.*z'
+# Output: foo bar baz
 ```
 
 ### Non-Greedy by Default
 
 ```bash
 # Make quantifiers non-greedy by default
-echo 'foo bar baz' | rg '(?U)f.*z'  # Matches up to first 'z'
+echo 'foo bar baz' | rg '(?U)f.*z'
+# Output: (matches up to first 'z' found)
 
 # Individual quantifiers can override
-echo 'foo bar baz' | rg '(?U)f.*?z'  # ? makes it greedy in this context
+echo 'foo bar baz' | rg '(?U)f.*?z'
+# Output: (? makes it greedy in this context)
 ```
 
 !!! note "Rarely Used"
