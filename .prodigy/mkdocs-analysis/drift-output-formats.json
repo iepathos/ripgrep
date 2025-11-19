@@ -4,120 +4,116 @@
   "page_title": "output formats",
   "page_file": "docs/output-formats.md",
   "drift_detected": true,
-  "severity": "medium",
-  "quality_assessment": "Page provides good coverage of output formatting features but has a broken link and could benefit from visual enhancements. Content is accurate and well-organized.",
+  "severity": "low",
+  "quality_assessment": "Page is comprehensive and well-structured with excellent visual aids. Minor issues include missing hyperlink format aliases and a few areas where additional context would be helpful. All cross-references are valid and source code references are accurate.",
   "issues": [
     {
-      "type": "broken_links",
+      "type": "missing_content",
       "severity": "medium",
-      "section": "Cross-References",
-      "description": "Found 1 broken internal link",
-      "broken_links": [
-        {
-          "link_text": "Common Options",
-          "original_target": "common-options.md",
-          "expected_path": "docs/common-options.md",
-          "actual_location": "docs/common-options/index.md",
-          "line_reference": "output-formats.md:257"
-        }
-      ],
-      "fix_suggestion": "Update link from 'common-options.md' to 'common-options/index.md' to match current documentation structure.",
-      "source_reference": "docs/output-formats.md:257"
-    },
-    {
-      "type": "missing_visual_features",
-      "severity": "low",
-      "section": "Overall Page Structure",
-      "description": "Auto-discovered page lacks MkDocs Material visual enhancements",
-      "current_content": "Page uses basic markdown without Material extensions",
-      "should_include": [
-        "Admonitions (tips, warnings) for important formatting considerations",
-        "Tabbed code blocks for comparing different output formats",
-        "Code annotations for explaining complex command flags",
-        "Visual diagrams showing output format transformations"
-      ],
-      "fix_suggestion": "Add Material extensions: Use admonitions for best practices section, tabs for format comparisons (standard vs JSON vs vimgrep), and annotations for complex examples.",
-      "feature_reference": "output_control.json_output, output_control.alternative_formats"
+      "section": "Hyperlink Support",
+      "description": "Documentation is missing several hyperlink format aliases that exist in the codebase",
+      "feature_reference": "output_control.hyperlinks",
+      "fix_suggestion": "Add documentation for the following missing hyperlink format aliases: 'grep+' (grep+://), 'kitty' (file:// with line anchor), 'file' (file:// with host), and 'none' (disable hyperlinks)",
+      "source_reference": "crates/printer/src/hyperlink/aliases.rs:6-68",
+      "current_content": "Lists: default, vscode, vscode-insiders, vscodium, macvim, textmate, cursor",
+      "should_include": "grep+ (grep+://{path}:{line}), kitty (file://{host}{path}#{line}), file (file://{host}{path}), none (disable hyperlinks)"
     },
     {
       "type": "incomplete_explanation",
       "severity": "low",
-      "section": "Hyperlink Support",
-      "description": "Hyperlink section mentions feature but could provide more examples of format strings",
-      "current_content": "Shows default and file:// format only",
-      "should_be": "Include VSCode format (vscode://file/{path}:{line}) and other common editor formats",
-      "fix_suggestion": "Add examples for VSCode, VSCode Insiders, and other common editor hyperlink formats. Reference feature inventory shows this is supported.",
-      "feature_reference": "utility_features.hyperlinks",
-      "source_reference": "features.json:418-425"
+      "section": "Buffering Modes",
+      "description": "Block-buffered mode is mentioned as default but lacks explanation of when to use it",
+      "feature_reference": "output_control.additional_output",
+      "fix_suggestion": "Add brief explanation: block buffering is optimal for most use cases as it minimizes system calls and maximizes throughput. Only use line buffering when incremental processing is required.",
+      "source_reference": "crates/printer/"
     },
     {
       "type": "missing_content",
       "severity": "low",
-      "section": "Statistics Integration",
-      "description": "JSON output section doesn't mention statistics availability in JSON format",
-      "feature_reference": "utility_features.statistics",
-      "fix_suggestion": "Add note that --stats can be combined with --json for structured statistics output",
-      "source_reference": "features.json:398-407"
+      "section": "JSON Output Structure",
+      "description": "Missing explanation of the --include-zero interaction with JSON output",
+      "feature_reference": "output_control.json_output",
+      "fix_suggestion": "Clarify that --include-zero affects which files appear in JSON output. Files with zero matches will have begin/end messages but no match messages when this flag is used.",
+      "source_reference": "crates/core/flags/defs.rs"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "low",
+      "section": "Vimgrep Format",
+      "description": "Vimgrep format section is minimal and could benefit from editor integration examples",
+      "feature_reference": "output_control.vimgrep_format",
+      "fix_suggestion": "Add examples showing integration with other editors beyond vim, such as Emacs or VSCode's task runner, since the format is editor-agnostic despite the name.",
+      "source_reference": "crates/printer/"
     }
   ],
   "positive_aspects": [
-    "Comprehensive coverage of all major output formatting options",
-    "Clear, well-organized sections progressing from basic to advanced",
-    "Excellent examples demonstrating real-world use cases",
-    "Good explanations of JSON output structure with type descriptions",
-    "Strong best practices section with practical guidance",
-    "Performance considerations appropriately included",
-    "Color customization thoroughly documented with all options",
-    "Good cross-references to related pages (2 of 3 links valid)"
+    "Excellent use of mermaid diagrams (decision flowchart and sequence diagram)",
+    "Clear decision guide for choosing output formats",
+    "Comprehensive coverage of color customization",
+    "Well-structured with Material tabs for format comparison",
+    "Proper use of admonitions (notes, warnings, tips) throughout",
+    "Good code annotation examples (numbered callouts)",
+    "Extensive examples section with practical use cases",
+    "Thorough best practices section",
+    "Performance considerations documented",
+    "Source code references are accurate and helpful (4/4 valid)",
+    "All internal cross-references are valid (3/3 working)",
+    "Strong visual presentation with modern MkDocs Material features"
   ],
   "improvement_suggestions": [
-    "Add visual comparison table showing when to use each output format",
-    "Include annotated example showing all fields in JSON match output",
-    "Add admonition boxes for important warnings (e.g., --color never for scripts)",
-    "Consider adding a decision tree diagram for choosing output format",
-    "Add troubleshooting section for common output format issues",
-    "Include example of chaining output formats with jq or other tools",
-    "Show side-by-side comparison of heading vs no-heading modes",
-    "Add cross-reference to statistics page for --stats usage"
+    "Add 'none' hyperlink format to examples showing how to disable hyperlinks",
+    "Include a comparison table showing hyperlink format compatibility across different terminals",
+    "Add troubleshooting section for hyperlink issues (e.g., 'Hyperlinks not clickable in my terminal')",
+    "Expand vimgrep section with examples for multiple editors (Emacs, Sublime, VSCode tasks)",
+    "Add diagram showing the relationship between buffering modes and pipeline behavior",
+    "Consider adding a 'Common Patterns' section for output formatting workflows (e.g., filtering JSON with jq, colorizing output for presentations)",
+    "Document the 'grep+' hyperlink format for grepp integration",
+    "Document the 'kitty' hyperlink format with its unique line anchor syntax",
+    "Add explicit example of disabling hyperlinks with 'none' format"
   ],
   "cross_references": [
     "replacements",
-    "context-lines",
     "common-options/index",
-    "statistics"
+    "context-lines"
   ],
   "link_validation": {
     "total_internal_links": 3,
-    "broken_links": 1,
-    "valid_links": 2,
-    "broken_link_details": [
-      {
-        "target": "common-options.md",
-        "suggested_fix": "common-options/index.md",
-        "line": 257
-      }
+    "broken_links": 0,
+    "valid_links": [
+      "replacements.md",
+      "common-options/index.md",
+      "context-lines.md"
+    ]
+  },
+  "source_validation": {
+    "total_references": 4,
+    "invalid_references": 0,
+    "valid_references": [
+      "crates/printer/src/standard.rs:92",
+      "crates/printer/src/json.rs:119",
+      "crates/printer/src/color.rs:177",
+      "crates/printer/src/hyperlink/aliases.rs:54-57"
     ]
   },
   "metadata": {
-    "analyzed_at": "2025-11-13T20:53:28Z",
+    "analyzed_at": "2025-11-19T18:24:02Z",
     "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
     "topics_covered": [
-      "output formatting",
+      "output formats",
       "JSON output",
-      "color customization",
-      "field separators",
       "vimgrep format",
+      "color customization",
       "hyperlinks",
-      "buffering modes"
+      "buffering modes",
+      "field separators"
     ],
     "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
-    "features_referenced": [
-      "output_control.standard_output",
-      "output_control.json_output",
-      "output_control.alternative_formats",
-      "output_control.color_control",
-      "utility_features.hyperlinks",
-      "utility_features.statistics"
+    "visual_features_used": [
+      "mermaid flowchart",
+      "mermaid sequence diagram",
+      "material tabs",
+      "code annotations",
+      "admonitions (note, warning, tip)"
     ]
   }
 }
