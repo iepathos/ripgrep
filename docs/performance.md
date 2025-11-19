@@ -50,6 +50,9 @@ Ripgrep uses a work-stealing scheduler for parallel iteration. When one thread f
 
 This lock-free parallel iteration (using atomic operations for work distribution) means ripgrep scales well across many cores without contention overhead.
 
+!!! tip "Performance Sweet Spot"
+    Ripgrep's work-stealing scheduler is most effective when searching many files (100+) of varying sizes. The dynamic load balancing ensures that all CPU cores remain busy even when file sizes differ significantly.
+
 ```mermaid
 graph TD
     Start[Directory Traversal] --> WorkQueue["Work Queue
@@ -164,15 +167,18 @@ rg --no-mmap pattern           # (2)!
 1. Override automatic selection and force memory-mapped I/O
 2. Force buffered reading even for large files
 
-Memory mapping is beneficial when:
-- Searching very large files (>10 MB)
-- The file is likely to be in the OS page cache
-- You have sufficient RAM
+!!! tip "When to Use Memory Mapping"
+    Memory mapping is beneficial when:
 
-Avoid memory mapping when:
-- Searching many small files (<1 MB)
-- Working with network file systems (NFS, SMB)
-- Memory is constrained
+    - Searching very large files (>10 MB)
+    - The file is likely to be in the OS page cache
+    - You have sufficient RAM
+
+    Avoid memory mapping when:
+
+    - Searching many small files (<1 MB)
+    - Working with network file systems (NFS, SMB)
+    - Memory is constrained
 
 !!! warning "macOS Memory Mapping"
     Memory mapping is disabled by default on macOS due to performance overhead in the kernel's mmap implementation. You can enable it with `--mmap` if benchmarking shows it's beneficial for your specific use case.
@@ -214,6 +220,14 @@ rg 'TODO.*urgent'
 ```
 
 Ripgrep first uses fast literal matching to find "TODO", then applies the full regex only to those candidates. This makes complex regex searches nearly as fast as literal searches.
+
+!!! tip "Optimize Patterns for Literal Extraction"
+    Structure your regex patterns to include literal strings that can be extracted. For example:
+
+    - **Good**: `'TODO.*urgent'` (extracts "TODO" for fast pre-filtering)
+    - **Less optimal**: `'T.DO.*urgent'` (cannot extract literal, must run full regex on every line)
+
+    The more specific the literal prefix, the faster the search.
 
 ### Binary Detection
 
@@ -503,18 +517,36 @@ When benchmarking ripgrep, consider these factors:
 
 ### Warm vs. Cold Cache
 
-File system caches dramatically affect performance:
+File system caches dramatically affect performance. Understanding the difference between cold and warm cache helps you benchmark realistically.
+
+**Clearing the cache** (cold cache):
+
+=== "macOS"
+    ```bash
+    # Clear file system cache
+    sudo purge
+
+    # Then run search
+    rg pattern
+    ```
+
+=== "Linux"
+    ```bash
+    # Clear page cache, dentries, and inodes
+    sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'
+
+    # Then run search
+    rg pattern
+    ```
+
+**Warm cache** (subsequent runs):
 
 ```bash
-# Cold cache (first run after clearing cache)
-sudo purge  # macOS
-sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'  # Linux
-
-# Warm cache (subsequent runs)
-rg pattern  # Fast due to OS caching
+# Fast due to OS caching files in memory
+rg pattern
 ```
 
-For realistic benchmarks, run searches multiple times and measure warm cache performance.
+For realistic benchmarks, run searches multiple times and measure warm cache performance, as most real-world usage benefits from OS file caching.
 
 ### Fair Comparisons
 
