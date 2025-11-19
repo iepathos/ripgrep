@@ -15,6 +15,8 @@ Ripgrep uses a simple but effective heuristic: **the presence of NUL bytes** (`\
 
     **Why the difference?** The library is designed to be flexible for different use cases, while the CLI enables binary detection by default for typical grep-like workflows where binary files should be skipped. If you use ripgrep as a library, you need to explicitly enable binary detection if you want it.
 
+    See [Explicit vs Implicit](explicit-implicit.md) for more details on detection strategies.
+
     ```rust
     // Source: crates/searcher/src/line_buffer.rs:66-69
     impl Default for BinaryDetection {
@@ -26,7 +28,7 @@ Ripgrep uses a simple but effective heuristic: **the presence of NUL bytes** (`\
 
 ## How Binary Detection Works
 
-Binary detection behavior depends on the search mode ripgrep uses:
+Binary detection behavior depends on the search mode ripgrep uses. The CLI provides several flags to control this behavior (see [Binary Flags](flags.md)), and different binary handling modes are available (see [Binary Modes](modes.md)).
 
 ```mermaid
 flowchart TD
@@ -158,3 +160,10 @@ Understanding when each mode is most effective:
     # Force memory-mapped search
     rg --mmap "pattern" largefile.txt
     ```
+
+## See Also
+
+- **[Binary Flags](flags.md)** - Command-line flags to control binary detection (`--binary`, `--no-binary`, `-a/--text`)
+- **[Binary Modes](modes.md)** - Different binary handling modes (Auto, SearchAndSuppress, AsText)
+- **[Explicit vs Implicit](explicit-implicit.md)** - Understanding detection strategies and default behaviors
+- **[Examples](examples.md)** - Practical examples of binary detection in action
