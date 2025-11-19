@@ -151,6 +151,9 @@ Many flags work well together:
 
 If you're coming from `grep`, here are some equivalents:
 
+!!! note "Key Differences from grep"
+    Ripgrep is recursive by default, respects `.gitignore` automatically, shows colors and line numbers by default, and is optimized for speed. Use `-u` to search ignored files or `--no-ignore` to disable `.gitignore` handling.
+
 | grep | ripgrep | Notes |
 |------|---------|-------|
 | `grep -r` | `rg` | Recursive by default |
