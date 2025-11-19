@@ -33,6 +33,20 @@ rg pattern file.txt dir/
 !!! note "Explicit File Paths Override Ignore Rules"
     File paths specified on the command line are always searched, even if they would normally be filtered by `.gitignore` or other ignore files. This allows you to explicitly search specific files regardless of ignore rules.
 
+    **Example:**
+    ```bash
+    # .gitignore contains: *.log
+
+    # This skips error.log (directory search respects .gitignore)
+    rg "ERROR" ./
+
+    # This searches error.log (explicit file overrides .gitignore)
+    rg "ERROR" error.log
+
+    # This searches error.log directly AND recursively searches src/
+    rg "ERROR" error.log src/
+    ```
+
 ## Controlling Recursion Depth
 
 Use the `--max-depth` flag (short form: `-d`, alias: `--maxdepth`) to limit how deep ripgrep descends into the directory tree:
@@ -122,8 +136,8 @@ rg -L pattern /var/
 rg -L --max-depth 3 TODO ./
 ```
 
-!!! warning "Symlink Loop Risk"
-    Be careful when using `-L` as it can cause infinite loops if symlinks create cycles in the directory structure. ripgrep will continue following symlinks until it hits the depth limit or exhausts the directory tree.
+!!! warning "Symlink Loop Detection"
+    When using `-L`, be aware that symlink cycles in the directory structure can cause issues. ripgrep detects symlink loops and reports an error when encountered, but this may result in incomplete search results. Use `--max-depth` to limit traversal depth as an additional safeguard.
 
 ## File System Boundaries
 
@@ -155,6 +169,7 @@ To search ignored files during recursive traversal, use `--no-ignore` or related
 
 ## How Directory Traversal Works
 
+<!-- Source: crates/ignore/src/walk.rs -->
 Under the hood, ripgrep uses an efficient parallel directory walker (`WalkBuilder` and `WalkParallel`) that:
 
 - Traverses directories in parallel for better performance
@@ -163,6 +178,9 @@ Under the hood, ripgrep uses an efficient parallel directory walker (`WalkBuilde
 - Handles errors gracefully (e.g., permission denied on directories)
 
 This implementation allows ripgrep to efficiently search large directory trees while respecting ignore rules and user-specified filters.
+
+!!! info "Performance Optimization"
+    For details on how ripgrep's parallel directory walker is optimized for performance, including threading strategies and memory management, see the [Performance](./performance.md) chapter.
 
 ```mermaid
 flowchart LR
@@ -280,12 +298,15 @@ Use appropriate permissions or `sudo` if you need to search restricted directori
 
 ### Symlink Loops
 
-When using `-L/--follow`, be aware of potential symlink loops. If ripgrep appears to hang or search indefinitely, you may have a symlink cycle. Use `--max-depth` to limit traversal depth:
+When using `-L/--follow`, ripgrep will detect symlink loops and report errors. If you see loop detection errors, you can use `--max-depth` to limit traversal depth and avoid reaching the problematic symlinks:
 
 ```bash
-# Limit depth to prevent infinite symlink loops
+# Source: crates/ignore/src/walk.rs:1892-1913
+# Limit depth to avoid symlink loops
 rg -L --max-depth 10 pattern ./
 ```
+
+ripgrep's loop detection works by tracking directory handles and comparing them with ancestor paths, reporting an error when a cycle is detected.
 
 ### Slow Recursive Search
 
