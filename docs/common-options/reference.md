@@ -80,12 +80,25 @@ for context"]
 | `--hidden` | Search hidden files | `rg --hidden pattern` |
 | `--files` | List files that would be searched | `rg --files` |
 | `--stats` | Show search statistics | `rg --stats pattern` |
+| `--json` | Output results in JSON format | `rg --json pattern` |
+| `--vimgrep` | Output in vim quickfix format | `rg --vimgrep pattern` |
+| `--hyperlink-format` | Enable terminal hyperlinks to files | `rg --hyperlink-format default pattern` |
 
 !!! warning "Performance Note"
     The `-uuu` flag searches everything including binary files, which is significantly slower. Use `-u` (ignores .gitignore) or `-uu` (+ hidden files) for better performance unless you specifically need to search binary files.
 
 !!! note "Smart Case Behavior"
     `-S` (smart case) automatically becomes case-sensitive when your pattern contains uppercase letters. For example, `rg -S error` matches "error", "Error", "ERROR", but `rg -S Error` only matches "Error".
+
+!!! tip "Editor Integration"
+    For editor/IDE integration, combine `--vimgrep` (vim quickfix format) and `--hyperlink-format` (clickable file links):
+
+    ```bash
+    # Source: crates/core/flags/defs.rs (Vimgrep and HyperlinkFormat flags)
+    rg --vimgrep --hyperlink-format default 'pattern'
+    ```
+
+    This produces output that's easy to parse by editors and includes clickable hyperlinks in supported terminals.
 
 ## Combining Flags
 
@@ -97,7 +110,7 @@ Many flags work well together:
     === "Search by File Type"
         ```bash
         # Smart case search in Python files with context
-        # Source: tests/feature.rs:212 (smart-case example)
+        # Source: tests/feature.rs (f70_smart_case test)
         rg -S -tpy -C 2 'Database'  # (1)!
 
         # Count TODOs in Rust files, including ignored files
@@ -110,11 +123,11 @@ Many flags work well together:
     === "Pattern Matching"
         ```bash
         # Multiple patterns: find either foo or bar
-        # Source: tests/feature.rs:551 (multiple -e flags)
+        # Source: tests/feature.rs (multiple -e flags test)
         rg -e foo -e bar            # (1)!
 
         # Show only the matched email addresses, not full lines
-        # Source: tests/multiline.rs:45 (only-matching example)
+        # Source: tests/multiline.rs (only-matching test)
         rg -o '\w+@\w+\.\w+'        # (2)!
         ```
 
@@ -127,7 +140,7 @@ Many flags work well together:
         rg -l -tjs -g '!*.min.js' 'deprecated'  # (1)!
 
         # Get detailed statistics about your search
-        # Source: tests/feature.rs:425 (stats example)
+        # Source: tests/feature.rs (f411_single_threaded_search_stats test)
         rg --stats 'pattern' | tail -10         # (2)!
         ```
 
