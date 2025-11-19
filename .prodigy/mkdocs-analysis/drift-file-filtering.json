@@ -1,104 +1,133 @@
 {
-  "item_type": "auto-discovered",
+  "item_type": "page",
   "page_id": "file-filtering",
   "page_title": "file filtering",
   "page_file": "docs/common-options/file-filtering.md",
   "drift_detected": true,
   "severity": "medium",
-  "quality_assessment": "Well-structured and accurate documentation with clear examples. Missing some granular filtering flags and custom type definition details.",
+  "quality_assessment": "Comprehensive and well-structured page with excellent visual aids (Mermaid diagrams). Documentation is mostly accurate but missing some advanced features like --type-clear, --glob-case-insensitive, and --ignore-file. The page effectively uses MkDocs Material features (admonitions, code annotations) and has strong visual organization.",
   "issues": [
     {
       "type": "missing_content",
       "severity": "medium",
-      "section": "Unrestricted Search",
-      "description": "Missing documentation for granular ignore control flags",
-      "feature_reference": "filtering.automatic_filtering.override_flags",
-      "fix_suggestion": "Add a subsection documenting --no-ignore, --no-ignore-vcs, --no-ignore-global, --no-ignore-dot, and --no-ignore-parent (which is documented under Advanced Filtering, but should be cross-referenced here for completeness)",
-      "source_reference": "features.json:filtering.automatic_filtering.override_flags"
+      "section": "File Type Filtering",
+      "description": "Missing documentation for --type-clear flag which is available in ripgrep",
+      "feature_reference": "filtering.file_types.type_clearing",
+      "fix_suggestion": "Add documentation for --type-clear TYPE flag that clears custom type definitions. This is complementary to --type-add and allows removing built-in type definitions. Example: rg --type-clear rust --type-add 'rust:*.rs' pattern",
+      "source_reference": "crates/core/flags/defs.rs:7023-7033"
+    },
+    {
+      "type": "incomplete_explanation",
+      "severity": "medium",
+      "section": "File Type Filtering",
+      "description": "Type composition with include: is mentioned in features but not explained in documentation",
+      "feature_reference": "filtering.file_types.type_composition",
+      "fix_suggestion": "Add example showing how to use include: syntax in --type-add to compose types from other types. Example from source: '--type-add 'src:include:cpp,py,md'' allows creating a type that includes multiple existing types.",
+      "source_reference": "crates/core/flags/defs.rs:6936-6969, features.json line 141"
     },
     {
       "type": "missing_content",
-      "severity": "medium",
-      "section": "File Type Filtering",
-      "description": "Missing documentation for --type-add flag to define custom file types",
-      "feature_reference": "filtering.manual_filtering.file_types",
-      "fix_suggestion": "Add example showing how to define custom file types with --type-add, such as: rg --type-add 'web:*.{html,css,js}' -tweb pattern",
-      "source_reference": "features.json:filtering.manual_filtering.file_types.features"
+      "severity": "low",
+      "section": "Glob Patterns",
+      "description": "Missing documentation for --glob-case-insensitive flag",
+      "feature_reference": "filtering.manual_globs.case_insensitive_globs",
+      "fix_suggestion": "Add --glob-case-insensitive flag which makes all -g/--glob patterns case-insensitive (equivalent to using --iglob for all globs). This is useful when you have multiple glob patterns and want them all case-insensitive.",
+      "source_reference": "ripgrep --help output"
     },
     {
       "type": "missing_content",
       "severity": "low",
       "section": "Advanced Filtering",
-      "description": "Potential flag name discrepancy for filesystem boundary flag",
-      "feature_reference": "performance.performance_tuning",
-      "fix_suggestion": "Verify that --same-file-system is the correct flag name. Features.json refers to --one-file-system. If both exist, document both; if one is an alias, clarify.",
-      "source_reference": "features.json:performance.performance_tuning.features"
+      "description": "Missing documentation for --ignore-file flag",
+      "feature_reference": "filtering.automatic_filtering.custom_ignore_files",
+      "fix_suggestion": "Add --ignore-file PATH flag that allows specifying additional custom ignore files beyond .gitignore and .ignore. This is useful for project-specific ignore patterns.",
+      "source_reference": "ripgrep --help output"
     },
     {
       "type": "missing_content",
       "severity": "low",
+      "section": "Advanced Filtering",
+      "description": "Missing --no-ignore-exclude flag in granular ignore control",
+      "feature_reference": "filtering.automatic_filtering.exclude_files",
+      "fix_suggestion": "Document --no-ignore-exclude flag which skips .git/info/exclude files. This should be added to the Granular Ignore Control section alongside --no-ignore-vcs, --no-ignore-global, etc.",
+      "source_reference": "ripgrep --help output"
+    },
+    {
+      "type": "incorrect_example",
+      "severity": "low",
       "section": "Binary Files",
-      "description": "Missing --max-columns flag for binary detection",
-      "feature_reference": "performance.performance_tuning",
-      "fix_suggestion": "Add documentation for --max-columns (if different from --max-columns-preview) or clarify that --max-columns-preview is the correct flag name",
-      "source_reference": "features.json:performance.performance_tuning.features"
+      "description": "Misleading description of --max-columns-preview behavior",
+      "current_content": "Files with lines longer than 200 chars are considered binary",
+      "should_be": "--max-columns-preview controls how many bytes to preview when detecting binary files via NUL bytes, not line length",
+      "fix_suggestion": "Clarify that --max-columns-preview sets the number of bytes to check for NUL characters during binary detection, not a line length threshold. The flag tunes the binary detection heuristic.",
+      "source_reference": "docs/binary-data/detection.md likely has more accurate explanation"
     },
     {
       "type": "incomplete_explanation",
       "severity": "low",
-      "section": "Glob Patterns",
-      "description": "Glob syntax not fully explained",
-      "fix_suggestion": "Add brief explanation of remaining glob syntax elements like ? (single char) and [...] (character class). Example: rg -g 'test?.rs' or rg -g 'file[0-9].txt'",
-      "source_reference": "docs/common-options/file-filtering.md:47"
-    },
-    {
-      "type": "incomplete_explanation",
-      "severity": "low",
-      "section": "File Type Filtering",
-      "description": "Custom type definition in config file mentioned but not explained",
-      "fix_suggestion": "Either add a brief inline example or add a clearer cross-reference to the configuration file documentation showing how to define custom types",
-      "source_reference": "docs/common-options/file-filtering.md:29"
+      "section": "Unrestricted Search",
+      "description": "Slight ambiguity about -uu flag behavior with binary files",
+      "current_content": "Also search hidden files and binary files",
+      "should_be": "-uu = --no-ignore + --hidden (doesn't directly control binary searching)",
+      "fix_suggestion": "Clarify that -uu specifically adds --no-ignore and --hidden. Binary file searching is controlled separately. The current description 'Also search hidden files and binary files' might imply -uu directly enables binary searching, but that's a side effect of --no-ignore in recursive mode.",
+      "source_reference": "ripgrep --help: -uu is equivalent to --no-ignore --hidden"
     }
   ],
   "positive_aspects": [
-    "Clear, logical organization of file filtering topics",
-    "Excellent progression from simple to advanced filtering",
-    "Multiple practical examples for each flag",
-    "Good explanation of -u/-uu/-uuu flag progression",
-    "Accurate documentation of glob patterns with negation",
-    "All internal cross-references are valid",
-    "Clear descriptions of default behavior vs. override flags",
-    "Good use of code blocks for examples"
+    "Excellent use of Mermaid diagrams to visualize progressive unrestricted search modes (-u, -uu, -uuu)",
+    "Clear visual representation of granular ignore control flags with flowchart diagram",
+    "Comprehensive code examples with numbered annotations using MkDocs Material code annotation features",
+    "Well-organized sections covering all major filtering mechanisms",
+    "Strong use of admonitions (tip, warning, info, note) to highlight important concepts and default behaviors",
+    "Quick reference tip box at the top provides fast access to common filtering patterns",
+    "Clear explanation of glob syntax with multiple practical examples including *, **, ?, [...], and ! prefix",
+    "Source code references included for some sections (e.g., --type-add at line 37, --one-file-system at line 278)",
+    "Good progression from simple file type filtering to advanced glob patterns to unrestricted modes",
+    "All internal links are valid (configuration-file.md exists)",
+    "Examples show multiple flags combined together (e.g., -tpy -tjs, multiple -g flags)"
   ],
   "improvement_suggestions": [
-    "Add a comparison table showing when to use -t/--type vs -g/--glob vs -u flags",
-    "Include a troubleshooting section for common filtering issues (e.g., 'Why isn't my file being searched?')",
-    "Add cross-reference to performance page for --max-filesize impact on search speed",
-    "Consider adding a 'Quick Reference' section at the top with most common filtering flags",
-    "Add visual indicators (like MkDocs admonitions) for important notes about default behavior"
+    "Add cross-reference to binary-data/detection.md page for detailed binary file handling explanation",
+    "Include example of --type-clear usage to clear built-in types before defining custom ones",
+    "Add troubleshooting subsection addressing common file filtering issues (e.g., 'Files unexpectedly excluded', 'Pattern matches but no results')",
+    "Consider adding a comparison table: 'When to use -t/--type vs -g/--glob vs --hidden'",
+    "Make configuration-file.md cross-reference more prominent for persistent type definitions",
+    "Add performance notes: file type filtering vs glob filtering vs unrestricted search impact",
+    "Include example combining multiple filtering mechanisms: rg -t rust -g '!target/' --hidden pattern",
+    "Consider adding a decision flowchart: 'Which filtering approach should I use for my use case?'",
+    "Add note about using --files flag to preview which files match glob patterns before searching",
+    "Cross-reference to automatic-filtering.md page for detailed explanation of .gitignore and .ignore precedence rules",
+    "Add example showing how --type-add with include: syntax works for type composition"
   ],
-  "link_validation": {
-    "total_internal_links": 2,
-    "broken_links": 0,
-    "valid_links": [
-      "./index.md",
-      "../configuration-file.md"
-    ]
-  },
+  "cross_references": [
+    "configuration-file",
+    "binary-data/detection",
+    "automatic-filtering",
+    "manual-filtering-types"
+  ],
   "metadata": {
-    "analyzed_at": "2025-11-13T21:41:49Z",
+    "analyzed_at": "2025-11-19T18:24:02Z",
     "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
     "topics_covered": [
-      "file type filtering",
-      "glob patterns",
-      "unrestricted search",
-      "hidden files",
-      "symlinks",
-      "directory depth",
-      "file size limits",
-      "binary files",
-      "advanced filtering"
+      "File type filtering (-t, -T, --type-list, --type-add)",
+      "Glob patterns (-g, --glob, --iglob)",
+      "Unrestricted search modes (-u, -uu, -uuu)",
+      "Granular ignore control (--no-ignore-vcs, --no-ignore-global, --no-ignore-dot, --no-ignore-parent)",
+      "Hidden files and symlinks (--hidden, -L/--follow)",
+      "Directory depth limits (-d/--max-depth)",
+      "File size limits (--max-filesize)",
+      "Binary file handling (--binary, -a/--text, --max-columns-preview)",
+      "Advanced filtering (--one-file-system, --no-ignore-parent, --path-separator)"
     ],
-    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features"
+    "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
+    "internal_links_validated": true,
+    "broken_links_found": 0,
+    "visual_features_present": [
+      "Mermaid flowchart for unrestricted search progression",
+      "Mermaid graph for granular ignore control",
+      "MkDocs Material code annotations (numbered callouts)",
+      "Admonitions: tip, warning, info, note",
+      "Source code line references"
+    ]
   }
 }
