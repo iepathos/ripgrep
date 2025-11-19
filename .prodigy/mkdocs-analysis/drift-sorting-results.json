@@ -3,66 +3,34 @@
   "page_id": "sorting-results",
   "page_title": "sorting results",
   "page_file": "docs/sorting-results.md",
-  "drift_detected": true,
-  "severity": "medium",
-  "quality_assessment": "Page is comprehensive and accurate but has a broken internal link and lacks visual features present in other enhanced pages",
-  "issues": [
-    {
-      "type": "broken_links",
-      "severity": "medium",
-      "section": "See Also",
-      "description": "Found 1 broken internal link",
-      "broken_links": [
-        {
-          "link_text": "Common Options",
-          "target": "common-options.md",
-          "expected_path": "docs/common-options.md",
-          "current_file": "docs/sorting-results.md",
-          "reason": "File does not exist. The file was reorganized into a section.",
-          "suggested_fix": "common-options/index.md"
-        }
-      ],
-      "fix_suggestion": "Update link from 'common-options.md' to 'common-options/index.md'"
-    },
-    {
-      "type": "missing_visual_features",
-      "severity": "low",
-      "section": "Overall Page Structure",
-      "description": "Page lacks MkDocs Material visual features found in other enhanced pages",
-      "current_content": "Plain markdown without admonitions, tabs, or other visual enhancements",
-      "should_add": "MkDocs Material extensions (admonitions for notes/tips/warnings, tabs for examples, code annotations)",
-      "fix_suggestion": "Add visual features consistent with other enhanced pages: use !!! note/tip/warning admonitions for callouts, === tabs for alternative examples, and code annotations where helpful",
-      "examples": [
-        "Convert **Note**: blocks to !!! note admonitions",
-        "Convert **Performance Note**: to !!! tip \"Performance Impact\" admonitions",
-        "Use === tabs for showing multiple sort option examples side-by-side",
-        "Add !!! warning for the deprecation notice about --sort-files"
-      ]
-    }
-  ],
+  "drift_detected": false,
+  "severity": "none",
+  "quality_assessment": "Excellent documentation with comprehensive coverage, accurate technical details, and strong visual aids. The page correctly documents all sorting options, performance implications, and platform-specific behaviors. The use of Mermaid diagrams and MkDocs Material features (tabs, admonitions) significantly enhances comprehension.",
+  "issues": [],
   "positive_aspects": [
-    "Comprehensive coverage of all sorting options (path, modified, accessed, created)",
-    "Accurate documentation of --sort and --sortr flags with clear examples",
-    "Correct explanation of performance impacts including parallelism and memory usage",
-    "Accurate note about streaming optimization for --sort path in ascending order (lines 77, 131)",
-    "Proper documentation of --sort=none for overriding config files (line 36)",
-    "Accurate documentation of deprecated --sort-files flag (lines 38-40)",
-    "Good explanation of platform differences in timestamp availability (lines 218-231)",
-    "Helpful best practices section covering when to use and avoid sorting",
-    "Clear examples showing combinations with other flags (context, file types, JSON)",
-    "Good organization with logical progression from basic to advanced topics",
-    "Accurate error handling documentation for unavailable sort criteria (line 225)"
+    "Comprehensive coverage of all sort options (path, modified, accessed, created, none)",
+    "Accurate documentation of --sort-files deprecation (line 99-100)",
+    "Correct explanation of streaming path optimization for --sort path in ascending order (lines 138-139, 193, verified in crates/core/flags/hiargs.rs:783,913-914)",
+    "Accurate memory usage and parallelism implications (lines 14, 192-195)",
+    "Excellent use of Mermaid decision flowchart for sort option selection (lines 16-51)",
+    "Strong use of Mermaid performance comparison diagram (lines 197-234)",
+    "Proper use of MkDocs Material tabs for sort options (lines 59-92)",
+    "Comprehensive best practices section with appropriate scope (lines 302-313)",
+    "Platform-specific timestamp behavior correctly documented (lines 324-338)",
+    "Error handling for metadata errors accurately described (lines 334-338, verified in crates/core/flags/hiargs.rs:802-810)",
+    "Error handling for unavailable sort criteria accurately described (lines 331-332, verified in crates/core/flags/lowargs.rs:712-743)",
+    "Clear examples with practical use cases (lines 274-300)",
+    "All internal cross-references are valid and correct (lines 342-344)",
+    "Proper use of admonitions throughout: note (line 13), tip (lines 94, 138, 304), warning (lines 99, 331)",
+    "Example admonition with clear explanatory text (lines 271-272)",
+    "Consistent formatting and structure"
   ],
   "improvement_suggestions": [
-    "Fix broken link to common-options by updating to common-options/index.md",
-    "Add MkDocs Material admonitions to enhance readability and match visual style of other pages",
-    "Convert plain **Note**: blocks to !!! note admonitions for better visual hierarchy",
-    "Convert **Performance Note**: to !!! tip \"Performance Impact\" admonitions",
-    "Use !!! warning for the deprecation notice about --sort-files",
-    "Consider using === tabs to show alternative sort option examples side-by-side",
-    "Add code annotations for complex examples in the Examples section",
-    "Consider adding a comparison table showing memory/performance characteristics of each sort mode",
-    "Add cross-reference links within the page content (e.g., from Best Practices to relevant sections)"
+    "Could add a note that the --threads flag is automatically set to 1 when sorting is enabled (verified in crates/core/flags/hiargs.rs:912)",
+    "Could mention that ascending path sorting uses sort_by_file_name during directory traversal for the streaming optimization",
+    "Could add a troubleshooting example showing how to diagnose the 'sorting by X isn't supported' error",
+    "Could add an example showing how to test if a sort criterion is supported before running a large search",
+    "Could add a comparison table showing memory/performance characteristics of each sort mode at a glance"
   ],
   "cross_references": [
     "performance",
@@ -70,18 +38,21 @@
     "common-options/index"
   ],
   "metadata": {
-    "analyzed_at": "2025-11-13T20:53:28Z",
+    "analyzed_at": "2025-11-19T18:24:00Z",
     "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
-    "topics_covered": [
-      "sorting",
-      "performance",
-      "output control",
-      "command-line flags"
-    ],
+    "topics_covered": ["sorting", "sort options", "performance impact", "parallelism", "memory usage", "platform compatibility"],
     "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
-    "internal_links_checked": 3,
-    "broken_links_found": 1,
-    "visual_features_present": false,
-    "mkdocs_material_extensions_used": []
+    "internal_links_validated": 3,
+    "broken_links_found": 0,
+    "visual_features_present": true,
+    "mkdocs_material_extensions_used": ["admonitions", "tabs", "mermaid"],
+    "mermaid_diagrams": 2,
+    "source_verification": [
+      "crates/core/flags/defs.rs:6211-6450 - Sort flag definitions and documentation",
+      "crates/core/flags/lowargs.rs:687-744 - SortMode and SortModeKind enums with platform support checking",
+      "crates/core/flags/hiargs.rs:750-820 - Sort implementation with streaming optimization for ascending path sort",
+      "crates/core/flags/hiargs.rs:874-918 - walk_builder with sort_by_file_name optimization for path sorting",
+      "crates/core/main.rs:107-114,234-241 - Sort usage in search and files modes"
+    ]
   }
 }
