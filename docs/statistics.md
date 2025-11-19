@@ -421,12 +421,13 @@ Possible causes:
 
 ## Performance Tips Based on Statistics
 
-If statistics show:
+!!! tip "Optimization Strategies"
+    Use these guidelines to optimize based on what statistics reveal:
 
-1. **High files searched count**: Use file type filters (`-t`) or glob patterns
-2. **High bytes searched**: Consider excluding large files or binary data
-3. **High search time**: Simplify regex patterns or use fixed strings (`-F`)
-4. **Low parallelism benefit**: Check if sorting or other options disabled threading
+    1. **High files searched count**: Use file type filters (`-t`) or glob patterns
+    2. **High bytes searched**: Consider excluding large files or binary data
+    3. **High search time**: Simplify regex patterns or use fixed strings (`-F`)
+    4. **Low parallelism benefit**: Check if sorting or other options disabled threading
 
 ## Statistics in Scripts
 
