@@ -4,89 +4,58 @@
   "page_title": "boundaries",
   "page_file": "docs/basics/boundaries.md",
   "drift_detected": true,
-  "severity": "medium",
-  "quality_assessment": "Page is accurate but lacks visual enhancements and could benefit from additional practical examples",
+  "severity": "low",
+  "quality_assessment": "Page is accurate and well-structured with excellent visual aids. Minor correction needed for flag precedence documentation.",
   "issues": [
     {
-      "type": "missing_visual_features",
+      "type": "incorrect_example",
       "severity": "medium",
-      "section": "Whole Word Matching",
-      "description": "Page could be enhanced with admonitions to highlight key concepts and warnings",
-      "fix_suggestion": "Add a tip admonition explaining when to use -w vs \\b boundaries, and a warning about Unicode word boundaries",
-      "source_reference": "features.json:search_basics.capabilities.pattern_matching.features (Word boundary matching with -w/--word-regexp)"
-    },
-    {
-      "type": "incomplete_explanation",
-      "severity": "medium",
-      "section": "Word Boundaries in Regex",
-      "description": "Unicode word boundary behavior not explained",
-      "fix_suggestion": "Add explanation of how \\b and \\B handle Unicode characters, grapheme clusters, and non-ASCII text",
-      "source_reference": "features.json:advanced_patterns.capabilities.unicode_support"
-    },
-    {
-      "type": "missing_content",
-      "severity": "low",
-      "section": "General",
-      "description": "No discussion of interaction between -w and -x flags",
-      "current_content": "Separate sections for -w and -x flags",
-      "should_be": "Explanation that -x overrides -w (from help text: 'This overrides the -w/--word-regexp flag')",
-      "fix_suggestion": "Add a section or admonition explaining flag precedence: -x overrides -w when both are specified",
-      "source_reference": "rg --help output and crates/core/flags/defs.rs"
-    },
-    {
-      "type": "missing_visual_features",
-      "severity": "low",
-      "section": "Examples",
-      "description": "Examples could be enhanced with expected output or annotations",
-      "fix_suggestion": "Add code annotations or separate output blocks showing what each example would match",
-      "source_reference": "MkDocs Material features: code annotations"
-    },
-    {
-      "type": "missing_content",
-      "severity": "low",
-      "section": "Practical Use Cases",
-      "description": "No real-world examples showing why boundary matching matters",
-      "fix_suggestion": "Add examples like: searching for 'log' function vs 'logger' variable, or matching 'test' in test names without matching 'latest'",
-      "source_reference": "features.json:meta_content.common_patterns"
+      "section": "Whole Line Matching",
+      "description": "Flag precedence documentation contradicts actual implementation behavior",
+      "current_content": "!!! warning \"Flag precedence: -x overrides -w\"\n    When both flags are specified, `-x` (line-regexp) takes precedence over `-w` (word-regexp). The last flag wins:\n    ```bash\n    rg -w -x \"test\"   # Uses -x (line matching)\n    rg -x -w \"test\"   # Uses -w (word matching)\n    ```",
+      "should_be": "The warning states -x overrides -w, but the implementation shows -w overrides -x. The actual behavior is: last flag wins, and -w overrides -x (not the other way around).",
+      "fix_suggestion": "Update the warning to correctly state: \"Flag precedence: -w overrides -x\" and fix the description to match the implementation. According to crates/core/flags/defs.rs:7541, -w overrides -x, not vice versa.",
+      "source_reference": "crates/core/flags/defs.rs:7541 (doc_long for WordRegexp flag states 'This overrides the \\flag{line-regexp} flag.')"
     }
   ],
   "positive_aspects": [
-    "Clear, concise explanations of -w and -x flags",
-    "Good progression from flag to regex equivalent",
-    "Practical examples showing the difference",
-    "Clean code blocks with proper bash syntax",
-    "Correct technical information about word and line boundaries",
-    "Valid internal link to parent page (./index.md)"
+    "Excellent use of Mermaid diagrams to visualize word boundary behavior",
+    "Clear practical examples showing when to use -w vs \\b regex boundaries",
+    "Comprehensive coverage of Unicode word boundary support",
+    "Good use of MkDocs Material admonitions (tip, warning, note, example)",
+    "Accurate documentation of \\b{start-half} and \\b{end-half} implementation",
+    "Well-structured progression from basic to advanced boundary usage",
+    "Code annotations used effectively to explain complex patterns",
+    "Accurate reference to source code location (crates/core/flags/defs.rs:7538-7539, 7541)"
   ],
   "improvement_suggestions": [
-    "Add MkDocs Material admonitions (tip, note, warning) to highlight important concepts",
-    "Include a comparison table showing -w vs \\b, -x vs ^...$",
-    "Add visual examples with highlighted matches to show exactly what gets matched",
-    "Include a troubleshooting section for common boundary matching issues",
-    "Add cross-reference to case-sensitivity page (boundaries are case-sensitive by default)",
-    "Consider adding a 'Quick Reference' admonition box at the top",
-    "Add examples showing Unicode boundary behavior (e.g., matching 'café' with -w)",
-    "Include performance note: -w and -x may be slightly faster than manual boundary regex"
-  ],
-  "cross_references": [
-    "case-sensitivity",
-    "regex-basics",
-    "pattern-matching"
+    {
+      "section": "Whole Word Matching",
+      "suggestion": "Add cross-reference to Unicode support page for detailed information about Unicode word boundary behavior",
+      "priority": "low"
+    },
+    {
+      "section": "Advanced Boundary Examples",
+      "suggestion": "Add example showing interaction between -w flag and manual \\b boundaries in regex patterns",
+      "priority": "low"
+    }
   ],
   "metadata": {
-    "analyzed_at": "2025-11-13T20:53:28Z",
+    "analyzed_at": "2025-11-19T18:24:02Z",
     "feature_inventory": ".prodigy/mkdocs-analysis/features.json",
     "topics_covered": [
       "word boundaries",
       "line boundaries",
-      "-w flag",
-      "-x flag",
-      "\\\\b regex",
-      "\\\\B regex"
+      "Unicode support",
+      "regex boundaries",
+      "flag precedence"
     ],
     "validation_focus": "Auto-discovered page - check for drift and enhance with visual features",
-    "ripgrep_version_tested": "15.1.0",
-    "internal_links_validated": 1,
+    "features_validated": [
+      "search_basics.word_boundaries",
+      "advanced_patterns.unicode_support"
+    ],
+    "internal_links_checked": 0,
     "broken_links": 0
   }
 }
