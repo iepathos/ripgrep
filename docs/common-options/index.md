@@ -9,26 +9,38 @@ The common options are organized by use case to help you quickly find the right 
 
 ```mermaid
 graph LR
-    CommonOpts[Common Options] --> SearchBehavior[Search Basics]
-    CommonOpts --> OutputFormat[Output Formatting]
-    CommonOpts --> FileFilter[File Filtering]
-    CommonOpts --> OutputModes[Output Modes]
+    CommonOpts["Common Options"] --> SearchBehavior["Search Basics"]
+    CommonOpts --> OutputFormat["Output Formatting"]
+    CommonOpts --> FileFilter["File Filtering"]
+    CommonOpts --> OutputModes["Output Modes"]
 
-    SearchBehavior --> SB1["Pattern modes (-F, -w)"]
-    SearchBehavior --> SB2["Case sensitivity (-i, -s)"]
-    SearchBehavior --> SB3["Regex engines (-P)"]
+    SearchBehavior --> SB1["Pattern modes
+    (-F, -w)"]
+    SearchBehavior --> SB2["Case sensitivity
+    (-i, -s)"]
+    SearchBehavior --> SB3["Regex engines
+    (-P)"]
 
-    OutputFormat --> OF1["Line numbers (-n)"]
-    OutputFormat --> OF2["Context lines (-A, -B, -C)"]
-    OutputFormat --> OF3["Color (--color)"]
+    OutputFormat --> OF1["Line numbers
+    (-n)"]
+    OutputFormat --> OF2["Context lines
+    (-A, -B, -C)"]
+    OutputFormat --> OF3["Color
+    (--color)"]
 
-    FileFilter --> FF1["Type filtering (-t)"]
-    FileFilter --> FF2["Glob patterns (-g)"]
-    FileFilter --> FF3["Hidden files (--hidden)"]
+    FileFilter --> FF1["Type filtering
+    (-t)"]
+    FileFilter --> FF2["Glob patterns
+    (-g)"]
+    FileFilter --> FF3["Hidden files
+    (--hidden)"]
 
-    OutputModes --> OM1["JSON output (--json)"]
-    OutputModes --> OM2["Count matches (-c)"]
-    OutputModes --> OM3["List files (-l)"]
+    OutputModes --> OM1["JSON output
+    (--json)"]
+    OutputModes --> OM2["Count matches
+    (-c)"]
+    OutputModes --> OM3["List files
+    (-l)"]
 
     style CommonOpts fill:#e1f5ff
     style SearchBehavior fill:#e8f5e9
@@ -46,6 +58,22 @@ graph LR
 
 !!! tip "Navigation Guide"
     Start with **Search Basics** if you're new to ripgrep. Once you understand pattern matching, explore **Output Formatting** to customize results, then **File Filtering** to narrow your search scope. The **Reference** page provides a quick lookup table of all common flags.
+
+!!! example "Combining Common Options"
+    Common options often work together. For example, searching for function definitions in Rust files:
+
+    ```bash
+    rg -w -n -t rust "fn.*main" -C 2
+    ```
+
+    This combines:
+
+    - `-w` (Search Basics) - Match whole words only
+    - `-n` (Output Formatting) - Show line numbers
+    - `-t rust` (File Filtering) - Only search Rust files
+    - `-C 2` (Output Formatting) - Show 2 lines of context
+
+    Each option category contributes to creating precise, readable results.
 
 ## See Also
 
