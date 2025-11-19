@@ -38,6 +38,9 @@ rg "[a-zA-Z]+"       # Matches alphabetic words
 rg "[^0-9]"          # Matches any non-digit character
 ```
 
+!!! warning "Character Class Negation"
+    The `^` character only means negation when it's the **first character** inside square brackets. `[^0-9]` means "not a digit", but `[0-9^]` means "a digit or a caret character".
+
 !!! tip "Prefer Predefined Classes"
     Use predefined classes like `\d` instead of `[0-9]` and `\w` instead of `[a-zA-Z0-9_]` for better readability.
 
@@ -124,6 +127,14 @@ rg "[a-z]{5,}"       # Matches words with 5 or more letters
 rg "[0-9]{2,4}"      # Matches 2-4 digits like "42", "123", "1234"
 ```
 
+!!! note "Greedy vs Non-Greedy Quantifiers"
+    By default, quantifiers (`*`, `+`, `?`, `{n,m}`) are **greedy** - they match as much text as possible. Add `?` after the quantifier to make it **non-greedy** (match as little as possible):
+
+    - `.*` matches as much as possible (greedy)
+    - `.*?` matches as little as possible (non-greedy)
+
+    Example: In `"<div>text</div>"`, the pattern `<.*>` matches the entire string, but `<.*?>` matches just `<div>`.
+
 ## Groups and Alternation
 
 ```bash
@@ -149,20 +160,26 @@ rg "(?:http|https)://\S+"     # Matches URLs
 
 ```bash
 # Email addresses
-rg "\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"
+rg "\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"  # (1)!
 
 # IP addresses (simplified)
-rg "\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b"
+rg "\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b"                # (2)!
 
 # Hexadecimal colors
-rg "#[0-9a-fA-F]{6}"
+rg "#[0-9a-fA-F]{6}"                                       # (3)!
 
 # Function calls (basic)
-rg "\w+\([^)]*\)"
+rg "\w+\([^)]*\)"                                          # (4)!
 
 # URLs
-rg "https?://[^\s]+"
+rg "https?://[^\s]+"                                       # (5)!
 ```
+
+1. `\b` ensures word boundaries, `+` matches one or more allowed email characters
+2. Matches four groups of 1-3 digits separated by dots (doesn't validate valid IP ranges)
+3. `#` followed by exactly 6 hexadecimal digits for colors like `#FF5733`
+4. `\w+` matches function name, `[^)]*` matches any characters except closing paren
+5. `s?` makes the 's' in https optional, `[^\s]+` matches any non-whitespace
 
 ## Regex Engine Selection
 
