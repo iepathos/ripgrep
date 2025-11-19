@@ -87,6 +87,42 @@ property".-> M1
 
 For a comprehensive list of Unicode properties, see the [Rust regex Unicode documentation](https://github.com/rust-lang/regex/blob/master/UNICODE.md).
 
+!!! note "Unicode Support Across Regex Engines"
+    The availability and behavior of Unicode properties may vary between ripgrep's default regex engine and the PCRE2 engine. While both support Unicode, PCRE2 provides additional Unicode features and properties.
+
+    ```mermaid
+    graph LR
+        subgraph Default["Default Engine (Rust regex)"]
+            direction TB
+            D1["Standard Unicode
+            Properties"]
+            D2["Fast Performance"]
+            D3["UTF-8 Optimized"]
+        end
+
+        subgraph PCRE2["PCRE2 Engine"]
+            direction TB
+            P1["Extended Unicode
+            Properties"]
+            P2["Advanced Features"]
+            P3["Perl Compatibility"]
+        end
+
+        Default -.->|"Use when"| U1["Standard properties
+        sufficient"]
+        PCRE2 -.->|"Use when"| U2["Need extended
+        Unicode support"]
+
+        style Default fill:#e1f5ff
+        style PCRE2 fill:#fff3e0
+    ```
+
+    **Figure**: Default engine provides standard Unicode properties with optimal performance. PCRE2 offers extended Unicode features when needed (enable with `--pcre2` or `-P`).
+
+    If you need extended Unicode support not available in the default engine, see the [PCRE2 documentation](./pcre2.md) for details.
+
+    Additionally, Unicode support depends on the Unicode version used by your system and ripgrep version. Character property definitions and emoji classifications may evolve across Unicode versions.
+
 ## Unicode-Aware Metacharacters
 
 By default, these metacharacters are Unicode-aware:
@@ -170,14 +206,18 @@ rg '\p{Han}+\s+\p{Latin}+'  # Chinese + Latin names
 
 ```bash
 # Extract sentences from mixed-script documents
-rg '\p{Uppercase}\p{Alphabetic}+.*?[.!?]'
+rg '\p{Uppercase}\p{Alphabetic}+.*?[.!?]'  # (1)!
 
 # Find all non-ASCII text
-rg '[^\p{ASCII}]+'
+rg '[^\p{ASCII}]+'  # (2)!
 
 # Identify specific language blocks
-rg '\p{Arabic}+' --only-matching  # Extract Arabic text
+rg '\p{Arabic}+' --only-matching  # (3)!
 ```
+
+1. Matches sentences starting with uppercase, containing alphabetic chars, ending with punctuation (works across all scripts)
+2. Negated ASCII property matches any character outside the ASCII range (useful for finding internationalized content)
+3. Extracts Arabic text blocks; use `--only-matching` to output just the matched text without file/line context
 
 ### Data Validation
 
@@ -199,11 +239,15 @@ rg '[^\p{Print}\p{White_Space}]'  # (2)!
 
 ```bash
 # Find lines containing emoji
-rg '\p{Emoji}'
+rg '\p{Emoji}'  # (1)!
 
 # Extract emoji from text
-rg '\p{Emoji}+' --only-matching
+rg '\p{Emoji}+' --only-matching  # (2)!
 
 # Find text without emoji (using negative pattern in broader search)
-rg '^[^\p{Emoji}]+$'
+rg '^[^\p{Emoji}]+$'  # (3)!
 ```
+
+1. Matches any line containing at least one emoji character
+2. Extracts sequences of emoji without surrounding context (useful for emoji inventories)
+3. Matches entire lines that contain no emoji characters (useful for filtering emoji-free content)
