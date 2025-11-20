@@ -57,36 +57,27 @@ This lock-free parallel iteration (using atomic operations for work distribution
 graph TD
     Start[Directory Traversal] --> WorkQueue["Work Queue
 Files to Search"]
-    WorkQueue --> T1[Thread 1]
-    WorkQueue --> T2[Thread 2]
-    WorkQueue --> T3[Thread 3]
-    WorkQueue --> TN[Thread N]
 
-    T1 -->|Work Done| Steal1{More Work?}
-    T2 -->|Work Done| Steal2{More Work?}
-    T3 -->|Work Done| Steal3{More Work?}
+    subgraph Workers["Worker Threads"]
+        T1[Thread 1]
+        T2[Thread 2]
+        T3[Thread 3]
+        TN[Thread N]
+    end
 
-    Steal1 -->|Queue Empty| StealFrom2[Steal from Thread 2]
-    Steal2 -->|Queue Empty| StealFrom3[Steal from Thread 3]
-    Steal3 -->|Queue Empty| StealFrom1[Steal from Thread 1]
+    WorkQueue --> Workers
 
-    StealFrom2 --> T1
-    StealFrom3 --> T2
-    StealFrom1 --> T3
+    Workers -->|Work Done| Steal{More Work?}
 
-    Steal1 -->|Found Work| T1
-    Steal2 -->|Found Work| T2
-    Steal3 -->|Found Work| T3
+    Steal -->|Queue Empty| StealWork[Work Stealing]
+    Steal -->|Found Work| Workers
 
-    T1 --> Results[Aggregate Results]
-    T2 --> Results
-    T3 --> Results
-    TN --> Results
+    StealWork --> Workers
+    Workers --> Results[Aggregate Results]
 
     style WorkQueue fill:#e1f5ff
-    style T1 fill:#fff3e0
-    style T2 fill:#fff3e0
-    style T3 fill:#fff3e0
+    style Workers fill:#fff3e0
+    style Steal fill:#f3e5f5
     style TN fill:#fff3e0
     style Results fill:#e8f5e9
 ```
