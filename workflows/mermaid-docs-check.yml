@@ -1,0 +1,22 @@
+
+# Environment variables for parameterization
+env:
+  # Project configuration
+  PROJECT_NAME: "ripgrep"
+  PROJECT_CONFIG: ".prodigy/mkdocs-config.json"
+  FEATURES_PATH: ".prodigy/mkdocs-analysis/features.json"
+
+  # MkDocs-specific settings
+  DOCS_DIR: "docs"
+  MKDOCS_CONFIG: "mkdocs.yml"
+  ANALYSIS_DIR: ".prodigy/mkdocs-analysis"
+  CHAPTERS_FILE: "workflows/data/mkdocs-chapters.json"
+
+commands:
+  # Mermaid diagram validation - ensure all diagrams have valid syntax
+  - shell: "mermaid-sonar $DOCS_DIR --strict --viewport-profile mkdocs"
+    on_failure:
+      # Fix any invalid Mermaid diagrams found
+      # Pass validation output to Claude for context
+      claude: "/prodigy-fix-mermaid-diagrams '${shell.stderr}'"
+      commit_required: true
