@@ -258,7 +258,7 @@ rg -C 2 --passthru pattern  # Passthru mode: all lines shown
 ```
 
 ```mermaid
-flowchart LR
+flowchart TD
     Start["Command Parsing"] --> Check{"Both flags
     present?"}
 

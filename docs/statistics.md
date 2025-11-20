@@ -26,21 +26,23 @@ This prints statistics after all search results.
 The statistics output includes several categories of information. Statistics are printed to stdout after all search results.
 
 ```mermaid
-flowchart LR
+flowchart TD
     Input[Search Input] --> Search[ripgrep Search]
     Search --> Track["Track Metrics
 Internally"]
-    Track --> M1[Matches Count]
-    Track --> M2[Bytes Searched]
-    Track --> M3[Files Processed]
-    Track --> M4[Elapsed Time]
+
+    subgraph Metrics["Collected Metrics"]
+        M1[Matches Count]
+        M2[Bytes Searched]
+        M3[Files Processed]
+        M4[Elapsed Time]
+    end
+
+    Track --> Metrics
 
     Search --> Results["Search Results
 to stdout"]
-    M1 --> Stats[Statistics Summary]
-    M2 --> Stats
-    M3 --> Stats
-    M4 --> Stats
+    Metrics --> Stats[Statistics Summary]
     Stats --> Output["Statistics Output
 to stdout"]
 
@@ -153,13 +155,11 @@ the quick brown fox jumps over the lazy dog
 
 ```mermaid
 graph LR
-    Line["Input line with text"]
-    Line --> Match1["Match 1: 'the' (pos 0)"]
-    Line --> Match2["Match 2: 'the' (pos 31)"]
+    Line[Input Line] --> Match1["Match 1 (pos 0)"]
+    Line --> Match2["Match 2 (pos 31)"]
 
-    Match1 --> Result["Result:
-2 matches
-1 matched line"]
+    Match1 --> Result["2 matches
+1 line"]
     Match2 --> Result
 
     style Line fill:#e1f5ff
@@ -358,7 +358,7 @@ rg --stats --debug 'pattern' 2>&1 | less
 ## Interpreting Results
 
 ```mermaid
-flowchart LR
+flowchart TD
     Start[Review Statistics] --> Check1{"High matches,
 few files?"}
     Check1 -->|Yes| Common["Pattern is common

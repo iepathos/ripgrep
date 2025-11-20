@@ -7,7 +7,7 @@ When you run `rg` recursively, ripgrep automatically filters out many files and 
 By default, ripgrep respects various ignore files, skips hidden files and directories, and avoids searching binary files. This behavior makes searches faster and reduces noise in results. Understanding these filters helps you search effectively and know when to disable them.
 
 ```mermaid
-flowchart LR
+flowchart TD
     Start[File Encountered] --> Explicit{"Specified
 Explicitly?"}
     Explicit -->|Yes| Search[Search File]
@@ -166,7 +166,7 @@ When multiple ignore files exist, ripgrep applies them in a specific order:
 3. Parent directory ignore files are respected by default
 
 ```mermaid
-flowchart LR
+flowchart TD
     Start[File Pattern Match Check] --> Ignore[".ignore files
     (ripgrep-specific)"]
     Ignore -->|Not matched| GitIgnore[".gitignore files

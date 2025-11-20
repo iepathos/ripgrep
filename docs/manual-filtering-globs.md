@@ -127,7 +127,7 @@ rg -g '!**/tests/**' -g '**/tests/integration/**' pattern
 This allows building complex filters by layering include and exclude patterns.
 
 ```mermaid
-flowchart LR
+flowchart TD
     Start[File Encountered] --> Check{"Any -g
 patterns?"}
     Check -->|No| Auto["Use Automatic Filtering
@@ -281,7 +281,7 @@ Glob patterns with `-g/--glob` are "override patterns" that sit at the top of ri
 8. **Hidden file detection** - Automatic filtering of dotfiles
 
 ```mermaid
-graph LR
+graph TD
     File[File Encountered] --> L1["1. Override Patterns
     -g/--glob, --iglob"]
 

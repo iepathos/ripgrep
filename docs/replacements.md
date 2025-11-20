@@ -30,14 +30,11 @@ When you use the `-r/--replace` flag, ripgrep processes text through several sta
 
 ```mermaid
 flowchart LR
-    Input[Input Text] --> Match{"Pattern
-Matches?"}
-    Match -->|No| Skip[Skip Line]
-    Match -->|Yes| Extract["Extract Capture
-Groups"]
-    Extract --> Replace["Apply Replacement
-String"]
-    Replace --> Output[Modified Output]
+    Input[Input] --> Match{Matches?}
+    Match -->|No| Skip[Skip]
+    Match -->|Yes| Extract[Extract Groups]
+    Extract --> Replace[Apply Replace]
+    Replace --> Output[Output]
     Skip --> Output
 
     style Input fill:#e1f5ff

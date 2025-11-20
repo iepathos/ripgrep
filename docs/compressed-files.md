@@ -74,21 +74,17 @@ ripgrep detects the compression format based on file extension:
 6. Reports matches with the original compressed filename
 
 ```mermaid
-flowchart LR
+flowchart TD
     Start[File Encountered] --> CheckExt{"Check File
 Extension"}
-    CheckExt -->|.gz, .tgz| Gzip[Select gzip -d -c]
-    CheckExt -->|.xz, .txz| XZ[Select xz -d -c]
-    CheckExt -->|.zst, .zstd| Zstd[Select zstd -q -d -c]
-    CheckExt -->|.bz2, .tbz2| Bzip[Select bzip2 -d -c]
-    CheckExt -->|Other formats| Other[Select appropriate tool]
+
+    CheckExt -->|.gz, .tgz, .xz, .txz, etc.| Supported["Supported Format Detected"]
     CheckExt -->|No match| Skip[Skip decompression]
 
-    Gzip --> Spawn[Spawn Child Process]
-    XZ --> Spawn
-    Zstd --> Spawn
-    Bzip --> Spawn
-    Other --> Spawn
+    Supported --> SelectTool["Select Decompression Tool
+(gzip, xz, zstd, bzip2, etc.)"]
+
+    SelectTool --> Spawn[Spawn Child Process]
 
     Spawn --> ToolCheck{"Tool in
 PATH?"}

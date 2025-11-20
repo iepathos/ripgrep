@@ -33,7 +33,7 @@ The preprocessor outputs the transformed content to stdout, which ripgrep then s
 ### How It Works
 
 ```mermaid
-flowchart LR
+flowchart TD
     File["Binary File
 PDF, .gz, .docx"] --> Check{"--pre-glob
 match?"}
