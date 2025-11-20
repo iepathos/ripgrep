@@ -11,7 +11,7 @@ Hyperlink support allows terminal emulators to display clickable file paths that
 - Integrating with IDE-like terminal experiences
 
 ```mermaid
-flowchart LR
+flowchart TD
     A[ripgrep Output] --> B["OSC 8 Escape Sequence"]
     B --> C[Terminal Emulator]
     C --> D{User Clicks Link?}

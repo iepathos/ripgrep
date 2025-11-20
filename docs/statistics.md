@@ -26,7 +26,7 @@ This prints statistics after all search results.
 The statistics output includes several categories of information. Statistics are printed to stdout after all search results.
 
 ```mermaid
-flowchart LR
+flowchart TD
     Input[Search Input] --> Search[ripgrep Search]
     Search --> Track["Track Metrics
 Internally"]
@@ -358,7 +358,7 @@ rg --stats --debug 'pattern' 2>&1 | less
 ## Interpreting Results
 
 ```mermaid
-flowchart LR
+flowchart TD
     Start[Review Statistics] --> Check1{"High matches,
 few files?"}
     Check1 -->|Yes| Common["Pattern is common

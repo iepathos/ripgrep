@@ -14,7 +14,7 @@ Sorting is useful when:
     Sorting disables parallelism, which impacts performance on large searches.
 
 ```mermaid
-flowchart LR
+flowchart TD
     Start{"Need to
 sort results?"} --> NeedConsistent{"Need consistent
 output?"}

@@ -158,7 +158,7 @@ Configuration file arguments are **prepended** to your command-line arguments. T
 - **Later flags override earlier flags**
 
 ```mermaid
-flowchart LR
+flowchart TD
     Env[RIPGREP_CONFIG_PATH] --> Load{File exists?}
     Load -->|No| Error[Error: Not found]
     Load -->|Yes| Parse[Parse Config]
@@ -245,7 +245,7 @@ The `--debug` flag shows:
 ripgrep handles configuration file errors as follows:
 
 ```mermaid
-flowchart LR
+flowchart TD
     Start([Config Loading]) --> CheckEnv{RIPGREP_CONFIG_PATH set?}
 
     CheckEnv -->|No/Empty| NoConfig[No config loaded]

@@ -523,7 +523,7 @@ See [Configuration Files](configuration-file.md) for more details on ripgrep con
 Under the hood, file types are implemented as named collections of glob patterns. When you use `-t rust`, ripgrep internally applies the glob pattern `*.rs` to match files.
 
 ```mermaid
-flowchart LR
+flowchart TD
     Start[File Encountered] --> IgnoreCheck{"In .gitignore or
     ignore file?"}
     IgnoreCheck -->|Yes| Skip[Skip File]

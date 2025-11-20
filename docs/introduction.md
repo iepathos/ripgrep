@@ -7,7 +7,7 @@ ripgrep is a line-oriented search tool that recursively searches the current dir
 ripgrep is a command line tool that searches your files for patterns that you give it. ripgrep behaves as if reading each file line by line. If a line matches the pattern provided to ripgrep, then that line will be printed. If a line does not match the pattern, then the line is not printed.
 
 ```mermaid
-flowchart LR
+flowchart TD
     Start([Start Search]) --> Filter{"File should
 be searched?"}
     Filter -->|No - gitignore, hidden, binary| Skip[Skip File]

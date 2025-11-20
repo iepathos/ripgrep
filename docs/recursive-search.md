@@ -183,7 +183,7 @@ This implementation allows ripgrep to efficiently search large directory trees w
     For details on how ripgrep's parallel directory walker is optimized for performance, including threading strategies and memory management, see the [Performance](./performance.md) chapter.
 
 ```mermaid
-flowchart LR
+flowchart TD
     Start[Start Search] --> PathType{Path Type?}
 
     PathType -->|File| SearchFile["Search File Directly
