@@ -159,21 +159,18 @@ Configuration file arguments are **prepended** to your command-line arguments. T
 
 ```mermaid
 flowchart LR
-    Env[RIPGREP_CONFIG_PATH] --> Load{"File
-exists?"}
-    Load -->|No| Error[Error: Config not found]
-    Load -->|Yes| Parse[Parse Config File]
+    Env[RIPGREP_CONFIG_PATH] --> Load{File exists?}
+    Load -->|No| Error[Error: Not found]
+    Load -->|Yes| Parse[Parse Config]
 
-    Parse --> ConfigArgs[Config Arguments]
-    CLI[Command-Line Args] --> Merge[Merge Arguments]
+    Parse --> ConfigArgs[Config Args]
+    CLI[CLI Args] --> Merge[Merge Args]
     ConfigArgs --> Merge
 
-    Merge --> Process["Process All Args
-Left to Right"]
-    Process --> Override{"Duplicate
-flags?"}
-    Override -->|Yes| Later[Later flag wins]
-    Override -->|No| Keep[Keep all flags]
+    Merge --> Process[Process Left to Right]
+    Process --> Override{Duplicate?}
+    Override -->|Yes| Later[Later wins]
+    Override -->|No| Keep[Keep all]
 
     Later --> Final[Final Config]
     Keep --> Final
