@@ -12,26 +12,15 @@ Different output formats serve different purposes:
 
 ```mermaid
 flowchart TD
-    Start{"What's your
-use case?"}
+    Start{"Output
+format?"}
 
-    Start -->|Interactive terminal use| Human[Standard Format]
-    Start -->|Script/automation| Machine[JSON Format]
-    Start -->|Editor integration| Editor[Vimgrep Format]
-
-    Human --> Features1["✓ Syntax highlighting
-✓ Color coding
-✓ Heading mode"]
-    Machine --> Features2["✓ Structured data
-✓ Easy parsing with jq
-✓ Complete metadata"]
-    Editor --> Features3["✓ Vim quickfix compatible
-✓ file:line:col format
-✓ Editor agnostic"]
-
-    Features1 --> Cmd1["rg pattern"]
-    Features2 --> Cmd2["rg --json pattern"]
-    Features3 --> Cmd3["rg --vimgrep pattern"]
+    Start -->|Terminal| Human["Standard
+rg pattern"]
+    Start -->|Automation| Machine["JSON
+rg --json"]
+    Start -->|Editor| Editor["Vimgrep
+rg --vimgrep"]
 
     style Human fill:#e8f5e9
     style Machine fill:#e1f5ff

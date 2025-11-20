@@ -74,7 +74,7 @@ ripgrep detects the compression format based on file extension:
 6. Reports matches with the original compressed filename
 
 ```mermaid
-flowchart TD
+flowchart LR
     Start[File Encountered] --> CheckExt{"Check File
 Extension"}
     CheckExt -->|.gz, .tgz| Gzip[Select gzip -d -c]
