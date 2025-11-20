@@ -112,7 +112,7 @@ reduce:
   - claude: "/prodigy-validate-feature-consistency --project $PROJECT_NAME --docs-dir $DOCS_DIR --output $ANALYSIS_DIR/feature-consistency.json"
 
   # Mermaid diagram validation - ensure all diagrams have valid syntax
-  - shell: "mermaid-sonar $DOCS_DIR --strict"
+  - shell: "mermaid-sonar $DOCS_DIR --strict --viewport-profile mkdocs"
     on_failure:
       # Fix any invalid Mermaid diagrams found
       # Pass validation output to Claude for context

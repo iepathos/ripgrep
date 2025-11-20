@@ -9,7 +9,7 @@ Find and fix all invalid Mermaid diagrams in the documentation.
 Run mermaid-sonar to find invalid diagrams:
 
 ```bash
-mermaid-sonar docs/ --strict
+mermaid-sonar docs/ --strict --viewport-profile mkdocs
 ```
 
 This will check all Mermaid diagrams in the docs directory for:
@@ -279,7 +279,7 @@ After fixing all diagrams:
 
 1. Run mermaid-sonar again to confirm all issues are resolved:
    ```bash
-   mermaid-sonar docs/ --strict
+   mermaid-sonar docs/ --strict --viewport-profile mkdocs
    ```
 
 2. If any diagrams still fail validation, review and fix them manually
