@@ -1,210 +1,112 @@
 
-<!doctype html>
-<html lang="en" class="no-js">
-  <head>
-    
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width,initial-scale=1">
-      
-        <meta name="description" content="A comprehensive guide to using ripgrep, a line-oriented search tool">
-      
-      
-        <meta name="author" content="Andrew Gallant">
-      
-      
-        <link rel="canonical" href="https://github.com/BurntSushi/ripgrep/file-encoding/">
-      
-      
-        <link rel="prev" href="../configuration-file/">
-      
-      
-        <link rel="next" href="../binary-data/">
-      
-      
-        
-      
-      
-      <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
-    
-    
-      
-        <title>File Encoding - ripgrep User Guide</title>
-      
-    
-    
-      <link rel="stylesheet" href="../assets/stylesheets/main.618322db.min.css">
-      
-        
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
-      
-      
+<!DOCTYPE html>
 
-
-    
-    
-      
-    
-    
-      
-        
-        
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
-        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
-      
-    
-    
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
-    
-      
-
-    
-    
-  </head>
-  
-  
-    
-    
-    
-    
-    
-    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
-  
-    
-    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
-    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
-    <label class="md-overlay" for="__drawer"></label>
-    <div data-md-component="skip">
-      
-        
-        <a href="#file-encoding" class="md-skip">
+<html class="no-js" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="A comprehensive guide to using ripgrep, a line-oriented search tool" name="description"/>
+<meta content="Andrew Gallant" name="author"/>
+<link href="https://github.com/BurntSushi/ripgrep/file-encoding/" rel="canonical"/>
+<link href="../configuration-file/" rel="prev"/>
+<link href="../binary-data/" rel="next"/>
+<link href="../assets/images/favicon.png" rel="icon"/>
+<meta content="mkdocs-1.6.1, mkdocs-material-9.7.0" name="generator"/>
+<title>File Encoding - ripgrep User Guide</title>
+<link href="../assets/stylesheets/main.618322db.min.css" rel="stylesheet"/>
+<link href="../assets/stylesheets/palette.ab4e12ef.min.css" rel="stylesheet"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback" rel="stylesheet"/>
+<style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+<script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+</head>
+<body data-md-color-accent="indigo" data-md-color-primary="indigo" data-md-color-scheme="default" dir="ltr">
+<input autocomplete="off" class="md-toggle" data-md-toggle="drawer" id="__drawer" type="checkbox"/>
+<input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
+<label class="md-overlay" for="__drawer"></label>
+<div data-md-component="skip">
+<a class="md-skip" href="#file-encoding">
           Skip to content
         </a>
-      
-    </div>
-    <div data-md-component="announce">
-      
-    </div>
-    
-    
-      
-
+</div>
+<div data-md-component="announce">
+</div>
 <header class="md-header" data-md-component="header">
-  <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="ripgrep User Guide" class="md-header__button md-logo" aria-label="ripgrep User Guide" data-md-component="logo">
-      
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
-
-    </a>
-    <label class="md-header__button md-icon" for="__drawer">
-      
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
-    </label>
-    <div class="md-header__title" data-md-component="header-title">
-      <div class="md-header__ellipsis">
-        <div class="md-header__topic">
-          <span class="md-ellipsis">
+<nav aria-label="Header" class="md-header__inner md-grid">
+<a aria-label="ripgrep User Guide" class="md-header__button md-logo" data-md-component="logo" href=".." title="ripgrep User Guide">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+</a>
+<label class="md-header__button md-icon" for="__drawer">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+</label>
+<div class="md-header__title" data-md-component="header-title">
+<div class="md-header__ellipsis">
+<div class="md-header__topic">
+<span class="md-ellipsis">
             ripgrep User Guide
           </span>
-        </div>
-        <div class="md-header__topic" data-md-component="header-topic">
-          <span class="md-ellipsis">
+</div>
+<div class="md-header__topic" data-md-component="header-topic">
+<span class="md-ellipsis">
             
               File Encoding
             
           </span>
-        </div>
-      </div>
-    </div>
-    
-      
-    
-    
-    
-    
-      
-      
-        <label class="md-header__button md-icon" for="__search">
-          
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
-        </label>
-        <div class="md-search" data-md-component="search" role="dialog">
-  <label class="md-search__overlay" for="__search"></label>
-  <div class="md-search__inner" role="search">
-    <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
-      <label class="md-search__icon md-icon" for="__search">
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
-      </label>
-      <nav class="md-search__options" aria-label="Search">
-        
-          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
-            
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
-          </a>
-        
-        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
-          
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-        </button>
-      </nav>
-      
-        <div class="md-search__suggest" data-md-component="search-suggest"></div>
-      
-    </form>
-    <div class="md-search__output">
-      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
-        <div class="md-search-result" data-md-component="search-result">
-          <div class="md-search-result__meta">
+</div>
+</div>
+</div>
+<label class="md-header__button md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+</label>
+<div class="md-search" data-md-component="search" role="dialog">
+<label class="md-search__overlay" for="__search"></label>
+<div class="md-search__inner" role="search">
+<form class="md-search__form" name="search">
+<input aria-label="Search" autocapitalize="off" autocomplete="off" autocorrect="off" class="md-search__input" data-md-component="search-query" name="query" placeholder="Search" required="" spellcheck="false" type="text"/>
+<label class="md-search__icon md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+</label>
+<nav aria-label="Search" class="md-search__options">
+<a aria-label="Share" class="md-search__icon md-icon" data-clipboard="" data-clipboard-text="" data-md-component="search-share" href="javascript:void(0)" tabindex="-1" title="Share">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"></path></svg>
+</a>
+<button aria-label="Clear" class="md-search__icon md-icon" tabindex="-1" title="Clear" type="reset">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+</button>
+</nav>
+<div class="md-search__suggest" data-md-component="search-suggest"></div>
+</form>
+<div class="md-search__output">
+<div class="md-search__scrollwrap" data-md-scrollfix="" tabindex="0">
+<div class="md-search-result" data-md-component="search-result">
+<div class="md-search-result__meta">
             Initializing search
           </div>
-          <ol class="md-search-result__list" role="presentation"></ol>
-        </div>
-      </div>
-    </div>
-  </div>
+<ol class="md-search-result__list" role="presentation"></ol>
 </div>
-      
-    
-    
-      <div class="md-header__source">
-        <a href="https://github.com/BurntSushi/ripgrep" title="Go to repository" class="md-source" data-md-component="source">
-  <div class="md-source__icon md-icon">
-    
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
-  </div>
-  <div class="md-source__repository">
+</div>
+</div>
+</div>
+</div>
+<div class="md-header__source">
+<a class="md-source" data-md-component="source" href="https://github.com/BurntSushi/ripgrep" title="Go to repository">
+<div class="md-source__icon md-icon">
+<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"></path></svg>
+</div>
+<div class="md-source__repository">
     BurntSushi/ripgrep
   </div>
 </a>
-      </div>
-    
-  </nav>
-  
+</div>
+</nav>
 </header>
-    
-    <div class="md-container" data-md-component="container">
-      
-      
-        
-          
-            
-<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
-  <div class="md-grid">
-    <ul class="md-tabs__list">
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="../introduction/" class="md-tabs__link">
+<div class="md-container" data-md-component="container">
+<nav aria-label="Tabs" class="md-tabs" data-md-component="tabs">
+<div class="md-grid">
+<ul class="md-tabs__list">
+<li class="md-tabs__item">
+<a class="md-tabs__link" href="..">
         
   
   
@@ -213,131 +115,54 @@
   Home
 
       </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-    
-  
-  
-    
-    
-      
-  
-  
-  
-    
-  
-  
-    
-    
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../basics/" class="md-tabs__link">
+</li>
+<li class="md-tabs__item md-tabs__item--active">
+<a class="md-tabs__link" href="../basics/">
           
   
   
   User Guide
 
         </a>
-      </li>
-    
-  
-
-    
-  
-
-      
-        
-  
-  
-  
-  
-    
-    
-      
-  
-  
-  
-  
-    
-    
-      <li class="md-tabs__item">
-        <a href="../advanced-patterns/" class="md-tabs__link">
+</li>
+<li class="md-tabs__item">
+<a class="md-tabs__link" href="../advanced-patterns/">
           
   
   
   Advanced Topics
 
         </a>
-      </li>
-    
-  
-
-    
-  
-
-      
-    </ul>
-  </div>
+</li>
+</ul>
+</div>
 </nav>
-          
-        
-      
-      <main class="md-main" data-md-component="main">
-        <div class="md-main__inner md-grid">
-          
-            
-              
-              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
-                <div class="md-sidebar__scrollwrap">
-                  <div class="md-sidebar__inner">
-                    
-
-
-  
-
-
-<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
-  <label class="md-nav__title" for="__drawer">
-    <a href=".." title="ripgrep User Guide" class="md-nav__button md-logo" aria-label="ripgrep User Guide" data-md-component="logo">
-      
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
-
-    </a>
+<main class="md-main" data-md-component="main">
+<div class="md-main__inner md-grid">
+<div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Navigation" class="md-nav md-nav--primary md-nav--lifted" data-md-level="0">
+<label class="md-nav__title" for="__drawer">
+<a aria-label="ripgrep User Guide" class="md-nav__button md-logo" data-md-component="logo" href=".." title="ripgrep User Guide">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+</a>
     ripgrep User Guide
   </label>
-  
-    <div class="md-nav__source">
-      <a href="https://github.com/BurntSushi/ripgrep" title="Go to repository" class="md-source" data-md-component="source">
-  <div class="md-source__icon md-icon">
-    
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
-  </div>
-  <div class="md-source__repository">
+<div class="md-nav__source">
+<a class="md-source" data-md-component="source" href="https://github.com/BurntSushi/ripgrep" title="Go to repository">
+<div class="md-source__icon md-icon">
+<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"></path></svg>
+</div>
+<div class="md-source__repository">
     BurntSushi/ripgrep
   </div>
 </a>
-    </div>
-  
-  <ul class="md-nav__list" data-md-scrollfix>
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../introduction/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</div>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="..">
+<span class="md-ellipsis">
     
   
     Home
@@ -345,47 +170,12 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-    
-  
-  
-  
-    
-    
-    
-    
-      
-        
-        
-      
-      
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
-        
-          
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
-            
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+<input checked="" class="md-nav__toggle md-toggle" id="__nav_2" type="checkbox"/>
+<label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+<span class="md-ellipsis">
     
   
     User Guide
@@ -393,56 +183,22 @@
 
     
   </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_2">
-            <span class="md-nav__icon md-icon"></span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="true" aria-labelledby="__nav_2_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_2">
+<span class="md-nav__icon md-icon"></span>
             
   
     User Guide
   
 
           </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    
-    
-    
-    
-      
-      
-        
-          
-          
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
-      
-        
-        
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_1" >
-        
-          
-          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="">
-            
-  
-  
-  <span class="md-ellipsis">
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--section md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_2_1" type="checkbox"/>
+<label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="">
+<span class="md-ellipsis">
     
   
     Basics
@@ -450,35 +206,21 @@
 
     
   </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_2_1">
-            <span class="md-nav__icon md-icon"></span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_2_1_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_2_1">
+<span class="md-nav__icon md-icon"></span>
             
   
     Basics
   
 
           </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../basics/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../basics/">
+<span class="md-ellipsis">
     
   
     Basics
@@ -486,27 +228,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../basics/pattern-matching/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../basics/pattern-matching/">
+<span class="md-ellipsis">
     
   
     Pattern Matching
@@ -514,27 +240,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../basics/literal-search/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../basics/literal-search/">
+<span class="md-ellipsis">
     
   
     Literal String Search
@@ -542,27 +252,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../basics/regex-basics/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../basics/regex-basics/">
+<span class="md-ellipsis">
     
   
     Regular Expressions
@@ -570,27 +264,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../basics/case-sensitivity/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../basics/case-sensitivity/">
+<span class="md-ellipsis">
     
   
     Case Sensitivity
@@ -598,27 +276,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../basics/boundaries/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../basics/boundaries/">
+<span class="md-ellipsis">
     
   
     Word and Line Boundaries
@@ -626,27 +288,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../basics/output/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../basics/output/">
+<span class="md-ellipsis">
     
   
     Output Format
@@ -654,27 +300,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../basics/count-list/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../basics/count-list/">
+<span class="md-ellipsis">
     
   
     Count and List Modes
@@ -682,27 +312,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../basics/practice/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../basics/practice/">
+<span class="md-ellipsis">
     
   
     Practice Examples
@@ -710,35 +324,14 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../recursive-search/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../recursive-search/">
+<span class="md-ellipsis">
     
   
     Recursive Search
@@ -746,27 +339,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../automatic-filtering/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../automatic-filtering/">
+<span class="md-ellipsis">
     
   
     Automatic Filtering
@@ -774,27 +351,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../manual-filtering-globs/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../manual-filtering-globs/">
+<span class="md-ellipsis">
     
   
     Manual Filtering (Globs)
@@ -802,27 +363,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../manual-filtering-types/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../manual-filtering-types/">
+<span class="md-ellipsis">
     
   
     Manual Filtering (File Types)
@@ -830,27 +375,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../replacements/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../replacements/">
+<span class="md-ellipsis">
     
   
     Replacements
@@ -858,27 +387,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../configuration-file/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../configuration-file/">
+<span class="md-ellipsis">
     
   
     Configuration File
@@ -886,36 +399,12 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-    
-  
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item md-nav__item--active">
+<input class="md-nav__toggle md-toggle" id="__toc" type="checkbox"/>
+<label class="md-nav__link md-nav__link--active" for="__toc">
+<span class="md-ellipsis">
     
   
     File Encoding
@@ -923,17 +412,10 @@
 
     
   </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
-        
-  
-  
-  <span class="md-ellipsis">
+<span class="md-nav__icon md-icon"></span>
+</label>
+<a class="md-nav__link md-nav__link--active" href="./">
+<span class="md-ellipsis">
     
   
     File Encoding
@@ -941,306 +423,181 @@
 
     
   </span>
-  
-  
-
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
+</a>
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
       Table of contents
     </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#understanding-the-basics" class="md-nav__link">
-    <span class="md-ellipsis">
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#understanding-the-basics">
+<span class="md-ellipsis">
       
         Understanding the Basics
       
     </span>
-  </a>
-  
+</a>
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#the-encoding-flag" class="md-nav__link">
-    <span class="md-ellipsis">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#the-encoding-flag">
+<span class="md-ellipsis">
       
         The --encoding Flag
       
     </span>
-  </a>
-  
+</a>
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#encoding-modes" class="md-nav__link">
-    <span class="md-ellipsis">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#encoding-modes">
+<span class="md-ellipsis">
       
         Encoding Modes
       
     </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Encoding Modes">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#auto-mode-default" class="md-nav__link">
-    <span class="md-ellipsis">
+</a>
+<nav aria-label="Encoding Modes" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#auto-mode-default">
+<span class="md-ellipsis">
       
         Auto Mode (Default)
       
     </span>
-  </a>
-  
+</a>
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#explicit-mode" class="md-nav__link">
-    <span class="md-ellipsis">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#explicit-mode">
+<span class="md-ellipsis">
       
         Explicit Mode
       
     </span>
-  </a>
-  
+</a>
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#disabled-mode" class="md-nav__link">
-    <span class="md-ellipsis">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#disabled-mode">
+<span class="md-ellipsis">
       
         Disabled Mode
       
     </span>
-  </a>
-  
+</a>
 </li>
-        
-      </ul>
-    </nav>
-  
+</ul>
+</nav>
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#bom-sniffing" class="md-nav__link">
-    <span class="md-ellipsis">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#bom-sniffing">
+<span class="md-ellipsis">
       
         BOM Sniffing
       
     </span>
-  </a>
-  
+</a>
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#transcoding" class="md-nav__link">
-    <span class="md-ellipsis">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#transcoding">
+<span class="md-ellipsis">
       
         Transcoding
       
     </span>
-  </a>
-  
+</a>
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#ascii-compatibility-assumption" class="md-nav__link">
-    <span class="md-ellipsis">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#ascii-compatibility-assumption">
+<span class="md-ellipsis">
       
         ASCII Compatibility Assumption
       
     </span>
-  </a>
-  
+</a>
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#supported-encodings" class="md-nav__link">
-    <span class="md-ellipsis">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#supported-encodings">
+<span class="md-ellipsis">
       
         Supported Encodings
       
     </span>
-  </a>
-  
+</a>
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#practical-examples" class="md-nav__link">
-    <span class="md-ellipsis">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#practical-examples">
+<span class="md-ellipsis">
       
         Practical Examples
       
     </span>
-  </a>
-  
+</a>
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#unicode-regex-features-and-encoding" class="md-nav__link">
-    <span class="md-ellipsis">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#unicode-regex-features-and-encoding">
+<span class="md-ellipsis">
       
         Unicode Regex Features and Encoding
       
     </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Unicode Regex Features and Encoding">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#disabling-unicode-features" class="md-nav__link">
-    <span class="md-ellipsis">
+</a>
+<nav aria-label="Unicode Regex Features and Encoding" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#disabling-unicode-features">
+<span class="md-ellipsis">
       
         Disabling Unicode Features
       
     </span>
-  </a>
-  
+</a>
 </li>
-        
-      </ul>
-    </nav>
-  
+</ul>
+</nav>
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#performance-considerations" class="md-nav__link">
-    <span class="md-ellipsis">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#performance-considerations">
+<span class="md-ellipsis">
       
         Performance Considerations
       
     </span>
-  </a>
-  
+</a>
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#troubleshooting-common-encoding-issues" class="md-nav__link">
-    <span class="md-ellipsis">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#troubleshooting-common-encoding-issues">
+<span class="md-ellipsis">
       
         Troubleshooting Common Encoding Issues
       
     </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Troubleshooting Common Encoding Issues">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#pattern-doesnt-match-known-content" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Pattern doesn't match known content
-      
-    </span>
-  </a>
-  
+</a>
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#getting-garbled-output" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Getting garbled output
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#searching-for-non-ascii-pattern-fails" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Searching for non-ASCII pattern fails
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#interaction-with-other-flags" class="md-nav__link">
-    <span class="md-ellipsis">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#interaction-with-other-flags">
+<span class="md-ellipsis">
       
         Interaction with Other Flags
       
     </span>
-  </a>
-  
+</a>
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#summary" class="md-nav__link">
-    <span class="md-ellipsis">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#summary">
+<span class="md-ellipsis">
       
         Summary
       
     </span>
-  </a>
-  
+</a>
 </li>
-      
-    </ul>
-  
+</ul>
 </nav>
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-    
-    
-      
-      
-        
-          
-          
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
-      
-        
-        
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_9" >
-        
-          
-          <label class="md-nav__link" for="__nav_2_9" id="__nav_2_9_label" tabindex="">
-            
-  
-  
-  <span class="md-ellipsis">
+</li>
+<li class="md-nav__item md-nav__item--section md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_2_9" type="checkbox"/>
+<label class="md-nav__link" for="__nav_2_9" id="__nav_2_9_label" tabindex="">
+<span class="md-ellipsis">
     
   
     Binary Data
@@ -1248,35 +605,21 @@
 
     
   </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_9_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_2_9">
-            <span class="md-nav__icon md-icon"></span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_2_9_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_2_9">
+<span class="md-nav__icon md-icon"></span>
             
   
     Binary Data
   
 
           </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../binary-data/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../binary-data/">
+<span class="md-ellipsis">
     
   
     Binary Data
@@ -1284,27 +627,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../binary-data/detection/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../binary-data/detection/">
+<span class="md-ellipsis">
     
   
     Binary Detection
@@ -1312,27 +639,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../binary-data/modes/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../binary-data/modes/">
+<span class="md-ellipsis">
     
   
     Binary Modes
@@ -1340,27 +651,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../binary-data/explicit-implicit/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../binary-data/explicit-implicit/">
+<span class="md-ellipsis">
     
   
     Explicit vs Implicit Files
@@ -1368,27 +663,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../binary-data/flags/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../binary-data/flags/">
+<span class="md-ellipsis">
     
   
     Binary Flags Reference
@@ -1396,27 +675,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../binary-data/examples/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../binary-data/examples/">
+<span class="md-ellipsis">
     
   
     Examples and Troubleshooting
@@ -1424,35 +687,14 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../compressed-files/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../compressed-files/">
+<span class="md-ellipsis">
     
   
     Compressed Files
@@ -1460,27 +702,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../preprocessor/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../preprocessor/">
+<span class="md-ellipsis">
     
   
     Preprocessor
@@ -1488,48 +714,12 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-    
-    
-      
-      
-        
-          
-          
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
-      
-        
-        
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_12" >
-        
-          
-          <label class="md-nav__link" for="__nav_2_12" id="__nav_2_12_label" tabindex="">
-            
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item md-nav__item--section md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_2_12" type="checkbox"/>
+<label class="md-nav__link" for="__nav_2_12" id="__nav_2_12_label" tabindex="">
+<span class="md-ellipsis">
     
   
     Common Options
@@ -1537,35 +727,21 @@
 
     
   </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_12_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_2_12">
-            <span class="md-nav__icon md-icon"></span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_2_12_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_2_12">
+<span class="md-nav__icon md-icon"></span>
             
   
     Common Options
   
 
           </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../common-options/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../common-options/">
+<span class="md-ellipsis">
     
   
     Common Options
@@ -1573,27 +749,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../common-options/search-basics/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../common-options/search-basics/">
+<span class="md-ellipsis">
     
   
     Search Basics
@@ -1601,27 +761,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../common-options/output-formatting/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../common-options/output-formatting/">
+<span class="md-ellipsis">
     
   
     Output Formatting
@@ -1629,27 +773,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../common-options/file-filtering/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../common-options/file-filtering/">
+<span class="md-ellipsis">
     
   
     File Filtering
@@ -1657,27 +785,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../common-options/output-modes/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../common-options/output-modes/">
+<span class="md-ellipsis">
     
   
     Output Modes
@@ -1685,27 +797,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../common-options/reference/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../common-options/reference/">
+<span class="md-ellipsis">
     
   
     Quick Reference
@@ -1713,35 +809,14 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../context-lines/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../context-lines/">
+<span class="md-ellipsis">
     
   
     Context Lines
@@ -1749,27 +824,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../output-formats/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../output-formats/">
+<span class="md-ellipsis">
     
   
     Output Formats
@@ -1777,27 +836,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../sorting-results/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../sorting-results/">
+<span class="md-ellipsis">
     
   
     Sorting Results
@@ -1805,27 +848,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../utility-modes/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../utility-modes/">
+<span class="md-ellipsis">
     
   
     Utility Modes
@@ -1833,52 +860,15 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-    
-      
-      
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
-        
-          
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
-            
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_3" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+<span class="md-ellipsis">
     
   
     Advanced Topics
@@ -1886,53 +876,22 @@
 
     
   </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3">
-            <span class="md-nav__icon md-icon"></span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_3_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_3">
+<span class="md-nav__icon md-icon"></span>
             
   
     Advanced Topics
   
 
           </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    
-    
-    
-    
-      
-      
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_1" >
-        
-          
-          <label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
-            
-  
-  
-  <span class="md-ellipsis">
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_3_1" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
+<span class="md-ellipsis">
     
   
     Advanced Patterns
@@ -1940,35 +899,21 @@
 
     
   </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3_1">
-            <span class="md-nav__icon md-icon"></span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_3_1_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_3_1">
+<span class="md-nav__icon md-icon"></span>
             
   
     Advanced Patterns
   
 
           </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../advanced-patterns/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../advanced-patterns/">
+<span class="md-ellipsis">
     
   
     Advanced Patterns
@@ -1976,27 +921,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../advanced-patterns/multiline/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../advanced-patterns/multiline/">
+<span class="md-ellipsis">
     
   
     Multiline Search
@@ -2004,27 +933,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../advanced-patterns/pcre2/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../advanced-patterns/pcre2/">
+<span class="md-ellipsis">
     
   
     PCRE2 Engine
@@ -2032,27 +945,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../advanced-patterns/lookaround/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../advanced-patterns/lookaround/">
+<span class="md-ellipsis">
     
   
     Lookaround Assertions
@@ -2060,27 +957,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../advanced-patterns/backreferences/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../advanced-patterns/backreferences/">
+<span class="md-ellipsis">
     
   
     Backreferences
@@ -2088,27 +969,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../advanced-patterns/unicode/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../advanced-patterns/unicode/">
+<span class="md-ellipsis">
     
   
     Unicode Patterns
@@ -2116,27 +981,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../advanced-patterns/inline-flags/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../advanced-patterns/inline-flags/">
+<span class="md-ellipsis">
     
   
     Inline Regex Flags
@@ -2144,27 +993,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../advanced-patterns/performance/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../advanced-patterns/performance/">
+<span class="md-ellipsis">
     
   
     Performance Considerations
@@ -2172,27 +1005,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../advanced-patterns/examples/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../advanced-patterns/examples/">
+<span class="md-ellipsis">
     
   
     Practical Examples
@@ -2200,35 +1017,14 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../performance/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../performance/">
+<span class="md-ellipsis">
     
   
     Performance
@@ -2236,27 +1032,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../statistics/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../statistics/">
+<span class="md-ellipsis">
     
   
     Statistics and Metrics
@@ -2264,27 +1044,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../hyperlinks/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../hyperlinks/">
+<span class="md-ellipsis">
     
   
     Hyperlinks
@@ -2292,45 +1056,12 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-    
-    
-      
-      
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_5" >
-        
-          
-          <label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="0">
-            
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_3_5" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="0">
+<span class="md-ellipsis">
     
   
     Troubleshooting
@@ -2338,35 +1069,21 @@
 
     
   </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3_5">
-            <span class="md-nav__icon md-icon"></span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_3_5_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_3_5">
+<span class="md-nav__icon md-icon"></span>
             
   
     Troubleshooting
   
 
           </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../troubleshooting/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../troubleshooting/">
+<span class="md-ellipsis">
     
   
     Troubleshooting
@@ -2374,27 +1091,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../troubleshooting/debug-flags/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../troubleshooting/debug-flags/">
+<span class="md-ellipsis">
     
   
     Debug Flags
@@ -2402,27 +1103,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../troubleshooting/no-results/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../troubleshooting/no-results/">
+<span class="md-ellipsis">
     
   
     No Results Found
@@ -2430,27 +1115,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../troubleshooting/performance/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../troubleshooting/performance/">
+<span class="md-ellipsis">
     
   
     Performance Issues
@@ -2458,27 +1127,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../troubleshooting/errors/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../troubleshooting/errors/">
+<span class="md-ellipsis">
     
   
     Common Error Messages
@@ -2486,27 +1139,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../troubleshooting/binary-encoding/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../troubleshooting/binary-encoding/">
+<span class="md-ellipsis">
     
   
     Binary and Encoding Problems
@@ -2514,27 +1151,11 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../troubleshooting/bug-reports/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../troubleshooting/bug-reports/">
+<span class="md-ellipsis">
     
   
     When to File a Bug
@@ -2542,317 +1163,199 @@
 
     
   </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-  </ul>
+</a>
+</li>
+</ul>
 </nav>
-                  </div>
-                </div>
-              </div>
-            
-            
-              
-              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
-                <div class="md-sidebar__scrollwrap">
-                  <div class="md-sidebar__inner">
-                    
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
       Table of contents
     </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#understanding-the-basics" class="md-nav__link">
-    <span class="md-ellipsis">
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#understanding-the-basics">
+<span class="md-ellipsis">
       
         Understanding the Basics
       
     </span>
-  </a>
-  
+</a>
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#the-encoding-flag" class="md-nav__link">
-    <span class="md-ellipsis">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#the-encoding-flag">
+<span class="md-ellipsis">
       
         The --encoding Flag
       
     </span>
-  </a>
-  
+</a>
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#encoding-modes" class="md-nav__link">
-    <span class="md-ellipsis">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#encoding-modes">
+<span class="md-ellipsis">
       
         Encoding Modes
       
     </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Encoding Modes">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#auto-mode-default" class="md-nav__link">
-    <span class="md-ellipsis">
+</a>
+<nav aria-label="Encoding Modes" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#auto-mode-default">
+<span class="md-ellipsis">
       
         Auto Mode (Default)
       
     </span>
-  </a>
-  
+</a>
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#explicit-mode" class="md-nav__link">
-    <span class="md-ellipsis">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#explicit-mode">
+<span class="md-ellipsis">
       
         Explicit Mode
       
     </span>
-  </a>
-  
+</a>
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#disabled-mode" class="md-nav__link">
-    <span class="md-ellipsis">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#disabled-mode">
+<span class="md-ellipsis">
       
         Disabled Mode
       
     </span>
-  </a>
-  
+</a>
 </li>
-        
-      </ul>
-    </nav>
-  
+</ul>
+</nav>
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#bom-sniffing" class="md-nav__link">
-    <span class="md-ellipsis">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#bom-sniffing">
+<span class="md-ellipsis">
       
         BOM Sniffing
       
     </span>
-  </a>
-  
+</a>
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#transcoding" class="md-nav__link">
-    <span class="md-ellipsis">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#transcoding">
+<span class="md-ellipsis">
       
         Transcoding
       
     </span>
-  </a>
-  
+</a>
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#ascii-compatibility-assumption" class="md-nav__link">
-    <span class="md-ellipsis">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#ascii-compatibility-assumption">
+<span class="md-ellipsis">
       
         ASCII Compatibility Assumption
       
     </span>
-  </a>
-  
+</a>
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#supported-encodings" class="md-nav__link">
-    <span class="md-ellipsis">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#supported-encodings">
+<span class="md-ellipsis">
       
         Supported Encodings
       
     </span>
-  </a>
-  
+</a>
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#practical-examples" class="md-nav__link">
-    <span class="md-ellipsis">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#practical-examples">
+<span class="md-ellipsis">
       
         Practical Examples
       
     </span>
-  </a>
-  
+</a>
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#unicode-regex-features-and-encoding" class="md-nav__link">
-    <span class="md-ellipsis">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#unicode-regex-features-and-encoding">
+<span class="md-ellipsis">
       
         Unicode Regex Features and Encoding
       
     </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Unicode Regex Features and Encoding">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#disabling-unicode-features" class="md-nav__link">
-    <span class="md-ellipsis">
+</a>
+<nav aria-label="Unicode Regex Features and Encoding" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#disabling-unicode-features">
+<span class="md-ellipsis">
       
         Disabling Unicode Features
       
     </span>
-  </a>
-  
+</a>
 </li>
-        
-      </ul>
-    </nav>
-  
+</ul>
+</nav>
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#performance-considerations" class="md-nav__link">
-    <span class="md-ellipsis">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#performance-considerations">
+<span class="md-ellipsis">
       
         Performance Considerations
       
     </span>
-  </a>
-  
+</a>
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#troubleshooting-common-encoding-issues" class="md-nav__link">
-    <span class="md-ellipsis">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#troubleshooting-common-encoding-issues">
+<span class="md-ellipsis">
       
         Troubleshooting Common Encoding Issues
       
     </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Troubleshooting Common Encoding Issues">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#pattern-doesnt-match-known-content" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Pattern doesn't match known content
-      
-    </span>
-  </a>
-  
+</a>
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#getting-garbled-output" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Getting garbled output
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#searching-for-non-ascii-pattern-fails" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Searching for non-ASCII pattern fails
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#interaction-with-other-flags" class="md-nav__link">
-    <span class="md-ellipsis">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#interaction-with-other-flags">
+<span class="md-ellipsis">
       
         Interaction with Other Flags
       
     </span>
-  </a>
-  
+</a>
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#summary" class="md-nav__link">
-    <span class="md-ellipsis">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#summary">
+<span class="md-ellipsis">
       
         Summary
       
     </span>
-  </a>
-  
+</a>
 </li>
-      
-    </ul>
-  
+</ul>
 </nav>
-                  </div>
-                </div>
-              </div>
-            
-          
-          
-            <div class="md-content" data-md-component="content">
-              
-              <article class="md-content__inner md-typeset">
-                
-                  
-
-
-  
-  
-
-
-<h1 id="file-encoding">File Encoding<a class="headerlink" href="#file-encoding" title="Permanent link">&para;</a></h1>
+</div>
+</div>
+</div>
+<div class="md-content" data-md-component="content">
+<article class="md-content__inner md-typeset">
+<h1 id="file-encoding">File Encoding<a class="headerlink" href="#file-encoding" title="Permanent link">¶</a></h1>
 <p><a href="https://en.wikipedia.org/wiki/Character_encoding">Text encoding</a> is a complex topic, but this chapter will help you understand how ripgrep handles different file encodings and how to search non-UTF-8 files effectively.</p>
-<h2 id="understanding-the-basics">Understanding the Basics<a class="headerlink" href="#understanding-the-basics" title="Permanent link">&para;</a></h2>
+<h2 id="understanding-the-basics">Understanding the Basics<a class="headerlink" href="#understanding-the-basics" title="Permanent link">¶</a></h2>
 <p>Files are generally just bundles of bytes with no reliable way to know their encoding. For ripgrep to search them effectively:</p>
 <ul>
 <li>Either the encoding of the pattern must match the encoding of the files being searched, or</li>
@@ -2863,32 +1366,38 @@
 * <strong>latin1</strong> (ISO-8859-1) - Common for Western European text
 * <strong>UTF-8</strong> - The most popular modern encoding
 * <strong>UTF-16</strong> - Prevalent in Windows environments</p>
-<h2 id="the-encoding-flag">The --encoding Flag<a class="headerlink" href="#the-encoding-flag" title="Permanent link">&para;</a></h2>
+<h2 id="the-encoding-flag">The --encoding Flag<a class="headerlink" href="#the-encoding-flag" title="Permanent link">¶</a></h2>
 <p>The <code>-E/--encoding</code> flag lets you control how ripgrep handles file encodings.</p>
 <p><strong>Syntax:</strong>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>rg<span class="w"> </span>-E<span class="w"> </span>ENCODING<span class="w"> </span>pattern
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>rg<span class="w"> </span>--encoding<span class="w"> </span>ENCODING<span class="w"> </span>pattern
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a href="#__codelineno-0-1" id="__codelineno-0-1" name="__codelineno-0-1"></a>rg<span class="w"> </span>-E<span class="w"> </span>ENCODING<span class="w"> </span>pattern
+</span><span id="__span-0-2"><a href="#__codelineno-0-2" id="__codelineno-0-2" name="__codelineno-0-2"></a>rg<span class="w"> </span>--encoding<span class="w"> </span>ENCODING<span class="w"> </span>pattern
 </span></code></pre></div></p>
 <p><strong>Values:</strong>
 * <code>auto</code> - Default mode: automatic BOM detection only
 * <code>none</code> - Disables all encoding detection, searches raw bytes
 * Any <a href="https://encoding.spec.whatwg.org/#concept-encoding-get">WHATWG encoding label</a> - Forces specific encoding (e.g., <code>utf-16</code>, <code>latin1</code>, <code>gbk</code>, <code>shift_jis</code>)</p>
 <p><strong>Examples:</strong>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Use default automatic mode (BOM detection)</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>rg<span class="w"> </span>pattern<span class="w"> </span>files/
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># Force UTF-16 encoding</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>rg<span class="w"> </span>-E<span class="w"> </span>utf-16<span class="w"> </span>pattern<span class="w"> </span>files/
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="c1"># Search raw bytes without any transcoding</span>
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>rg<span class="w"> </span>-E<span class="w"> </span>none<span class="w"> </span>pattern<span class="w"> </span>files/
-</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>
-</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="c1"># Search Cyrillic text encoded in Windows-1251</span>
-</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>rg<span class="w"> </span>-E<span class="w"> </span>windows-1251<span class="w"> </span><span class="s1">&#39;текст&#39;</span><span class="w"> </span>files/
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a href="#__codelineno-1-1" id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="c1"># Use default automatic mode (BOM detection)</span>
+</span><span id="__span-1-2"><a href="#__codelineno-1-2" id="__codelineno-1-2" name="__codelineno-1-2"></a>rg<span class="w"> </span>pattern<span class="w"> </span>files/<span class="w">                          </span><span class="c1"># (1)!</span>
+</span><span id="__span-1-3"><a href="#__codelineno-1-3" id="__codelineno-1-3" name="__codelineno-1-3"></a>
+</span><span id="__span-1-4"><a href="#__codelineno-1-4" id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="c1"># Force UTF-16 encoding</span>
+</span><span id="__span-1-5"><a href="#__codelineno-1-5" id="__codelineno-1-5" name="__codelineno-1-5"></a>rg<span class="w"> </span>-E<span class="w"> </span>utf-16<span class="w"> </span>pattern<span class="w"> </span>files/<span class="w">                </span><span class="c1"># (2)!</span>
+</span><span id="__span-1-6"><a href="#__codelineno-1-6" id="__codelineno-1-6" name="__codelineno-1-6"></a>
+</span><span id="__span-1-7"><a href="#__codelineno-1-7" id="__codelineno-1-7" name="__codelineno-1-7"></a><span class="c1"># Search raw bytes without any transcoding</span>
+</span><span id="__span-1-8"><a href="#__codelineno-1-8" id="__codelineno-1-8" name="__codelineno-1-8"></a>rg<span class="w"> </span>-E<span class="w"> </span>none<span class="w"> </span>pattern<span class="w"> </span>files/<span class="w">                  </span><span class="c1"># (3)!</span>
+</span><span id="__span-1-9"><a href="#__codelineno-1-9" id="__codelineno-1-9" name="__codelineno-1-9"></a>
+</span><span id="__span-1-10"><a href="#__codelineno-1-10" id="__codelineno-1-10" name="__codelineno-1-10"></a><span class="c1"># Search Cyrillic text encoded in Windows-1251</span>
+</span><span id="__span-1-11"><a href="#__codelineno-1-11" id="__codelineno-1-11" name="__codelineno-1-11"></a>rg<span class="w"> </span>-E<span class="w"> </span>windows-1251<span class="w"> </span><span class="s1">'текст'</span><span class="w"> </span>files/<span class="w">          </span><span class="c1"># (4)!</span>
 </span></code></pre></div></p>
+<ol>
+<li>BOM sniffing enabled - detects UTF-8/UTF-16 files automatically</li>
+<li>All files treated as UTF-16 (unless BOM overrides)</li>
+<li>Disables transcoding - useful for binary or byte-level searches</li>
+<li>Pattern must match file's actual encoding for correct results</li>
+</ol>
 <p><strong>Short form:</strong> <code>-E</code> is the short form of <code>--encoding</code></p>
 <p><strong>Reset to auto:</strong> Use <code>--no-encoding</code> to reset encoding mode back to automatic, useful when overriding config files or earlier flags.</p>
-<h2 id="encoding-modes">Encoding Modes<a class="headerlink" href="#encoding-modes" title="Permanent link">&para;</a></h2>
+<h2 id="encoding-modes">Encoding Modes<a class="headerlink" href="#encoding-modes" title="Permanent link">¶</a></h2>
 <p>ripgrep operates in three distinct encoding modes:</p>
 <table>
 <thead>
@@ -2916,14 +1425,22 @@
 </tr>
 </tbody>
 </table>
-<h3 id="auto-mode-default">Auto Mode (Default)<a class="headerlink" href="#auto-mode-default" title="Permanent link">&para;</a></h3>
+<div class="admonition tip">
+<p class="admonition-title">Choosing the Right Mode</p>
+<ul>
+<li><strong>Use Auto</strong> (default) when searching modern text files - works for most UTF-8 and BOM-marked files</li>
+<li><strong>Use Explicit</strong> when you know files are in a specific legacy encoding (e.g., <code>windows-1251</code>, <code>shift_jis</code>)</li>
+<li><strong>Use Disabled</strong> for binary files, byte-level searches, or when BOM should be treated as content</li>
+</ul>
+</div>
+<h3 id="auto-mode-default">Auto Mode (Default)<a class="headerlink" href="#auto-mode-default" title="Permanent link">¶</a></h3>
 <p>When using <code>--encoding=auto</code> or not specifying any encoding flag:</p>
 <ol>
 <li><strong>BOM Sniffing</strong> - ripgrep checks the first 3 bytes of each file for a byte-order mark</li>
 <li><strong>If BOM found</strong> - File is transcoded from detected encoding (UTF-8, UTF-16LE, or UTF-16BE) to UTF-8</li>
 <li><strong>If no BOM</strong> - File is assumed to be ASCII-compatible and searched as-is</li>
 </ol>
-<h3 id="explicit-mode">Explicit Mode<a class="headerlink" href="#explicit-mode" title="Permanent link">&para;</a></h3>
+<h3 id="explicit-mode">Explicit Mode<a class="headerlink" href="#explicit-mode" title="Permanent link">¶</a></h3>
 <p>When you specify an encoding like <code>--encoding=utf-16</code>:</p>
 <ol>
 <li>All files are assumed to be in that encoding</li>
@@ -2931,7 +1448,7 @@
 <li>Files are transcoded to UTF-8 before searching</li>
 <li>Invalid bytes are replaced with the Unicode replacement character (U+FFFD)</li>
 </ol>
-<h3 id="disabled-mode">Disabled Mode<a class="headerlink" href="#disabled-mode" title="Permanent link">&para;</a></h3>
+<h3 id="disabled-mode">Disabled Mode<a class="headerlink" href="#disabled-mode" title="Permanent link">¶</a></h3>
 <p>When using <code>--encoding=none</code>:</p>
 <ol>
 <li>All encoding detection is disabled</li>
@@ -2972,9 +1489,10 @@
     style Transcode2 fill:#fff3e0
     style Transcode3 fill:#fff3e0
     style Search fill:#e8f5e9
-    style RawSearch fill:#ffebee</code></pre>
+    style RawSearch fill:#ffebee
+</code></pre>
 <p><strong>Figure</strong>: Encoding detection and transcoding flow showing how ripgrep processes files in different modes.</p>
-<h2 id="bom-sniffing">BOM Sniffing<a class="headerlink" href="#bom-sniffing" title="Permanent link">&para;</a></h2>
+<h2 id="bom-sniffing">BOM Sniffing<a class="headerlink" href="#bom-sniffing" title="Permanent link">¶</a></h2>
 <p>A <strong>Byte Order Mark (BOM)</strong> is a special sequence of bytes at the start of a file that indicates its encoding.</p>
 <p><strong>ripgrep detects BOMs for these encodings only:</strong>
 * <code>EF BB BF</code> - UTF-8 BOM
@@ -3021,18 +1539,19 @@ or use explicit encoding"]
     style UTF8 fill:#e8f5e9
     style UTF16LE fill:#e8f5e9
     style UTF16BE fill:#e8f5e9
-    style NoBOM fill:#fff3e0</code></pre>
+    style NoBOM fill:#fff3e0
+</code></pre>
 <p><strong>Figure</strong>: BOM detection process showing the three supported byte-order marks and transcoding paths.</p>
 <div class="admonition warning">
 <p class="admonition-title">BOM Override Behavior</p>
 <p>Even if you specify an explicit encoding like <code>--encoding=latin1</code>, a file with a BOM will override your setting. For example:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Even though we specify latin1, the UTF-16 BOM is detected and used instead</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>rg<span class="w"> </span>-E<span class="w"> </span>latin1<span class="w"> </span><span class="s1">&#39;pattern&#39;</span><span class="w"> </span>utf16-file-with-bom
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c1"># ripgrep uses UTF-16 (from BOM) not latin1</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a href="#__codelineno-2-1" id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="c1"># Even though we specify latin1, the UTF-16 BOM is detected and used instead</span>
+</span><span id="__span-2-2"><a href="#__codelineno-2-2" id="__codelineno-2-2" name="__codelineno-2-2"></a>rg<span class="w"> </span>-E<span class="w"> </span>latin1<span class="w"> </span><span class="s1">'pattern'</span><span class="w"> </span>utf16-file-with-bom
+</span><span id="__span-2-3"><a href="#__codelineno-2-3" id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="c1"># ripgrep uses UTF-16 (from BOM) not latin1</span>
 </span></code></pre></div>
 <p>This ensures files are read correctly, but may be unexpected if you're trying to force a specific encoding.</p>
 </div>
-<h2 id="transcoding">Transcoding<a class="headerlink" href="#transcoding" title="Permanent link">&para;</a></h2>
+<h2 id="transcoding">Transcoding<a class="headerlink" href="#transcoding" title="Permanent link">¶</a></h2>
 <p>When ripgrep detects or is told about a non-UTF-8 encoding, it performs <strong>transcoding</strong> - converting the file from its source encoding to UTF-8 before searching.</p>
 <p><strong>When transcoding occurs:</strong>
 * A BOM is detected (in auto mode)
@@ -3046,13 +1565,13 @@ or use explicit encoding"]
 * Searches on transcoded files will be slower
 * For best performance, use UTF-8 files when possible</p>
 <p><strong>Example:</strong> Searching a UTF-16 file
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># Automatic detection via BOM</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>rg<span class="w"> </span><span class="s1">&#39;Шерлок&#39;</span><span class="w"> </span>some-utf16-file
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># Explicit encoding (if no BOM)</span>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>rg<span class="w"> </span>-E<span class="w"> </span>utf-16<span class="w"> </span><span class="s1">&#39;Шерлок&#39;</span><span class="w"> </span>some-utf16-file
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a href="#__codelineno-3-1" id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="c1"># Automatic detection via BOM</span>
+</span><span id="__span-3-2"><a href="#__codelineno-3-2" id="__codelineno-3-2" name="__codelineno-3-2"></a>rg<span class="w"> </span><span class="s1">'Шерлок'</span><span class="w"> </span>some-utf16-file
+</span><span id="__span-3-3"><a href="#__codelineno-3-3" id="__codelineno-3-3" name="__codelineno-3-3"></a>
+</span><span id="__span-3-4"><a href="#__codelineno-3-4" id="__codelineno-3-4" name="__codelineno-3-4"></a><span class="c1"># Explicit encoding (if no BOM)</span>
+</span><span id="__span-3-5"><a href="#__codelineno-3-5" id="__codelineno-3-5" name="__codelineno-3-5"></a>rg<span class="w"> </span>-E<span class="w"> </span>utf-16<span class="w"> </span><span class="s1">'Шерлок'</span><span class="w"> </span>some-utf16-file
 </span></code></pre></div></p>
-<h2 id="ascii-compatibility-assumption">ASCII Compatibility Assumption<a class="headerlink" href="#ascii-compatibility-assumption" title="Permanent link">&para;</a></h2>
+<h2 id="ascii-compatibility-assumption">ASCII Compatibility Assumption<a class="headerlink" href="#ascii-compatibility-assumption" title="Permanent link">¶</a></h2>
 <div class="admonition note">
 <p class="admonition-title">Performance Optimization</p>
 <p><strong>By default, ripgrep assumes files are ASCII-compatible.</strong> This is a critical assumption that affects how searches work.</p>
@@ -3102,20 +1621,25 @@ Slower but reliable"]
     style DirectSearch fill:#c8e6c9
     style Search fill:#fff3e0
     style Mismatch fill:#ffebee
-    style AssumeASCII fill:#e1f5ff</code></pre>
+    style AssumeASCII fill:#e1f5ff
+</code></pre>
 <p><strong>Figure</strong>: ASCII compatibility assumption and its impact on search behavior. Files without BOM or explicit encoding are assumed ASCII-compatible for performance.</p>
 <div class="admonition warning">
 <p class="admonition-title">Why it matters</p>
 <p>If you search UTF-16 text without BOM detection or explicit encoding, your ASCII pattern will be looking for single bytes, but UTF-16 represents each character with two bytes. The pattern won't match.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Won&#39;t work - searching for ASCII bytes in UTF-16 file without BOM</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>rg<span class="w"> </span><span class="s1">&#39;hello&#39;</span><span class="w"> </span>utf16-file-no-bom
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># Works - explicit encoding specified</span>
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>rg<span class="w"> </span>-E<span class="w"> </span>utf-16<span class="w"> </span><span class="s1">&#39;hello&#39;</span><span class="w"> </span>utf16-file-no-bom
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a href="#__codelineno-4-1" id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="c1"># Won't work - searching for ASCII bytes in UTF-16 file without BOM</span>
+</span><span id="__span-4-2"><a href="#__codelineno-4-2" id="__codelineno-4-2" name="__codelineno-4-2"></a>rg<span class="w"> </span><span class="s1">'hello'</span><span class="w"> </span>utf16-file-no-bom
+</span><span id="__span-4-3"><a href="#__codelineno-4-3" id="__codelineno-4-3" name="__codelineno-4-3"></a>
+</span><span id="__span-4-4"><a href="#__codelineno-4-4" id="__codelineno-4-4" name="__codelineno-4-4"></a><span class="c1"># Works - explicit encoding specified</span>
+</span><span id="__span-4-5"><a href="#__codelineno-4-5" id="__codelineno-4-5" name="__codelineno-4-5"></a>rg<span class="w"> </span>-E<span class="w"> </span>utf-16<span class="w"> </span><span class="s1">'hello'</span><span class="w"> </span>utf16-file-no-bom
 </span></code></pre></div>
 </div>
-<h2 id="supported-encodings">Supported Encodings<a class="headerlink" href="#supported-encodings" title="Permanent link">&para;</a></h2>
-<p>ripgrep supports all encodings from the <a href="https://encoding.spec.whatwg.org/#concept-encoding-get">WHATWG Encoding Standard</a> via the <code>encoding_rs</code> crate. The <code>encoding_rs</code> crate provides a complete implementation of the WHATWG Encoding Standard, ensuring reliable encoding detection and transcoding.</p>
+<h2 id="supported-encodings">Supported Encodings<a class="headerlink" href="#supported-encodings" title="Permanent link">¶</a></h2>
+<p>ripgrep supports all encodings from the <a href="https://encoding.spec.whatwg.org/#concept-encoding-get">WHATWG Encoding Standard</a> via the <code>encoding_rs</code> crate. The <code>encoding_rs</code> crate is Rust's standard implementation of the WHATWG Encoding Standard, originally developed for Firefox and maintained as part of the Rust/Mozilla ecosystem. This provides a battle-tested, reliable foundation for encoding detection and transcoding.</p>
+<div class="admonition note">
+<p class="admonition-title">Battle-Tested Implementation</p>
+<p>The <code>encoding_rs</code> crate is the same encoding library used in Firefox, handling billions of web page loads daily. This means ripgrep's encoding support is production-proven and handles edge cases reliably.</p>
+</div>
 <p><strong>Common encodings:</strong></p>
 <table>
 <thead>
@@ -3172,40 +1696,40 @@ Slower but reliable"]
 </tbody>
 </table>
 <p><strong>For the complete list</strong>, see the <a href="https://encoding.spec.whatwg.org/#names-and-labels">WHATWG Encoding Standard</a>.</p>
-<h2 id="practical-examples">Practical Examples<a class="headerlink" href="#practical-examples" title="Permanent link">&para;</a></h2>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">UTF-16 Files</label><label for="__tabbed_1_2">Legacy Encodings</label><label for="__tabbed_1_3">Raw Bytes</label></div>
+<h2 id="practical-examples">Practical Examples<a class="headerlink" href="#practical-examples" title="Permanent link">¶</a></h2>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio"><input id="__tabbed_1_2" name="__tabbed_1" type="radio"><input id="__tabbed_1_3" name="__tabbed_1" type="radio"><div class="tabbed-labels"><label for="__tabbed_1_1">UTF-16 Files</label><label for="__tabbed_1_2">Legacy Encodings</label><label for="__tabbed_1_3">Raw Bytes</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p><strong>Automatic detection (with BOM):</strong></p>
 <p>Most UTF-16 files have a BOM, so this works automatically:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>rg<span class="w"> </span><span class="s1">&#39;pattern&#39;</span><span class="w"> </span>utf16-file-with-bom
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a href="#__codelineno-5-1" id="__codelineno-5-1" name="__codelineno-5-1"></a>rg<span class="w"> </span><span class="s1">'pattern'</span><span class="w"> </span>utf16-file-with-bom
 </span></code></pre></div>
 <p><strong>Force UTF-16 (without BOM):</strong></p>
 <p>For UTF-16 files without a BOM:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>rg<span class="w"> </span>-E<span class="w"> </span>utf-16<span class="w"> </span><span class="s1">&#39;pattern&#39;</span><span class="w"> </span>utf16-file-no-bom
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a href="#__codelineno-6-1" id="__codelineno-6-1" name="__codelineno-6-1"></a>rg<span class="w"> </span>-E<span class="w"> </span>utf-16<span class="w"> </span><span class="s1">'pattern'</span><span class="w"> </span>utf16-file-no-bom
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
 <p><strong>Cyrillic (Windows-1251):</strong></p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>rg<span class="w"> </span>-E<span class="w"> </span>windows-1251<span class="w"> </span><span class="s1">&#39;текст&#39;</span><span class="w"> </span>legacy-cyrillic-files/
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a href="#__codelineno-7-1" id="__codelineno-7-1" name="__codelineno-7-1"></a>rg<span class="w"> </span>-E<span class="w"> </span>windows-1251<span class="w"> </span><span class="s1">'текст'</span><span class="w"> </span>legacy-cyrillic-files/
 </span></code></pre></div>
 <p><strong>Chinese (GBK):</strong></p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>rg<span class="w"> </span>-E<span class="w"> </span>gbk<span class="w"> </span><span class="s1">&#39;搜索&#39;</span><span class="w"> </span>chinese-files/
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a href="#__codelineno-8-1" id="__codelineno-8-1" name="__codelineno-8-1"></a>rg<span class="w"> </span>-E<span class="w"> </span>gbk<span class="w"> </span><span class="s1">'搜索'</span><span class="w"> </span>chinese-files/
 </span></code></pre></div>
 <p><strong>Japanese (Shift JIS):</strong></p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>rg<span class="w"> </span>-E<span class="w"> </span>shift_jis<span class="w"> </span><span class="s1">&#39;検索&#39;</span><span class="w"> </span>japanese-files/
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a href="#__codelineno-9-1" id="__codelineno-9-1" name="__codelineno-9-1"></a>rg<span class="w"> </span>-E<span class="w"> </span>shift_jis<span class="w"> </span><span class="s1">'検索'</span><span class="w"> </span>japanese-files/
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
 <p><strong>Search raw byte sequences:</strong></p>
 <p>Disable all encoding detection and search raw bytes:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>rg<span class="w"> </span>-E<span class="w"> </span>none<span class="w"> </span><span class="s1">&#39;(?-u)\x00\x48\x00\x65\x00\x6c\x00\x6c\x00\x6f&#39;</span><span class="w"> </span>utf16-file
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a href="#__codelineno-10-1" id="__codelineno-10-1" name="__codelineno-10-1"></a>rg<span class="w"> </span>-E<span class="w"> </span>none<span class="w"> </span><span class="s1">'(?-u)\x00\x48\x00\x65\x00\x6c\x00\x6c\x00\x6f'</span><span class="w"> </span>utf16-file
 </span></code></pre></div>
 <p>The <code>(?-u)</code> flag disables Unicode mode in the regex, allowing byte-level matching.</p>
 </div>
 </div>
-</div>
-<h2 id="unicode-regex-features-and-encoding">Unicode Regex Features and Encoding<a class="headerlink" href="#unicode-regex-features-and-encoding" title="Permanent link">&para;</a></h2>
+</input></input></input></div>
+<h2 id="unicode-regex-features-and-encoding">Unicode Regex Features and Encoding<a class="headerlink" href="#unicode-regex-features-and-encoding" title="Permanent link">¶</a></h2>
 <p>ripgrep's regex engine includes Unicode support by default. After transcoding to UTF-8, these features work on the transcoded content:</p>
 <ul>
 <li><code>\w</code> - Matches Unicode word characters (not just ASCII <code>[a-zA-Z0-9_]</code>)</li>
@@ -3217,20 +1741,20 @@ Slower but reliable"]
 * On UTF-8 files, they work naturally
 * On transcoded files (UTF-16, GBK, etc.), they work on the UTF-8 transcoded version
 * On raw bytes without transcoding, they only work reliably on valid UTF-8 sequences</p>
-<h3 id="disabling-unicode-features">Disabling Unicode Features<a class="headerlink" href="#disabling-unicode-features" title="Permanent link">&para;</a></h3>
+<h3 id="disabling-unicode-features">Disabling Unicode Features<a class="headerlink" href="#disabling-unicode-features" title="Permanent link">¶</a></h3>
 <p>You can disable Unicode matching within patterns using the <code>(?-u)</code> flag:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1"># Match any byte (not any Unicode codepoint)</span>
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>rg<span class="w"> </span><span class="s1">&#39;(?-u:.)&#39;</span>
-</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>
-</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="c1"># Match ASCII word chars followed by any byte followed by Unicode word char</span>
-</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>rg<span class="w"> </span><span class="s1">&#39;\w(?-u:\w)\w&#39;</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a href="#__codelineno-11-1" id="__codelineno-11-1" name="__codelineno-11-1"></a><span class="c1"># Match any byte (not any Unicode codepoint)</span>
+</span><span id="__span-11-2"><a href="#__codelineno-11-2" id="__codelineno-11-2" name="__codelineno-11-2"></a>rg<span class="w"> </span><span class="s1">'(?-u:.)'</span>
+</span><span id="__span-11-3"><a href="#__codelineno-11-3" id="__codelineno-11-3" name="__codelineno-11-3"></a>
+</span><span id="__span-11-4"><a href="#__codelineno-11-4" id="__codelineno-11-4" name="__codelineno-11-4"></a><span class="c1"># Match ASCII word chars followed by any byte followed by Unicode word char</span>
+</span><span id="__span-11-5"><a href="#__codelineno-11-5" id="__codelineno-11-5" name="__codelineno-11-5"></a>rg<span class="w"> </span><span class="s1">'\w(?-u:\w)\w'</span>
 </span></code></pre></div>
 <p>This is useful when:
 * Searching binary files where <code>.</code> should match any byte including invalid UTF-8
 * Mixing ASCII and Unicode patterns
 * Searching raw bytes with <code>--encoding=none</code></p>
 <p>For more details on regex flags, see the <a href="../advanced-patterns/">Advanced Patterns</a> chapter.</p>
-<h2 id="performance-considerations">Performance Considerations<a class="headerlink" href="#performance-considerations" title="Permanent link">&para;</a></h2>
+<h2 id="performance-considerations">Performance Considerations<a class="headerlink" href="#performance-considerations" title="Permanent link">¶</a></h2>
 <div class="admonition tip">
 <p class="admonition-title">Performance Best Practices</p>
 <p><strong>Transcoding overhead:</strong></p>
@@ -3251,27 +1775,78 @@ Slower but reliable"]
 <li>Use <code>--encoding=none</code> only when necessary (skips BOM detection overhead)</li>
 </ul>
 </div>
-<h2 id="troubleshooting-common-encoding-issues">Troubleshooting Common Encoding Issues<a class="headerlink" href="#troubleshooting-common-encoding-issues" title="Permanent link">&para;</a></h2>
-<h3 id="pattern-doesnt-match-known-content">Pattern doesn't match known content<a class="headerlink" href="#pattern-doesnt-match-known-content" title="Permanent link">&para;</a></h3>
+<h2 id="troubleshooting-common-encoding-issues">Troubleshooting Common Encoding Issues<a class="headerlink" href="#troubleshooting-common-encoding-issues" title="Permanent link">¶</a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Pattern doesn't match known content</p>
 <p><strong>Likely cause:</strong> Encoding mismatch</p>
-<p><strong>Solutions:</strong>
-1. Use <code>--debug</code> to see encoding detection: <code>rg --debug pattern file</code> (shows which encoding was detected or transcoding performed)
-2. Check if file has a BOM: <code>hexdump -C file | head -n 1</code>
-3. Try explicit encoding: <code>rg -E utf-16 pattern file</code>
-4. Try disabling encoding: <code>rg -E none pattern file</code> (search raw bytes)</p>
-<h3 id="getting-garbled-output">Getting garbled output<a class="headerlink" href="#getting-garbled-output" title="Permanent link">&para;</a></h3>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li>
+<p>Use <code>--debug</code> to see encoding detection and BOM sniffing details:
+   <div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a href="#__codelineno-12-1" id="__codelineno-12-1" name="__codelineno-12-1"></a>rg<span class="w"> </span>--debug<span class="w"> </span>pattern<span class="w"> </span>file
+</span></code></pre></div>
+   This shows BOM sniffing results, which encoding was detected, and any transcoding performed.</p>
+</li>
+<li>
+<p>Check if file has a BOM:
+   <div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a href="#__codelineno-13-1" id="__codelineno-13-1" name="__codelineno-13-1"></a>hexdump<span class="w"> </span>-C<span class="w"> </span>file<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-n<span class="w"> </span><span class="m">1</span>
+</span></code></pre></div></p>
+</li>
+<li>
+<p>Try explicit encoding:
+   <div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a href="#__codelineno-14-1" id="__codelineno-14-1" name="__codelineno-14-1"></a>rg<span class="w"> </span>-E<span class="w"> </span>utf-16<span class="w"> </span>pattern<span class="w"> </span>file
+</span></code></pre></div></p>
+</li>
+<li>
+<p>Try disabling encoding (search raw bytes):
+   <div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a href="#__codelineno-15-1" id="__codelineno-15-1" name="__codelineno-15-1"></a>rg<span class="w"> </span>-E<span class="w"> </span>none<span class="w"> </span>pattern<span class="w"> </span>file
+</span></code></pre></div></p>
+</li>
+</ol>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Getting garbled output</p>
 <p><strong>Likely cause:</strong> Wrong encoding specified or BOM override</p>
-<p><strong>Solutions:</strong>
-1. Let ripgrep auto-detect: <code>rg --no-encoding pattern file</code>
-2. Try different encoding: <code>rg -E windows-1252 pattern file</code>
-3. Check if file is actually UTF-8: <code>file file</code></p>
-<h3 id="searching-for-non-ascii-pattern-fails">Searching for non-ASCII pattern fails<a class="headerlink" href="#searching-for-non-ascii-pattern-fails" title="Permanent link">&para;</a></h3>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li>
+<p>Let ripgrep auto-detect:
+   <div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a href="#__codelineno-16-1" id="__codelineno-16-1" name="__codelineno-16-1"></a>rg<span class="w"> </span>--no-encoding<span class="w"> </span>pattern<span class="w"> </span>file
+</span></code></pre></div></p>
+</li>
+<li>
+<p>Try different encoding:
+   <div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a href="#__codelineno-17-1" id="__codelineno-17-1" name="__codelineno-17-1"></a>rg<span class="w"> </span>-E<span class="w"> </span>windows-1252<span class="w"> </span>pattern<span class="w"> </span>file
+</span></code></pre></div></p>
+</li>
+<li>
+<p>Check if file is actually UTF-8:
+   <div class="language-bash highlight"><pre><span></span><code><span id="__span-18-1"><a href="#__codelineno-18-1" id="__codelineno-18-1" name="__codelineno-18-1"></a>file<span class="w"> </span>file
+</span></code></pre></div></p>
+</li>
+</ol>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Searching for non-ASCII pattern fails</p>
 <p><strong>Likely cause:</strong> Pattern encoding doesn't match file encoding</p>
-<p><strong>Solutions:</strong>
-1. Ensure your terminal/shell uses UTF-8
-2. Specify correct file encoding: <code>rg -E gbk '中文' file</code>
-3. Use hex escapes for byte-level search: <code>rg '(?-u)\xe4\xb8\xad\xe6\x96\x87' file</code></p>
-<h2 id="interaction-with-other-flags">Interaction with Other Flags<a class="headerlink" href="#interaction-with-other-flags" title="Permanent link">&para;</a></h2>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li>
+<p>Ensure your terminal/shell uses UTF-8</p>
+</li>
+<li>
+<p>Specify correct file encoding:
+   <div class="language-bash highlight"><pre><span></span><code><span id="__span-19-1"><a href="#__codelineno-19-1" id="__codelineno-19-1" name="__codelineno-19-1"></a>rg<span class="w"> </span>-E<span class="w"> </span>gbk<span class="w"> </span><span class="s1">'中文'</span><span class="w"> </span>file
+</span></code></pre></div></p>
+</li>
+<li>
+<p>Use hex escapes for byte-level search:
+   <div class="language-bash highlight"><pre><span></span><code><span id="__span-20-1"><a href="#__codelineno-20-1" id="__codelineno-20-1" name="__codelineno-20-1"></a>rg<span class="w"> </span><span class="s1">'(?-u)\xe4\xb8\xad\xe6\x96\x87'</span><span class="w"> </span>file
+</span></code></pre></div></p>
+</li>
+</ol>
+</div>
+<h2 id="interaction-with-other-flags">Interaction with Other Flags<a class="headerlink" href="#interaction-with-other-flags" title="Permanent link">¶</a></h2>
 <p><strong><code>--text</code> or <code>-a</code> flag:</strong>
 * Forces ripgrep to search binary files as if they were text
 * Encoding detection and transcoding still apply
@@ -3285,7 +1860,7 @@ Slower but reliable"]
 * <code>(?-u)</code> disables Unicode mode for a pattern section
 * Works on the transcoded UTF-8 version of files
 * See <a href="../advanced-patterns/">Advanced Patterns</a> chapter</p>
-<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
+<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">¶</a></h2>
 <ul>
 <li>ripgrep defaults to <strong>auto encoding mode</strong> with BOM sniffing</li>
 <li>Use <code>-E/--encoding</code> to specify explicit encodings or disable detection</li>
@@ -3297,66 +1872,37 @@ Slower but reliable"]
 <li>Use <code>(?-u)</code> to disable Unicode features when needed</li>
 <li>For best performance, use UTF-8 files when possible</li>
 </ul>
-
-
-
-
-
-
-
-
-
-
-
-
-                
-              </article>
-            </div>
-          
-          
+</article>
+</div>
 <script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
-        </div>
-        
-          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+</div>
+<button class="md-top md-icon" data-md-component="top" hidden="" type="button">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"></path></svg>
   Back to top
 </button>
-        
-      </main>
-      
-        <footer class="md-footer">
-  
-  <div class="md-footer-meta md-typeset">
-    <div class="md-footer-meta__inner md-grid">
-      <div class="md-copyright">
+</main>
+<footer class="md-footer">
+<div class="md-footer-meta md-typeset">
+<div class="md-footer-meta__inner md-grid">
+<div class="md-copyright">
   
   
     Made with
-    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+    <a href="https://squidfunk.github.io/mkdocs-material/" rel="noopener" target="_blank">
       Material for MkDocs
     </a>
-  
 </div>
-      
-    </div>
-  </div>
+</div>
+</div>
 </footer>
-      
-    </div>
-    <div class="md-dialog" data-md-component="dialog">
-      <div class="md-dialog__inner md-typeset"></div>
-    </div>
-    
-    
-    
-      
-      
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.highlight", "search.share", "search.suggest", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
-    
-    
-      <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
-      
-    
-  </body>
+</div>
+<div class="md-dialog" data-md-component="dialog">
+<div class="md-dialog__inner md-typeset"></div>
+</div>
+<script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.highlight", "search.share", "search.suggest", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+<script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
+<script type="module">import mermaid from "https://unpkg.com/mermaid@10.4.0/dist/mermaid.esm.min.mjs";
+window.mermaidConfig = {default: {
+    startOnLoad: false
+}};</script></body>
 </html>
